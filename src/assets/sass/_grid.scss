@@ -1,0 +1,192 @@
+
+.grid-1-1 {
+  & > .cell {
+    width: 50%;
+  }
+}
+.grid-1-1-1 {
+  & > .cell {
+    width: (1 / 3) * 100%;
+  }
+}
+.grid-1-1-1-1 {
+  & > .cell {
+    width: 25%;
+  }
+}
+.grid-1-2 {
+  & > .cell:first-child {
+    width: (1 / 3) * 100%;
+    & + .cell {
+      width: (2 / 3) * 100%;
+    }
+  }
+}
+.grid-2-1 {
+  & > .cell:first-child {
+    width: (2 / 3) * 100%;
+    & + .cell {
+      width: (1 / 3) * 100%;
+    }
+  }
+}
+.grid-1-1-2 {
+  & > .cell:first-child {
+    width: (1 / 4) * 100%;
+    & + .cell {
+      width: (1 / 4) * 100%;
+      & + .cell {
+        width: (2 / 4) * 100%;
+      }
+    }
+  }
+}
+.grid-1-2-1 {
+  & > .cell:first-child {
+    width: (1 / 4) * 100%;
+    & + .cell {
+      width: (2 / 4) * 100%;
+      & + .cell {
+        width: (1 / 4) * 100%;
+      }
+    }
+  }
+}
+.grid-2-1-1 {
+  & > .cell:first-child {
+    width: (2 / 4) * 100%;
+    & + .cell {
+      width: (1 / 4) * 100%;
+      & + .cell {
+        width: (1 / 4) * 100%;
+      }
+    }
+  }
+}
+.grid-1-3 {
+  & > .cell:first-child {
+    width: (1 / 4) * 100%;
+    & + .cell {
+      width: (3 / 4) * 100%;
+    }
+  }
+}
+.grid-3-1 {
+  & > .cell:first-child {
+    width: (3 / 4) * 100%;
+    & + .cell {
+      width: (1 / 4) * 100%;
+    }
+  }
+}
+.grid-2-3 {
+  & > .cell:first-child {
+    width: (2 / 5) * 100%;
+    & + .cell {
+      width: (3 / 5) * 100%;
+    }
+  }
+}
+.grid-3-2 {
+  & > .cell:first-child {
+    width: (3 / 5) * 100%;
+    & + .cell {
+      width: (2 / 5) * 100%;
+    }
+  }
+}
+
+@mixin grid-base() {
+  margin: 0 -10px;
+  & > .cell {
+    float: left;
+    padding: 0 10px;
+    margin-bottom: 20px;
+    & > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &:after {
+    content: ' ';
+    display: block;
+    clear: left;
+  }
+}
+
+@mixin grid-responsive($min-size: $md) {
+  @media screen and (max-width: $min-size - 1) {
+    margin: 0;
+    & > .cell {
+      width: auto !important;
+      float: none;
+      padding: 0;
+    }
+  }
+}
+
+@mixin grid($min-size: $md) {
+  @include grid-base();
+  @include grid-responsive($min-size);
+}
+
+.grid, .grid-xs, .grid-sm, .grid-md, .grid-lg {
+  @include grid-base();
+}
+.grid-xs {
+  @include grid-responsive($xs);
+}
+.grid-sm {
+  @include grid-responsive($sm);
+}
+.grid-md {
+  @include grid-responsive($md);
+}
+.grid-lg {
+  @include grid-responsive($lg);
+}
+
+@mixin auto-grid($numxs, $numsm, $nummd, $numlg) {
+  margin: 0 -10px 20px;
+  & > .cell {
+    float: left;
+    padding: 0 10px;
+    width: (1 / $numxs) * 100%;
+  }
+  &:after {
+    content: ' ';
+    display: block;
+    clear: left;
+  }
+  @media screen and (min-width: $xs) {
+    & > .cell {
+      width: (1 / $numsm) * 100%;
+    }
+  }
+  @media screen and (min-width: $sm) {
+    & > .cell {
+      width: (1 / $nummd) * 100%;
+    }
+  }
+  @media screen and (min-width: $lg) {
+    & > .cell {
+      width: (1 / $numlg) * 100%;
+    }
+  }
+}
+
+.grid-auto,
+.grid-auto-md {
+  @include auto-grid(1, 2, 3, 4);
+}
+
+.grid-auto-xs {
+  @include auto-grid(2, 3, 5, 7);
+}
+
+.grid-auto-sm {
+  @include auto-grid(1, 2, 4, 5);
+}
+
+.grid-auto-lg {
+  @include auto-grid(1, 1, 2, 3);
+}

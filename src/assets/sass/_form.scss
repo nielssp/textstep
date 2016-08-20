@@ -1,0 +1,339 @@
+$inputs: 'input[type=text], input[type=email], input[type=password], input[type=date], input[type=time], input[type=datetime], textarea, select';
+
+@mixin field-color($color) {
+  & > label:first-child,
+  .help {
+    color: $color;
+  }
+  #{$inputs} {
+    border-color: $color;
+    &:focus {
+      border-color: lighten($color, 20%);
+    }
+  }
+  .input-group-text {
+    border-color: $color;
+    background-color: lighten($color, 40%);
+  }
+  .input-group-button {
+    .button, button, input[type=button], input[type=reset], input[type=submit] {
+      @include button-color($color);
+    }
+  }
+}
+
+#{$inputs} {
+  padding: 5px 12px 5px;
+  margin: 2px 0;
+  display: block;
+  border: 1px solid darken($mainBg, 15%);
+  font-size: 14px;
+  background-color: #fff;
+  color: #999;
+  width: 100%;
+  box-shadow: inset 0 1px 2px darken($mainBg, 10%);
+  
+  &:focus {
+    color: #222;
+    border: 1px solid lighten($primaryBg, 20%);
+    box-shadow: 0 0 1px lighten($primaryBg, 20%);
+    outline: 0;
+  }
+  
+  &[data-error] {
+    border-color: $error;
+    &:focus {
+      border-color: lighten($error, 20%);
+    }
+
+  }
+  &[disabled] {
+    background-color: darken($mainBg, 3%);
+  }
+  &.input-xs {
+    padding: 0px 4px 0px;
+    margin: 0;
+  }
+  &.input-sm {
+    padding: 3px 8px 3px;
+    margin: 1px 0;
+  }
+  &.input-md {
+    font-size: 14px;
+  }
+  &.input-lg {
+    font-size: 18px;
+    padding: 5px 14px 5px;
+  }
+}
+
+textarea {
+  min-height: 200px;
+  max-width: 100%;
+  &.textarea-xs {
+    min-height: 100px;
+  }
+  &.textarea-sm {
+    min-height: 200px;
+  }
+  &.textarea-md {
+    min-height: 300px;
+  }
+  &.textarea-lg {
+    min-height: 400px;
+  }
+}
+
+input[type=checkbox] {
+  -webkit-appearance: none;
+  background-color: #fff;
+  border: 1px solid darken($mainBg, 15%);
+  box-shadow: inset 0 1px 2px darken($mainBg, 10%);
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  margin: -2px 0 0 0;
+  text-align: center;
+  cursor: pointer;
+
+  &:checked:before {
+    color: $primaryBg;
+    font-size: 14px;
+    float: left;
+    margin: -2px 0 0 0px;
+    font-family: $font; 
+    content: '\2714';
+  }
+
+  &:focus {
+    color: #222;
+    border: 1px solid lighten($primaryBg, 20%);
+    box-shadow: 0 0 1px lighten($primaryBg, 20%);
+    outline: 0;
+  }
+
+  &[disabled] {
+    background-color: darken($mainBg, 3%);
+  }
+}
+
+input[type=radio] {
+  -webkit-appearance: none;
+  background-color: #fff;
+  border: 1px solid darken($mainBg, 15%);
+  box-shadow: inset 0 1px 2px darken($mainBg, 10%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+  margin: -2px 0 0 0;
+  text-align: center;
+  cursor: pointer;
+  
+  &:checked:before {
+    background: $primaryBg;
+    float: left;
+    width: 8px;
+    height: 8px;
+    margin: 3px 0 0 3px;
+    content: ' ';
+    font-size: 1px;
+    border-radius: 50%;
+  }
+
+  &:focus {
+    color: #222;
+    border: 1px solid lighten($primaryBg, 20%);
+    box-shadow: 0 0 1px lighten($primaryBg, 20%);
+    outline: 0;
+  }
+
+  &[disabled] {
+    background-color: darken($mainBg, 3%);
+  }
+}
+
+label[for] {
+  cursor: pointer;
+}
+
+.checkbox-list,
+.radio-list {
+  list-style-type: none;
+  margin-left: 0;
+  li {
+    margin-bottom: 4px;
+  }
+}
+
+.field {
+  margin-bottom: $pmargin / 2;
+  .help {
+    font-style: italic;
+    color: $grey;
+    font-size: 0.95em;
+  }
+  
+  input[type=text],
+  input[type=email],
+  input[type=password],
+  input[type=date],
+  input[type=time],
+  input[type=datetime],
+  textarea,
+  select,
+  .input-group {
+    margin: 0 0 6px 0;
+  }
+  ul, ol {
+    margin-bottom: 6px;
+  }
+  & > label:first-child {
+    font-weight: 600;
+    font-style: normal;
+    font-size: 0.95em;
+    display: block;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+  &.field-required label:first-child:after {
+    content: '*';
+    margin-left: 4px;
+    color: $error;
+  }
+  input[type=checkbox],
+  input[type=radio] {
+    margin-right: 6px;
+  }
+  input + label {
+    font-weight: normal;
+    font-style: normal;
+    display: inline;
+    margin: 0 12px 0 0px;
+  }
+
+  &.field-muted {
+    @include field-color($grey);
+  }
+  &.field-primary {
+    @include field-color($primary);
+  }
+  &.field-light {
+    @include field-color($light);
+  }
+  &.field-dark {
+    @include field-color($dark);
+  }
+  &.field-info {
+    @include field-color($info);
+  }
+  &.field-success {
+    @include field-color($success);
+  }
+  &.field-warning {
+    @include field-color($warning);
+  }
+  &.field-error {
+    @include field-color($error);
+  }
+
+  & > *:last-child {
+    margin-bottom: 0;
+  }
+}
+form {
+  display: block;
+  margin-bottom: $pmargin;
+  .buttons {
+    margin-bottom: $pmargin;
+  }
+  & > *:last-child {
+    margin-bottom: 0;
+  }
+}
+
+@media screen and (min-width: $sm) {
+  @include wide-form;
+}
+
+.form-narrow,
+.block {
+  @include narrow-form;
+}
+
+.form-wide {
+  @include wide-form;
+}
+.form-wide-xs {
+  @include narrow-form;
+  @media screen and (min-width: $xs) {
+    @include wide-form(140px, 100%);
+  }
+}
+.form-wide-sm {
+  @include narrow-form;
+  @media screen and (min-width: $sm) {
+    @include wide-form(160px, 80%);
+  }
+}
+.form-wide-md {
+  @include narrow-form;
+  @media screen and (min-width: $md) {
+    @include wide-form;
+  }
+}
+.form-wide-lg {
+  @include narrow-form;
+  @media screen and (min-width: $lg) {
+    @include wide-form;
+  }
+}
+
+.input-group, .field .input-group {
+  display: table;
+  white-space: nowrap;
+  position: relative;
+  border-collapse: separate;
+  #{$inputs} {
+    position: relative;
+    width: 100%;
+    display: table-cell;
+    margin: 0;
+    &:focus {
+      z-index: 2;
+    }
+  }
+  &-text, &-button {
+    position: relative;
+    display: table-cell;
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  &-button {
+    .button, button, input[type=button], input[type=reset], input[type=submit] {
+      position: relative;
+      font-size: 14px;
+      margin: 0;
+      display: block;
+      margin-right: -1px;
+      &:hover, &:active, &:focus {
+        z-index: 2;
+      }
+    }
+  }
+  &-text {
+    padding: 5px 12px 5px;
+    border: 1px solid darken($mainBg, 15%);
+    font-size: 14px;
+    background-color: darken($mainBg, 3%);
+    &:first-child {
+      border-right: none;
+    }
+    &:last-child {
+      border-left: none;
+    }
+  }
+}

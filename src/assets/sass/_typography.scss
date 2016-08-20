@@ -1,0 +1,332 @@
+a {
+  &, &:link, &:active, &:visited {
+    cursor: pointer;
+    color: $linkFg;
+    text-decoration: none;
+  }
+  &:hover {
+    color: $linkHlFg;
+    text-decoration: underline;
+  }
+}
+
+p {
+  margin: 0 0 $pmargin;
+  line-height: 1.6em;
+
+  &.lead {
+    font-size: 1.1em;
+    font-weight: bold;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 { 
+  & > small {
+    font-weight: normal;
+    color: lighten($mainFg, 40%);
+    font-size: 0.8em;
+  }
+}
+
+h1, h2, h3 {
+  margin: 0 0 12px;
+  font-weight: normal;
+}
+
+h4, h5, h6 {
+  margin: 0 0 8px;
+}
+
+h1 {
+  font-size: 2.2em;
+  & > small {
+    font-size: 0.5em;
+  }
+}
+
+h2 {
+  font-size: 1.8em;
+  & > small {
+    font-size: 0.6em;
+  }
+}
+
+h3 {
+  font-size: 1.6em;
+  & > small {
+    font-size: 0.7em;
+  }
+}
+
+h4 {
+  font-size: 1.4em;
+}
+
+h5 {
+  font-size: 1.3em;
+}
+
+h6 {
+  font-size: 1.2em;
+}
+
+strong, b {
+  font-weight: 600;
+}
+
+em {
+  font-style: italic;
+}
+
+mark {
+  background-color: #ffffcc;
+}
+
+del {
+  color: #722222;
+  text-decoration: line-through;
+}
+
+ins {
+  color: #227222;
+  text-decoration: underline;
+}
+
+abbr[title] {
+  border-bottom: 1px dotted #222;
+  cursor: help;
+}
+
+q {
+  quotes: "\201C" "\201D" "\2018" "\2019";
+}
+
+blockquote {
+  border-left: 4px solid #ccc;
+  padding: 10px 20px;
+  font-size: 1.4em;
+  margin-bottom: $pmargin;
+  cite {
+    margin-top: 5px;
+    font-size: 0.7em;
+    color: #999;
+    font-style: italic;
+    display: block;
+    &:before {
+      color: #999;
+      content: "\2014";
+      padding-right: 0.5em;
+    }
+  }
+}
+
+pre, code, kbd {
+  font-family: "Source Code Pro", monospace;
+}
+
+pre, code {
+  background-color: #eee;
+  color: $warning;
+  font-size: 0.9em;
+  border-radius: 3px;
+}
+
+pre {
+  padding: 8px;
+  margin-bottom: $pmargin;
+}
+
+code {
+  padding: 3px;
+}
+
+a img {
+  border: 0;
+}
+
+ul, ol {
+  margin-left: 32px;
+  margin-bottom: $pmargin;
+
+  ul, ol {
+    margin-bottom: 0;
+  }
+}
+
+ul {
+  list-style-type: disc;
+  ul {
+    list-style-type: circle;
+  }
+}
+
+ol {
+  list-style-type: decimal;
+  ol {
+    list-style-type: lower-alpha;
+  }
+}
+
+dl {
+  margin-bottom: $pmargin / 2;
+  dt {
+    float: left;
+    font-weight: 600;
+    width: 150px;
+    text-align: right;
+    padding-right: $pmargin;
+    &:after {
+      content: ':';
+      display: inline;
+    }
+  }
+  dd {
+    margin-left: 150px;
+    &:after {
+      clear: left;
+      display: block;
+      content: ' ';
+      margin-bottom: $pmargin / 2;
+    }
+  }
+  &:after {
+    clear: left;
+    display: block;
+    content: ' ';
+  }
+}
+
+.list-inline {
+  list-style-type: none;
+  li {
+    float: left;
+    margin-left: 20px;
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+  &:after {
+    clear: left;
+    display: block;
+    content: ' ';
+  }
+}
+
+.center {
+  text-align: center;
+}
+
+.muted {
+  color: $grey;
+}
+
+.primary {
+  color: $primary;
+}
+
+.light {
+  color: $light;
+}
+
+.dark {
+  color: $dark;
+}
+
+.info {
+  color: $info;
+}
+
+.success {
+  color: $success;
+}
+
+.warning {
+  color: $warning;
+}
+
+.error {
+  color: $error;
+}
+
+.bg, .bg-muted, .bg-primary, .bg-light, .bg-dark,
+.bg-info, .bg-success, .bg-warning, .bg-error {
+  color: $contextFg;
+  background-color: $grey;
+  padding: 10px 20px;
+}
+
+.bg-primary {
+  background-color: $primary;
+}
+
+.bg-light {
+  background-color: $light;
+}
+
+.bg-dark {
+  background-color: $dark;
+}
+
+.bg-info {
+  background-color: $info;
+}
+
+.bg-success {
+  background-color: $success;
+}
+
+.bg-warning {
+  background-color: $warning;
+}
+
+.bg-error {
+  background-color: $error;
+}
+
+.badge {
+  background-color: $grey;
+  color: $contextFg;
+  padding: 2px 6px;
+  font-size: 0.8em;
+  border-radius: 3px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+a.badge {
+  &, &:link, &:active, &:visited, &:hover {
+    color: $contextFg;
+    text-decoration: none;
+  }
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.badge-primary {
+  background-color: $primary;
+}
+
+.badge-light {
+  background-color: $light;
+}
+
+.badge-dark {
+  background-color: $dark;
+}
+
+.badge-info {
+  background-color: $info;
+}
+
+.badge-success {
+  background-color: $success;
+}
+
+.badge-warning {
+  background-color: $warning;
+}
+
+.badge-error {
+  background-color: $error;
+}

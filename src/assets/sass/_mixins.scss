@@ -1,0 +1,225 @@
+@mixin icon-size($size: 12px, $valign: 0px) {
+  .icon {
+    font-size: $size;
+    height: $size;
+    width: $size;
+    vertical-align: $valign;
+    & > * {
+      width: $size;
+      height: $size;
+    }
+  }
+}
+
+@mixin button-color($color) {
+  background-color: desaturate(lighten($color, 10%), 20%);
+  color: #fff;
+  border-color: darken($color, 30%);
+  &:hover, &.active {
+    color: #fff;
+    background-color: $color;
+    border-color: darken($color, 20%);
+  }
+  &[disabled] {
+    &, &:hover, &:active {
+      background-color: desaturate(lighten($color, 20%), 50%);
+      border-color: desaturate($color, 50%);
+      color: #eee;
+    }
+  }
+}
+
+@mixin button {
+  &, &:link, &:visited {
+    background-color: $navBg;
+    border: none;
+    border: 1px solid $navFg;
+    color: $navFg;
+    line-height: normal;
+    text-decoration: none;
+    padding: 5px 12px 5px;
+    display: inline-block;
+    margin: 2px 0;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  &.active, &:hover {
+    background-color: $navHlBg;
+  }
+  &:focus {
+    box-shadow: 0 0 2px 1px lighten($primary, 10%);
+    outline: none;
+  }
+  &:hover, &:active {
+    color: $navHlFg;
+    border-color: $navHlFg;
+    text-decoration: none;
+  }
+  &.active, &:active {
+    box-shadow: inset 0 4px 5px 0 rgba(0, 0, 0, 0.15);
+    outline: none;
+  }
+  &[disabled] {
+    &, &:hover, &:active {
+      background-color: $navDisBg;
+      border-color: $navDisFg;
+      color: $navDisFg;
+      cursor: default;
+      box-shadow: none;
+      outline: none;
+    }
+  }
+  &.button-block {
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+  @include icon-size(12px);
+  &.button-xs,
+  &.button-sm {
+    font-size: 12px;
+    @include icon-size(10px);
+  }
+  &.button-xs {
+    padding: 0px 4px 0px;
+    margin: 0;
+  }
+  &.button-sm {
+    padding: 3px 8px 3px;
+    margin: 1px 0;
+  }
+  &.button-md {
+    font-size: 14px;
+    @include icon-size(12px);
+  }
+  &.button-lg {
+    font-size: 18px;
+    padding: 5px 14px 5px;
+    @include icon-size(14px);
+  }
+
+  &.button-primary {
+    font-weight: 600;
+    @include button-color($primary);
+  }
+
+  &.button-light {
+    @include button-color($light);
+  }
+
+  &.button-dark {
+    @include button-color($dark);
+  }
+
+  &.button-info {
+    @include button-color($info);
+  }
+
+  &.button-success {
+    @include button-color($success);
+  }
+
+  &.button-warning {
+    @include button-color($warning);
+  }
+
+  &.button-error {
+    @include button-color($error);
+  }
+}
+
+
+@mixin table-density($padding) {
+  td, th {
+    padding: $padding 8px;
+  }
+  thead th, tfoot th {
+    a, label {
+      &, &:link, &:visited {
+        padding: $padding 8px ($padding - 1px);
+        margin: -$padding -8px (-$padding - 1px);
+      }
+    }
+  }
+  tfoot th {
+    a, label {
+      margin: (-$padding - 1px) -8px -$padding;
+    }
+  }
+  .selection label {
+    padding: $padding 0 $padding 8px;
+    margin: -$padding -8px;
+  }
+  thead th.selection label {
+     margin: -$padding -8px (-$padding - 1px);
+  }
+  tfoot th.selection label {
+     margin: (-$padding - 1px) (-8px) (-$padding);
+  }
+}
+
+@mixin wide-form($labelSize: 240px, $inputSize: 60%) {
+  .field {
+    margin-bottom: $pmargin / 2;
+    padding: 6px 0;
+    margin-left: $labelSize;
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    input[type=date],
+    input[type=time],
+    input[type=datetime],
+    textarea,
+    select,
+    .input-group {
+      margin-top: -6px;
+      margin-bottom: 6px;
+      width: $inputSize;
+    }
+    & > label:first-child {
+      float: left;
+      width: $labelSize;
+      margin-left: -$labelSize;
+      text-align: right;
+      padding-right: 30px;
+    }
+    & > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .buttons {
+    margin-left: $labelSize;
+  }
+}
+
+@mixin narrow-form {
+  .field {
+    margin-bottom: $pmargin;
+    padding: 0;
+    margin-left: 0;
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    input[type=date],
+    input[type=time],
+    input[type=datetime],
+    textarea,
+    select,
+    .input-group {
+      margin: 0 0 6px 0;
+      width: 100%;
+    }
+    & > label:first-child {
+      float: none;
+      width: auto;
+      margin-left: 0;
+      text-align: left;
+    }
+    & > *:last-child {
+      margin-bottom: 0;
+    }
+  }
+  .buttons {
+    margin-left: 0;
+  }
+}

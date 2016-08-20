@@ -1,0 +1,32 @@
+{
+  "name": "nielssp/blogstep",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Niels Sonnich Poulsen",
+      "email": "niels@nielssp.dk",
+      "homepage": "http://nielssp.dk",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Blogstep\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {"Blogstep\\": "tests/"}
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "composer/semver": "^1.2",
+    "jivoo/core": "^1.0",
+    "jivoo/http": "^1.0",
+    "jivoo/view": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.0",
+    "squizlabs/php_codesniffer": "2.*"
+  }
+}

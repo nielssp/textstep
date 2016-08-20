@@ -1,0 +1,82 @@
+
+.icon {
+  vertical-align: 0px;
+  display: inline-block;
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
+  font-weight: normal;
+  & > * {
+    width: 14px;
+    height: 14px;
+  }
+  & > .icon-unavailable:before {
+    display: block;
+    content: '?';
+    font-weight: bold;
+  }
+  & + .label {
+    margin-left: 6px;
+  }
+}
+
+.jtk-icon-checkmark:before {
+  content: '\2714';
+}
+
+.jtk-icon-checkmark2:before {
+  content: '\2713';
+}
+
+.jtk-icon-close:before {
+  content: '\2716';
+}
+
+.jtk-icon-close2:before {
+  content: '\2718';
+}
+
+.jtk-icon-star:before {
+  content: '\2606';
+}
+
+.jtk-icon-star2:before {
+  content: '\2605';
+}
+
+.jtk-icon-arrow-left:before {
+  content: '\2190';
+}
+.jtk-icon-arrow-up:before {
+  content: '\2191';
+}
+.jtk-icon-arrow-right:before {
+  content: '\2192';
+}
+.jtk-icon-arrow-down:before {
+  content: '\2193';
+}
+.jtk-icon-arrow-up-left:before {
+  content: '\2196';
+}
+.jtk-icon-arrow-up-right:before {
+  content: '\2197';
+}
+.jtk-icon-arrow-down-left:before {
+  content: '\2199';
+}
+.jtk-icon-arrow-down-right:before {
+  content: '\2198';
+}
+.jtk-icon-disk:before {
+  content: '\1f4be';
+}
+.jtk-icon-folder:before {
+  content: '\1f4c1';
+}
+.jtk-icon-folder-open:before {
+  content: '\1f4c2';
+}
+.jtk-icon-file:before {
+  content: '\1f4c4';
+}
