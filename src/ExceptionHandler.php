@@ -19,30 +19,34 @@ class ExceptionHandler
 {
 
     /**
-     * @var Main
+     * @var Modules
      */
-    private $main;
+    private $m;
 
     /**
      * @var string[]
      */
     private $errorPaths = [];
 
-    public function __construct(Main $main)
+    public function __construct(Modules $m)
     {
-        $this->main = $main;
+        $this->m = $m;
+        $this->m->required('logger');
+        $this->m->required('paths');
+        $this->m->required('main');
+        $this->m->required('server');
 
         // Precompute paths used for error handling
-        $logDir = $this->main->p('system/log');
+        $logDir = $this->m->paths->p('system/log');
         if (Utilities::dirExists($logDir)) {
             $this->errorPaths['log'] = realpath($logDir);
         }
-        $errorTemplate = $this->main->p('src/templates/error/error.php');
+        $errorTemplate = $this->m->paths->p('src/templates/error/error.php');
         if (!file_exists($errorTemplate)) {
             throw new RuntimeException('Error template not found: ' . $errorTemplate);
         }
         $this->errorPaths['errorTemplate'] = realpath($errorTemplate);
-        $exceptionTemplate = $this->main->p('src/templates/error/exception.php');
+        $exceptionTemplate = $this->m->paths->p('src/templates/error/exception.php');
         if (!file_exists($exceptionTemplate)) {
             throw new RuntimeException('Exception template not found: ' . $errorTemplate);
         }
@@ -63,8 +67,8 @@ class ExceptionHandler
             $title = 'Uncaught exception';
         }
         $log = [];
-        if ($this->main->logger instanceof Logger) {
-            $log = $this->main->logger->getLog();
+        if ($this->m->logger instanceof Logger) {
+            $log = $this->m->logger->getLog();
         }
         ob_start();
         include $this->errorPaths['exceptionTemplate'];
@@ -78,30 +82,30 @@ class ExceptionHandler
      */
     public function handleError($exception, $fatal = false)
     {
-        $this->main->logger->critical(
+        $this->m->logger->critical(
             'Uncaught exception: ' . $exception->getMessage(), ['exception' => $exception]
         );
-        if ($this->main->config['system']['createCrashReports']) {
+        if ($this->m->main->config['system']['createCrashReports']) {
             $file = $exception->getFile();
             $line = $exception->getLine();
             $message = $exception->getMessage();
             $hash = substr(md5($file . $line . $message), 0, 10);
             $name = date('Y-m-d') . '_crash_' . $hash . '.html';
             if (!isset($this->errorPaths['log'])) {
-                $this->main->logger->alert('Could not create crash report: Log directory is missing');
+                $this->m->logger->alert('Could not create crash report: Log directory is missing');
             } else if (!file_exists($this->errorPaths['log'] . '/' . $name)) {
                 $file = fopen($this->errorPaths['log'] . '/' . $name, 'w');
                 if ($file !== false) {
                     $this->crashReport($exception);
                     fwrite($file, $this->crashReport($exception));
                     fclose($file);
-                    $this->main->logger->critical('A crash report has been generated: {name}', ['name' => $name]);
+                    $this->m->logger->critical('A crash report has been generated: {name}', ['name' => $name]);
                 } else {
                     $hash = null;
-                    $this->main->logger->alert('Failed to create crash report: {name}', ['name' => $name]);
+                    $this->m->logger->alert('Failed to create crash report: {name}', ['name' => $name]);
                 }
             }
-            if (!$this->main->config['system']['showReference']) {
+            if (!$this->m->main->config['system']['showReference']) {
                 $hash = null;
             }
         }
@@ -111,7 +115,7 @@ class ExceptionHandler
         }
         $response = new Response(Status::INTERNAL_SERVER_ERROR);
         $response = $response->withHeader('Content-Type', 'text/html');
-        if ($this->main->config['system']['showExceptions']) {
+        if ($this->m->main->config['system']['showExceptions']) {
             $body = $this->crashReport($exception);
             $response->getBody()->write($body);
         } else {
@@ -119,7 +123,7 @@ class ExceptionHandler
             include $this->errorPaths['errorTemplate'];
             $response->getBody()->write(ob_get_clean());
         }
-        $this->main->server->serve($response);
+        $this->m->server->serve($response);
     }
 
     /**

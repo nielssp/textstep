@@ -22,7 +22,7 @@
 <?php foreach ($element['args'] as $j => $arg): ?>
 <span title="<?php
 if (is_scalar($arg)) {
-  echo h($arg);
+  echo htmlentities($arg, ENT_COMPAT, 'UTF-8');
 }
 else if (is_object($arg)) {
   echo get_class($arg);

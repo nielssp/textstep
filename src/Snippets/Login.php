@@ -1,14 +1,18 @@
 <?php
-
 // BlogSTEP 
 // Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+namespace Blogstep\Snippets;
 
 /**
- * Description of ActionRoute
+ * Description of Login
  */
-class ActionRoute
+class Login extends \Blogstep\Snippet
 {
-    //put your code here
+    public function get()
+    {
+        $this->response->getBody()->write('test');
+        return $this->response;
+    }
 }

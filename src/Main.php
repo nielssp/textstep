@@ -7,7 +7,6 @@ namespace Blogstep;
 
 /**
  * BlogSTEP main class.
- * @property-read \Jivoo\Http\SapiServer $server Server.
  */
 class Main implements \Psr\Log\LoggerAwareInterface
 {
@@ -18,81 +17,43 @@ class Main implements \Psr\Log\LoggerAwareInterface
     const VERSION = '0.1.0';
     
     /**
-     * @var \Psr\Log\LoggerInterface
+     * @var Modules
      */
-    private $logger;
-    
-    /**
-     * @var \Jivoo\Http\SapiServer
-     */
-    private $server;
-    
-    /**
-     * @var \Jivoo\Http\Router
-     */
-    private $router;
-    
-    /**
-     * @var \Jivoo\Http\Route\AssetScheme
-     */
-    private $assets;
-    
-    /**
-     * @var \Jivoo\Paths
-     */
-    private $paths;
+    private $m;
     
     /**
      * @var \Jivoo\Store\Document
      */
     private $config;
     
-    /**
-     * @var \Jivoo\Cache\Cache
-     */
-    private $cache;
-    
-    /**
-     * @var \Jivoo\Store\StateMap
-     */
-    private $state = null;
-    
-    /**
-     * @var \Jivoo\View\View
-     */
-    private $view = null;
-    
     public function __construct($userPath)
     {
         \Jivoo\Log\ErrorHandler::getInstance()->register();
         
-        $this->logger = \Jivoo\Log\ErrorHandler::getInstance()->getLogger();
+        $this->m = new Modules();
+        $this->m->main = $this;
+        
+        $this->m->logger = \Jivoo\Log\ErrorHandler::getInstance()->getLogger();
         
         $userPath = \Jivoo\Utilities::convertPath($userPath);
-        $this->paths = new \Jivoo\Paths(getcwd(), $userPath);
-        $this->paths->src = dirname(__FILE__);
-        $this->paths->user = $userPath;
+        $this->m->paths = new \Jivoo\Paths(getcwd(), $userPath);
+        $this->m->paths->src = dirname(__FILE__);
+        $this->m->paths->user = $userPath;
         
-        $this->router = new \Jivoo\Http\Router();
-        $this->server = new \Jivoo\Http\SapiServer($this->router);
+        $this->m->router = new \Jivoo\Http\Router();
+        $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
         
         $this->config = new \Jivoo\Store\Document();
         $userConfig = new \Jivoo\Store\PhpStore($this->p('system/config.php'));
         $this->config['user'] = new \Jivoo\Store\Config($userConfig);
         
-        $this->cache = new \Jivoo\Cache\Cache();
+        $this->m->cache = new \Jivoo\Cache\Cache();
     }
     
     public function __get($property)
     {
         switch ($property) {
             case 'config':
-            case 'server':
-            case 'logger':
-            case 'router':
-            case 'paths':
-            case 'cache':
-            case 'state':
                 return $this->$property;
         }
         throw new \Jivoo\InvalidPropertyException('Undefined property: ' . $property);
@@ -100,28 +61,30 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
     public function setLogger(\Psr\Log\LoggerInterface $logger)
     {
-        $this->logger = $logger;
+        $this->m->logger = $logger;
     }
     
     private function initRoutes()
     {
-        $this->router->addScheme($this->assets);
-        $this->router->addScheme(new \Jivoo\Http\Route\UrlScheme());
-        $this->router->addScheme(new \Jivoo\Http\Route\PathScheme());
+        $this->m->router->addScheme($this->m->assets);
+        $this->m->router->addScheme($this->m->snippets);
+        $this->m->router->addScheme(new \Jivoo\Http\Route\UrlScheme());
+        $this->m->router->addScheme(new \Jivoo\Http\Route\PathScheme());
         
-        $this->router->match('assets/**', 'asset:');
+        $this->m->router->match('assets/**', 'asset:');
+        $this->m->router->root('snippet:Login');
     }
     
     public function p($ipath)
     {
-        return $this->paths->p($ipath);
+        return $this->m->paths->p($ipath);
     }
 
    
 
     public function run()
     {
-        $exceptionHandler = new ExceptionHandler($this);
+        $exceptionHandler = new ExceptionHandler($this->m);
         $exceptionHandler->register();
         
         // Force output buffering so that error handlers can clear it.
@@ -140,15 +103,15 @@ class Main implements \Psr\Log\LoggerAwareInterface
         }
         
         // Add file logger
-        if ($this->logger instanceof \Jivoo\Log\Logger) {
-            $this->logger->addHandler(new \Jivoo\Log\FileHandler(
+        if ($this->m->logger instanceof \Jivoo\Log\Logger) {
+            $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
                 $this->p('system/log/blogstep-' . date('Y-m-d') . '.log'), $this->config['system']->get('logLevel', \Psr\Log\LogLevel::WARNING)
             ));
         }
         
         // Initialize cache system
-        if ($this->paths->dirExists('system/cache')) {
-            $this->cache->setDefaultProvider(function ($pool) {
+        if ($this->m->paths->dirExists('system/cache')) {
+            $this->m->cache->setDefaultProvider(function ($pool) {
                 $store = new \Jivoo\Store\SerializedStore($this->p('system/cache/' . $pool . '.s'));
                 if ($store->touch()) {
                     return new \Jivoo\Cache\StorePool($store);
@@ -158,18 +121,20 @@ class Main implements \Psr\Log\LoggerAwareInterface
         }
         
         // Initialize application state system
-        $this->state = new \Jivoo\Store\StateMap($this->p('system/state'));
+        $this->m->state = new \Jivoo\Store\StateMap($this->p('system/state'));
         
         // Initialize assets
-        $this->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'));
+        $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'));
         
         // Initialize view
-        $this->view = new \Jivoo\View\View($this->assets, $this->router, $this->config['view'], $this->logger);
+        $this->m->view = new \Jivoo\View\View($this->m->assets, $this->m->router, $this->config['view'], $this->m->logger);
+        
+        $this->m->snippets = new Route\SnippetScheme($this->m, 'Blogstep\Snippets');
         
         // Initialize routes
         $this->initRoutes();
 
-        $this->server->listen();
+        $this->m->server->listen();
     }
 
 }
