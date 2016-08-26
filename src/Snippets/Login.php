@@ -12,7 +12,6 @@ class Login extends \Blogstep\Snippet
 {
     public function get()
     {
-        $this->response->getBody()->write('test');
-        return $this->response;
+        return $this->render();
     }
 }

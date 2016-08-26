@@ -127,7 +127,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'));
         
         // Initialize view
-        $this->m->view = new \Jivoo\View\View($this->m->assets, $this->m->router, $this->config['view'], $this->m->logger);
+        $this->m->view = new \Jivoo\View\View($this->m->assets, $this->m->router, $this->config['user']['view'], $this->m->logger);
+        $this->m->view->addTemplateDir($this->p('src/templates'));
         
         $this->m->snippets = new Route\SnippetScheme($this->m, 'Blogstep\Snippets');
         

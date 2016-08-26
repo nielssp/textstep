@@ -298,6 +298,8 @@ abstract class Snippet
             $templateName = implode('/', $dirs) . '.' . $type;
         }
         // TODO
+        $this->response->getBody()->write($this->m->view->render($templateName, $this->viewData));
+        return $this->response;
 //        $enableLayout = $this->enableLayout;
 //        $this->disableLayout();
 //        $this->response->template = $templateName;
