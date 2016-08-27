@@ -18,6 +18,9 @@ namespace Blogstep;
  * @property \Jivoo\Cache\Cache $cache
  * @property \Jivoo\Store\StateMap $state
  * @property \Jivoo\Http\Router $router
+ * @property \Jivoo\Store\Session $session
+ * @property \Jivoo\Http\Token $token
+ * @property Files\FileSystem $files
  */
 class Modules extends \Jivoo\Modules
 {
@@ -31,6 +34,9 @@ class Modules extends \Jivoo\Modules
         'paths' => 'Jivoo\Paths',
         'cache' => 'Jivoo\Cache\Cache',
         'state' => 'Jivoo\Store\StateMap',
-        'router' => 'Jivoo\Http\Router'
+        'router' => 'Jivoo\Http\Router',
+        'session' => 'Jivoo\Store\Session',
+        'token' => 'Jivoo\Http\Token',
+        'files' => 'Blogstep\Files\FileSystem',
     ];
 }

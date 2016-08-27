@@ -23,7 +23,6 @@ p {
 h1, h2, h3, h4, h5, h6 { 
   & > small {
     font-weight: normal;
-    color: lighten($mainFg, 40%);
     font-size: 0.8em;
   }
 }
@@ -126,7 +125,7 @@ pre, code, kbd {
 
 pre, code {
   background-color: #eee;
-  color: $warning;
+  color: #000;
   font-size: 0.9em;
   border-radius: 3px;
 }
@@ -214,119 +213,4 @@ dl {
 
 .center {
   text-align: center;
-}
-
-.muted {
-  color: $grey;
-}
-
-.primary {
-  color: $primary;
-}
-
-.light {
-  color: $light;
-}
-
-.dark {
-  color: $dark;
-}
-
-.info {
-  color: $info;
-}
-
-.success {
-  color: $success;
-}
-
-.warning {
-  color: $warning;
-}
-
-.error {
-  color: $error;
-}
-
-.bg, .bg-muted, .bg-primary, .bg-light, .bg-dark,
-.bg-info, .bg-success, .bg-warning, .bg-error {
-  color: $contextFg;
-  background-color: $grey;
-  padding: 10px 20px;
-}
-
-.bg-primary {
-  background-color: $primary;
-}
-
-.bg-light {
-  background-color: $light;
-}
-
-.bg-dark {
-  background-color: $dark;
-}
-
-.bg-info {
-  background-color: $info;
-}
-
-.bg-success {
-  background-color: $success;
-}
-
-.bg-warning {
-  background-color: $warning;
-}
-
-.bg-error {
-  background-color: $error;
-}
-
-.badge {
-  background-color: $grey;
-  color: $contextFg;
-  padding: 2px 6px;
-  font-size: 0.8em;
-  border-radius: 3px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-a.badge {
-  &, &:link, &:active, &:visited, &:hover {
-    color: $contextFg;
-    text-decoration: none;
-  }
-  &:hover {
-    opacity: 0.8;
-  }
-}
-
-.badge-primary {
-  background-color: $primary;
-}
-
-.badge-light {
-  background-color: $light;
-}
-
-.badge-dark {
-  background-color: $dark;
-}
-
-.badge-info {
-  background-color: $info;
-}
-
-.badge-success {
-  background-color: $success;
-}
-
-.badge-warning {
-  background-color: $warning;
-}
-
-.badge-error {
-  background-color: $error;
 }

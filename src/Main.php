@@ -48,6 +48,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->config['user'] = new \Jivoo\Store\Config($userConfig);
         
         $this->m->cache = new \Jivoo\Cache\Cache();
+        
+        $this->m->files = Files\FileSystem::open($this->p('user'));
     }
     
     public function __get($property)
@@ -73,6 +75,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->router->match('assets/**', 'asset:');
         $this->m->router->root('snippet:Login');
+        $this->m->router->auto('snippet:Demo');
+        $this->m->router->auto('snippet:Editor');
+        $this->m->router->match('files/**', 'snippet:Files');
     }
     
     public function p($ipath)
@@ -122,6 +127,10 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         // Initialize application state system
         $this->m->state = new \Jivoo\Store\StateMap($this->p('system/state'));
+        
+        // Initialize session
+        $this->m->session = new \Jivoo\Store\Session(new \Jivoo\Store\PhpSessionStore());
+        $this->m->token = \Jivoo\Http\Token::create($this->m->session);
         
         // Initialize assets
         $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'));

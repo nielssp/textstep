@@ -25,11 +25,22 @@ class SnippetRoute extends \Jivoo\Http\Route\RouteBase
     
     public function __toString()
     {
+        return 'snippet:' . $this->name;
     }
 
     public function auto(\Jivoo\Http\Route\Matcher $matcher, $resource = false)
     {
-        
+        $namespace = $this->scheme->getNamespace();
+        $name = $this->name;
+        if (\Jivoo\Unicode::startsWith($name, $namespace)) {
+            $name = substr($name, strlen($namespace));
+        }
+        $dirs = explode('\\', $name);
+        $dirs = array_map(array('Jivoo\Utilities', 'camelCaseToDashes'), $dirs);
+        $pattern = 'ANY ' . str_replace('_', '.', implode('/', $dirs));
+        $matcher->match($pattern, $this);
+        return $pattern;
+
     }
 
     public function dispatch(\Jivoo\Http\ActionRequest $request, \Psr\Http\Message\ResponseInterface $response)
@@ -40,7 +51,7 @@ class SnippetRoute extends \Jivoo\Http\Route\RouteBase
 
     public function getPath($pattern)
     {
-        
+        return \Jivoo\Http\Route\RouteBase::insertParameters($pattern, $this->parameters);
     }
 
 }

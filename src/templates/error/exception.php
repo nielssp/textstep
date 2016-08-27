@@ -7,7 +7,7 @@
 <meta name="generator" content="Jivoo" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style type="text/css">
-<?php include dirname(__FILE__) . '/../../assets/css/core.css'; ?>
+<?php include dirname(__FILE__) . '/../../assets/css/main.css'; ?>
 </style>
 </head>
 <body class="exception">

@@ -10,12 +10,12 @@ html {
 }
 
 body {
-  height: 100%;
   overflow-y: scroll;
-  background-color: $navBg;
+  background-color: $wsBg;
   font-family: $font;
-  color: $mainFg;
+  color: $wsFg;
   font-size: 87.5%;
+  margin: 10px;
 }
 
 header, footer, section, nav {

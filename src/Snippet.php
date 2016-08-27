@@ -25,6 +25,8 @@ abstract class Snippet
      * @var string Data key.
      */
     protected $dataKey = null;
+    
+    protected $routeParameters = [];
 
     /**
      * @var mixed[] Values of required parameters.
@@ -61,6 +63,7 @@ abstract class Snippet
         $this->m = $m;
         $this->m->required('assets', 'Jivoo\Http\Route\AssetScheme');
         $this->m->required('router', 'Jivoo\Http\Router');
+        $this->m->required('token', 'Jivoo\Http\Token');
         $this->m->required('view', 'Jivoo\View\View');
         $this->m->required('snippets', 'Blogstep\Route\SnippetScheme');
 
@@ -171,6 +174,7 @@ abstract class Snippet
     {
         $this->request = $request;
         $this->response = $response;
+        $this->routeParameters = $parameters;
         $this->parameterValues = array();
         foreach ($this->parameters as $offset => $name) {
             if (isset($parameters[$name])) {
@@ -188,7 +192,7 @@ abstract class Snippet
         if ($this->request->isGet()) {
             return $this->after($this->get());
         }
-        if (!$this->request->hasValidData($this->dataKey)) {
+        if (! $this->hasValidData($this->dataKey)) {
             return $this->after($this->get());
         }
         if (isset($this->dataKey)) {
@@ -238,6 +242,11 @@ abstract class Snippet
     protected function setStatus($httpStatus)
     {
         $this->response->status = $httpStatus;
+    }
+    
+    public function hasValidData($key = null)
+    {
+        return $this->m->token->hasValidData($this->request, $key);
     }
 
     /**

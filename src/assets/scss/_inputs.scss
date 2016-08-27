@@ -1,0 +1,300 @@
+$inputs: 'input[type=text], input[type=email], input[type=password], input[type=date], input[type=time], input[type=datetime], textarea';
+
+
+#{$inputs} {
+    padding: 2px 4px 2px 4px;
+    margin: 2px 0;
+    display: block;
+    font-size: 14px;
+    background-color: $contentBg;
+    color: $contentFg;
+    border: 2px solid #555555;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    box-shadow: inset -1px -1px 0px #AAAAAA;
+    width: 100%;
+
+    &:focus {
+        outline: 1px solid #000000;
+        outline-offset: 0;
+    }
+
+    &:hover {
+        background-color: darken($contentBg, 5%);
+    }
+
+    &[disabled] {
+        background-color: $frameBg;
+    }
+    &.input-xs {
+        padding: 0px 1px 0px;
+        margin: 0;
+    }
+    &.input-sm {
+        padding: 1px 2px 1px;
+        margin: 1px 0;
+    }
+    &.input-md {
+        font-size: 14px;
+    }
+    &.input-lg {
+        font-size: 18px;
+        padding: 4px 8px 4px;
+    }
+}
+
+textarea {
+    min-height: 200px;
+    max-width: 100%;
+    &.textarea-xs {
+        min-height: 100px;
+    }
+    &.textarea-sm {
+        min-height: 200px;
+    }
+    &.textarea-md {
+        min-height: 300px;
+    }
+    &.textarea-lg {
+        min-height: 400px;
+    }
+}
+
+input[type=checkbox] {
+    -webkit-appearance: none;
+    background-color: $frameBg;
+    box-shadow: inset -1px -1px 0px #555555;
+    border: 1px solid #fff;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    margin: -2px 0 0 0;
+    text-align: center;
+
+    &:hover {
+        background-color: lighten($frameBg, 5%);
+    }
+
+    &:checked:before {
+        color: #000000;
+        text-shadow: 0 -1px 0 #ffffff, -1px 0 0 #ffffff;
+        font-size: 14px;
+        float: left;
+        margin: -3px 0 0 2px;
+        font-family: $font; 
+        content: '\2713';
+    }
+
+    &:focus {
+        outline: 1px solid #000000;
+    }
+
+    &[disabled] {
+        background-color: $frameBg;
+        opacity: 0.5;
+    }
+}
+
+input[type=radio] {
+    -webkit-appearance: none;
+    background-color: $frameBg;
+    box-shadow: inset 1px 1px 0px #000000;
+    border: 1px solid #515551;
+    border-right: 1px solid #ffffff;
+    border-bottom: 1px solid #ffffff;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    margin: -2px 0 0 0;
+    text-align: center;
+    
+    &:hover {
+        background-color: lighten($frameBg, 5%);
+    }
+    
+    &:active:before,
+    &:checked:before {
+        background: #ffffff;
+        float: left;
+        width: 11px;
+        height: 11px;
+        margin: 2px 0 0 2px;
+        content: ' ';
+        font-size: 1px;
+        border-radius: 50%;
+    }
+
+    &:focus {
+        outline: 0;
+        box-shadow: inset 1px 1px 0px #000000,
+            1px 0px 0 #000000,
+            0px 1px 0 #000000,
+            -1px 0px 0 #000000,
+            0px -1px 0 #000000;
+    }
+
+    &[disabled] {
+        background-color: $frameBg;
+        opacity: 0.5;
+    }
+}
+
+select:not([size]), select[size="1"] {
+    @include button;
+    display: block;
+    width: 100%;
+
+    option {
+        padding: 3px 5px 1px 7px;
+    }
+}
+
+select:not([size="1"]) {
+    display: block;
+    width: 100%;
+    padding: 1px 4px 1px 4px;
+    margin: 2px 0;
+    background-color: $contentBg;
+    color: $contentFg;
+    border: 2px solid #555555;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    box-shadow: inset -1px -1px 0px #AAAAAA;
+    width: 100%;
+
+    &:focus {
+        outline: 1px solid #000000;
+        outline-offset: 0;
+    }
+
+    &:hover {
+        background-color: darken($contentBg, 5%);
+    }
+    &[disabled] {
+        background-color: $frameBg;
+    }
+}
+
+
+.input-group, .field .input-group {
+  display: table;
+  white-space: nowrap;
+  position: relative;
+  border-collapse: separate;
+  #{$inputs} {
+    position: relative;
+    width: 100%;
+    display: table-cell;
+    margin: 0;
+    &:focus {
+      z-index: 2;
+    }
+  }
+  &-text, &-button {
+    position: relative;
+    display: table-cell;
+    width: 1%;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  &-button {
+    .button, button, input[type=button], input[type=reset], input[type=submit] {
+      position: relative;
+      font-size: 14px;
+      margin: 0;
+      display: block;
+      margin-right: -1px;
+      &:hover, &:active, &:focus {
+        z-index: 2;
+      }
+    }
+  }
+  &-text {
+    padding: 1px 8px 1px;
+    /*border: 1px solid darken($mainBg, 15%);*/
+    font-size: 14px;
+    /*background-color: darken($mainBg, 3%);*/
+    &:first-child {
+      border-right: none;
+    }
+    &:last-child {
+      border-left: none;
+    }
+  }
+}
+
+
+.checkbox-list,
+.radio-list {
+  list-style-type: none;
+  margin-left: 0;
+  li {
+    margin-bottom: 4px;
+  }
+}
+
+.field {
+  margin-bottom: $pmargin / 2;
+  .help {
+    font-style: italic;
+    color: #333333;
+    font-size: 0.95em;
+  }
+  
+  input[type=text],
+  input[type=email],
+  input[type=password],
+  input[type=date],
+  input[type=time],
+  input[type=datetime],
+  textarea,
+  select,
+  .input-group {
+    margin: 0 0 6px 0;
+  }
+  ul, ol {
+    margin-bottom: 6px;
+  }
+  & > label:first-child {
+    font-weight: 600;
+    font-style: normal;
+    font-size: 0.95em;
+    display: block;
+    margin-bottom: 2px;
+    overflow: hidden;
+  }
+  &.field-required label:first-child:after {
+    content: '*';
+    margin-left: 4px;
+    color: #990000;
+  }
+  input[type=checkbox],
+  input[type=radio] {
+    margin-right: 6px;
+  }
+  input + label {
+    font-weight: normal;
+    font-style: normal;
+    display: inline;
+    margin: 0 12px 0 0px;
+  }
+
+  & > *:last-child {
+    margin-bottom: 0;
+  }
+}
+form {
+  display: block;
+  margin-bottom: $pmargin;
+  .buttons {
+    margin-bottom: $pmargin;
+  }
+  & > *:last-child {
+    margin-bottom: 0;
+  }
+}
