@@ -1,0 +1,15 @@
+{
+  "name": "blogstep",
+  "version": "0.1.0",
+  "dependencies": {
+    "highlightjs": "^8.7.0",
+    "simplemde": "^1.11.2"
+  },
+  "devDependencies": {
+    "css-loader": "^0.24.0",
+    "extract-text-webpack-plugin": "^2.0.0-beta",
+    "file-loader": "^0.9.0",
+    "style-loader": "^0.13.1",
+    "webpack": "^2.1.0-beta"
+  }
+}

@@ -46,7 +46,9 @@ class SnippetScheme implements \Jivoo\Http\Route\Scheme
     public function fromString($routeString)
     {
         $route = array(
-            'parameters' => array()
+            'parameters' => [],
+            'query' => [],
+            'fragment' => ''
         );
         $routeString = \Jivoo\Http\Route\RouteBase::stripAttributes($routeString, $route);
         if (preg_match('/^snippet:([a-z0-9_\\\\]+)$/i', $routeString, $matches) !== 1) {

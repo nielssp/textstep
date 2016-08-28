@@ -3,14 +3,41 @@
     <head>
         <meta charset="UTF-8">
         <title>BlogSTEP</title>
-        
+
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta j:block="meta" />
 
-        <link j:imports="css/main.css" />
+        <link j:imports="css/main.css;dist/init.js;dist/main.js" />
 
     </head>
     <body>
+
+        <aside>
+            <div j:block="appmenu"></div>
+            <header>Workspace</header>
+            <nav>
+                <ul>
+                    <li><a j:href="snippet:Files">File system</a></li>
+                    <li><a href="#">Control panel</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <div class="shortcuts">
+            <div class="shortcut">
+                <img j:src="asset:img/desktop.png" />
+                <label>Desktop</label>
+            </div>
+            <div class="shortcut">
+                <img j:src="asset:img/trash.png" />
+                <label>Trash</label>
+            </div>
+        </div>
+
+        <main>
         <div j:block="content"></div>
+        </main>
+        
+        <script j:imports />
     </body>
 </html>

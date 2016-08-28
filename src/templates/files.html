@@ -1,42 +1,32 @@
-<aside>
-    <header>Editor</header>
-    <nav>
-        <ul>
-            <li><a href="#">New</a></li>
-            <li><a href="#">Save</a></li>
-            <li><a href="#">Close</a></li>
-        </ul>
-    </nav>
-    <header>Workspace</header>
-    <nav>
-        <ul>
-            <li><a href="#">File system</a></li>
-            <li><a href="#">Control panel</a></li>
-        </ul>
-    </nav>
-</aside>
+<div class="xcme-frame" j:import="dist/files.js">
 
-<div class="shortcuts">
-    <div class="shortcut">
-        <img j:src="asset:img/desktop.png" />
-        <label>Desktop</label>
+    <div j:assign="appmenu">
+        <header>Editor</header>
+        <nav>
+            <ul>
+                <li><a href="#">Create folder</a></li>
+                <li><a href="#">Create file</a></li>
+                <li><a href="#">Close</a></li>
+            </ul>
+        </nav>
     </div>
-    <div class="shortcut">
-        <img j:src="asset:img/trash.png" />
-        <label>Trash</label>
-    </div>
-</div>
 
-<div class="main xcme-frame" j:import="vendor/simplemde/dist/simplemde.min.js;vendor/simplemde/dist/simplemde.min.css;vendor/highlightjs/highlight.pack.min.js;vendor/highlightjs/styles/solarized_light.css">
     <div class="xcme-frame-header">
         <span j:outertext="{$fs->getVirtualPath()}">path goes here</span>
         &ndash; Files
     </div>
-    <div class="xcme-frame-content xcme-files-frame">
-        <ul>
-            <li j:foreach="{$fs as $file}">
-                <a j:href="{$file}" j:text="{$file->getName()}" class="{$file->getType()}">File name goes here</a>
-            </li>
-        </ul>
+
+    <div class="xcme-frame-content">
+        <select size="1" style="width:100px;">
+            <option>Name</option>
+            <option>Size</option>
+        </select>
+        <div class="xcme-files-panel">
+            <ul>
+                <li j:foreach="{$fs as $file}">
+                    <a j:href="{$file}" j:text="{$file->getName()}" class="{$file->getType()}">File name goes here</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

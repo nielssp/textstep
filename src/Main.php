@@ -76,7 +76,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->match('assets/**', 'asset:');
         $this->m->router->root('snippet:Login');
         $this->m->router->auto('snippet:Demo');
-        $this->m->router->auto('snippet:Editor');
+        $this->m->router->match('open/**', 'snippet:Open');
+        $this->m->router->match('edit/**', 'snippet:Editor');
         $this->m->router->match('files/**', 'snippet:Files');
     }
     

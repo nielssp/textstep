@@ -38,6 +38,11 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         }
         $files = [];
         foreach ($names as $name) {
+            if ($name == '.') {
+                continue;
+            } else if ($name == '..' and $this->vpath == '/') {
+                continue;
+            }
             $files[] = $this->get($name);
         }
         return new \ArrayIterator($files);
@@ -61,7 +66,7 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function getRoute()
     {
         return [
-            'snippet' => 'Files', // TODO: snippet = Open
+            'snippet' => 'Open',
             'parameters' => explode('/', trim($this->vpath, '/'))
         ];
     }
@@ -69,6 +74,11 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function getType()
     {
         return $this->type;
+    }
+    
+    public function getMetadata()
+    {
+        
     }
     
     public function get($rpath)

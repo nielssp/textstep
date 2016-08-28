@@ -10,4 +10,11 @@ namespace Blogstep\Snippets;
  */
 class Editor extends \Blogstep\Snippet
 {
+    public function get()
+    {
+        $path = implode('/', $this->routeParameters);
+        $this->viewData['fs'] = $this->m->files->get($path);
+        $this->viewData['content'] = file_get_contents($this->viewData['fs']->getPath());
+        return $this->render();
+    }
 }

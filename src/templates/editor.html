@@ -1,49 +1,22 @@
-<aside>
-    <header>Editor</header>
-    <nav>
-        <ul>
-            <li><a href="#">New</a></li>
-            <li><a href="#">Save</a></li>
-            <li><a href="#">Close</a></li>
-        </ul>
-    </nav>
-    <header>Workspace</header>
-    <nav>
-        <ul>
-            <li><a href="#">File system</a></li>
-            <li><a href="#">Control panel</a></li>
-        </ul>
-    </nav>
-</aside>
+<div class="xcme-frame" j:import="css/editor.css;dist/editor.js">
 
-<div class="shortcuts">
-    <div class="shortcut">
-        <img j:src="asset:img/desktop.png" />
-        <label>Desktop</label>
+    <div j:assign="appmenu">
+        <header>Editor</header>
+        <nav>
+            <ul>
+                <li><a href="" class="app-action" data-action="new">New</a></li>
+                <li><a href="" class="app-action" data-action="save">Save</a></li>
+                <li><a href="#">Close</a></li>
+            </ul>
+        </nav>
     </div>
-    <div class="shortcut">
-        <img j:src="asset:img/trash.png" />
-        <label>Trash</label>
-    </div>
-</div>
 
-<div class="main xcme-frame" j:import="vendor/simplemde/dist/simplemde.min.js;vendor/simplemde/dist/simplemde.min.css;vendor/highlightjs/highlight.pack.min.js;vendor/highlightjs/styles/solarized_light.css">
     <div class="xcme-frame-header">
-        some-file.md - Editor
+        <span j:outertext="{$fs->getName()}">name goes here</span>
+        &ndash; Editor
     </div>
+
     <div class="xcme-frame-content xcme-editor-frame">
-        <textarea>test goes here</textarea>
+        <textarea j:text="{$content}" id="editor">content goes here</textarea>
     </div>
 </div>
-
-<script type="text/javascript">
-    var simplemde = new SimpleMDE({
-        autofocus: true,
-        autosave: {
-            enabled: true
-        },
-        renderingConfig: {
-            codeSyntaxHighlighting: true
-        }
-    });
-</script>

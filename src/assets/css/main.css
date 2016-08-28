@@ -742,7 +742,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   .xcme-frame-header {
     background-color: #000;
     color: #fff;
-    text-align: left;
+    text-align: center;
     padding: 2px 6px;
     font-weight: bold;
     font-size: 0.9em;
@@ -799,7 +799,7 @@ aside {
     background-color: #000;
     color: #fff;
     text-align: left;
-    padding: 2px 6px;
+    padding: 3px 6px;
     font-weight: bold;
     font-size: 0.9em;
     border: 1px solid #fff;
@@ -863,32 +863,10 @@ aside {
           aside nav ul li a .icon + .label {
             margin-left: 0px; }
 
-.main {
+main {
   margin-left: 230px;
   margin-right: 64px;
-  display: block;
-  text-align: left;
-  border: 1px solid #000; }
-  .main header {
-    background-color: #000;
-    color: #fff;
-    text-align: left;
-    padding: 2px 6px;
-    font-weight: bold;
-    font-size: 0.9em;
-    border: 1px solid #A2A2A2;
-    border-right: 1px solid #4F4F4F;
-    border-bottom: 1px solid #4F4F4F; }
-    .main header > .actions {
-      float: right;
-      font-size: 0.8em; }
-  .main > .content {
-    background-color: #AEAAAE;
-    border-top: 1px solid #000;
-    color: #000;
-    padding: 6px; }
-    .main > .content > *:last-child {
-      margin-bottom: 0; }
+  display: block; }
 
 .shortcuts {
   float: right;
@@ -948,27 +926,65 @@ aside {
   .xcme-editor-frame .editor-toolbar {
     border: 0; }
     .xcme-editor-frame .editor-toolbar a {
-      border-radius: 0; }
+      border-radius: 0;
+      background: transparent; }
+      .xcme-editor-frame .editor-toolbar a:focus {
+        outline: 1px solid #000000; }
+      .xcme-editor-frame .editor-toolbar a:hover {
+        background-color: #bab7ba;
+        color: #000000;
+        box-shadow: inset -1px -1px 0px #555555;
+        border: 1px solid #fff;
+        border-right: 1px solid #000000;
+        border-bottom: 1px solid #000000;
+        border-radius: 1px; }
+      .xcme-editor-frame .editor-toolbar a:active, .xcme-editor-frame .editor-toolbar a.active {
+        background-color: #ffffff;
+        border: 1px solid #000000;
+        border-right: 1px solid #fff;
+        border-bottom: 1px solid #fff;
+        box-shadow: none; }
+    .xcme-editor-frame .editor-toolbar .separator {
+      border-right: 0;
+      border-left: 1px solid #666; }
     .xcme-editor-frame .editor-toolbar:after, .xcme-editor-frame .editor-toolbar:before {
       margin: 0; }
+    .xcme-editor-frame .editor-toolbar.fullscreen a:active, .xcme-editor-frame .editor-toolbar.fullscreen a.active {
+      border: 1px solid #000; }
+    .xcme-editor-frame .editor-toolbar.disabled-for-preview a:not(.no-disable) {
+      background: transparent; }
   .xcme-editor-frame .CodeMirror {
     border-radius: 0;
     border-bottom: 1px solid #666;
     border-top: 1px solid #666;
     height: 400px; }
 
-.xcme-files-frame ul {
-  margin-left: 0;
-  list-style-type: none; }
-  .xcme-files-frame ul a {
-    display: block;
-    margin: 0 -5px;
-    padding: 0 5px; }
-    .xcme-files-frame ul a.dir:after {
-      content: url(../img/arrow.png);
-      float: right; }
-    .xcme-files-frame ul a:hover, .xcme-files-frame ul a:active {
-      background-color: #fff;
-      text-decoration: none; }
+.xcme-files-panel {
+  border: 1px solid #555;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  margin-bottom: 5px;
+  overflow-y: scroll; }
+  .xcme-files-panel ul {
+    border-left: 1px solid #000;
+    border-top: 1px solid #000;
+    margin: 0;
+    list-style-type: none; }
+    .xcme-files-panel ul a {
+      display: block;
+      padding: 1px 5px; }
+      .xcme-files-panel ul a.dir:after {
+        content: url(../img/arrow.png);
+        float: right; }
+      .xcme-files-panel ul a:before {
+        content: url(../img/file.png);
+        display: inline;
+        vertical-align: middle;
+        margin-right: 5px; }
+      .xcme-files-panel ul a.dir:before {
+        content: url(../img/folder.png); }
+      .xcme-files-panel ul a:hover, .xcme-files-panel ul a:active {
+        background-color: #fff;
+        text-decoration: none; }
 
 /*# sourceMappingURL=main.css.map */

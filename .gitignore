@@ -1,0 +1,16 @@
+*.swp
+*~
+.sass-cache
+*.scssc
+/.project
+/.buildpath
+/.settings
+/.idea
+/apigen
+/doc
+/tests/_output
+/vendor/*
+/node_modules
+/nbproject
+/user
+/index.php
