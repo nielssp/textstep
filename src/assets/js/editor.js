@@ -6,7 +6,7 @@
  */
 
 require('highlightjs/styles/solarized_dark.css');
-window.highlightjs = require('highlightjs/highlight.pack.js');
+window.hljs = require('highlightjs/highlight.pack.js');
 require('simplemde/dist/simplemde.min.css');
 
 function saveFile() {
@@ -19,7 +19,22 @@ function newFile() {
 
 var actions = document.getElementsByClassName("app-action");
 for (var i = 0; i < actions.length; i++) {
-    console.log(actions[i]);
+    var action = actions[i];
+    action.addEventListener('click', function (e) {
+        e.preventDefault();
+        switch (action.getAttribute('data-action')) {
+            case 'save':
+                saveFile();
+                break;
+            case 'new':
+                newFile();
+                break;
+            default:
+                alert('not implemented');
+                break;
+        }
+        return false;
+    });
 }
 
 var SimpleMDE = require('simplemde');
