@@ -42,6 +42,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->router = new \Jivoo\Http\Router();
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
+        $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
+        $this->m->server->add(new \Jivoo\Http\EntityTag);
         
         $this->config = new \Jivoo\Store\Document();
         $userConfig = new \Jivoo\Store\PhpStore($this->p('system/config.php'));
@@ -79,6 +81,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->match('open/**', 'snippet:Open');
         $this->m->router->match('edit/**', 'snippet:Editor');
         $this->m->router->match('files/**', 'snippet:Files');
+        
+        $this->m->router->auto('snippet:Api\ListFiles');
     }
     
     public function p($ipath)

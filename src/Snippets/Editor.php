@@ -14,7 +14,7 @@ class Editor extends \Blogstep\Snippet
     {
         $path = implode('/', $this->routeParameters);
         $this->viewData['fs'] = $this->m->files->get($path);
-        $this->viewData['content'] = file_get_contents($this->viewData['fs']->getPath());
+        $this->viewData['content'] = file_get_contents($this->viewData['fs']->getRealPath());
         return $this->render();
     }
 }

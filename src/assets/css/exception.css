@@ -30,7 +30,6 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 @import url("http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600");
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600");
 * {
   padding: 0;
   margin: 0;
@@ -811,249 +810,25 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     font-size: 0.95em;
     margin-top: 2px; }
 
-/*
-BlogSTEP 
-Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
-Licensed under the MIT license.
-See the LICENSE file or http://opensource.org/licenses/MIT for more information.
-*/
-aside {
-  float: left;
-  width: 220px;
-  display: none; }
-  aside header {
+body {
+  background-color: #AEAAAE; }
+  body header {
     background-color: #000;
     color: #fff;
     text-align: left;
-    padding: 3px 6px;
+    padding: 2px 6px;
     font-weight: bold;
     font-size: 0.9em;
-    border: 1px solid #fff;
-    border-right: 1.5px solid #403E3B;
-    border-bottom: 1.5px solid #403E3B;
-    box-shadow: inset -1px -1px 0px #9A9286; }
-  aside nav ul {
-    margin-left: 0;
-    margin-bottom: 16px; }
-    aside nav ul li {
-      display: block; }
-      aside nav ul li a {
-        display: block;
-        color: #000;
-        text-decoration: none;
-        background-color: #AEAAAE;
-        color: #000000;
-        text-decoration: none;
-        box-shadow: inset -1px -1px 0px #555555;
-        border: 1px solid #fff;
-        border-right: 1px solid #000000;
-        border-bottom: 1px solid #000000;
-        outline: none;
-        cursor: default !important;
-        padding: 2px 6px 2px 6px;
-        font-weight: normal;
-        border-radius: 1px; }
-        aside nav ul li a:visited {
-          color: #000000; }
-        aside nav ul li a:focus {
-          outline: 1px solid #000000; }
-        aside nav ul li a:default {
-          font-weight: bold; }
-        aside nav ul li a:hover {
-          background-color: #bab7ba;
-          color: #000000;
-          text-decoration: none; }
-        aside nav ul li a:active {
-          background-color: #ffffff;
-          border: 1px solid #000000;
-          border-right: 1px solid #fff;
-          border-bottom: 1px solid #fff;
-          box-shadow: none;
-          /*box-shadow: inset 1px 1px 0px #555555;*/
-          padding: 3px 5px 1px 7px; }
-        aside nav ul li a[disabled], aside nav ul li a[disabled]:hover, aside nav ul li a[disabled]:active {
-          color: #666666;
-          text-shadow: 1px 1px 0 #eee;
-          background-color: #AEAAAE;
-          cursor: default;
-          outline: none; }
-        aside nav ul li a .icon {
-          display: inline-block; }
-          aside nav ul li a .icon:before {
-            font-size: 16px;
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            background-size: 16px 16px;
-            display: inline-block;
-            content: ''; }
-          aside nav ul li a .icon > * {
-            width: 16px;
-            height: 16px; }
-          aside nav ul li a .icon + .label {
-            margin-left: 0px; }
-
-main {
-  margin-right: 64px;
-  display: block; }
-
-@media screen and (min-width: 768px) {
-  aside {
-    display: block; }
-
-  main {
-    margin-left: 230px; } }
-.shortcuts {
-  float: right;
-  width: 64px;
-  margin-top: 0px;
-  text-align: center; }
-  .shortcuts .shortcut {
-    position: relative;
-    height: 64px;
-    margin-left: 16px;
-    /*margin-bottom: 16px;*/
-    width: 48px;
-    cursor: pointer;
-    text-align: left;
-    height: 48px;
-    padding-top: 6px;
-    padding-left: 6px;
-    border: 2px solid #fff;
-    border-bottom: 1px solid #000;
-    border-right: 1px solid #000;
-    box-shadow: inset -1px -1px 0 #222233;
-    background: #aaaabb;
-    /* Old browsers */
-    background: -moz-linear-gradient(-45deg, #aaaabb 0%, #555566 100%);
-    /* FF3.6-15 */
-    background: -webkit-linear-gradient(-45deg, #aaaabb 0%, #555566 100%);
-    /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(135deg, #aaaabb 0%, #555566 100%);
-    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aaaabb', endColorstr='#555566',GradientType=1 );
-    /* IE6-9 fallback on horizontal gradient */ }
-    .shortcuts .shortcut label {
-      position: absolute;
-      bottom: 1px;
-      right: 1px;
-      text-align: center;
-      font-size: 0.6em;
-      cursor: pointer;
-      opacity: 0.8; }
-    .shortcuts .shortcut:hover label {
-      /*text-decoration: underline;*/ }
-    .shortcuts .shortcut:active {
-      border: 2px solid #000;
-      border-right: 1px solid #fff;
-      border-bottom: 1px solid #fff;
-      box-shadow: inset 1px 1px 0px #9A9286;
-      padding-top: 7px;
-      padding-left: 7px; }
-      .shortcuts .shortcut:active label {
-        bottom: 0;
-        right: 0; }
-
-/*
-BlogSTEP 
-Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
-Licensed under the MIT license.
-See the LICENSE file or http://opensource.org/licenses/MIT for more information.
-*/
-.editor-frame {
-  padding: 0; }
-  .editor-frame .editor-statusbar {
-    color: #000000; }
-  .editor-frame .editor-toolbar {
-    border: 0; }
-    .editor-frame .editor-toolbar a {
-      border-radius: 0;
-      background: transparent; }
-      .editor-frame .editor-toolbar a:focus {
-        outline: 1px solid #000000; }
-      .editor-frame .editor-toolbar a:hover {
-        background-color: #bab7ba;
-        color: #000000;
-        box-shadow: inset -1px -1px 0px #555555;
-        border: 1px solid #fff;
-        border-right: 1px solid #000000;
-        border-bottom: 1px solid #000000;
-        border-radius: 1px; }
-      .editor-frame .editor-toolbar a:active, .editor-frame .editor-toolbar a.active {
-        background-color: #ffffff;
-        border: 1px solid #000000;
-        border-right: 1px solid #fff;
-        border-bottom: 1px solid #fff;
-        box-shadow: none; }
-    .editor-frame .editor-toolbar .separator {
-      border-right: 0;
-      border-left: 1px solid #666; }
-    .editor-frame .editor-toolbar:after, .editor-frame .editor-toolbar:before {
+    border: 1px solid #A2A2A2;
+    border-right: 1px solid #4F4F4F;
+    border-bottom: 1px solid #4F4F4F; }
+    body header h1 {
+      font-size: 1em;
       margin: 0; }
-    .editor-frame .editor-toolbar.fullscreen a:active, .editor-frame .editor-toolbar.fullscreen a.active {
-      border: 1px solid #000; }
-    .editor-frame .editor-toolbar.disabled-for-preview a:not(.no-disable) {
-      background: transparent; }
-  .editor-frame .CodeMirror {
-    border-radius: 0;
-    border-bottom: 1px solid #666;
-    border-top: 1px solid #666;
-    height: 400px; }
-
-/*
-BlogSTEP 
-Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
-Licensed under the MIT license.
-See the LICENSE file or http://opensource.org/licenses/MIT for more information.
-*/
-.files-columns {
-  position: relative; }
-  .files-columns > .files-panel {
-    float: left;
-    width: 100%;
-    height: 100%; }
-  .files-columns:after {
-    content: ' ';
-    display: block;
-    clear: left; }
-
-.files-panel {
-  border: 1px solid #555;
-  border-right: 1px solid #fff;
-  border-bottom: 1px solid #fff;
-  margin-bottom: 5px;
-  overflow-y: scroll;
-  min-height: 200px;
-  position: relative; }
-  .files-panel ul {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-left: 1px solid #000;
+  body #main {
+    background-color: #AEAAAE;
     border-top: 1px solid #000;
-    margin: 0;
-    list-style-type: none; }
-    .files-panel ul a {
-      display: block;
-      padding: 1px 5px; }
-      .files-panel ul a:before {
-        font-size: 16px;
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        background-size: 16px 16px;
-        display: inline-block;
-        content: ''; }
-      .files-panel ul a.file-directory:after {
-        content: url(../img/arrow.png);
-        float: right; }
-      .files-panel ul a:before {
-        vertical-align: middle;
-        margin-right: 5px; }
-      .files-panel ul a:hover, .files-panel ul a:active, .files-panel ul a.active {
-        background-color: #fff;
-        text-decoration: none; }
+    color: #000;
+    padding: 6px; }
 
-/*# sourceMappingURL=main.css.map */
+/*# sourceMappingURL=exception.css.map */

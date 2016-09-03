@@ -1,0 +1,34 @@
+/*
+BlogSTEP 
+Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+
+
+.frame {
+    @include frame;
+    &-header {
+        @include frame-header;
+    }
+    &-content {
+        @include frame-content;
+    }
+}
+
+.login-frame {
+    margin: 14% auto 0 auto;
+    width: 200px;
+    text-align: right;
+
+    .field {
+        text-align: left;
+    }
+
+    .remember {
+        float: left;
+        width: auto;
+        font-size: 0.95em;
+        margin-top: 2px;
+    }
+}

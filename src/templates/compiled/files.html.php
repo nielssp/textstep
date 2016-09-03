@@ -1,4 +1,4 @@
-<?php $this->import('dist/files.js'); ?><div class="xcme-frame">
+<?php $this->import('dist/files.js'); ?><div class="frame">
 <?php echo $this->begin('appmenu'); ?><div>
 <header>Editor</header>
 <nav>
@@ -9,23 +9,43 @@
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>
-<div class="xcme-frame-header">
-<?php echo \Jivoo\View\Html::h($fs->getVirtualPath()); ?>
+<div class="frame-header">
+<span class="header-path"><?php echo \Jivoo\View\Html::h($fs->getPath()); ?></span>
         &ndash; Files
 </div>
-<div class="xcme-frame-content">
+<div class="frame-content">
+<div class="toolbar">
+<button data-action="back">
+<span class="icon icon-go-back"></span>
+</button>
+<button data-action="foward">
+<span class="icon icon-go-forward"></span>
+</button>
+<button data-action="up">
+<span class="icon icon-go-up"></span>
+</button>
+<button data-action="home">
+<span class="icon icon-go-home"></span>
+</button>
+<span class="toolbar-separator"></span>
+<button>
+<span class="icon icon-edit-copy"></span>
+</button>
 <select size="1" style="width:100px;">
 <option>Name</option>
 <option>Size</option>
 </select>
-<div class="xcme-files-panel">
+</div>
+<div class="files-columns">
+<div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
 <ul>
 <?php foreach ($fs as $file): ?>
 <li>
-<a class="<?php echo $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a>
+<a data-path="<?php echo $file->getPath(); ?>" class="<?php echo 'file file-' . $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a>
 </li><?php endforeach; ?>
 
 </ul>
+</div>
 </div>
 </div>
 </div>

@@ -1,0 +1,43 @@
+/*
+BlogSTEP 
+Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+@import 'partials/base';
+
+@import 'partials/root';
+@import 'partials/typography';
+@import 'partials/buttons';
+@import 'partials/inputs';
+@import 'partials/grid';
+@import 'partials/frames';
+
+
+body {
+    background-color: $frameBg;
+
+    header {
+        background-color: #000;
+        color: #fff;
+        text-align: left;
+        padding: 2px 6px;
+        font-weight: bold;
+        font-size: 0.9em;
+        border: 1px solid #A2A2A2;
+        border-right: 1px solid #4F4F4F;
+        border-bottom: 1px solid #4F4F4F;
+
+        h1 {
+            font-size: 1em;
+            margin: 0;
+        }
+    }
+
+    #main {
+        background-color: $frameBg;
+        border-top: 1px solid #000;
+        color: #000;
+        padding:6px;
+    }
+}

@@ -8980,9 +8980,9 @@ webpackJsonp([0,3],[
 
 'use strict'
 
-var base64 = __webpack_require__(10)
-var ieee754 = __webpack_require__(18)
-var isArray = __webpack_require__(19)
+var base64 = __webpack_require__(11)
+var ieee754 = __webpack_require__(19)
+var isArray = __webpack_require__(20)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -10862,7 +10862,7 @@ CodeMirror.overlayMode = function(base, overlay, combine) {
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(0), __webpack_require__(4), __webpack_require__(17));
+    mod(__webpack_require__(0), __webpack_require__(4), __webpack_require__(18));
   else if (typeof define == "function" && define.amd) // AMD
     define(["../../lib/codemirror", "../xml/xml", "../meta"], mod);
   else // Plain browser env
@@ -25096,24 +25096,25 @@ hljs.registerLanguage('zephir', function(hljs) {
 
 
 /***/ },
-/* 9 */
+/* 9 */,
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
 /*global require,module*/
 "use strict";
 var CodeMirror = __webpack_require__(0);
-__webpack_require__(14);
-__webpack_require__(22);
-__webpack_require__(12);
+__webpack_require__(15);
+__webpack_require__(23);
+__webpack_require__(13);
 __webpack_require__(3);
 __webpack_require__(2);
-__webpack_require__(13);
-__webpack_require__(15);
+__webpack_require__(14);
 __webpack_require__(16);
+__webpack_require__(17);
 __webpack_require__(4);
-var CodeMirrorSpellChecker = __webpack_require__(11);
-var marked = __webpack_require__(20);
+var CodeMirrorSpellChecker = __webpack_require__(12);
+var marked = __webpack_require__(21);
 
 
 // Some variables
@@ -27130,7 +27131,7 @@ SimpleMDE.prototype.toTextArea = function() {
 module.exports = SimpleMDE;
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 "use strict";
@@ -27246,7 +27247,7 @@ function fromByteArray (uint8) {
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -27255,7 +27256,7 @@ function fromByteArray (uint8) {
 
 
 // Requires
-var Typo = __webpack_require__(23);
+var Typo = __webpack_require__(24);
 
 
 // Create function
@@ -27371,7 +27372,7 @@ CodeMirrorSpellChecker.typo;
 module.exports = CodeMirrorSpellChecker;
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -27418,7 +27419,7 @@ module.exports = CodeMirrorSpellChecker;
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -27486,7 +27487,7 @@ module.exports = CodeMirrorSpellChecker;
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -27543,7 +27544,7 @@ module.exports = CodeMirrorSpellChecker;
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -27667,7 +27668,7 @@ module.exports = CodeMirrorSpellChecker;
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -27803,7 +27804,7 @@ CodeMirror.defineMode("gfm", function(config, modeConfig) {
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -28017,7 +28018,7 @@ CodeMirror.defineMode("gfm", function(config, modeConfig) {
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -28107,7 +28108,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 var toString = {}.toString;
@@ -28118,7 +28119,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -29411,13 +29412,13 @@ if (true) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -29467,7 +29468,7 @@ CodeMirror.commands.shiftTabAndUnindentMarkdownList = function (cm) {
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29634,7 +29635,7 @@ Typo.prototype = {
 		}
 		else if (true) {
 			// Node.js
-			var fs = __webpack_require__(21);
+			var fs = __webpack_require__(22);
 			
 			try {
 				if (fs.existsSync(path)) {
@@ -30263,7 +30264,7 @@ if (true) {
 /* WEBPACK VAR INJECTION */}.call(exports, "/", __webpack_require__(1).Buffer))
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 /* 
@@ -30305,7 +30306,7 @@ for (var i = 0; i < actions.length; i++) {
     });
 }
 
-var SimpleMDE = __webpack_require__(9);
+var SimpleMDE = __webpack_require__(10);
 
 var simplemde = new SimpleMDE({
     autofocus: true,
@@ -30348,4 +30349,4 @@ var simplemde = new SimpleMDE({
 });
 
 /***/ }
-],[24]);
+],[25]);

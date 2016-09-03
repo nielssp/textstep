@@ -5,12 +5,12 @@
 <title>BlogSTEP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <?php echo $this->block('meta'); ?>
-<?php echo $this->resourceBlock(); ?>
+<?php echo $this->resourceBlock("style"); ?>
 </head>
 <body>
-<div class="xcme-frame xcme-login-frame">
-<div class="xcme-frame-header">Log in</div>
-<div class="xcme-frame-content">
+<div class="frame login-frame">
+<div class="frame-header">Log in</div>
+<div class="frame-content">
 <form action="#" method="post" id="login">
 <div class="field">
 <label for="username">Username</label>

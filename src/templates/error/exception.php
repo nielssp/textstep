@@ -7,10 +7,10 @@
 <meta name="generator" content="Jivoo" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style type="text/css">
-<?php include dirname(__FILE__) . '/../../assets/css/main.css'; ?>
+<?php include dirname(__FILE__) . '/../../assets/css/exception.css'; ?>
 </style>
 </head>
-<body class="exception">
+<body>
 
 <header>
 <h1>BlogSTEP</h1>

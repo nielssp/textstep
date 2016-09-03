@@ -1,6 +1,6 @@
-<section class="xcme-frame">
-<div class="xcme-frame-header">Typography</div>
-<div class="xcme-frame-content">
+<section class="frame">
+<div class="frame-header">Typography</div>
+<div class="frame-content">
 <div class="grid-sm grid-1-1">
 <div class="cell">
 <div class="block">
@@ -293,9 +293,9 @@ int main() {
 </div>
 </div>
 </section>
-<section class="xcme-frame">
-<div class="xcme-frame-header">Buttons</div>
-<div class="xcme-frame-content">
+<section class="frame">
+<div class="frame-header">Buttons</div>
+<div class="frame-content">
 <div class="grid-sm grid-1-1">
 <div class="cell">
 <div class="block">
@@ -321,14 +321,14 @@ int main() {
 <div class="block-header"><h3>Buttons with icons</h3></div>
 <div class="block-content">
 <p>
-<button type="button"><span class="icon"><span class="icon-plus"></span></span><span class="label">A button</span></button>
+<button type="button"><span class="icon"><span class="icon-edit-plus"></span></span><span class="label">A button</span></button>
 <button type="button"><span class="icon"><span class="icon-download"></span></span><span class="label">A button</span></button>
 <button type="button"><span class="icon"><span class="icon-enter"></span></span><span class="label">A button</span></button>
 <button type="button" class="button-primary"><span class="icon"><span class="icon-plus"></span></span><span class="label">A button</span></button>
 </p>
 <p>
                             Disabled:
-<button disabled type="button"><span class="icon"><span class="icon-plus"></span></span><span class="label">A button</span></button>
+<button disabled type="button"><span class="icon"><span class="icon-edit-plus"></span></span><span class="label">A button</span></button>
 <button disabled type="button"><span class="icon"><span class="icon-download"></span></span><span class="label">A button</span></button>
 <button disabled type="button"><span class="icon"><span class="icon-enter"></span></span><span class="label">A button</span></button>
 </p>
@@ -459,9 +459,9 @@ int main() {
 </div>
 </div>
 </section>
-<section class="xcme-frame">
-<div class="xcme-frame-header">Form elements</div>
-<div class="xcme-frame-content">
+<section class="frame">
+<div class="frame-header">Form elements</div>
+<div class="frame-content">
 <div class="grid-2-1 grid-md">
 <div class="cell cell"><div class="block"><div class="block-header"><h2>Elements</h2></div><form class="form-wide-sm block-content">
 <div class="field">

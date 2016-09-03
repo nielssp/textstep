@@ -1,4 +1,4 @@
-<?php $this->import('css/editor.css;dist/editor.js'); ?><div class="xcme-frame">
+<?php $this->import('css/editor.css;dist/editor.js'); ?><div class="frame">
 <?php echo $this->begin('appmenu'); ?><div>
 <header>Editor</header>
 <nav>
@@ -9,11 +9,11 @@
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>
-<div class="xcme-frame-header">
+<div class="frame-header">
 <?php echo \Jivoo\View\Html::h($fs->getName()); ?>
         &ndash; Editor
 </div>
-<div class="xcme-frame-content xcme-editor-frame">
+<div class="frame-content editor-frame">
 <textarea id="editor"><?php echo \Jivoo\View\Html::h($content); ?></textarea>
 </div>
 </div>

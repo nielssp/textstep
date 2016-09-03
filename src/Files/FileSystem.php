@@ -11,15 +11,15 @@ namespace Blogstep\Files;
 class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
 {
     
-    private $vpath;
+    private $root;
     
     private $path;
     
     private $type;
     
-    private function __construct($vpath, $path, $type)
+    private function __construct(array $path, $root, $type)
     {
-        $this->vpath = $vpath;
+        $this->root = $root;
         $this->path = $path;
         $this->type = $type;
     }
@@ -27,20 +27,19 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public static function open($rootPath)
     {
         \Jivoo\Assume::that(is_dir($rootPath));
-        return new self('/', $rootPath, 'dir');
+        return new self([], rtrim($rootPath, '/'), 'dir');
     }
 
     public function getIterator()
     {
         $names = [];
-        if (is_dir($this->path)) {
-            $names = scandir($this->path);
+        $path = $this->getRealPath();
+        if (is_dir($path)) {
+            $names = scandir($path);
         }
         $files = [];
         foreach ($names as $name) {
-            if ($name == '.') {
-                continue;
-            } else if ($name == '..' and $this->vpath == '/') {
+            if ($name == '.' or $name == '..') {
                 continue;
             }
             $files[] = $this->get($name);
@@ -48,26 +47,29 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return new \ArrayIterator($files);
     }
     
-    public function getVirtualPath()
+    public function getRealPath()
     {
-        return $this->vpath;
+        return $this->root . $this->getPath();
     }
     
     public function getPath()
     {
-        return $this->path;
+        return '/' . implode('/', $this->path);
     }
     
     public function getName()
     {
-        return basename($this->vpath);
+        if (count($this->path)) {
+            return $this->path[count($this->path) - 1];
+        }
+        return '';
     }
     
     public function getRoute()
     {
         return [
             'snippet' => 'Open',
-            'parameters' => explode('/', trim($this->vpath, '/'))
+            'parameters' => $this->path
         ];
     }
     
@@ -81,12 +83,38 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         
     }
     
-    public function get($rpath)
+    public function getParent()
     {
-        $path = \Jivoo\Paths::combinePaths($this->path, $rpath);
-        $vpath = \Jivoo\Paths::combinePaths($this->vpath, $rpath);
-        $type = is_dir($path) ? 'dir' : 'file';
-        return new self($vpath, $path, $type);
+        if (count($this->path)) {
+            return new FileSystem(array_slice($this->path, 0, -1), $this->root, 'directory');
+        }
+        return $this;
+    }
+    
+    public function get($relativePath)
+    {
+        if ($relativePath == '') {
+            return $this;
+        }
+        $path = $this->path;
+        if ($relativePath[0] == '/') {
+            $path = [];
+        }
+        $relativePath = explode('/', $relativePath);
+        foreach ($relativePath as $component) {
+            if ($component == '.') {
+                continue;
+            } elseif ($component == '..') {
+                array_pop($path);
+            } else if ($component != '') {
+                array_push($path, $component);
+            }
+        }
+        $type = 'unknown';
+        if (is_dir($this->root . '/' . implode('/', $path))) {
+            $type = 'directory';
+        }
+        return new self($path, $this->root, $type);
     }
 
 }

@@ -1,4 +1,4 @@
-<div class="xcme-frame" j:import="css/editor.css;dist/editor.js">
+<div class="frame" j:import="css/editor.css;dist/editor.js">
 
     <div j:assign="appmenu">
         <header>Editor</header>
@@ -11,12 +11,12 @@
         </nav>
     </div>
 
-    <div class="xcme-frame-header">
+    <div class="frame-header">
         <span j:outertext="{$fs->getName()}">name goes here</span>
         &ndash; Editor
     </div>
 
-    <div class="xcme-frame-content xcme-editor-frame">
+    <div class="frame-content editor-frame">
         <textarea j:text="{$content}" id="editor">content goes here</textarea>
     </div>
 </div>

@@ -1,0 +1,68 @@
+/*
+BlogSTEP 
+Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+
+.editor-frame {
+    padding: 0;
+
+    .editor-statusbar {
+        color: $frameFg;
+    }
+
+    .editor-toolbar {
+        border: 0;
+
+        a {
+            border-radius: 0;
+            background: transparent;
+            &:focus {
+                outline: 1px solid #000000;
+            }
+            &:hover {
+                background-color: lighten($frameBg, 5%);
+                color: $frameFg;
+                box-shadow: inset -1px -1px 0px #555555;
+                border: 1px solid #fff;
+                border-right: 1px solid #000000;
+                border-bottom: 1px solid #000000;
+                border-radius: 1px;
+            }
+            &:active, &.active {
+                background-color: #ffffff;
+                border: 1px solid #000000;
+                border-right: 1px solid #fff;
+                border-bottom: 1px solid #fff;
+                box-shadow: none;
+            }
+        }
+
+        .separator {
+            border-right: 0;
+            border-left: 1px solid #666;
+        }
+
+        &:after, &:before {
+            margin: 0;
+        }
+
+        &.fullscreen a {
+            &:active, &.active {
+                border: 1px solid #000;
+            }
+        }
+
+        &.disabled-for-preview a:not(.no-disable) {
+            background: transparent;
+        }
+    }
+
+    .CodeMirror {
+        border-radius: 0;
+        border-bottom: 1px solid #666;
+        border-top: 1px solid #666;
+        height: 400px;
+    }
+}

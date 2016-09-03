@@ -1,4 +1,4 @@
-<div class="xcme-frame" j:import="dist/files.js">
+<div class="frame" j:import="dist/files.js">
 
     <div j:assign="appmenu">
         <header>Editor</header>
@@ -11,22 +11,44 @@
         </nav>
     </div>
 
-    <div class="xcme-frame-header">
-        <span j:outertext="{$fs->getVirtualPath()}">path goes here</span>
+    <div class="frame-header">
+        <span class="header-path" j:text="{$fs->getPath()}">path goes here</span>
         &ndash; Files
     </div>
 
-    <div class="xcme-frame-content">
-        <select size="1" style="width:100px;">
-            <option>Name</option>
-            <option>Size</option>
-        </select>
-        <div class="xcme-files-panel">
-            <ul>
-                <li j:foreach="{$fs as $file}">
-                    <a j:href="{$file}" j:text="{$file->getName()}" class="{$file->getType()}">File name goes here</a>
-                </li>
-            </ul>
+    <div class="frame-content">
+
+        <div class="toolbar">
+            <button data-action="back">
+                <span class="icon icon-go-back"></span>
+            </button>
+            <button data-action="foward">
+                <span class="icon icon-go-forward"></span>
+            </button>
+            <button data-action="up">
+                <span class="icon icon-go-up"></span>
+            </button>
+            <button data-action="home">
+                <span class="icon icon-go-home"></span>
+            </button>
+            <span class="toolbar-separator"></span>
+            <button>
+                <span class="icon icon-edit-copy"></span>
+            </button>
+
+            <select size="1" style="width:100px;">
+                <option>Name</option>
+                <option>Size</option>
+            </select>
+        </div>
+        <div class="files-columns">
+            <div class="files-panel" data-path="{$fs->getPath()}">
+                <ul>
+                    <li j:foreach="{$fs as $file}">
+                        <a j:href="{$file}" j:text="{$file->getName()}" data-path="{$file->getPath()}" class="{'file file-' . $file->getType()}">File name goes here</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

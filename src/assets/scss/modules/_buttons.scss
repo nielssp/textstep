@@ -1,4 +1,30 @@
-$buttons: '.button, button, input[type=button], input[type=reset], input[type=submit]';
+/*
+BlogSTEP 
+Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+
+@mixin icon-size($size) {
+    &:before {
+        font-size: $size;
+        display: inline-block;
+        width: $size;
+        height: $size;
+        background-size: $size $size;
+        display: inline-block;
+        content: '';
+    }
+}
+
+@mixin button-size($size) {
+    .icon {
+        font-size: $size;
+        height: $size;
+        width: $size;
+        @include icon-size($size);
+    }
+}
 
 @mixin button {
     color: #000;
@@ -15,7 +41,7 @@ $buttons: '.button, button, input[type=button], input[type=reset], input[type=su
     padding: 2px 6px 2px 6px;
     font-weight: normal;
     border-radius: 1px;
-    
+
     &:visited {
         color: $frameFg;
     }
@@ -49,51 +75,14 @@ $buttons: '.button, button, input[type=button], input[type=reset], input[type=su
         }
     }
     .icon {
-        vertical-align: -3px;
         display: inline-block;
-        font-size: 16px;
-        height: 16px;
-        width: 16px;
+        @include icon-size(16px);
         & > * {
-          width: 16px;
-          height: 16px;
+            width: 16px;
+            height: 16px;
         }
         & + .label {
             margin-left: 0px;
-        }
-    }
-}
-
-#{$buttons} {
-    @include button;
-}
-
-.button-group {
-    display: inline-block;
-    vertical-align: middle;
-    position: relative;
-    white-space: nowrap;
-    #{$buttons} {
-        float: left;
-        margin-left: -1px;
-        position: relative;
-        &:first-child {
-            margin-left: 0;
-        }
-        &.active {
-            z-index: 1;
-        }
-        &:active, &:focus {
-            z-index: 2;
-        }
-        &.active, &:active {
-            background-color: #ffffff;
-            border: 1px solid #000000;
-            border-right: 1px solid #fff;
-            border-bottom: 1px solid #fff;
-            box-shadow: none;
-            /*box-shadow: inset 1px 1px 0px #555555;*/
-            padding: 3px 5px 1px 7px;
         }
     }
 }

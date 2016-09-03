@@ -1,0 +1,69 @@
+/*
+BlogSTEP 
+Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+
+@import "partials/base";
+
+$size32: '.shortcuts, .files-grid';
+$size16: '.files-columns';
+$size22: '.toolbar';
+
+@mixin icon($name) {
+    .icon-#{$name} {
+        &:before {
+            background-image: url(../img/icons/32/#{$name}.png);
+        }
+    }
+    
+    #{$size16} {
+        .icon-size-16 .icon-#{$name} {
+            &:before {
+                background-image: url(../img/icons/16/#{$name}.png);
+            }
+        }
+    }
+    
+    #{$size22} {
+        .icon-#{$name} {
+            &:before {
+                background-image: url(../img/icons/22/#{$name}.png);
+            }
+        }
+    }
+}
+
+@mixin filetype($name) {
+    .file-#{$name} {
+        &:before {
+            background-image: url(../img/icons/16/file-#{$name}.png);
+        }
+    }
+}
+
+.file:before {
+    background-image: url(../img/icons/16/file-unknown.png);
+}
+
+#{$size22} {
+    button {
+        @include button-size(22px);
+    }
+    .icon {
+        @include icon-size(22px);
+    }
+}
+
+@include filetype('directory');
+
+@include icon('edit-copy');
+@include icon('edit-cut');
+@include icon('edit-trash');
+@include icon('edit-undo');
+@include icon('edit-plus');
+@include icon('go-up');
+@include icon('go-forward');
+@include icon('go-back');
+@include icon('go-home');

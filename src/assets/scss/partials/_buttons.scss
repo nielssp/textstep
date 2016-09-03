@@ -1,0 +1,35 @@
+$buttons: '.button, button, input[type=button], input[type=reset], input[type=submit]';
+
+#{$buttons} {
+    @include button;
+}
+
+.button-group {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    white-space: nowrap;
+    #{$buttons} {
+        float: left;
+        margin-left: -1px;
+        position: relative;
+        &:first-child {
+            margin-left: 0;
+        }
+        &.active {
+            z-index: 1;
+        }
+        &:active, &:focus {
+            z-index: 2;
+        }
+        &.active, &:active {
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            border-right: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            box-shadow: none;
+            /*box-shadow: inset 1px 1px 0px #555555;*/
+            padding: 3px 5px 1px 7px;
+        }
+    }
+}
