@@ -817,6 +817,18 @@ Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
+.toolbar {
+  margin-bottom: 10px; }
+  .toolbar-separator {
+    display: inline-block;
+    width: 10px; }
+
+/*
+BlogSTEP 
+Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
 aside {
   float: left;
   width: 220px;
@@ -1025,6 +1037,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   overflow-y: scroll;
   min-height: 200px;
   position: relative; }
+  .files-panel.accept {
+    background-color: #bab7ba; }
   .files-panel ul {
     position: absolute;
     top: 0;
@@ -1037,7 +1051,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     list-style-type: none; }
     .files-panel ul a {
       display: block;
-      padding: 1px 5px; }
+      padding: 8px 5px; }
+      @media screen and (min-width: 768px) {
+        .files-panel ul a {
+          padding: 1px 5px; } }
       .files-panel ul a:before {
         font-size: 16px;
         display: inline-block;

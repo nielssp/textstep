@@ -15,7 +15,7 @@
 </div>
 <div class="frame-content">
 <div class="toolbar">
-<button data-action="back">
+<button data-action="back" title="Go back">
 <span class="icon icon-go-back"></span>
 </button>
 <button data-action="foward">
@@ -29,14 +29,23 @@
 </button>
 <span class="toolbar-separator"></span>
 <button>
+<span class="icon icon-edit-new-folder"></span>
+</button>
+<span class="toolbar-separator"></span>
+<button>
+<span class="icon icon-edit-cut"></span>
+</button>
+<button>
 <span class="icon icon-edit-copy"></span>
 </button>
-<select size="1" style="width:100px;">
-<option>Name</option>
-<option>Size</option>
-</select>
+<button>
+<span class="icon icon-edit-paste"></span>
+</button>
+<button>
+<span class="icon icon-edit-trash"></span>
+</button>
 </div>
-<div class="files-columns">
+<div class="files-columns" data-token="<?php echo $token; ?>">
 <div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
 <ul>
 <?php foreach ($fs as $file): ?>

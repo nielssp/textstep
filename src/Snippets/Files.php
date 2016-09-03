@@ -15,6 +15,8 @@ class Files extends \Blogstep\Snippet
     {
         $path = implode('/', $this->routeParameters);
         $this->viewData['fs'] = $this->m->files->get($path);
+        $this->viewData['title'] = $this->viewData['fs']->getPath() . ' – Files';
+        $this->viewData['token'] = $this->m->token->__toString();
         return $this->render();
     }
 }

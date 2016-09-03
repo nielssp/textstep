@@ -12,6 +12,8 @@ var PATH = $('body').data('path').replace(/\/$/, '');
 
 var $columns = $('.files-columns');
 
+var TOKEN = $columns.data('token');
+
 var cwd = $columns.children().first().data('path');
 
 var stack = [];
@@ -20,6 +22,42 @@ var stackOffset = 0;
 
 function open(path) {
     location.href = PATH + '/open' + path;
+}
+
+function initColumn($column) {
+    $column[0].ondragenter = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        e.dropEffect = "copy";
+        $column.addClass('accept');
+        return false;
+    };
+    $column[0].ondragleave = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $column.removeClass('accept');
+        return false;
+    };
+    $column[0].ondragover = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        e.dropEffect = "copy";
+        return false;
+    };
+    $column[0].ondrop = function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var files = event.dataTransfer.files;
+        var data = new FormData();
+        data.append('request_token', TOKEN);
+        for (var i = 0; i < files.length; i++) {
+            data.append('file' + i, files[i]);
+        }
+        var request = new XMLHttpRequest();
+        request.open("POST", PATH + '/api/upload?path=' + $column.data('path'));
+        request.send(data);
+        return false;
+    };
 }
 
 function initFile($file) {
@@ -70,7 +108,7 @@ function cd(path) {
             stack.push(path);
         }
     }
-    cwd = path;
+    cwd = stack[stack.length - 1];
     updateColumns();
 }
 
@@ -87,6 +125,8 @@ function updateColumns() {
             updateColumn(columns.eq(i), null);
         }
     }
+    $('.header-path').text(cwd);
+    document.title = cwd + ' – Files';
 }
 
 function updateColumn($column, path) {
@@ -142,6 +182,7 @@ function createColumns() {
             var $column = $('<div class="files-panel">');
             $column.append('<ul>');
             $column.appendTo($columns);
+            initColumn($column);
         }
     } else if (ideal < current) {
         var remove = current - ideal;
@@ -155,13 +196,20 @@ function createColumns() {
     return true;
 }
 
+function resizeView() {
+    $columns.height($(window).height() - 150);
+}
+
+initColumn($columns.children().first());
 createColumns();
 cd(cwd);
+resizeView();
 
 $(window).resize(function () {
     if (createColumns()) {
         updateColumns();
     }
+    resizeView();
 });
 
 initFile($columns.find('a'));
@@ -178,4 +226,5 @@ $('.toolbar [data-action="up"]').click(function () {
 $('.toolbar [data-action="home"]').click(function () {
     cd('/');
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
+    $columns.find('a').removeClass('active');
 });

@@ -1,4 +1,4 @@
-webpackJsonp([0,3],[
+webpackJsonp([0],[
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -30274,6 +30274,8 @@ if (true) {
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+var $ = __webpack_require__(9);
+
 __webpack_require__(6);
 window.hljs = __webpack_require__(8);
 __webpack_require__(7);
@@ -30347,6 +30349,13 @@ var simplemde = new SimpleMDE({
         "guide"
     ]
 });
+
+function resizeView() {
+    $('.CodeMirror').height($(window).height() - 200);
+}
+
+resizeView();
+$(window).resize(resizeView);
 
 /***/ }
 ],[25]);

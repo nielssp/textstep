@@ -83,6 +83,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->match('files/**', 'snippet:Files');
         
         $this->m->router->auto('snippet:Api\ListFiles');
+        $this->m->router->auto('snippet:Api\Upload');
     }
     
     public function p($ipath)

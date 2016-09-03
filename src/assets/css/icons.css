@@ -25,6 +25,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 /*$wsBg: #1E6290;*/
 .file:before {
   background-image: url(../img/icons/16/file-unknown.png); }
+.file.file-directory.active:before, .file.file-directory:active:before, .file.file-directory:hover:before {
+  background-image: url(../img/icons/16/file-directory-open.png); }
 
 .toolbar button .icon {
   font-size: 22px;
@@ -50,6 +52,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .file-directory:before {
   background-image: url(../img/icons/16/file-directory.png); }
 
+.file-markdown:before {
+  background-image: url(../img/icons/16/file-markdown.png); }
+
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }
 
@@ -67,6 +72,24 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 .toolbar .icon-edit-cut:before {
   background-image: url(../img/icons/22/edit-cut.png); }
+
+.icon-edit-paste:before {
+  background-image: url(../img/icons/32/edit-paste.png); }
+
+.files-columns .icon-size-16 .icon-edit-paste:before {
+  background-image: url(../img/icons/16/edit-paste.png); }
+
+.toolbar .icon-edit-paste:before {
+  background-image: url(../img/icons/22/edit-paste.png); }
+
+.icon-edit-new-folder:before {
+  background-image: url(../img/icons/32/edit-new-folder.png); }
+
+.files-columns .icon-size-16 .icon-edit-new-folder:before {
+  background-image: url(../img/icons/16/edit-new-folder.png); }
+
+.toolbar .icon-edit-new-folder:before {
+  background-image: url(../img/icons/22/edit-new-folder.png); }
 
 .icon-edit-trash:before {
   background-image: url(../img/icons/32/edit-trash.png); }

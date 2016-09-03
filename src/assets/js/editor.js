@@ -5,6 +5,8 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+var $ = require('jquery');
+
 require('highlightjs/styles/solarized_dark.css');
 window.hljs = require('highlightjs/highlight.pack.js');
 require('simplemde/dist/simplemde.min.css');
@@ -78,3 +80,10 @@ var simplemde = new SimpleMDE({
         "guide"
     ]
 });
+
+function resizeView() {
+    $('.CodeMirror').height($(window).height() - 200);
+}
+
+resizeView();
+$(window).resize(resizeView);

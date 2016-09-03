@@ -43,8 +43,17 @@ $size22: '.toolbar';
     }
 }
 
-.file:before {
-    background-image: url(../img/icons/16/file-unknown.png);
+.file {
+    &:before {
+        background-image: url(../img/icons/16/file-unknown.png);
+    }
+    &.file-directory {
+        &.active, &:active, &:hover {
+            &:before {
+            background-image: url(../img/icons/16/file-directory-open.png);
+            }
+        }
+    }
 }
 
 #{$size22} {
@@ -57,9 +66,12 @@ $size22: '.toolbar';
 }
 
 @include filetype('directory');
+@include filetype('markdown');
 
 @include icon('edit-copy');
 @include icon('edit-cut');
+@include icon('edit-paste');
+@include icon('edit-new-folder');
 @include icon('edit-trash');
 @include icon('edit-undo');
 @include icon('edit-plus');
