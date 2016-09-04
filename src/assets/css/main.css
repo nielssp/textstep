@@ -1077,6 +1077,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       .files-panel ul a:hover, .files-panel ul a:active, .files-panel ul a.active {
         background-color: #fff;
         text-decoration: none; }
+      .files-panel ul a:focus {
+        outline: 1px solid #000; }
     .files-panel ul .file-info {
       text-align: center;
       padding: 10px; }

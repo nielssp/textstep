@@ -48,7 +48,7 @@ $size22: '.toolbar';
         background-image: url(../img/icons/16/file-unknown.png);
     }
     &.file-directory {
-        &.active, &:active, &:hover {
+        &.active {
             &:before {
             background-image: url(../img/icons/16/file-directory-open.png);
             }

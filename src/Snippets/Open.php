@@ -17,7 +17,10 @@ class Open extends \Blogstep\Snippet
         if ($fs->getType() == 'dir') {
             return $this->redirect(['snippet' => 'Files', 'parameters' => $this->routeParameters]);
         }
+        if (preg_match('/\.md$/i', $fs->getName()) === 1) {
+            return $this->redirect(['snippet' => 'Editor', 'parameters' => $this->routeParameters]);
+        }
         // TODO: file associations
-        return $this->redirect(['snippet' => 'Editor', 'parameters' => $this->routeParameters]);
+        return $this->redirect(['snippet' => 'CodeEditor', 'parameters' => $this->routeParameters]);
     }
 }

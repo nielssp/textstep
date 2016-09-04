@@ -20,11 +20,11 @@
 </aside>
 <div class="shortcuts">
 <div class="shortcut">
-<img src="<?php echo $this->link('asset:img/desktop.png'); ?>" />
+<img src="<?php echo $this->link('asset:img/icons/32/desktop.png'); ?>" />
 <label>Desktop</label>
 </div>
 <div class="shortcut">
-<img src="<?php echo $this->link('asset:img/trash.png'); ?>" />
+<img src="<?php echo $this->link('asset:img/icons/32/trash.png'); ?>" />
 <label>Trash</label>
 </div>
 </div>

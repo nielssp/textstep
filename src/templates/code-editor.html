@@ -1,0 +1,22 @@
+<div class="frame" j:import="css/code-editor.css;dist/code-editor.js">
+
+    <div j:assign="appmenu">
+        <header>Code Editor</header>
+        <nav>
+            <ul>
+                <li><a href="" class="app-action" data-action="new">New</a></li>
+                <li><a href="" class="app-action" data-action="save">Save</a></li>
+                <li><a j:href="{$fs->getFilesRoute()}">Close</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="frame-header">
+        <span j:outertext="{$fs->getName()}">name goes here</span>
+        &ndash; Code Editor
+    </div>
+
+    <div class="frame-content editor-frame">
+        <textarea j:text="{$content}" id="editor" data-token="{$token}" data-path="{$fs->getPath()}">content goes here</textarea>
+    </div>
+</div>

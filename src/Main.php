@@ -80,6 +80,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Demo');
         $this->m->router->match('open/**', 'snippet:Open');
         $this->m->router->match('edit/**', 'snippet:Editor');
+        $this->m->router->match('code-edit/**', 'snippet:CodeEditor');
         $this->m->router->match('files/**', 'snippet:Files');
         
         $this->m->router->auto('snippet:Api\ListFiles');

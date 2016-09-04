@@ -1,6 +1,31 @@
 webpackJsonp([2],{
 
-/***/ 26:
+/***/ 2:
+/***/ function(module, exports, __webpack_require__) {
+
+/* 
+ * BlogSTEP 
+ * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+ * Licensed under the MIT license.
+ * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+ */
+
+var $ = __webpack_require__(1);
+
+exports.define = defineAction;
+
+function defineAction(name, callback) {
+    $('[data-action="' + name + '"]').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        callback();
+        return false;
+    });
+}
+
+/***/ },
+
+/***/ 34:
 /***/ function(module, exports, __webpack_require__) {
 
 /* 
@@ -11,8 +36,8 @@ webpackJsonp([2],{
  */
 
 
-var $ = __webpack_require__(9);
-var actions = __webpack_require__(29);
+var $ = __webpack_require__(1);
+var actions = __webpack_require__(2);
 
 var PATH = $('body').data('path').replace(/\/$/, '');
 
@@ -347,31 +372,6 @@ actions.define('trash', function () {
     }
 });
 
-/***/ },
-
-/***/ 29:
-/***/ function(module, exports, __webpack_require__) {
-
-/* 
- * BlogSTEP 
- * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
- * Licensed under the MIT license.
- * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
- */
-
-var $ = __webpack_require__(9);
-
-exports.define = defineAction;
-
-function defineAction(name, callback) {
-    $('[data-action="' + name + '"]').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        callback();
-        return false;
-    });
-}
-
 /***/ }
 
-},[26]);
+},[34]);

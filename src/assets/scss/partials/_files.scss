@@ -66,6 +66,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 background-color: #fff;
                 text-decoration: none;
             }
+            &:focus {
+                outline: 1px solid #000;
+            }
         }
         
         .file-info {

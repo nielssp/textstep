@@ -1,6 +1,6 @@
-webpackJsonp([1],{
+webpackJsonp([3],{
 
-/***/ 27:
+/***/ 35:
 /***/ function(module, exports, __webpack_require__) {
 
 /* 
@@ -10,7 +10,7 @@ webpackJsonp([1],{
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var $ = __webpack_require__(9);
+var $ = __webpack_require__(1);
 
 $('[data-toggle]').each(function () {
     var $buttons = $(this).find($(this).data('toggle'));
@@ -31,4 +31,4 @@ $('[data-choice]').each(function () {
 
 /***/ }
 
-},[27]);
+},[35]);

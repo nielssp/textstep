@@ -6,9 +6,9 @@
 namespace Blogstep\Snippets;
 
 /**
- * Markdown editor.
+ * Code editor.
  */
-class Editor extends \Blogstep\Snippet
+class CodeEditor extends \Blogstep\Snippet
 {
     public function get()
     {

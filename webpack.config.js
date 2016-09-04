@@ -5,6 +5,7 @@ module.exports = {
     entry: {
       main: "./main",
       editor: "./editor",
+      "code-editor": "./code-editor",
       files: "./files"
     },
     output: {

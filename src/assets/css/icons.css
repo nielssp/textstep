@@ -25,7 +25,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 /*$wsBg: #1E6290;*/
 .file:before {
   background-image: url(../img/icons/16/file-unknown.png); }
-.file.file-directory.active:before, .file.file-directory:active:before, .file.file-directory:hover:before {
+.file.file-directory.active:before {
   background-image: url(../img/icons/16/file-directory-open.png); }
 
 .file-info .file:before {
