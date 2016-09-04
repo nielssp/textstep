@@ -30275,38 +30275,19 @@ if (true) {
  */
 
 var $ = __webpack_require__(9);
+var actions = __webpack_require__(29);
 
 __webpack_require__(6);
 window.hljs = __webpack_require__(8);
 __webpack_require__(7);
 
-function saveFile() {
-    alert('not implemented');
-}
+var PATH = $('body').data('path').replace(/\/$/, '');
+var TOKEN = $('#editor').data('token');
 
-function newFile() {
-    alert('not implemented');
-}
+var path = $('#editor').data('path');
 
-var actions = document.getElementsByClassName("app-action");
-for (var i = 0; i < actions.length; i++) {
-    var action = actions[i];
-    action.addEventListener('click', function (e) {
-        e.preventDefault();
-        switch (action.getAttribute('data-action')) {
-            case 'save':
-                saveFile();
-                break;
-            case 'new':
-                newFile();
-                break;
-            default:
-                alert('not implemented');
-                break;
-        }
-        return false;
-    });
-}
+actions.define('new', newFile);
+actions.define('save', saveFile);
 
 var SimpleMDE = __webpack_require__(10);
 
@@ -30350,12 +30331,65 @@ var simplemde = new SimpleMDE({
     ]
 });
 
+
+function saveFile() {
+    $.ajax({
+        url: PATH + '/api/edit',
+        method: 'post',
+        data: {request_token: TOKEN, path: path, data: simplemde.value()},
+        success: function (data) {
+            alert('Saved!');
+        },
+        error: function () {
+            alert('could not save file');
+        }
+    });
+}
+
+function newFile() {
+    alert('not implemented');
+}
+
 function resizeView() {
     $('.CodeMirror').height($(window).height() - 200);
 }
 
+$(document).keydown(function (e) {
+    if (e.key === 's' && e.ctrlKey) {
+        saveFile();
+        return false;
+    }
+});
+
 resizeView();
 $(window).resize(resizeView);
+
+/***/ },
+/* 26 */,
+/* 27 */,
+/* 28 */,
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+/* 
+ * BlogSTEP 
+ * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
+ * Licensed under the MIT license.
+ * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+ */
+
+var $ = __webpack_require__(9);
+
+exports.define = defineAction;
+
+function defineAction(name, callback) {
+    $('[data-action="' + name + '"]').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        callback();
+        return false;
+    });
+}
 
 /***/ }
 ],[25]);

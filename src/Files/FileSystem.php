@@ -65,6 +65,43 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return '';
     }
     
+    public function getModified()
+    {
+        return (int) filemtime($this->getRealPath());
+    }
+    
+    public function getCreated()
+    {
+        return (int) filectime($this->getRealPath());
+    }
+    
+    public function getMetadata()
+    {
+        $store = new \Jivoo\Store\JsonStore($this->root . '/system/metadata' . $this->getPath() . '.json');
+        return new \Jivoo\Store\Config($store);
+    }
+    
+    public function getBrief()
+    {
+        return [
+            'name' => $this->getName(),
+            'path' => $this->getPath(),
+            'type' => $this->getType(),
+            'modified' => $this->getModified(),
+            'created' => $this->getCreated()
+        ];
+    }
+    
+    public function getDetailed()
+    {
+        $brief = $this->getBrief();
+        $brief['files'] = [];
+        foreach ($this as $file) {
+            $brief['files'][] = $file->getBrief();
+        }
+        return $brief;
+    }
+
     public function getRoute()
     {
         return [
@@ -73,14 +110,17 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         ];
     }
     
+    public function getFilesRoute()
+    {
+        return [
+            'snippet' => 'Files',
+            'parameters' => $this->path
+        ];
+    }
+    
     public function getType()
     {
         return $this->type;
-    }
-    
-    public function getMetadata()
-    {
-        
     }
     
     public function getParent()
@@ -94,6 +134,16 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function exists()
     {
         return file_exists($this->getRealPath());
+    }
+    
+    public function rename(FileSystem $destination)
+    {
+        return rename($this->getRealPath(), $destination->getRealPath());
+    }
+    
+    public function openStream($mode = 'rb')
+    {
+        return new \Jivoo\Http\Message\PhpStream($this->getRealPath(), $mode);
     }
     
     public function delete($recursive = true)

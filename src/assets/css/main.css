@@ -1055,7 +1055,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       display: block;
       padding: 8px 5px;
       white-space: nowrap;
-      overflow: hidden; }
+      overflow: hidden;
+      text-overflow: ellipsis; }
       @media screen and (min-width: 768px) {
         .files-panel ul a {
           padding: 1px 5px; } }
@@ -1076,5 +1077,19 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       .files-panel ul a:hover, .files-panel ul a:active, .files-panel ul a.active {
         background-color: #fff;
         text-decoration: none; }
+    .files-panel ul .file-info {
+      text-align: center;
+      padding: 10px; }
+      .files-panel ul .file-info .file-icon {
+        display: block;
+        margin-bottom: 10px; }
+      .files-panel ul .file-info .file-name {
+        display: block;
+        word-wrap: break-word;
+        margin-bottom: 10px; }
+      .files-panel ul .file-info .file-modified {
+        display: block;
+        color: #4d4d4d;
+        margin-bottom: 10px; }
 
 /*# sourceMappingURL=main.css.map */

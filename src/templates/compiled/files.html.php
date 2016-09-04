@@ -4,8 +4,8 @@
 <nav>
 <ul>
 <li><a href="#" data-action="new-folder">New folder</a></li>
-<li><a href="#">New file</a></li>
-<li><a href="#">Close</a></li>
+<li><a href="#" data-action="new-file">New file</a></li>
+<li><a href="#" date-action="close">Close</a></li>
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>
@@ -15,6 +15,7 @@
 </div>
 <div class="frame-content">
 <div class="toolbar">
+<div class="button-group">
 <button data-action="back" title="Go back">
 <span class="icon icon-go-back"></span>
 </button>
@@ -27,11 +28,15 @@
 <button data-action="home">
 <span class="icon icon-go-home"></span>
 </button>
+</div>
 <span class="toolbar-separator"></span>
+<div class="button-group">
 <button data-action="new-folder">
 <span class="icon icon-edit-new-folder"></span>
 </button>
+</div>
 <span class="toolbar-separator"></span>
+<div class="button-group">
 <button data-action="cut">
 <span class="icon icon-edit-cut"></span>
 </button>
@@ -44,6 +49,7 @@
 <button data-action="trash">
 <span class="icon icon-edit-trash"></span>
 </button>
+</div>
 </div>
 <div class="files-columns" data-token="<?php echo $token; ?>">
 <div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">

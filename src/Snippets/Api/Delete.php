@@ -21,7 +21,7 @@ class Delete extends \Blogstep\Snippet
         if ($fs->delete()) {
             return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
         }
-        // TODO: error...
+        return $this->response->withStatus(\Jivoo\Http\Message\Status::INTERNAL_SERVER_ERROR);
     }
     
     public function get()

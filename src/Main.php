@@ -88,6 +88,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\MakeDir');
         $this->m->router->auto('snippet:Api\MakeFile');
         $this->m->router->auto('snippet:Api\Delete');
+        $this->m->router->auto('snippet:Api\Edit');
     }
     
     public function p($ipath)

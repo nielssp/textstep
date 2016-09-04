@@ -46,6 +46,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             padding: 8px 5px;
             white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis;
             
             @media screen and (min-width: $sm) {
                 padding: 1px 5px;
@@ -64,6 +65,26 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             &:hover, &:active, &.active {
                 background-color: #fff;
                 text-decoration: none;
+            }
+        }
+        
+        .file-info {
+            text-align: center;
+            padding: 10px;
+            
+            .file-icon {
+                display: block;
+                margin-bottom: 10px;
+            }
+            .file-name {
+                display: block;
+                word-wrap: break-word;
+                margin-bottom: 10px;
+            }
+            .file-modified {
+                display: block;
+                color: lighten($frameFg, 30%);
+                margin-bottom: 10px;
             }
         }
     }

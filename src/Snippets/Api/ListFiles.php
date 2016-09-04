@@ -18,22 +18,6 @@ class ListFiles extends \Blogstep\Snippet
             $path = $this->request->query['path'];
         }
         $fs = $this->m->files->get($path);
-        $object = [
-            'name' => $fs->getName(),
-            'path' => $fs->getPath(),
-            'type' => $fs->getType(),
-            'files' => []
-        ];
-        foreach ($fs as $file) {
-            $object['files'][] = [
-                'name' => $file->getName(),
-                'path' => $file->getPath(),
-                'type' => $file->getType()
-            ];
-        }
-        $response = $this->response;
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write(\Jivoo\Json::encode($object));
-        return $response;
+        return $this->json($fs->getDetailed());
     }
 }

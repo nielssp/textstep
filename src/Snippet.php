@@ -318,6 +318,14 @@ abstract class Snippet
 //        $this->response = new ViewResponse(Http::OK, $this->view);
 //        return $response;
     }
+    
+    protected function json($object)
+    {
+        $response = $this->response;
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write(\Jivoo\Json::encode($object));
+        return $response;
+    }
 
     /**
      * Set cache settings.

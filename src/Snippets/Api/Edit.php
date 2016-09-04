@@ -6,9 +6,9 @@
 namespace Blogstep\Snippets\Api;
 
 /**
- * Create file.
+ * Edit file content.
  */
-class MakeFile extends \Blogstep\Snippet
+class Edit extends \Blogstep\Snippet
 {
     
     public function post($data)
@@ -18,10 +18,10 @@ class MakeFile extends \Blogstep\Snippet
             $path = $data['path'];
         }
         $fs = $this->m->files->get($path);
-        if (!$fs->exists() and touch($fs->getRealPath())) {
-            return $this->json($fs->getBrief());
-        }
-        // TODO: error...
+        $stream = $fs->openStream('wb');
+        $stream->write($data['data']);
+        $stream->close();
+        return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
     }
     
     public function get()

@@ -7,6 +7,7 @@
 
 
 var $ = require('jquery');
+var actions = require('./common/actions');
 
 var PATH = $('body').data('path').replace(/\/$/, '');
 
@@ -17,8 +18,11 @@ var TOKEN = $columns.data('token');
 var $currentColumn = $columns.children().first();
 
 var cwd = $currentColumn.data('path');
+$currentColumn.data('path', null);
 
 var stack = [];
+
+var selection = [];
 
 var stackOffset = 0;
 
@@ -69,11 +73,16 @@ function initFile($file) {
             return false;
         });
     }
-    $file.click(function () {
-        cd($(this).data('path'));
-        history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
-        $(this).parent().parent().find('a').removeClass('active');
-        $(this).addClass('active');
+    $file.click(function (event) {
+        if (event.shiftKey) {
+            // TODO: add to selection
+            $(this).addClass('active');
+        } else {
+            cd($(this).data('path'));
+            history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
+            $(this).parent().parent().find('a').removeClass('active');
+            $(this).addClass('active');
+        }
         return false;
     });
 }
@@ -96,6 +105,22 @@ function createFile(file) {
 function addFile($column, file) {
     var $li = $('<li>');
     $li.append(createFile(file));
+    $column.children('ul').append($li);
+}
+
+function addFileInfo($column, file) {
+    var $li = $('<li class="file-info">');
+    var $icon = $('<span class="file">');
+    $icon.addClass('file-' + file.type);
+    var $name = $('<span class="file-name">');
+    $name.text(file.name);
+    var $modified = $('<span class="file-modified">');
+    $modified.text(new Date(file.modified * 1000).toString());
+    var $button = $('<button>Open in editor</button>');
+    $button.click(function () {
+        open(file.path); 
+    });
+    $li.append($icon).append($name).append($modified).append($button);
     $column.children('ul').append($li);
 }
 
@@ -173,9 +198,13 @@ function updateColumn($column, path) {
             data: {path: path},
             success: function (data) {
                 $column.data('path', path);
-                for (var i = 0; i < data.files.length; i++) {
-                    var file = data.files[i];
-                    addFile($column, file);
+                if (data.type === 'directory') {
+                    for (var i = 0; i < data.files.length; i++) {
+                        var file = data.files[i];
+                        addFile($column, file);
+                    }
+                } else {
+                    addFileInfo($column, data);
                 }
             }
         });
@@ -232,30 +261,22 @@ $(window).resize(function () {
 
 initFile($columns.find('a'));
 
-function defineAction(name, callback) {
-    $('[data-action="' + name + '"]').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        callback();
-        return false;
-    });
-}
 
-defineAction('back', function () {
+actions.define('back', function () {
     history.back();
 });
-defineAction('foreward', function () {
+actions.define('foreward', function () {
     history.forward();
 });
-defineAction('up', function () {
+actions.define('up', function () {
     goUp();
 });
-defineAction('home', function () {
+actions.define('home', function () {
     cd('/');
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
     $columns.find('a').removeClass('active');
 });
-defineAction('new-folder', function () {
+actions.define('new-folder', function () {
     var name = prompt('Enter the new name:');
     if (name !== null) {
         if (name === '') {
@@ -283,7 +304,31 @@ defineAction('new-folder', function () {
         });
     }
 });
-defineAction('trash', function () {
+actions.define('new-file', function () {
+    var name = prompt('Enter the new name:');
+    if (name !== null) {
+        if (name === '') {
+            alert('Invalid name');
+            return;
+        }
+        var path;
+        if (cwd === '/') {
+            path = cwd + name;
+        } else {
+            path = cwd + '/' + name;
+        }
+        $.ajax({
+            url: PATH + '/api/make-file',
+            method: 'post',
+            data: {request_token: TOKEN, path: path},
+            success: function (data) {
+                addFile($currentColumn, data);
+                cd(path);
+            }
+        });
+    }
+});
+actions.define('trash', function () {
     if (confirm('Delete file: ' + cwd)) {
         $.ajax({
             url: PATH + '/api/delete',

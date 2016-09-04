@@ -56,6 +56,10 @@ $size22: '.toolbar';
     }
 }
 
+.file-info .file {
+    @include icon-size(32px);
+}
+
 #{$size22} {
     button {
         @include button-size(22px);

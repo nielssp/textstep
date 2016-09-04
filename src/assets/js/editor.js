@@ -6,38 +6,19 @@
  */
 
 var $ = require('jquery');
+var actions = require('./common/actions');
 
 require('highlightjs/styles/solarized_dark.css');
 window.hljs = require('highlightjs/highlight.pack.js');
 require('simplemde/dist/simplemde.min.css');
 
-function saveFile() {
-    alert('not implemented');
-}
+var PATH = $('body').data('path').replace(/\/$/, '');
+var TOKEN = $('#editor').data('token');
 
-function newFile() {
-    alert('not implemented');
-}
+var path = $('#editor').data('path');
 
-var actions = document.getElementsByClassName("app-action");
-for (var i = 0; i < actions.length; i++) {
-    var action = actions[i];
-    action.addEventListener('click', function (e) {
-        e.preventDefault();
-        switch (action.getAttribute('data-action')) {
-            case 'save':
-                saveFile();
-                break;
-            case 'new':
-                newFile();
-                break;
-            default:
-                alert('not implemented');
-                break;
-        }
-        return false;
-    });
-}
+actions.define('new', newFile);
+actions.define('save', saveFile);
 
 var SimpleMDE = require('simplemde');
 
@@ -81,9 +62,35 @@ var simplemde = new SimpleMDE({
     ]
 });
 
+
+function saveFile() {
+    $.ajax({
+        url: PATH + '/api/edit',
+        method: 'post',
+        data: {request_token: TOKEN, path: path, data: simplemde.value()},
+        success: function (data) {
+            alert('Saved!');
+        },
+        error: function () {
+            alert('could not save file');
+        }
+    });
+}
+
+function newFile() {
+    alert('not implemented');
+}
+
 function resizeView() {
     $('.CodeMirror').height($(window).height() - 200);
 }
+
+$(document).keydown(function (e) {
+    if (e.key === 's' && e.ctrlKey) {
+        saveFile();
+        return false;
+    }
+});
 
 resizeView();
 $(window).resize(resizeView);

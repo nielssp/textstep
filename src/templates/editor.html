@@ -6,7 +6,7 @@
             <ul>
                 <li><a href="" class="app-action" data-action="new">New</a></li>
                 <li><a href="" class="app-action" data-action="save">Save</a></li>
-                <li><a href="#">Close</a></li>
+                <li><a j:href="{$fs->getFilesRoute()}">Close</a></li>
             </ul>
         </nav>
     </div>
@@ -17,6 +17,6 @@
     </div>
 
     <div class="frame-content editor-frame">
-        <textarea j:text="{$content}" id="editor">content goes here</textarea>
+        <textarea j:text="{$content}" id="editor" data-token="{$token}" data-path="{$fs->getPath()}">content goes here</textarea>
     </div>
 </div>

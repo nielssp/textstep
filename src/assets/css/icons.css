@@ -28,6 +28,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .file.file-directory.active:before, .file.file-directory:active:before, .file.file-directory:hover:before {
   background-image: url(../img/icons/16/file-directory-open.png); }
 
+.file-info .file:before {
+  font-size: 32px;
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-size: 32px 32px;
+  display: inline-block;
+  content: ''; }
+
 .toolbar button .icon {
   font-size: 22px;
   height: 22px;
