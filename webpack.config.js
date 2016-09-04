@@ -28,6 +28,7 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin("init"),
+        new webpack.optimize.UglifyJsPlugin({minimize: true}),
         new ExtractTextPlugin({
           filename: "css/[name].css"
         })

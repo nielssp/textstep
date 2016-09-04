@@ -70,7 +70,9 @@ $size22: '.toolbar';
 }
 
 @include filetype('directory');
-@include filetype('markdown');
+@include filetype('md');
+@include filetype('html');
+@include filetype('php');
 
 @include icon('edit-copy');
 @include icon('edit-cut');

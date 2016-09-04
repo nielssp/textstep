@@ -182,8 +182,8 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $real = $this->root . '/' . implode('/', $path);
         if (is_dir($real)) {
             $type = 'directory';
-        } else if (\Jivoo\Utilities::getFileExtension($real) === 'md') {
-            $type = 'markdown';
+        } else {
+            $type = \Jivoo\Utilities::getFileExtension($real);
         } 
         return new self($path, $this->root, $type);
     }

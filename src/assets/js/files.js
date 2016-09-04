@@ -67,7 +67,7 @@ function initColumn($column) {
 }
 
 function initFile($file) {
-    if (!$(this).hasClass('file-directory')) {
+    if (!$file.hasClass('file-directory')) {
         $file.dblclick(function () {
             open($(this).data('path'));
             return false;
@@ -266,7 +266,7 @@ actions.define('back', function () {
     history.back();
 });
 actions.define('foreward', function () {
-    history.forward();
+    history.go(1);
 });
 actions.define('up', function () {
     goUp();

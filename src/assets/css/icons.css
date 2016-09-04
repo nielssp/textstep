@@ -61,8 +61,14 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .file-directory:before {
   background-image: url(../img/icons/16/file-directory.png); }
 
-.file-markdown:before {
-  background-image: url(../img/icons/16/file-markdown.png); }
+.file-md:before {
+  background-image: url(../img/icons/16/file-md.png); }
+
+.file-html:before {
+  background-image: url(../img/icons/16/file-html.png); }
+
+.file-php:before {
+  background-image: url(../img/icons/16/file-php.png); }
 
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }

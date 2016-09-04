@@ -8,8 +8,7 @@
 var $ = require('jquery');
 var actions = require('./common/actions');
 
-require('highlightjs/styles/solarized_dark.css');
-window.hljs = require('highlightjs/highlight.pack.js');
+var CodeMirror = require('codemirror');
 require('codemirror/lib/codemirror.css');
 require('codemirror/mode/php/php');
 require('codemirror/mode/htmlmixed/htmlmixed');
@@ -22,7 +21,6 @@ var path = $('#editor').data('path');
 actions.define('new', newFile);
 actions.define('save', saveFile);
 
-var CodeMirror = require('codemirror');
 
 var codemirror = CodeMirror.fromTextArea($('#editor')[0], {
     lineNumbers: true,
