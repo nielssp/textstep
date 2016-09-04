@@ -26,8 +26,7 @@
 </div>
 <div class="buttons">
 <button type="submit">
-<span class="icon">
-<img width="16" height="16" alt="Log in" src="<?php echo $this->link('asset:img/unlock.png'); ?>" />
+<span class="icon icon-unlock">
 </span>
 <span class="label">Log in</span>
 </button>

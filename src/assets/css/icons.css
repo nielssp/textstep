@@ -178,4 +178,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .toolbar .icon-reload:before {
   background-image: url(../img/icons/22/reload.png); }
 
+.icon-unlock:before {
+  background-image: url(../img/icons/32/unlock.png); }
+
+.files-columns .icon-size-16 .icon-unlock:before {
+  background-image: url(../img/icons/16/unlock.png); }
+
+.toolbar .icon-unlock:before {
+  background-image: url(../img/icons/22/unlock.png); }
+
 /*# sourceMappingURL=icons.css.map */

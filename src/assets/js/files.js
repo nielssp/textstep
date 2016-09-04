@@ -58,10 +58,22 @@ function initColumn($column) {
         data.append('request_token', TOKEN);
         for (var i = 0; i < files.length; i++) {
             data.append('file' + i, files[i]);
+            addFile($column, {
+                name: files[i].name,
+                path: $column.data('path') + '/' + files[i].name,
+                type: 'unknown'
+            });
         }
         var request = new XMLHttpRequest();
         request.open("POST", PATH + '/api/upload?path=' + $column.data('path'));
         request.send(data);
+        request.onreadystatechange = function () {
+            if (this.readyState === 3 || this.readyState === 4) {
+                var path = $column.data('path');
+                $column.data('path', null);
+                updateColumn($column, path);
+            }
+        };
         return false;
     };
 }
@@ -104,8 +116,10 @@ function createFile(file) {
 
 function addFile($column, file) {
     var $li = $('<li>');
-    $li.append(createFile(file));
+    var $file = createFile(file); 
+    $li.append($file);
     $column.children('ul').append($li);
+    return $file;
 }
 
 function addFileInfo($column, file) {
@@ -260,6 +274,13 @@ $(window).resize(function () {
 });
 
 initFile($columns.find('a'));
+
+$(document).keypress(function (e) {
+    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
+        // TODO: Search/filter current folder
+//        console.log(e.key);
+    }
+});
 
 
 actions.define('back', function () {
