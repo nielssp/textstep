@@ -73,6 +73,7 @@ $size22: '.toolbar';
 @include filetype('md');
 @include filetype('html');
 @include filetype('php');
+@include filetype('uploading');
 
 @include icon('edit-copy');
 @include icon('edit-cut');

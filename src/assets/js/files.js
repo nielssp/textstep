@@ -61,7 +61,7 @@ function initColumn($column) {
             addFile($column, {
                 name: files[i].name,
                 path: $column.data('path') + '/' + files[i].name,
-                type: 'unknown'
+                type: 'uploading'
             });
         }
         var request = new XMLHttpRequest();

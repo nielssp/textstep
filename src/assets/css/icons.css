@@ -70,6 +70,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .file-php:before {
   background-image: url(../img/icons/16/file-php.png); }
 
+.file-uploading:before {
+  background-image: url(../img/icons/16/file-uploading.png); }
+
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }
 
