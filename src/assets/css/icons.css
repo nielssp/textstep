@@ -154,4 +154,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .toolbar .icon-go-home:before {
   background-image: url(../img/icons/22/go-home.png); }
 
+.icon-reload:before {
+  background-image: url(../img/icons/32/reload.png); }
+
+.files-columns .icon-size-16 .icon-reload:before {
+  background-image: url(../img/icons/16/reload.png); }
+
+.toolbar .icon-reload:before {
+  background-image: url(../img/icons/22/reload.png); }
+
 /*# sourceMappingURL=icons.css.map */

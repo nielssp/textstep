@@ -44,6 +44,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         a {
             display: block;
             padding: 8px 5px;
+            white-space: nowrap;
+            overflow: hidden;
             
             @media screen and (min-width: $sm) {
                 padding: 1px 5px;

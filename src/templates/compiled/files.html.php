@@ -3,8 +3,8 @@
 <header>Editor</header>
 <nav>
 <ul>
-<li><a href="#">Create folder</a></li>
-<li><a href="#">Create file</a></li>
+<li><a href="#" data-action="new-folder">New folder</a></li>
+<li><a href="#">New file</a></li>
 <li><a href="#">Close</a></li>
 </ul>
 </nav>
@@ -28,20 +28,20 @@
 <span class="icon icon-go-home"></span>
 </button>
 <span class="toolbar-separator"></span>
-<button>
+<button data-action="new-folder">
 <span class="icon icon-edit-new-folder"></span>
 </button>
 <span class="toolbar-separator"></span>
-<button>
+<button data-action="cut">
 <span class="icon icon-edit-cut"></span>
 </button>
-<button>
+<button data-action="copy">
 <span class="icon icon-edit-copy"></span>
 </button>
-<button>
+<button data-action="paste">
 <span class="icon icon-edit-paste"></span>
 </button>
-<button>
+<button data-action="trash">
 <span class="icon icon-edit-trash"></span>
 </button>
 </div>

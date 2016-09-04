@@ -819,6 +819,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 .toolbar {
   margin-bottom: 10px; }
+  .toolbar > * {
+    vertical-align: top; }
   .toolbar-separator {
     display: inline-block;
     width: 10px; }
@@ -1051,7 +1053,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     list-style-type: none; }
     .files-panel ul a {
       display: block;
-      padding: 8px 5px; }
+      padding: 8px 5px;
+      white-space: nowrap;
+      overflow: hidden; }
       @media screen and (min-width: 768px) {
         .files-panel ul a {
           padding: 1px 5px; } }

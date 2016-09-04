@@ -19,7 +19,9 @@ var $columns = $('.files-columns');
 
 var TOKEN = $columns.data('token');
 
-var cwd = $columns.children().first().data('path');
+var $currentColumn = $columns.children().first();
+
+var cwd = $currentColumn.data('path');
 
 var stack = [];
 
@@ -66,17 +68,40 @@ function initColumn($column) {
 }
 
 function initFile($file) {
-    $file.click(function () {
-        if ($(this).hasClass('file-directory')) {
-            cd($(this).data('path'));
-            history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
-            $(this).parent().parent().find('a').removeClass('active');
-            $(this).addClass('active');
-        } else {
+    if (!$(this).hasClass('file-directory')) {
+        $file.dblclick(function () {
             open($(this).data('path'));
-        }
+            return false;
+        });
+    }
+    $file.click(function () {
+        cd($(this).data('path'));
+        history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
+        $(this).parent().parent().find('a').removeClass('active');
+        $(this).addClass('active');
         return false;
     });
+}
+
+function createFile(file) {
+    var $file = $('<a class="file">');
+    $file.text(file.name);
+    if (stack.filter(function (elem) {
+        return elem === file.path;
+    }).length > 0) {
+        $file.addClass('active');
+    }
+    $file.attr('data-path', file.path);
+    $file.attr('href', PATH + '/files' + file.path);
+    $file.addClass('file-' + file.type);
+    initFile($file);
+    return $file;
+}
+
+function addFile($column, file) {
+    var $li = $('<li>');
+    $li.append(createFile(file));
+    $column.children('ul').append($li);
 }
 
 var originalCwd = cwd;
@@ -96,6 +121,11 @@ function goUp() {
     cwd = stack[stack.length - 1];
     updateColumns();
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
+}
+
+function refresh() {
+    $currentColumn.data('path', null);
+    updateColumn($currentColumn, cwd);
 }
 
 function cd(path) {
@@ -126,6 +156,7 @@ function updateColumns() {
         if (stackOffset + i < stack.length) {
             var id = i;
             updateColumn(columns.eq(id), stack[stackOffset + id]);
+            $currentColumn = columns.eq(id);
         } else {
             updateColumn(columns.eq(i), null);
         }
@@ -149,20 +180,7 @@ function updateColumn($column, path) {
                 $column.data('path', path);
                 for (var i = 0; i < data.files.length; i++) {
                     var file = data.files[i];
-                    var $file = $('<a class="file">');
-                    $file.text(file.name);
-                    if (stack.filter(function(elem) {
-                        return elem === file.path;
-                    }).length > 0) {
-                        $file.addClass('active');
-                    }
-                    $file.attr('data-path', file.path);
-                    $file.attr('href', PATH + '/files' + file.path);
-                    $file.addClass('file-' + file.type);
-                    initFile($file);
-                    var $li = $('<li>');
-                    $li.append($file);
-                    $list.append($li);
+                    addFile($column, file);
                 }
             }
         });
@@ -219,19 +237,69 @@ $(window).resize(function () {
 
 initFile($columns.find('a'));
 
-$('.toolbar [data-action="back"]').click(function () {
+function defineAction(name, callback) {
+    $('[data-action="' + name + '"]').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        callback();
+        return false;
+    });
+}
+
+defineAction('back', function () {
     history.back();
 });
-$('.toolbar [data-action="forward"]').click(function () {
+defineAction('foreward', function () {
     history.forward();
 });
-$('.toolbar [data-action="up"]').click(function () {
+defineAction('up', function () {
     goUp();
 });
-$('.toolbar [data-action="home"]').click(function () {
+defineAction('home', function () {
     cd('/');
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
     $columns.find('a').removeClass('active');
+});
+defineAction('new-folder', function () {
+    var name = prompt('Enter the new name:');
+    if (name !== null) {
+        if (name === '') {
+            alert('Invalid name');
+            return;
+        }
+        var path;
+        if (cwd === '/') {
+            path = cwd + name;
+        } else {
+            path = cwd + '/' + name;
+        }
+        $.ajax({
+            url: PATH + '/api/make-dir',
+            method: 'post',
+            data: {request_token: TOKEN, path: path},
+            success: function (data) {
+                addFile($currentColumn, {
+                    name: name,
+                    path: path,
+                    type: 'directory'
+                });
+                cd(path);
+            }
+        });
+    }
+});
+defineAction('trash', function () {
+    if (confirm('Delete file: ' + cwd)) {
+        $.ajax({
+            url: PATH + '/api/delete',
+            method: 'post',
+            data: {request_token: TOKEN, path: cwd},
+            success: function (data) {
+                goUp();
+                refresh();
+            }
+        });
+    }
 });
 
 /***/ }

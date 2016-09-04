@@ -91,6 +91,24 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return $this;
     }
     
+    public function exists()
+    {
+        return file_exists($this->getRealPath());
+    }
+    
+    public function delete($recursive = true)
+    {
+        if ($recursive) {
+            foreach ($this as $file) {
+                $file->delete(true);
+            }
+        }
+        if ($this->type == 'directory') {
+            return rmdir($this->getRealPath());
+        }
+        return unlink($this->getRealPath());
+    }
+    
     public function get($relativePath)
     {
         if ($relativePath == '') {
