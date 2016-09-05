@@ -141,7 +141,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->state = new \Jivoo\Store\StateMap($this->p('system/state'));
         
         // Initialize session
-        $this->m->session = new \Jivoo\Store\Session(new \Jivoo\Store\PhpSessionStore());
+        $session = new \Jivoo\Store\PhpSessionStore();
+        $session->name = 'blogstep_session_id';
+        $this->m->session = new \Jivoo\Store\Session($session);
         $this->m->token = \Jivoo\Http\Token::create($this->m->session);
         
         // Initialize assets
