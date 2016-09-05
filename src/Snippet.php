@@ -193,6 +193,8 @@ abstract class Snippet
             return $this->after($this->get());
         }
         if (! $this->hasValidData($this->dataKey)) {
+            // TODO
+            throw new \Exception('no valid data... ' . $this->request->data['request_token'] . ' != ' . $this->m->token);
             return $this->after($this->get());
         }
         if (isset($this->dataKey)) {

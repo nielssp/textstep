@@ -13,9 +13,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         height: 100%;
     }
     &:after {
-      content: ' ';
-      display: block;
-      clear: left;
+        content: ' ';
+        display: block;
+        clear: left;
     }
 }
 
@@ -42,18 +42,18 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         list-style-type: none;
 
         a {
-            display: block;
-            padding: 8px 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            
-            @media screen and (min-width: $sm) {
-                padding: 1px 5px;
-            }
-            
             @include icon-size(16px);
+            &, &:link, &:visited {
+                display: block;
+                padding: 8px 5px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
 
+                @media screen and (min-width: $sm) {
+                    padding: 1px 5px;
+                }
+            }
             &.file-directory:after {
                 content: url(../img/arrow.png);
                 float: right;
@@ -70,11 +70,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 outline: 1px solid #000;
             }
         }
-        
+
         .file-info {
             text-align: center;
             padding: 10px;
-            
+
             .file-icon {
                 display: block;
                 margin-bottom: 10px;

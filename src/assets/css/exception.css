@@ -223,7 +223,7 @@ dl {
 .center {
   text-align: center; }
 
-.button, button, input[type=button], input[type=reset], input[type=submit] {
+.button, .button:link, .button:visited, .button:active, button, button:link, button:visited, button:active, input[type=button], input[type=button]:link, input[type=button]:visited, input[type=button]:active, input[type=reset], input[type=reset]:link, input[type=reset]:visited, input[type=reset]:active, input[type=submit], input[type=submit]:link, input[type=submit]:visited, input[type=submit]:active {
   color: #000;
   text-decoration: none;
   background-color: #AEAAAE;
@@ -238,45 +238,43 @@ dl {
   padding: 2px 6px 2px 6px;
   font-weight: normal;
   border-radius: 1px; }
-  .button:visited, button:visited, input[type=button]:visited, input[type=reset]:visited, input[type=submit]:visited {
-    color: #000000; }
-  .button:focus, button:focus, input[type=button]:focus, input[type=reset]:focus, input[type=submit]:focus {
-    outline: 1px solid #000000; }
-  .button:default, button:default, input[type=button]:default, input[type=reset]:default, input[type=submit]:default {
-    font-weight: bold; }
-  .button:hover, button:hover, input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover {
-    background-color: #bab7ba;
-    color: #000000;
-    text-decoration: none; }
-  .button:active, button:active, input[type=button]:active, input[type=reset]:active, input[type=submit]:active {
-    background-color: #ffffff;
-    border: 1px solid #000000;
-    border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
-    box-shadow: none;
-    /*box-shadow: inset 1px 1px 0px #555555;*/
-    padding: 3px 5px 1px 7px; }
-  .button[disabled], .button[disabled]:hover, .button[disabled]:active, button[disabled], button[disabled]:hover, button[disabled]:active, input[type=button][disabled], input[type=button][disabled]:hover, input[type=button][disabled]:active, input[type=reset][disabled], input[type=reset][disabled]:hover, input[type=reset][disabled]:active, input[type=submit][disabled], input[type=submit][disabled]:hover, input[type=submit][disabled]:active {
-    color: #666666;
-    text-shadow: 1px 1px 0 #eee;
-    background-color: #AEAAAE;
-    cursor: default;
-    outline: none; }
-  .button .icon, button .icon, input[type=button] .icon, input[type=reset] .icon, input[type=submit] .icon {
-    display: inline-block; }
-    .button .icon:before, button .icon:before, input[type=button] .icon:before, input[type=reset] .icon:before, input[type=submit] .icon:before {
-      font-size: 16px;
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      background-size: 16px 16px;
-      display: inline-block;
-      content: ''; }
-    .button .icon > *, button .icon > *, input[type=button] .icon > *, input[type=reset] .icon > *, input[type=submit] .icon > * {
-      width: 16px;
-      height: 16px; }
-    .button .icon + .label, button .icon + .label, input[type=button] .icon + .label, input[type=reset] .icon + .label, input[type=submit] .icon + .label {
-      margin-left: 0px; }
+.button:focus, button:focus, input[type=button]:focus, input[type=reset]:focus, input[type=submit]:focus {
+  outline: 1px solid #000000; }
+.button:default, button:default, input[type=button]:default, input[type=reset]:default, input[type=submit]:default {
+  font-weight: bold; }
+.button:hover, button:hover, input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover {
+  background-color: #bab7ba;
+  color: #000000;
+  text-decoration: none; }
+.button:active, button:active, input[type=button]:active, input[type=reset]:active, input[type=submit]:active {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  box-shadow: none;
+  /*box-shadow: inset 1px 1px 0px #555555;*/
+  padding: 3px 5px 1px 7px; }
+.button[disabled], .button[disabled]:hover, .button[disabled]:active, button[disabled], button[disabled]:hover, button[disabled]:active, input[type=button][disabled], input[type=button][disabled]:hover, input[type=button][disabled]:active, input[type=reset][disabled], input[type=reset][disabled]:hover, input[type=reset][disabled]:active, input[type=submit][disabled], input[type=submit][disabled]:hover, input[type=submit][disabled]:active {
+  color: #666666;
+  text-shadow: 1px 1px 0 #eee;
+  background-color: #AEAAAE;
+  cursor: default;
+  outline: none; }
+.button .icon, button .icon, input[type=button] .icon, input[type=reset] .icon, input[type=submit] .icon {
+  display: inline-block; }
+  .button .icon:before, button .icon:before, input[type=button] .icon:before, input[type=reset] .icon:before, input[type=submit] .icon:before {
+    font-size: 16px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
+    display: inline-block;
+    content: ''; }
+  .button .icon > *, button .icon > *, input[type=button] .icon > *, input[type=reset] .icon > *, input[type=submit] .icon > * {
+    width: 16px;
+    height: 16px; }
+  .button .icon + .label, button .icon + .label, input[type=button] .icon + .label, input[type=reset] .icon + .label, input[type=submit] .icon + .label {
+    margin-left: 0px; }
 
 .button-group {
   display: inline-block;
@@ -407,24 +405,23 @@ input[type=radio] {
     opacity: 0.5; }
 
 select:not([size]), select[size="1"] {
-  color: #000;
-  text-decoration: none;
-  background-color: #AEAAAE;
-  color: #000000;
-  text-decoration: none;
-  box-shadow: inset -1px -1px 0px #555555;
-  border: 1px solid #fff;
-  border-right: 1px solid #000000;
-  border-bottom: 1px solid #000000;
-  outline: none;
-  cursor: default !important;
-  padding: 2px 6px 2px 6px;
-  font-weight: normal;
-  border-radius: 1px;
   display: block;
   width: 100%; }
-  select:not([size]):visited, select[size="1"]:visited {
-    color: #000000; }
+  select:not([size]), select:not([size]):link, select:not([size]):visited, select:not([size]):active, select[size="1"], select[size="1"]:link, select[size="1"]:visited, select[size="1"]:active {
+    color: #000;
+    text-decoration: none;
+    background-color: #AEAAAE;
+    color: #000000;
+    text-decoration: none;
+    box-shadow: inset -1px -1px 0px #555555;
+    border: 1px solid #fff;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    outline: none;
+    cursor: default !important;
+    padding: 2px 6px 2px 6px;
+    font-weight: normal;
+    border-radius: 1px; }
   select:not([size]):focus, select[size="1"]:focus {
     outline: 1px solid #000000; }
   select:not([size]):default, select[size="1"]:default {
