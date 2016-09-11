@@ -10,7 +10,7 @@
         <link j:imports="css/main.css;dist/init.js;dist/main.js;css/icons.css" />
 
     </head>
-    <body data-path="{$this->link('path:')}">
+    <body data-path="{$this->link('')}">
 
         <aside>
             <div j:block="appmenu"></div>
@@ -18,7 +18,7 @@
             <nav>
                 <ul>
                     <li><a j:href="snippet:Files">File system</a></li>
-                    <li><a href="#">Control panel</a></li>
+                    <li><a j:href="{[]}">Control panel</a></li>
                 </ul>
             </nav>
         </aside>

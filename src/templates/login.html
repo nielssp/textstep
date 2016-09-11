@@ -15,7 +15,8 @@
         <div class="frame login-frame">
             <div class="frame-header">Log in</div>
             <div class="frame-content">
-                <form action="#" method="post" id="login">
+                <form action="{$this->link([])}" method="post" id="login">
+                    <input type="hidden" name="request_token" value="{$token}" />
                     <div class="field">
                         <label for="username">Username</label>
                         <input type="text" name="username" id="username" />

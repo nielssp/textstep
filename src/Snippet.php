@@ -133,7 +133,7 @@ abstract class Snippet
      * @param array $data POST data.
      * @return \Psr\Http\Message\ResponseInterface|string A response object or content.
      */
-    public function post($data)
+    public function post(array $data)
     {
         return $this->get();
     }
@@ -143,7 +143,7 @@ abstract class Snippet
      * @param array $data PUT data.
      * @return \Psr\Http\Message\ResponseInterface|string A response object or content.
      */
-    public function put($data)
+    public function put(array $data)
     {
         return $this->get();
     }
@@ -153,7 +153,7 @@ abstract class Snippet
      * @param array $data PATCH data.
      * @return \Psr\Http\Message\ResponseInterface|string A response object or content.
      */
-    public function patch($data)
+    public function patch(array $data)
     {
         return $this->get();
     }
@@ -193,8 +193,7 @@ abstract class Snippet
             return $this->after($this->get());
         }
         if (! $this->hasValidData($this->dataKey)) {
-            // TODO
-            throw new \Exception('no valid data... ' . $this->request->data['request_token'] . ' != ' . $this->m->token);
+            throw new \Exception('Incorrect request token. Request=' . $this->request->data['request_token'] . ' Session=' . $this->m->token);
             return $this->after($this->get());
         }
         if (isset($this->dataKey)) {

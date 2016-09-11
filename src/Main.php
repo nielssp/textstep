@@ -44,6 +44,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
         $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
         $this->m->server->add(new \Jivoo\Http\EntityTag);
+        $this->m->cookies = $this->m->server->getCookies();
         
         $this->config = new \Jivoo\Store\Document();
         $userConfig = new \Jivoo\Store\PhpStore($this->p('system/config.php'));
@@ -136,6 +137,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
                 return new \Jivoo\Cache\NullPool();
             });
         }
+        
+        $this->m->users = new UserModel($this->m->files);
         
         // Initialize application state system
         $this->m->state = new \Jivoo\Store\StateMap($this->p('system/state'));

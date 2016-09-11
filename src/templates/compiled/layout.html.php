@@ -7,14 +7,14 @@
 <?php echo $this->block('meta'); ?>
 <?php echo $this->resourceBlock("style"); ?>
 </head>
-<body data-path="<?php echo $this->link('path:'); ?>">
+<body data-path="<?php echo $this->link(''); ?>">
 <aside>
 <?php echo $this->block('appmenu'); ?>
 <header>Workspace</header>
 <nav>
 <ul>
 <li><a class="<?php if ($this->isCurrent('snippet:Files')) echo 'current'; ?>" href="<?php echo $this->link('snippet:Files'); ?>">File system</a></li>
-<li><a href="#">Control panel</a></li>
+<li><a class="<?php if ($this->isCurrent([])) echo 'current'; ?>" href="<?php echo $this->link([]); ?>">Control panel</a></li>
 </ul>
 </nav>
 </aside>

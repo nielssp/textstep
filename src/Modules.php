@@ -21,6 +21,7 @@ namespace Blogstep;
  * @property \Jivoo\Store\Session $session
  * @property \Jivoo\Http\Token $token
  * @property Files\FileSystem $files
+ * @property \Jivoo\Http\Cookie\CookiePool $cookies
  */
 class Modules extends \Jivoo\Modules
 {
@@ -38,5 +39,6 @@ class Modules extends \Jivoo\Modules
         'session' => 'Jivoo\Store\Session',
         'token' => 'Jivoo\Http\Token',
         'files' => 'Blogstep\Files\FileSystem',
+        'cookies' => 'Jivoo\Http\Cookie\CookiePool',
     ];
 }
