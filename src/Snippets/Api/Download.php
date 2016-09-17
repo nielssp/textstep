@@ -19,7 +19,10 @@ class Download extends \Blogstep\AuthenticatedSnippet
         }
         $fs = $this->m->files->get($path);
         if (! $fs->exists()) {
-            return $this->response->withStatus(\Jivoo\Http\Message\Status::NOT_FOUND);
+            return $this->error('file not found', \Jivoo\Http\Message\Status::NOT_FOUND);
+        }
+        if (!$fs->isReadable()) {
+            return $this->error('not authorized', \Jivoo\Http\Message\Status::UNAUTHORIZED);
         }
         $path = $fs->getRealPath();
         $type = $this->m->assets->getMimeType($path);

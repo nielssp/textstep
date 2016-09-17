@@ -310,7 +310,7 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $parent->assumeWritable();
         if (mkdir($this->getRealPath())) {
             $metadata = $this->getMetadata();
-            $metadata['owner'] = $parent->getOwner();
+            $metadata['owner'] = $this->authentication->getId();
             $metadata['group'] = $parent->getGroup();
             $metadata['mode'] = $parent->getMode();
             if ($metadata->save()) {
@@ -330,7 +330,7 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $parent->assumeWritable();
         if (touch($this->getRealPath())) {
             $metadata = $this->getMetadata();
-            $metadata['owner'] = $parent->getOwner();
+            $metadata['owner'] = $this->authentication->getId();
             $metadata['group'] = $parent->getGroup();
             $metadata['mode'] = $parent->getMode();
             if ($metadata->save()) {

@@ -18,12 +18,18 @@ class Upload extends \Blogstep\AuthenticatedSnippet
             $path = $this->request->query['path'];
         }
         $fs = $this->m->files->get($path);
+        if (!$fs->isWritable()) {
+            return $this->error('not authorized', \Jivoo\Http\Message\Status::UNAUTHORIZED);
+        }
         $files = $this->request->getUploadedFiles();
         foreach ($files as $file) {
             $target = $fs->get($file->name);
             $file->moveTo($target->getRealPath());
+            $target->set('mode', $fs->getMode());
+            $target->set('group', $fs->getGroup());
+            $target->set('owner', $this->m->auth->user->getId());
         }
-        return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
+        return $this->response;
     }
     
     public function get()
