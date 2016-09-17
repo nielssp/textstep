@@ -35,7 +35,7 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public static function open($rootPath, \Blogstep\User $authentication = null)
     {
         \Jivoo\Assume::that(is_dir($rootPath));
-        return new self([], rtrim($rootPath, '/'), 'dir', $authentication);
+        return new self([], rtrim($rootPath, '/'), 'directory', $authentication);
     }
     
     public function setAuthentication(\Blogstep\User $user)
