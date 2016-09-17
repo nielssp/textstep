@@ -8,7 +8,7 @@ namespace Blogstep\Snippets\Api;
 /**
  * Download file.
  */
-class Download extends \Blogstep\Snippet
+class Download extends \Blogstep\AuthenticatedSnippet
 {
     
     public function get()

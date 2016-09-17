@@ -81,6 +81,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->error('snippet:NotFound');
         $this->m->router->auto('snippet:Demo');
         $this->m->router->auto('snippet:Logout');
+        $this->m->router->auto('snippet:Terminal');
         $this->m->router->match('open/**', 'snippet:Open');
         $this->m->router->match('edit/**', 'snippet:Editor');
         $this->m->router->match('code-edit/**', 'snippet:CodeEditor');
@@ -93,6 +94,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\MakeFile');
         $this->m->router->auto('snippet:Api\Delete');
         $this->m->router->auto('snippet:Api\Edit');
+        $this->m->router->auto('snippet:Api\ChangeMode');
+        $this->m->router->auto('snippet:Api\ChangeGroup');
+        $this->m->router->auto('snippet:Api\ChangeOwner');
     }
     
     public function p($ipath)

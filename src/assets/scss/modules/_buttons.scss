@@ -42,6 +42,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         padding: 2px 6px 2px 6px;
         font-weight: normal;
         border-radius: 1px;
+        text-align: left;
     }
     &:focus {
         outline: 1px solid #000000;
@@ -70,6 +71,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             background-color: $frameBg;
             cursor: default;
             outline: none;
+        }
+        .icon {
+            opacity: 0.5;
         }
     }
     .icon {

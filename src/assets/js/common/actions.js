@@ -8,6 +8,8 @@
 var $ = require('jquery');
 
 exports.define = defineAction;
+exports.enable = enable;
+exports.disable = disable;
 
 function defineAction(name, callback) {
     $('[data-action="' + name + '"]').click(function (e) {
@@ -16,4 +18,20 @@ function defineAction(name, callback) {
         callback();
         return false;
     });
+}
+
+function enable(name) {
+    if (typeof name === 'string') {
+        $('[data-action="' + name + '"]').attr('disabled', false);
+    } else {
+        name.forEach(enable);
+    }
+}
+
+function disable(name) {
+    if (typeof name === 'string') {
+        $('[data-action="' + name + '"]').attr('disabled', true);
+    } else {
+        name.forEach(disable);
+    }
 }

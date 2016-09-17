@@ -9,8 +9,6 @@ use Blogstep\Files\FileSystem;
 use Jivoo\Assume;
 use Jivoo\Binary;
 use Jivoo\Random;
-use Jivoo\Store\PhpStore;
-use Jivoo\Store\State;
 
 /**
  * Description of UserModel
@@ -20,35 +18,87 @@ class UserModel implements \Jivoo\Security\UserModel
     
     private $fs;
     
+    private $systemGroup;
+    
     private $system;
     
-    private $sessionFile;
-    
-    private $userFile;
+    /**
+     * @var \Jivoo\Store\StateMap
+     */
+    private $state;
     
     private $users = null;
+    
+    private $groups = null;
     
     public function __construct(FileSystem $fs)
     {
         $this->fs = $fs;
-        $this->system = new User(0, 'system', null, $fs->get('system'));
-        $this->userFile = new PhpStore($fs->get('system/users.php')->getRealPath());
-        $this->userFile->touch();
-        $this->sessionFile = new PhpStore($this->fs->get('system/sessions.php')->getRealPath());
-        $this->sessionFile->touch();
+        $this->systemGroup = new Group(0, 'system');
+        $this->system = new User(0, 'system', null, $fs->get('system'), 0, []);
+        $this->state = new \Jivoo\Store\StateMap($fs->get('system')->getRealPath());
     }
     
     public function getUsers()
     {
         if (! isset($this->users)) {
-            $state = new State($this->userFile, false);
+            $state = $this->state->read('users');
             $this->users = [];
-            foreach ($state as $id => $user) {
-                $this->users[$id] = new User($id, $user['username'], $user['hash'], $this->fs->get($user['home']));
+            foreach ($state as $id => $data) {
+                $user = $state->getSubset($id);
+                if (!isset($user['username'])) {
+                    // TODO: Warning
+                    continue;
+                }
+                $this->users[$id] = new User(
+                    $id,
+                    $user['username'],
+                    $user->get('hash', ''),
+                    $this->fs->get($user->get('home', '/home/' . $user['username'])),
+                    $user->get('group', -1),
+                    $user->get('groups', [])
+                );
             }
             $state->close();
         }
         return $this->users;
+    }
+    
+    public function getGroups()
+    {
+        if (! isset($this->groups)) {
+            $state = $this->state->read('groups');
+            $this->groups = [];
+            foreach ($state as $id => $group) {
+                $this->groups[$id] = new Group($id, $group['name']);
+            }
+            $state->close();
+        }
+        return $this->groups;
+    }
+    
+    public function getUser($userId)
+    {
+        if ($userId === 0) {
+            return $this->system;
+        }
+        $users = $this->getUsers();
+        if (isset($users[$userId])) {
+            return $users[$userId];
+        }
+        return null;
+    }
+    
+    public function getGroup($groupId)
+    {
+        if ($groupId === 0) {
+            return $this->systemGroup;
+        }
+        $groups = $this->getGroups();
+        if (isset($groups[$groupId])) {
+            return $groups[$groupId];
+        }
+        return null;
     }
     
     public function createSession($user, $validUntil)
@@ -58,7 +108,7 @@ class UserModel implements \Jivoo\Security\UserModel
         $sessions = $user->getSessions();
         $sessions[$sessionId] = $validUntil;
         $sessions->close();
-        $state = new State($this->sessionFile, true);
+        $state = $this->state->write('sessions');
         $state[$sessionId] = $user->getId();
         $state->close();
         return $sessionId;
@@ -66,7 +116,7 @@ class UserModel implements \Jivoo\Security\UserModel
 
     public function deleteSession($sessionId)
     {
-        $state = new State($this->sessionFile, true);
+        $state = $this->state->write('sessions');
         $user = null;
         if (isset($state[$sessionId])) {
             $users = $this->getUsers();
@@ -99,7 +149,7 @@ class UserModel implements \Jivoo\Security\UserModel
 
     public function openSession($sessionId)
     {
-        $state = new State($this->sessionFile, false);
+        $state = $this->state->read('sessions');
         $user = null;
         if (isset($state[$sessionId])) {
             $users = $this->getUsers();
@@ -124,7 +174,7 @@ class UserModel implements \Jivoo\Security\UserModel
 
     public function renewSession($sessionId, $validUntil)
     {
-        $state = new State($this->sessionFile, false);
+        $state = $this->state->read('sessions');
         $user = null;
         if (isset($state[$sessionId])) {
             $users = $this->getUsers();

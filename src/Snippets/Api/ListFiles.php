@@ -8,7 +8,7 @@ namespace Blogstep\Snippets\Api;
 /**
  * File listing.
  */
-class ListFiles extends \Blogstep\Snippet
+class ListFiles extends \Blogstep\AuthenticatedSnippet
 {
     
     public function get()
@@ -18,6 +18,9 @@ class ListFiles extends \Blogstep\Snippet
             $path = $this->request->query['path'];
         }
         $fs = $this->m->files->get($path);
-        return $this->json($fs->getDetailed());
+        if ($fs->isReadable()) {
+            return $this->json($fs->getDetailed());
+        }
+        return $this->json($fs->getBrief());
     }
 }

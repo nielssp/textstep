@@ -14,11 +14,18 @@
 
         <aside>
             <div j:block="appmenu"></div>
-            <header>Workspace</header>
+            <header>Workspace (<span j:text="{$user ? $user->getUsername() : ''}">username</span>)</header>
             <nav>
                 <ul>
                     <li><a j:href="snippet:Files">File system</a></li>
+                    <li><a j:href="snippet:Terminal">Terminal</a></li>
                     <li><a j:href="{[]}">Control panel</a></li>
+                    <li>
+                        <form action="{$this->link('snippet:Logout')}" method="post">
+                            <input type="hidden" name="request_token" value="{$token}" />
+                            <input type="submit" value="Log out" />
+                        </form>
+                    </li>
                 </ul>
             </nav>
         </aside>

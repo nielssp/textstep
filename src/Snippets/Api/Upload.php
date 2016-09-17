@@ -8,10 +8,10 @@ namespace Blogstep\Snippets\Api;
 /**
  * File upload.
  */
-class Upload extends \Blogstep\Snippet
+class Upload extends \Blogstep\AuthenticatedSnippet
 {
     
-    public function post($data)
+    public function post(array $data)
     {
         $path = '';
         if (isset($this->request->query['path'])) {
@@ -28,8 +28,6 @@ class Upload extends \Blogstep\Snippet
     
     public function get()
     {
-        $e = new \Jivoo\Http\ClientException('Method not allowed');
-        $e->statusCode = \Jivoo\Http\Message\Status::METHOD_NOT_ALLOWED;
-        throw $e;
+        return $this->methodNotAllowed();
     }
 }

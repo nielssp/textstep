@@ -238,7 +238,8 @@ dl {
   cursor: default !important;
   padding: 2px 6px 2px 6px;
   font-weight: normal;
-  border-radius: 1px; }
+  border-radius: 1px;
+  text-align: left; }
 .button:focus, button:focus, input[type=button]:focus, input[type=reset]:focus, input[type=submit]:focus {
   outline: 1px solid #000000; }
 .button:default, button:default, input[type=button]:default, input[type=reset]:default, input[type=submit]:default {
@@ -261,6 +262,8 @@ dl {
   background-color: #AEAAAE;
   cursor: default;
   outline: none; }
+.button[disabled] .icon, button[disabled] .icon, input[type=button][disabled] .icon, input[type=reset][disabled] .icon, input[type=submit][disabled] .icon {
+  opacity: 0.5; }
 .button .icon, button .icon, input[type=button] .icon, input[type=reset] .icon, input[type=submit] .icon {
   display: inline-block; }
   .button .icon:before, button .icon:before, input[type=button] .icon:before, input[type=reset] .icon:before, input[type=submit] .icon:before {
@@ -300,6 +303,12 @@ dl {
       box-shadow: none;
       /*box-shadow: inset 1px 1px 0px #555555;*/
       padding: 3px 5px 1px 7px; }
+    .button-group .button[disabled], .button-group .button[disabled]:hover, .button-group .button[disabled]:active, .button-group button[disabled], .button-group button[disabled]:hover, .button-group button[disabled]:active, .button-group input[type=button][disabled], .button-group input[type=button][disabled]:hover, .button-group input[type=button][disabled]:active, .button-group input[type=reset][disabled], .button-group input[type=reset][disabled]:hover, .button-group input[type=reset][disabled]:active, .button-group input[type=submit][disabled], .button-group input[type=submit][disabled]:hover, .button-group input[type=submit][disabled]:active {
+      color: #666666;
+      text-shadow: 1px 1px 0 #eee;
+      background-color: #AEAAAE;
+      cursor: default;
+      outline: none; }
 
 input[type=text], input[type=email], input[type=password], input[type=date], input[type=time], input[type=datetime], textarea {
   padding: 2px 4px 2px 4px;
@@ -422,7 +431,8 @@ select:not([size]), select[size="1"] {
     cursor: default !important;
     padding: 2px 6px 2px 6px;
     font-weight: normal;
-    border-radius: 1px; }
+    border-radius: 1px;
+    text-align: left; }
   select:not([size]):focus, select[size="1"]:focus {
     outline: 1px solid #000000; }
   select:not([size]):default, select[size="1"]:default {
@@ -445,6 +455,8 @@ select:not([size]), select[size="1"] {
     background-color: #AEAAAE;
     cursor: default;
     outline: none; }
+  select:not([size])[disabled] .icon, select[size="1"][disabled] .icon {
+    opacity: 0.5; }
   select:not([size]) .icon, select[size="1"] .icon {
     display: inline-block; }
     select:not([size]) .icon:before, select[size="1"] .icon:before {
@@ -864,7 +876,8 @@ aside {
           cursor: default !important;
           padding: 2px 6px 2px 6px;
           font-weight: normal;
-          border-radius: 1px; }
+          border-radius: 1px;
+          text-align: left; }
         aside nav ul li a:focus {
           outline: 1px solid #000000; }
         aside nav ul li a:default {
@@ -887,6 +900,8 @@ aside {
           background-color: #AEAAAE;
           cursor: default;
           outline: none; }
+        aside nav ul li a[disabled] .icon {
+          opacity: 0.5; }
         aside nav ul li a .icon {
           display: inline-block; }
           aside nav ul li a .icon:before {
@@ -902,6 +917,11 @@ aside {
             height: 16px; }
           aside nav ul li a .icon + .label {
             margin-left: 0px; }
+      aside nav ul li .button, aside nav ul li button, aside nav ul li input[type=button], aside nav ul li input[type=reset], aside nav ul li input[type=submit] {
+        display: block;
+        width: 100%; }
+        aside nav ul li .button:default, aside nav ul li button:default, aside nav ul li input[type=button]:default, aside nav ul li input[type=reset]:default, aside nav ul li input[type=submit]:default {
+          font-weight: normal; }
 
 main {
   margin-right: 64px;
@@ -1035,6 +1055,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   overflow-y: scroll;
   min-height: 200px;
   position: relative; }
+  .files-panel.readonly {
+    background-color: #a29da2; }
   .files-panel.accept {
     background-color: #bab7ba; }
   .files-panel ul {
@@ -1086,6 +1108,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         word-wrap: break-word;
         margin-bottom: 10px; }
       .files-panel ul .file-info .file-modified {
+        display: block;
+        color: #4d4d4d;
+        margin-bottom: 10px; }
+      .files-panel ul .file-info .file-access {
         display: block;
         color: #4d4d4d;
         margin-bottom: 10px; }

@@ -8,10 +8,10 @@ namespace Blogstep\Snippets\Api;
 /**
  * Delete file.
  */
-class Delete extends \Blogstep\Snippet
+class Delete extends \Blogstep\AuthenticatedSnippet
 {
     
-    public function post($data)
+    public function post(array $data)
     {
         $path = '';
         if (isset($data['path'])) {
@@ -26,8 +26,6 @@ class Delete extends \Blogstep\Snippet
     
     public function get()
     {
-        $e = new \Jivoo\Http\ClientException('Method not allowed');
-        $e->statusCode = \Jivoo\Http\Message\Status::METHOD_NOT_ALLOWED;
-        throw $e;
+        return $this->methodNotAllowed();
     }
 }

@@ -14,7 +14,20 @@ class Files extends \Blogstep\AuthenticatedSnippet
     public function get()
     {
         $path = implode('/', $this->routeParameters);
-        $this->viewData['fs'] = $this->m->files->get($path);
+        $fs = $this->m->files->get($path);
+        if (!$fs->isReadable()) {
+            while (true) {
+                if ($fs->isReadable()) {
+                    break;
+                }
+                if (! count($fs->getPath())) {
+                    throw new \Blogstep\UnauthorizedException('Root directory is not readable');
+                }
+                $fs = $fs->getParent();
+            }
+            return $this->redirect($fs->getFilesRoute());
+        }
+        $this->viewData['fs'] = $fs;
         $this->viewData['title'] = $this->viewData['fs']->getPath() . ' – Files';
         return $this->render();
     }

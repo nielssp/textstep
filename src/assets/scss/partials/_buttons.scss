@@ -31,5 +31,14 @@ $buttons: '.button, button, input[type=button], input[type=reset], input[type=su
             /*box-shadow: inset 1px 1px 0px #555555;*/
             padding: 3px 5px 1px 7px;
         }
+        &[disabled] {
+            &, &:hover, &:active {
+                color: #666666;
+                text-shadow: 1px 1px 0 #eee;
+                background-color: $frameBg;
+                cursor: default;
+                outline: none;
+            }
+        }
     }
 }

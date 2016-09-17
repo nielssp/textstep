@@ -21,12 +21,18 @@ class User
     
     private $home;
     
-    public function __construct($id, $username, $hash, FileSystem $home)
+    private $primaryGroup;
+    
+    private $groups;
+    
+    public function __construct($id, $username, $hash, FileSystem $home, $primaryGroupId, array $groupIds)
     {
         $this->id = $id;
         $this->username = $username;
         $this->hash = $hash;
         $this->home = $home;
+        $this->primaryGroup = $primaryGroupId;
+        $this->groups = $groupIds;
     }
     
     public function getId()
@@ -42,6 +48,16 @@ class User
     public function getPassword()
     {
         return $this->hash;
+    }
+    
+    public function getPrimaryGroupId()
+    {
+        return $this->primaryGroup;
+    }
+    
+    public function isMemberOf($groupId)
+    {
+        return $groupId === $this->primaryGroup or in_array($groupId, $this->groups, true);
     }
     
     /**

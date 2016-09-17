@@ -27,6 +27,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     overflow-y: scroll;
     min-height: 200px;
     position: relative;
+    &.readonly {
+        background-color: darken($frameBg, 5%);
+    }
     &.accept {
         background-color: lighten($frameBg, 5%);
     }
@@ -85,6 +88,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 margin-bottom: 10px;
             }
             .file-modified {
+                display: block;
+                color: lighten($frameFg, 30%);
+                margin-bottom: 10px;
+            }
+            .file-access {
                 display: block;
                 color: lighten($frameFg, 30%);
                 margin-bottom: 10px;

@@ -6,9 +6,9 @@
 namespace Blogstep\Snippets\Api;
 
 /**
- * Create file.
+ * Change file group.
  */
-class MakeFile extends \Blogstep\AuthenticatedSnippet
+class ChangeGroup extends \Blogstep\AuthenticatedSnippet
 {
     
     public function post(array $data)
@@ -17,11 +17,14 @@ class MakeFile extends \Blogstep\AuthenticatedSnippet
         if (isset($data['path'])) {
             $path = $data['path'];
         }
-        $fs = $this->m->files->get($path);
-        if ($fs->makeFile()) {
-            return $this->json($fs->getBrief());
+        if (isset($data['group'])) {
+            $fs = $this->m->files->get($path);
+            $recursive = isset($data['recursive']) && $data['recursive'] == 'true';
+            if (!$fs->set('group', intval($data['group']), $recursive)) {
+                return $this->error('Could not set group');
+            }
         }
-        return $this->error('File exists or can not be created');
+        return $this->response;
     }
     
     public function get()

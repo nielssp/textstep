@@ -8,26 +8,24 @@ namespace Blogstep\Snippets\Api;
 /**
  * Create directory.
  */
-class MakeDir extends \Blogstep\Snippet
+class MakeDir extends \Blogstep\AuthenticatedSnippet
 {
     
-    public function post($data)
+    public function post(array $data)
     {
         $path = '';
         if (isset($data['path'])) {
             $path = $data['path'];
         }
         $fs = $this->m->files->get($path);
-        if (\Jivoo\Utilities::dirExists($fs->getRealPath(), true, true)) {
-            return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
+        if ($fs->makeDirectory()) {
+            return $this->json($fs->getBrief());
         }
-        // TODO: error...
+        return $this->error('Directory exists or can not be created');
     }
     
     public function get()
     {
-        $e = new \Jivoo\Http\ClientException('Method not allowed');
-        $e->statusCode = \Jivoo\Http\Message\Status::METHOD_NOT_ALLOWED;
-        throw $e;
+        return $this->methodNotAllowed();
     }
 }

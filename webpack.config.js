@@ -6,7 +6,8 @@ module.exports = {
       main: "./main",
       editor: "./editor",
       "code-editor": "./code-editor",
-      files: "./files"
+      files: "./files",
+      terminal: "./terminal"
     },
     output: {
         path: __dirname + "/src/assets/",

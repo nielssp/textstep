@@ -27,6 +27,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   background-image: url(../img/icons/16/file-unknown.png); }
 .file.file-directory.active:before {
   background-image: url(../img/icons/16/file-directory-open.png); }
+.file.file-directory.locked:before {
+  background-image: url(../img/icons/16/file-directory-locked.png); }
 
 .file-info .file:before {
   font-size: 32px;

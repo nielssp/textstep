@@ -33,6 +33,13 @@ aside {
                     display: block;
                     @include button;
                 }
+                #{$buttons} {
+                    display: block;
+                    width: 100%;
+                    &:default {
+                        font-weight: normal;
+                    }
+                }
             }
         }
     }

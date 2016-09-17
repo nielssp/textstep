@@ -1,0 +1,19 @@
+<div class="frame" j:import="dist/terminal.js">
+
+    <div j:assign="appmenu">
+        <header>Terminal</header>
+        <nav>
+            <ul>
+                <li><a j:href="snippet:Files">Close</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="frame-header">
+        Terminal
+    </div>
+
+    <div class="frame-content">
+        <textarea id="terminal" data-token="{$token}"></textarea>
+    </div>
+</div>

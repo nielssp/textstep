@@ -46,7 +46,13 @@ class SnippetRoute extends \Jivoo\Http\Route\RouteBase
     public function dispatch(\Jivoo\Http\ActionRequest $request, \Psr\Http\Message\ResponseInterface $response)
     {
         $snippet = $this->scheme->getSnippet($this->name);
-        return $snippet($request, $response, $this->parameters);
+        $response = $snippet($request, $response, $this->parameters);
+        if (! ($response instanceof \Psr\Http\Message\ResponseInterface)) {
+            throw new \Jivoo\Http\InvalidResponseException(
+                'Invalid response returned from: ' . \Jivoo\Utilities::callableToString($snippet)
+            );
+        }
+        return $response;
     }
 
     public function getPath($pattern)

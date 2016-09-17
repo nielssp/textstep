@@ -277,14 +277,18 @@ abstract class Snippet
     {
         $this->enableLayout = false;
     }
-
-    /**
-     * Call when request is invalid.
-     * @return Response|string A response object or content.
-     */
-    protected function invalid()
+    
+    protected function error($message, $status = \Jivoo\Http\Message\Status::BAD_REQUEST)
     {
-        throw new NotFoundException(tr('Invalid request.'));
+        $response = $this->response;
+        $response->getBody()->write($message);
+        return $response->withStatus($status);
+    }
+    
+    protected function methodNotAllowed()
+    {
+        $response = $this->response;
+        return $response->withStatus(\Jivoo\Http\Message\Status::METHOD_NOT_ALLOWED);
     }
 
     /**

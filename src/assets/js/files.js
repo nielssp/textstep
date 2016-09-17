@@ -78,7 +78,7 @@ function initColumn($column) {
     };
 }
 
-function initFile($file) {
+function initFile($file, file) {
     if (!$file.hasClass('file-directory')) {
         $file.dblclick(function () {
             open($(this).data('path'));
@@ -87,10 +87,10 @@ function initFile($file) {
     }
     $file.click(function (event) {
         if (event.shiftKey) {
-            // TODO: add to selection
+            select(file.path);
             $(this).addClass('active');
         } else {
-            cd($(this).data('path'));
+            cd(file.path);
             history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
             $(this).parent().parent().find('a').removeClass('active');
             $(this).addClass('active');
@@ -107,10 +107,13 @@ function createFile(file) {
     }).length > 0) {
         $file.addClass('active');
     }
+    if (!file.read) {
+        $file.addClass('locked');
+    }
     $file.attr('data-path', file.path);
     $file.attr('href', PATH + '/files' + file.path);
     $file.addClass('file-' + file.type);
-    initFile($file);
+    initFile($file, file);
     return $file;
 }
 
@@ -126,15 +129,22 @@ function addFileInfo($column, file) {
     var $li = $('<li class="file-info">');
     var $icon = $('<span class="file">');
     $icon.addClass('file-' + file.type);
+    if (!file.read) {
+        $icon.addClass('locked');
+    }
     var $name = $('<span class="file-name">');
     $name.text(file.name);
     var $modified = $('<span class="file-modified">');
     $modified.text(new Date(file.modified * 1000).toString());
-    var $button = $('<button>Open in editor</button>');
-    $button.click(function () {
-        open(file.path); 
-    });
-    $li.append($icon).append($name).append($modified).append($button);
+    var $access = $('<span class="file-access">');
+    $access.text(file.modeString + ' ' + file.owner + ':' + file.group + ' (' + (file.read?'r':'-') + (file.write?'w':'-') + ')');
+    $li.append($icon).append($name).append($modified).append($access);
+    if (file.read) {
+        var $button = $('<button>Open in editor</button>');
+        $button.click(function () {
+            open(file.path); 
+        }).appendTo($li);
+    }
     $column.children('ul').append($li);
 }
 
@@ -162,7 +172,12 @@ function refresh() {
     updateColumn($currentColumn, cwd);
 }
 
+function select(path) {
+    selection.push(path);
+}
+
 function cd(path) {
+    selection = [path];
     var names = path.split('/');
     var path = '';
     stack = ['/'];
@@ -185,7 +200,10 @@ function updateColumns() {
     console.log('stack', stack, 'cwd', cwd, 'stackOffset', stackOffset);
     var columns = $columns.children();
     var length = columns.length;
-    stackOffset = Math.max(0, Math.min(stackOffset, stack.length - 1), stack.length - length);
+    // Does not move stackOffset when going up:
+//    stackOffset = Math.max(0, Math.min(stackOffset, stack.length - 1), stack.length - length);
+    // Always shows as much of the stack as possible: (maybe more confusing when moving up? but better overview)
+    stackOffset = Math.max(0, stack.length - length);
     for (var i = 0; i < length; i++) {
         if (stackOffset + i < stack.length) {
             var id = i;
@@ -206,13 +224,17 @@ function updateColumn($column, path) {
     var $list = $column.children('ul');
     $list.empty();
     $column.data('path', null);
+    $column.removeClass('readonly');
     if (path !== null) {
         $.ajax({
             url: PATH + '/api/list-files',
             data: {path: path},
             success: function (data) {
                 $column.data('path', path);
-                if (data.type === 'directory') {
+                if (!data.write) {
+                    $column.addClass('readonly');
+                }
+                if (data.type === 'directory' && typeof data.files !== 'undefined') {
                     for (var i = 0; i < data.files.length; i++) {
                         var file = data.files[i];
                         addFile($column, file);
@@ -261,7 +283,6 @@ function resizeView() {
     $columns.height($(window).height() - 150);
 }
 
-initColumn($columns.children().first());
 createColumns();
 cd(cwd);
 resizeView();
@@ -272,8 +293,6 @@ $(window).resize(function () {
     }
     resizeView();
 });
-
-initFile($columns.find('a'));
 
 $(document).keypress(function (e) {
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
