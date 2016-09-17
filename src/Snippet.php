@@ -185,6 +185,7 @@ abstract class Snippet
                 $this->parameterValues[$name] = null;
             }
         }
+        $this->viewData['token'] = $this->m->token;
         $before = $this->before();
         if (isset($before)) {
             return $this->after($before);

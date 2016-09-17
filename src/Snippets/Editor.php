@@ -8,14 +8,13 @@ namespace Blogstep\Snippets;
 /**
  * Markdown editor.
  */
-class Editor extends \Blogstep\Snippet
+class Editor extends \Blogstep\AuthenticatedSnippet
 {
     public function get()
     {
         $path = implode('/', $this->routeParameters);
         $this->viewData['fs'] = $this->m->files->get($path);
         $this->viewData['content'] = file_get_contents($this->viewData['fs']->getRealPath());
-        $this->viewData['token'] = $this->m->token;
         return $this->render();
     }
 }

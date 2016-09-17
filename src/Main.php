@@ -40,12 +40,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->paths->src = dirname(__FILE__);
         $this->m->paths->user = $userPath;
         
-        $this->m->router = new \Jivoo\Http\Router();
-        $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
-        $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
-        $this->m->server->add(new \Jivoo\Http\EntityTag);
-        $this->m->cookies = $this->m->server->getCookies();
-        
         $this->config = new \Jivoo\Store\Document();
         $userConfig = new \Jivoo\Store\PhpStore($this->p('system/config.php'));
         $this->config['user'] = new \Jivoo\Store\Config($userConfig);
@@ -53,6 +47,12 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->cache = new \Jivoo\Cache\Cache();
         
         $this->m->files = Files\FileSystem::open($this->p('user'));
+        
+        $this->m->router = new \Jivoo\Http\Router($this->config['user']['router']);
+        $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
+        $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
+        $this->m->server->add(new \Jivoo\Http\EntityTag);
+        $this->m->cookies = $this->m->server->getCookies();
     }
     
     public function __get($property)
@@ -78,7 +78,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->router->match('assets/**', 'asset:');
         $this->m->router->root('snippet:Login');
+        $this->m->router->error('snippet:NotFound');
         $this->m->router->auto('snippet:Demo');
+        $this->m->router->auto('snippet:Logout');
         $this->m->router->match('open/**', 'snippet:Open');
         $this->m->router->match('edit/**', 'snippet:Editor');
         $this->m->router->match('code-edit/**', 'snippet:CodeEditor');
@@ -138,8 +140,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
             });
         }
         
-        $this->m->users = new UserModel($this->m->files);
-        
         // Initialize application state system
         $this->m->state = new \Jivoo\Store\StateMap($this->p('system/state'));
         
@@ -148,6 +148,14 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $session->name = 'blogstep_session_id';
         $this->m->session = new \Jivoo\Store\Session($session);
         $this->m->token = \Jivoo\Http\Token::create($this->m->session);
+        
+        // Initialize authentication system        
+        $this->m->users = new UserModel($this->m->files);
+        
+        $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
+        $this->m->auth->session = new \Jivoo\Security\Authentication\SessionAuthentication($this->m->session);
+        $this->m->auth->cookie = new \Jivoo\Security\Authentication\CookieAuthentication($this->m->cookies);
+        $this->m->auth->authenticate(null);
         
         // Initialize assets
         $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'));

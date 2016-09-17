@@ -23,7 +23,8 @@
     "composer/semver": "^1.2",
     "jivoo/core": "^1.0",
     "jivoo/http": "^1.0",
-    "jivoo/view": "dev-master"
+    "jivoo/view": "dev-master",
+    "jivoo/security": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.0",

@@ -6,15 +6,19 @@
 namespace Blogstep\Snippets;
 
 /**
- * Code editor.
+ * Description of Login
  */
-class CodeEditor extends \Blogstep\AuthenticatedSnippet
+class Logout extends \Blogstep\AuthenticatedSnippet
 {
+    
+    public function post(array $data)
+    {
+        $this->m->auth->deauthenticate();
+        return $this->redirect('snippet:Login');
+    }
+    
     public function get()
     {
-        $path = implode('/', $this->routeParameters);
-        $this->viewData['fs'] = $this->m->files->get($path);
-        $this->viewData['content'] = file_get_contents($this->viewData['fs']->getRealPath());
         return $this->render();
     }
 }

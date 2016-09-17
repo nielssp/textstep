@@ -13,15 +13,22 @@ class Login extends \Blogstep\Snippet
     
     public function before()
     {
-        $this->viewData['token'] = $this->m->token;
+        if ($this->m->auth->isLoggedIn()) {
+            return $this->redirect('snippet:Files');
+        }
+        $this->m->auth->form = new \Jivoo\Security\Authentication\FormAuthentication();
         return null;
     }
     
     public function post(array $data)
     {
-        $user = $this->m->users->findUser($data);
-        if (isset($user) and $user->authenticate($data['password'])) {
-            echo $this->m->users->createSession($user, time() + 30);exit;
+        if ($this->m->auth->authenticate($data)) {
+            if (isset($data['remember'])) {
+                $this->m->auth->cookie->create();
+            } else {
+                $this->m->auth->session->create();
+            }
+            return $this->redirect('snippet:Files');
         } else {
             echo 'incorrect username or password';
             exit;

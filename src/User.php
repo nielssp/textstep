@@ -29,9 +29,19 @@ class User
         $this->home = $home;
     }
     
-    public function authenticate($password)
+    public function getId()
     {
-        return password_verify($password, $this->hash);
+        return $this->id;
+    }
+    
+    public function getUsername()
+    {
+        return $this->username;
+    }
+    
+    public function getPassword()
+    {
+        return $this->hash;
     }
     
     /**

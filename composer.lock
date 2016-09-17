@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "cf62f575bc3e8d38433cdd00dee7330a",
-    "content-hash": "bdf904bd23519ebbee399ad119bdbe93",
+    "hash": "da202c450c75c32cc590b3412b60ac75",
+    "content-hash": "ac9611fc6c22f9d7a2de117bad679d3d",
     "packages": [
         {
             "name": "composer/semver",
@@ -167,6 +167,56 @@
                 "framework"
             ],
             "time": "2016-08-20 12:02:28"
+        },
+        {
+            "name": "jivoo/security",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jivoo/security.git",
+                "reference": "0f24515f27d454d528d027d7c788c16958da0ec0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jivoo/security/zipball/0f24515f27d454d528d027d7c788c16958da0ec0",
+                "reference": "0f24515f27d454d528d027d7c788c16958da0ec0",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^1.2",
+                "jivoo/core": "^1.0",
+                "jivoo/http": "^1.0",
+                "php": ">=5.4.0",
+                "psr/log": "1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jivoo\\Security\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Niels Sonnich Poulsen",
+                    "email": "niels@nielssp.dk",
+                    "homepage": "http://nielssp.dk",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Jivoo authentication, authorization, and access control library.",
+            "homepage": "http://nielssp.dk",
+            "keywords": [
+                "framework"
+            ],
+            "time": "2016-09-17 08:53:42"
         },
         {
             "name": "jivoo/view",
@@ -1625,7 +1675,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "jivoo/view": 20
+        "jivoo/view": 20,
+        "jivoo/security": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

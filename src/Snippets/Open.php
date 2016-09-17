@@ -8,7 +8,7 @@ namespace Blogstep\Snippets;
 /**
  * File opener
  */
-class Open extends \Blogstep\Snippet
+class Open extends \Blogstep\AuthenticatedSnippet
 {
     public function get()
     {
