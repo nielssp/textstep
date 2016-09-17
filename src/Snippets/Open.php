@@ -14,7 +14,7 @@ class Open extends \Blogstep\AuthenticatedSnippet
     {
         $path = implode('/', $this->routeParameters);
         $fs = $this->m->files->get($path);
-        if ($fs->getType() == 'dir') {
+        if ($fs->getType() == 'directory') {
             return $this->redirect(['snippet' => 'Files', 'parameters' => $this->routeParameters]);
         }
         if (preg_match('/\.md$/i', $fs->getName()) === 1) {

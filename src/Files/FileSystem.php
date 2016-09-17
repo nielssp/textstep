@@ -89,11 +89,8 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return (int) filectime($this->getRealPath());
     }
     
-    public function getMetadataPath() {
-        if ($this->type === 'directory') {
-            return $this->root . '/system/metadata' . $this->getPath() . '/.json';
-        }
-        return $this->root . '/system/metadata' . $this->getPath() . '.json';
+    private function getMetadataPath() {
+        return $this->root . '/system/metadata' . '/' . implode('.dir/', $this->path);
     }
     
     public function getMetadata()
@@ -104,17 +101,19 @@ class FileSystem implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
                 $this->metadata['owner'] = 0;
                 $this->metadata['group'] = 0;
                 $this->metadata['mode'] = 0;
-            } else {
+            } else if ($this->exists()) {
                 if ($this->type === 'directory') {
                     \Jivoo\Utilities::dirExists(
-                        $this->root . '/system/metadata' . $this->getPath(),
+                        $this->getMetadataPath() . '.dir',
                         true,
                         true
                     );
                 }
-                $store = new \Jivoo\Store\JsonStore($this->getMetadataPath());
+                $store = new \Jivoo\Store\JsonStore($this->getMetadataPath() . '.json');
                 $store->touch();
                 $this->metadata = new \Jivoo\Store\Config($store);
+            } else {
+                return new \Jivoo\Store\Config();
             }
         }
         return $this->metadata;

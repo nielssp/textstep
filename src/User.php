@@ -50,6 +50,11 @@ class User
         return $this->hash;
     }
     
+    public function getHome()
+    {
+        return $this->home;
+    }
+    
     public function getPrimaryGroupId()
     {
         return $this->primaryGroup;

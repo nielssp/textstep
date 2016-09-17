@@ -97,6 +97,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\ChangeMode');
         $this->m->router->auto('snippet:Api\ChangeGroup');
         $this->m->router->auto('snippet:Api\ChangeOwner');
+        $this->m->router->auto('snippet:Api\WhoAmI');
     }
     
     public function p($ipath)

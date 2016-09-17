@@ -342,6 +342,7 @@ input[type=text], input[type=email], input[type=password], input[type=date], inp
     padding: 4px 8px 4px; }
 
 textarea {
+  font-family: "Source Code Pro", monospace;
   min-height: 200px;
   max-width: 100%; }
   textarea.textarea-xs {

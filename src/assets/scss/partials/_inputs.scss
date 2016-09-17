@@ -44,6 +44,7 @@ $inputs: 'input[type=text], input[type=email], input[type=password], input[type=
 }
 
 textarea {
+    font-family: "Source Code Pro", monospace;
     min-height: 200px;
     max-width: 100%;
     &.textarea-xs {
@@ -112,13 +113,13 @@ input[type=radio] {
     vertical-align: middle;
     margin: -2px 0 0 0;
     text-align: center;
-    
+
     &:hover {
         background-color: lighten($frameBg, 5%);
     }
-    
+
     &:active:before,
-    &:checked:before {
+        &:checked:before {
         background: #ffffff;
         float: left;
         width: 11px;
@@ -182,119 +183,119 @@ select:not([size="1"]) {
 
 
 .input-group, .field .input-group {
-  display: table;
-  white-space: nowrap;
-  position: relative;
-  border-collapse: separate;
-  #{$inputs} {
-    position: relative;
-    width: 100%;
-    display: table-cell;
-    margin: 0;
-    &:focus {
-      z-index: 2;
-    }
-  }
-  &-text, &-button {
-    position: relative;
-    display: table-cell;
-    width: 1%;
+    display: table;
     white-space: nowrap;
-    vertical-align: middle;
-  }
-  &-button {
-    .button, button, input[type=button], input[type=reset], input[type=submit] {
-      position: relative;
-      font-size: 14px;
-      margin: 0;
-      display: block;
-      margin-right: -1px;
-      &:hover, &:active, &:focus {
-        z-index: 2;
-      }
+    position: relative;
+    border-collapse: separate;
+    #{$inputs} {
+        position: relative;
+        width: 100%;
+        display: table-cell;
+        margin: 0;
+        &:focus {
+            z-index: 2;
+        }
     }
-  }
-  &-text {
-    padding: 1px 8px 1px;
-    /*border: 1px solid darken($mainBg, 15%);*/
-    font-size: 14px;
-    /*background-color: darken($mainBg, 3%);*/
-    &:first-child {
-      border-right: none;
+    &-text, &-button {
+        position: relative;
+        display: table-cell;
+        width: 1%;
+        white-space: nowrap;
+        vertical-align: middle;
     }
-    &:last-child {
-      border-left: none;
+    &-button {
+        .button, button, input[type=button], input[type=reset], input[type=submit] {
+            position: relative;
+            font-size: 14px;
+            margin: 0;
+            display: block;
+            margin-right: -1px;
+            &:hover, &:active, &:focus {
+                z-index: 2;
+            }
+        }
     }
-  }
+    &-text {
+        padding: 1px 8px 1px;
+        /*border: 1px solid darken($mainBg, 15%);*/
+        font-size: 14px;
+        /*background-color: darken($mainBg, 3%);*/
+        &:first-child {
+            border-right: none;
+        }
+        &:last-child {
+            border-left: none;
+        }
+    }
 }
 
 
 .checkbox-list,
 .radio-list {
-  list-style-type: none;
-  margin-left: 0;
-  li {
-    margin-bottom: 4px;
-  }
+    list-style-type: none;
+    margin-left: 0;
+    li {
+        margin-bottom: 4px;
+    }
 }
 
 .field {
-  margin-bottom: $pmargin / 2;
-  .help {
-    font-style: italic;
-    color: #333333;
-    font-size: 0.95em;
-  }
-  
-  input[type=text],
-  input[type=email],
-  input[type=password],
-  input[type=date],
-  input[type=time],
-  input[type=datetime],
-  textarea,
-  select,
-  .input-group {
-    margin: 0 0 6px 0;
-  }
-  ul, ol {
-    margin-bottom: 6px;
-  }
-  & > label:first-child {
-    font-weight: 600;
-    font-style: normal;
-    font-size: 0.95em;
-    display: block;
-    margin-bottom: 2px;
-    overflow: hidden;
-  }
-  &.field-required label:first-child:after {
-    content: '*';
-    margin-left: 4px;
-    color: #990000;
-  }
-  input[type=checkbox],
-  input[type=radio] {
-    margin-right: 6px;
-  }
-  input + label {
-    font-weight: normal;
-    font-style: normal;
-    display: inline;
-    margin: 0 12px 0 0px;
-  }
+    margin-bottom: $pmargin / 2;
+    .help {
+        font-style: italic;
+        color: #333333;
+        font-size: 0.95em;
+    }
 
-  & > *:last-child {
-    margin-bottom: 0;
-  }
+    input[type=text],
+    input[type=email],
+    input[type=password],
+    input[type=date],
+    input[type=time],
+    input[type=datetime],
+    textarea,
+    select,
+    .input-group {
+        margin: 0 0 6px 0;
+    }
+    ul, ol {
+        margin-bottom: 6px;
+    }
+    & > label:first-child {
+        font-weight: 600;
+        font-style: normal;
+        font-size: 0.95em;
+        display: block;
+        margin-bottom: 2px;
+        overflow: hidden;
+    }
+    &.field-required label:first-child:after {
+        content: '*';
+        margin-left: 4px;
+        color: #990000;
+    }
+    input[type=checkbox],
+    input[type=radio] {
+        margin-right: 6px;
+    }
+    input + label {
+        font-weight: normal;
+        font-style: normal;
+        display: inline;
+        margin: 0 12px 0 0px;
+    }
+
+    & > *:last-child {
+        margin-bottom: 0;
+    }
 }
 form {
-  display: block;
-  margin-bottom: $pmargin;
-  .buttons {
+    display: block;
     margin-bottom: $pmargin;
-  }
-  & > *:last-child {
-    margin-bottom: 0;
-  }
+    .buttons {
+        margin-bottom: $pmargin;
+    }
+    & > *:last-child {
+        margin-bottom: 0;
+    }
 }
