@@ -5,7 +5,7 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep;
 
-use Blogstep\Files\FileSystem;
+use Blogstep\Files\File;
 use Jivoo\Assume;
 use Jivoo\Binary;
 use Jivoo\Random;
@@ -31,7 +31,7 @@ class UserModel implements \Jivoo\Security\UserModel
     
     private $groups = null;
     
-    public function __construct(FileSystem $fs)
+    public function __construct(File $fs)
     {
         $this->fs = $fs;
         $this->systemGroup = new Group(0, 'system');

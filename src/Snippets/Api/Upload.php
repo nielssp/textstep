@@ -24,10 +24,9 @@ class Upload extends \Blogstep\AuthenticatedSnippet
         $files = $this->request->getUploadedFiles();
         foreach ($files as $file) {
             $target = $fs->get($file->name);
-            $file->moveTo($target->getRealPath());
-            $target->set('mode', $fs->getMode());
-            $target->set('group', $fs->getGroup());
-            $target->set('owner', $this->m->auth->user->getId());
+            if (!$target->moveHere($file)) {
+            return $this->error('could not upload file: ' . $file->name);
+            }
         }
         return $this->response;
     }

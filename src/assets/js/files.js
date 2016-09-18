@@ -334,11 +334,7 @@ actions.define('new-folder', function () {
             method: 'post',
             data: {request_token: TOKEN, path: path},
             success: function (data) {
-                addFile($currentColumn, {
-                    name: name,
-                    path: path,
-                    type: 'directory'
-                });
+                addFile($currentColumn, data);
                 cd(path);
             }
         });

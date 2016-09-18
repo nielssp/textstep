@@ -46,7 +46,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->cache = new \Jivoo\Cache\Cache();
         
-        $this->m->files = Files\FileSystem::open($this->p('user'));
+        $this->m->files = new Files\FileSystem($this->p('user'));
         
         $this->m->router = new \Jivoo\Http\Router($this->config['user']['router']);
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);

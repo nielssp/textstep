@@ -5,7 +5,7 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep;
 
-use Blogstep\Files\FileSystem;
+use Blogstep\Files\File;
 
 /**
  * Description of User
@@ -25,7 +25,7 @@ class User
     
     private $groups;
     
-    public function __construct($id, $username, $hash, FileSystem $home, $primaryGroupId, array $groupIds)
+    public function __construct($id, $username, $hash, File $home, $primaryGroupId, array $groupIds)
     {
         $this->id = $id;
         $this->username = $username;
