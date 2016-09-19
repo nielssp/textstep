@@ -8,6 +8,7 @@
 
 var $ = require('jquery');
 var actions = require('./common/actions');
+var ui = require('./common/ui');
 
 var PATH = $('body').data('path').replace(/\/$/, '');
 
@@ -21,6 +22,8 @@ var cwd = $currentColumn.data('path');
 $currentColumn.data('path', null);
 
 var stack = [];
+
+var files = {};
 
 var selection = [];
 
@@ -79,6 +82,10 @@ function initColumn($column) {
 }
 
 function initFile($file, file) {
+    files[file.path] = {
+        link: $file,
+        data: file
+    };
     if (!$file.hasClass('file-directory')) {
         $file.dblclick(function () {
             open($(this).data('path'));
@@ -88,12 +95,8 @@ function initFile($file, file) {
     $file.click(function (event) {
         if (event.shiftKey) {
             select(file.path);
-            $(this).addClass('active');
         } else {
-            cd(file.path);
-            history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
-            $(this).parent().parent().find('a').removeClass('active');
-            $(this).addClass('active');
+            enter(file.path);
         }
         return false;
     });
@@ -119,7 +122,7 @@ function createFile(file) {
 
 function addFile($column, file) {
     var $li = $('<li>');
-    var $file = createFile(file); 
+    var $file = createFile(file);
     $li.append($file);
     $column.children('ul').append($li);
     return $file;
@@ -137,12 +140,12 @@ function addFileInfo($column, file) {
     var $modified = $('<span class="file-modified">');
     $modified.text(new Date(file.modified * 1000).toString());
     var $access = $('<span class="file-access">');
-    $access.text(file.modeString + ' ' + file.owner + ':' + file.group + ' (' + (file.read?'r':'-') + (file.write?'w':'-') + ')');
+    $access.text(file.modeString + ' ' + file.owner + ':' + file.group + ' (' + (file.read ? 'r' : '-') + (file.write ? 'w' : '-') + ')');
     $li.append($icon).append($name).append($modified).append($access);
     if (file.read) {
         var $button = $('<button>Open in editor</button>');
         $button.click(function () {
-            open(file.path); 
+            open(file.path);
         }).appendTo($li);
     }
     $column.children('ul').append($li);
@@ -170,6 +173,14 @@ function goUp() {
 function refresh() {
     $currentColumn.data('path', null);
     updateColumn($currentColumn, cwd);
+}
+
+function enter(path) {
+    cd(path);
+    if (files.hasOwnProperty(path)) {
+        files[path].link.addClass('active');
+    }
+    history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
 }
 
 function select(path) {
@@ -219,6 +230,10 @@ function updateColumns() {
 
 function updateColumn($column, path) {
     if ($column.data('path') === path) {
+        $column.find('a').removeClass('active');
+        if (files.hasOwnProperty(path)) {
+            files[path].link.addClass('active');
+        }
         return;
     }
     var $list = $column.children('ul');
@@ -230,6 +245,8 @@ function updateColumn($column, path) {
             url: PATH + '/api/list-files',
             data: {path: path},
             success: function (data) {
+                $list.empty();
+                $column.removeClass('readonly');
                 $column.data('path', path);
                 if (!data.write) {
                     $column.addClass('readonly');
@@ -283,6 +300,7 @@ function resizeView() {
     $columns.height($(window).height() - 150);
 }
 
+$columns.empty();
 createColumns();
 cd(cwd);
 resizeView();
@@ -312,9 +330,7 @@ actions.define('up', function () {
     goUp();
 });
 actions.define('home', function () {
-    cd('/');
-    history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
-    $columns.find('a').removeClass('active');
+    enter('/');
 });
 actions.define('new-folder', function () {
     var name = prompt('Enter the new name:');
@@ -360,6 +376,9 @@ actions.define('new-file', function () {
             success: function (data) {
                 addFile($currentColumn, data);
                 cd(path);
+            },
+            error: function () {
+                ui.shake($('.frame'));
             }
         });
     }

@@ -1057,9 +1057,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   min-height: 200px;
   position: relative; }
   .files-panel.readonly {
-    background-color: #a29da2; }
+    background-color: #A59B9B; }
   .files-panel.accept {
-    background-color: #bab7ba; }
+    background-color: #bfbcbf; }
   .files-panel ul {
     position: absolute;
     top: 0;

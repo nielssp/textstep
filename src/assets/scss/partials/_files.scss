@@ -28,10 +28,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     min-height: 200px;
     position: relative;
     &.readonly {
-        background-color: darken($frameBg, 5%);
+        background-color: #A59B9B;
     }
     &.accept {
-        background-color: lighten($frameBg, 5%);
+        background-color: lighten($frameBg, 7%);
     }
     ul {
         position: absolute;
