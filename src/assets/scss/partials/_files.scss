@@ -57,9 +57,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                     padding: 1px 5px;
                 }
             }
-            &.file-directory:after {
-                content: url(../img/arrow.png);
-                float: right;
+            &.file-directory {
+                background-image: url(../img/arrow.png);
+                background-repeat: no-repeat;
+                background-position: right 8px center;
             }
             &:before {
                 vertical-align: middle;

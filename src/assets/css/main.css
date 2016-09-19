@@ -1087,9 +1087,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       @media screen and (min-width: 768px) {
         .files-panel ul a, .files-panel ul a:link, .files-panel ul a:visited {
           padding: 1px 5px; } }
-    .files-panel ul a.file-directory:after {
-      content: url(../img/arrow.png);
-      float: right; }
+    .files-panel ul a.file-directory {
+      background-image: url(../img/arrow.png);
+      background-repeat: no-repeat;
+      background-position: right 8px center; }
     .files-panel ul a:before {
       vertical-align: middle;
       margin-right: 5px; }
