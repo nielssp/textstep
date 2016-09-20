@@ -1,4 +1,4 @@
-/* 
+/*
  * BlogSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
@@ -39,7 +39,7 @@ var simplemde = new SimpleMDE({
             },
             className: "fa fa-save",
             title: "Save",
-        },
+    },
         "|",
         "bold",
         "italic",
@@ -63,7 +63,8 @@ var simplemde = new SimpleMDE({
 });
 
 
-function saveFile() {
+function saveFile()
+{
     $.ajax({
         url: PATH + '/api/edit',
         method: 'post',
@@ -77,11 +78,13 @@ function saveFile() {
     });
 }
 
-function newFile() {
+function newFile()
+{
     alert('not implemented');
 }
 
-function resizeView() {
+function resizeView()
+{
     $('.CodeMirror').height($(window).height() - 200);
 }
 

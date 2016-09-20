@@ -118,7 +118,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Set timezone (required by file logger)
         if (!isset($this->config['i18n']['timeZone'])) {
             $defaultTimeZone = 'UTC';
-            \Jivoo\Log\ErrorHandler::detect(function() use($defaultTimeZone) {
+            \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
                 $defaultTimeZone = @date_default_timezone_get();
             });
             $this->config['i18n']['timeZone'] = $defaultTimeZone;
@@ -130,7 +130,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Add file logger
         if ($this->m->logger instanceof \Jivoo\Log\Logger) {
             $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
-                $this->p('system/log/blogstep-' . date('Y-m-d') . '.log'), $this->config['system']->get('logLevel', \Psr\Log\LogLevel::WARNING)
+                $this->p('system/log/blogstep-' . date('Y-m-d') . '.log'),
+                $this->config['system']->get('logLevel', \Psr\Log\LogLevel::WARNING)
             ));
         }
         
@@ -154,7 +155,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->session = new \Jivoo\Store\Session($session);
         $this->m->token = \Jivoo\Http\Token::create($this->m->session);
         
-        // Initialize authentication system        
+        // Initialize authentication system
         $this->m->users = new UserModel($this->m->files);
         
         $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
@@ -176,5 +177,4 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
         $this->m->server->listen();
     }
-
 }

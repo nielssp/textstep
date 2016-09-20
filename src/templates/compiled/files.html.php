@@ -54,7 +54,7 @@
 <div class="files-columns" data-token="<?php echo $token; ?>">
 <div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
 <ul>
-<?php foreach ($fs as $file): ?>
+<?php foreach ($fs as $file) : ?>
 <li>
 <a data-path="<?php echo $file->getPath(); ?>" class="<?php echo 'file file-' . $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a>
 </li><?php endforeach; ?>

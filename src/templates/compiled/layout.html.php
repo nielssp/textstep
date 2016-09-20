@@ -13,9 +13,15 @@
 <header>Workspace (<span><?php echo \Jivoo\View\Html::h($user ? $user->getUsername() : ''); ?></span>)</header>
 <nav>
 <ul>
-<li><a class="<?php if ($this->isCurrent('snippet:Files')) echo 'current'; ?>" href="<?php echo $this->link('snippet:Files'); ?>">File system</a></li>
-<li><a class="<?php if ($this->isCurrent('snippet:Terminal')) echo 'current'; ?>" href="<?php echo $this->link('snippet:Terminal'); ?>">Terminal</a></li>
-<li><a class="<?php if ($this->isCurrent([])) echo 'current'; ?>" href="<?php echo $this->link([]); ?>">Control panel</a></li>
+<li><a class="<?php if ($this->isCurrent('snippet:Files')) {
+    echo 'current';
+} ?>" href="<?php echo $this->link('snippet:Files'); ?>">File system</a></li>
+<li><a class="<?php if ($this->isCurrent('snippet:Terminal')) {
+    echo 'current';
+} ?>" href="<?php echo $this->link('snippet:Terminal'); ?>">Terminal</a></li>
+<li><a class="<?php if ($this->isCurrent([])) {
+    echo 'current';
+} ?>" href="<?php echo $this->link([]); ?>">Control panel</a></li>
 <li>
 <form action="<?php echo $this->link('snippet:Logout'); ?>" method="post">
 <input type="hidden" name="request_token" value="<?php echo $token; ?>" />

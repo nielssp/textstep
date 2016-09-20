@@ -6,7 +6,7 @@
 namespace Blogstep\Route;
 
 /**
- * 
+ *
  */
 class SnippetRoute extends \Jivoo\Http\Route\RouteBase
 {
@@ -59,5 +59,4 @@ class SnippetRoute extends \Jivoo\Http\Route\RouteBase
     {
         return \Jivoo\Http\Route\RouteBase::insertParameters($pattern, $this->parameters);
     }
-
 }

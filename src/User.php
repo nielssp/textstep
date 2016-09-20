@@ -66,7 +66,7 @@ class User
     }
     
     /**
-     * 
+     *
      * @return \Jivoo\Store\State
      */
     public function getSessions()

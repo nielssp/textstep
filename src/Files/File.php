@@ -95,7 +95,8 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return (int) filectime($this->getRealPath());
     }
     
-    private function getMetadataPath() {
+    private function getMetadataPath()
+    {
         return $this->system->root . '/system/metadata' . '/' . implode('.dir/', $this->path);
     }
     
@@ -213,13 +214,15 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return $this->getMode() & 0x3;
     }
     
-    private function assumeReadable() {
+    private function assumeReadable()
+    {
         if (!$this->isReadable()) {
             throw new \Blogstep\UnauthorizedException('File is not readable');
         }
     }
     
-    private function assumeWritable() {
+    private function assumeWritable()
+    {
         if (!$this->isWritable()) {
             throw new \Blogstep\UnauthorizedException('File is not writable');
         }
@@ -318,11 +321,29 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return file_exists($this->getRealPath());
     }
     
-    public function rename(File $destination)
+    public function copy(File $destination)
     {
+        throw new \Exception('not implemented');
+        if ($this->type == 'directory') {
+            $destination->makeDirectory();
+            foreach ($this as $file) {
+                $file->copy(/*...*/);
+            }
+        } elseif (copy($this->getRealPath(), $destination->getRealPath())) {
+        }
+        $this->assumeReadable();
+        $destination->assumeWritable();
+        return false;
+    }
+    
+    public function move(File $destination)
+    {
+        throw new \Exception('not implemented');
         $this->assumeWritable();
         $destination->assumeWritable();
-        return rename($this->getRealPath(), $destination->getRealPath());
+        if (rename($this->getRealPath(), $destination->getRealPath())) {
+        }
+        return false;
     }
     
     public function moveHere(\Jivoo\Http\Message\UploadedFile $file)
@@ -452,10 +473,13 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             }
         }
         $this->assumeWritable();
-        if (file_exists($this->getMetadataPath())) {
-            unlink($this->getMetadataPath());
+        if (file_exists($this->getMetadataPath() . '.json')) {
+            unlink($this->getMetadataPath() . '.json');
         }
         if ($this->type == 'directory') {
+            if (is_dir($this->getMetadataPath() . '.dir')) {
+                rmdir($this->getMetadataPath() . '.dir');
+            }
             return rmdir($this->getRealPath());
         }
         return unlink($this->getRealPath());
@@ -499,5 +523,4 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         }
         return $this->getRelative(explode('/', $relativePath));
     }
-
 }

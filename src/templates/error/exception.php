@@ -24,16 +24,17 @@
 
 <?php
 if (isset($exception)) {
-  $file = $exception->getFile();
-  $line = $exception->getLine();
-  $record = $exception->getMessage();
+    $file = $exception->getFile();
+    $line = $exception->getLine();
+    $record = $exception->getMessage();
 ?>
 <h2><?php echo $record; ?></h2>
 
 <p><?php echo Jivoo\I18n\I18n::get(
-  'An uncaught %1 was thrown in file %2 on line %3 that prevented further execution of this request.',
-  '<strong>' . get_class($exception) . '</strong>',
-  '<em>' . basename($file) . '</em>', '<strong>' . $line . '</strong>'
+    'An uncaught %1 was thrown in file %2 on line %3 that prevented further execution of this request.',
+    '<strong>' . get_class($exception) . '</strong>',
+    '<em>' . basename($file) . '</em>',
+    '<strong>' . $line . '</strong>'
 ); ?></p>
 <p><?php echo Jivoo\I18n\I18n::get('The exception was thrown from the following file:')?></p>
 <p><code><?php echo $file ?></code></p>
@@ -42,15 +43,15 @@ if (isset($exception)) {
 <?php include dirname(__FILE__) . '/stack.php'; ?>
 
 <?php $previous = $exception->getPrevious(); ?>
-<?php while (isset($previous)): ?>
+<?php while (isset($previous)) : ?>
 
 <h2><?php echo Jivoo\I18n\I18n::get('Caused by'); ?></h2>
 
 <p><?php echo Jivoo\I18n\I18n::get(
-  '%1 in file %2 on line %3:',
-  '<strong>' . get_class($previous) . '</strong>',
-  '<em title="' . $previous->getFile() . '">' . basename($previous->getFile()) . '</em>',
-  '<strong>' . $previous->getLine() . '</strong>'
+    '%1 in file %2 on line %3:',
+    '<strong>' . get_class($previous) . '</strong>',
+    '<em title="' . $previous->getFile() . '">' . basename($previous->getFile()) . '</em>',
+    '<strong>' . $previous->getLine() . '</strong>'
 ); ?>
 
 <?php echo $previous->getMessage(); ?></p>
@@ -91,7 +92,7 @@ if (isset($exception)) {
 </tr>
 </thead>
 <tbody>
-<?php foreach ($log as $record): ?>
+<?php foreach ($log as $record) : ?>
 <?php $context = $record['context']; ?>
 <?php $message = \Jivoo\Log\Logger::interpolate($record['message'], $context); ?>
 <tr>
@@ -106,7 +107,7 @@ if (isset($exception)) {
 </span>
 </td>
 <td>
-<?php 
+<?php
 $seconds = (int) $record['time'];
 $millis = floor(($record['time'] - $seconds) * 1000);
 echo date('Y-m-d H:i:s', $seconds) . sprintf('.%03d ', $millis) . date('P');
@@ -118,9 +119,8 @@ echo date('Y-m-d H:i:s', $seconds) . sprintf('.%03d ', $millis) . date('P');
 </table>
 
 <?php
-}
-else {
-  echo $body;
+} else {
+    echo $body;
 }
 ?>
 

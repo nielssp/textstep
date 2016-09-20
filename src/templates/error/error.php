@@ -67,7 +67,7 @@
 <div>
 <p><?php echo Jivoo\I18n\I18n::get('An error occurred while loading this page&hellip;'); ?></p>
 
-<?php if (isset($hash)): ?>
+<?php if (isset($hash)) : ?>
 <p id="reference">Reference: #<?php echo $hash; ?></p>
 <?php endif; ?>
 </div>

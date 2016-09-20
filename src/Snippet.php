@@ -55,10 +55,10 @@ abstract class Snippet
 
     /**
      * Construct snippet.
-     * 
+     *
      * @param Modules $m Module collection.
      */
-    public final function __construct(Modules $m)
+    final public function __construct(Modules $m)
     {
         $this->m = $m;
         $this->m->required('assets', 'Jivoo\Http\Route\AssetScheme');
@@ -343,5 +343,4 @@ abstract class Snippet
     {
         $this->response->cache($public, $expires);
     }
-
 }

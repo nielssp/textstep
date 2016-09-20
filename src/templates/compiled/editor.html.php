@@ -5,7 +5,9 @@
 <ul>
 <li><a href="" class="app-action" data-action="new">New</a></li>
 <li><a href="" class="app-action" data-action="save">Save</a></li>
-<li><a class="<?php if ($this->isCurrent($fs->getFilesRoute())) echo 'current'; ?>" href="<?php echo $this->link($fs->getFilesRoute()); ?>">Close</a></li>
+<li><a class="<?php if ($this->isCurrent($fs->getFilesRoute())) {
+    echo 'current';
+} ?>" href="<?php echo $this->link($fs->getFilesRoute()); ?>">Close</a></li>
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>

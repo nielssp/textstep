@@ -1,4 +1,4 @@
-/* 
+/*
  * BlogSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
@@ -26,7 +26,8 @@ var months = [
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-function convertPath(path) {
+function convertPath(path)
+{
     path = path.trim();
     if (path.startsWith('~')) {
         path = user.home + path.substr(1);
@@ -118,30 +119,36 @@ var commands = {
     }
 };
 
-function resizeView() {
+function resizeView()
+{
     $terminal.height($(window).height() - 200);
 }
 
-function flush() {
+function flush()
+{
     $terminal.val(buffer);
     $terminal.scrollTop($terminal.innerHeight());
 }
 
-function write(content) {
+function write(content)
+{
     buffer += content;
     flush();
 }
 
-function writeLine(content) {
+function writeLine(content)
+{
     write(content + '\n');
 }
 
-function readLine(callback) {
+function readLine(callback)
+{
     $terminal.attr('readonly', false).focus();
     readCallback = callback;
 }
 
-function exec(command, data, success) {
+function exec(command, data, success)
+{
     data['request_token'] = TOKEN;
     $.ajax({
         url: PATH + '/api/' + command,
@@ -155,7 +162,8 @@ function exec(command, data, success) {
     });
 }
 
-function prompt() {
+function prompt()
+{
     write(user.username + ' ' + cwd + '> ');
     cmdHistoryPos = -1;
     readLine(function (line) {

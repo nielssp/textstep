@@ -1,4 +1,4 @@
-/* 
+/*
  * BlogSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.

@@ -8,7 +8,7 @@
 </tr>
 </thead>
 <tbody>
-<?php foreach ($trace as $element): ?>
+<?php foreach ($trace as $element) : ?>
 <tr>
 <td>
 <span title="<?php echo (isset($element['file']) ? $element['file'] : '') ?>">
@@ -18,22 +18,20 @@
 <td><?php echo (isset($element['class']) ? $element['class'] : '') ?></td>
 <td><?php echo (isset($element['function']) ? $element['function'] : '') ?></td>
 <td>
-<?php if (isset($element['args'])): ?>
-<?php foreach ($element['args'] as $j => $arg): ?>
+<?php if (isset($element['args'])) : ?>
+<?php foreach ($element['args'] as $j => $arg) : ?>
 <span title="<?php
 if (is_scalar($arg)) {
-  echo htmlentities($arg, ENT_COMPAT, 'UTF-8');
-}
-else if (is_object($arg)) {
-  echo get_class($arg);
-}
-else if (is_array($arg)) {
-  echo count($arg);
+    echo htmlentities($arg, ENT_COMPAT, 'UTF-8');
+} elseif (is_object($arg)) {
+    echo get_class($arg);
+} elseif (is_array($arg)) {
+    echo count($arg);
 }
 ?>"><?php echo gettype($arg) ?>
 </span><?php echo ($j < count($element['args']) - 1 ? ', ' : '') ?>
 <?php endforeach; ?>
-<?php else: ?>
+<?php else : ?>
 null
 <?php endif; ?>
 </td></tr>

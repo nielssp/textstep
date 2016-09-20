@@ -1,4 +1,4 @@
-/* 
+/*
  * BlogSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
@@ -28,7 +28,8 @@ var codemirror = CodeMirror.fromTextArea($('#editor')[0], {
 });
 
 
-function saveFile() {
+function saveFile()
+{
     codemirror.save();
     $.ajax({
         url: PATH + '/api/edit',
@@ -43,11 +44,13 @@ function saveFile() {
     });
 }
 
-function newFile() {
+function newFile()
+{
     alert('not implemented');
 }
 
-function resizeView() {
+function resizeView()
+{
     $('.CodeMirror').height($(window).height() - 200);
 }
 

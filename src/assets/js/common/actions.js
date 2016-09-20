@@ -1,4 +1,4 @@
-/* 
+/*
  * BlogSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
@@ -11,7 +11,8 @@ exports.define = defineAction;
 exports.enable = enable;
 exports.disable = disable;
 
-function defineAction(name, callback) {
+function defineAction(name, callback)
+{
     $('[data-action="' + name + '"]').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -20,7 +21,8 @@ function defineAction(name, callback) {
     });
 }
 
-function enable(name) {
+function enable(name)
+{
     if (typeof name === 'string') {
         $('[data-action="' + name + '"]').attr('disabled', false);
     } else {
@@ -28,7 +30,8 @@ function enable(name) {
     }
 }
 
-function disable(name) {
+function disable(name)
+{
     if (typeof name === 'string') {
         $('[data-action="' + name + '"]').attr('disabled', true);
     } else {

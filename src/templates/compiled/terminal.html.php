@@ -3,7 +3,9 @@
 <header>Terminal</header>
 <nav>
 <ul>
-<li><a class="<?php if ($this->isCurrent('snippet:Files')) echo 'current'; ?>" href="<?php echo $this->link('snippet:Files'); ?>">Close</a></li>
+<li><a class="<?php if ($this->isCurrent('snippet:Files')) {
+    echo 'current';
+} ?>" href="<?php echo $this->link('snippet:Files'); ?>">Close</a></li>
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>

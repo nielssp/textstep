@@ -83,7 +83,8 @@ class ExceptionHandler
     public function handleError($exception, $fatal = false)
     {
         $this->m->logger->critical(
-            'Uncaught exception: ' . $exception->getMessage(), ['exception' => $exception]
+            'Uncaught exception: ' . $exception->getMessage(),
+            ['exception' => $exception]
         );
         if ($this->m->main->config['system']['createCrashReports']) {
             $file = $exception->getFile();
@@ -93,7 +94,7 @@ class ExceptionHandler
             $name = date('Y-m-d') . '_crash_' . $hash . '.html';
             if (!isset($this->errorPaths['log'])) {
                 $this->m->logger->alert('Could not create crash report: Log directory is missing');
-            } else if (!file_exists($this->errorPaths['log'] . '/' . $name)) {
+            } elseif (!file_exists($this->errorPaths['log'] . '/' . $name)) {
                 $file = fopen($this->errorPaths['log'] . '/' . $name, 'w');
                 if ($file !== false) {
                     $this->crashReport($exception);
@@ -156,5 +157,4 @@ class ExceptionHandler
         set_exception_handler(array($this, 'handleError'));
         register_shutdown_function(array($this, 'handleFatalError'));
     }
-
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * BlogSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
@@ -29,11 +29,13 @@ var selection = [];
 
 var stackOffset = 0;
 
-function open(path) {
+function open(path)
+{
     location.href = PATH + '/open' + path;
 }
 
-function initColumn($column) {
+function initColumn($column)
+{
     $column[0].ondragenter = function (e) {
         e.stopPropagation();
         e.preventDefault();
@@ -81,7 +83,8 @@ function initColumn($column) {
     };
 }
 
-function initFile($file, file) {
+function initFile($file, file)
+{
     files[file.path] = {
         link: $file,
         data: file
@@ -102,7 +105,8 @@ function initFile($file, file) {
     });
 }
 
-function createFile(file) {
+function createFile(file)
+{
     var $file = $('<a class="file">');
     $file.text(file.name);
     if (stack.filter(function (elem) {
@@ -120,7 +124,8 @@ function createFile(file) {
     return $file;
 }
 
-function addFile($column, file) {
+function addFile($column, file)
+{
     var $li = $('<li>');
     var $file = createFile(file);
     $li.append($file);
@@ -128,7 +133,8 @@ function addFile($column, file) {
     return $file;
 }
 
-function addFileInfo($column, file) {
+function addFileInfo($column, file)
+{
     var $li = $('<li class="file-info">');
     var $icon = $('<span class="file">');
     $icon.addClass('file-' + file.type);
@@ -160,7 +166,8 @@ window.onpopstate = function (event) {
     }
 };
 
-function goUp() {
+function goUp()
+{
     if (stack.length <= 1) {
         return;
     }
@@ -170,12 +177,14 @@ function goUp() {
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
 }
 
-function refresh() {
+function refresh()
+{
     $currentColumn.data('path', null);
     updateColumn($currentColumn, cwd);
 }
 
-function enter(path) {
+function enter(path)
+{
     cd(path);
     if (files.hasOwnProperty(path)) {
         files[path].link.addClass('active');
@@ -183,11 +192,13 @@ function enter(path) {
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
 }
 
-function select(path) {
+function select(path)
+{
     selection.push(path);
 }
 
-function cd(path) {
+function cd(path)
+{
     selection = [path];
     var names = path.split('/');
     var path = '';
@@ -207,7 +218,8 @@ function cd(path) {
     updateColumns();
 }
 
-function updateColumns() {
+function updateColumns()
+{
     console.log('stack', stack, 'cwd', cwd, 'stackOffset', stackOffset);
     var columns = $columns.children();
     var length = columns.length;
@@ -228,7 +240,8 @@ function updateColumns() {
     document.title = cwd + ' – Files';
 }
 
-function updateColumn($column, path) {
+function updateColumn($column, path)
+{
     if ($column.data('path') === path) {
         $column.find('a').removeClass('active');
         if (files.hasOwnProperty(path)) {
@@ -264,7 +277,8 @@ function updateColumn($column, path) {
     }
 }
 
-function openFile(name, $column) {
+function openFile(name, $column)
+{
     $.ajax({
         url: PATH + '/api/list-files',
         data: {path: cwd + '/' + name},
@@ -273,7 +287,8 @@ function openFile(name, $column) {
     });
 }
 
-function createColumns() {
+function createColumns()
+{
     var current = $columns.children().length;
     var ideal = Math.max(1, Math.floor($columns.width() / 200));
     if (ideal > current) {
@@ -296,7 +311,8 @@ function createColumns() {
     return true;
 }
 
-function resizeView() {
+function resizeView()
+{
     $columns.height($(window).height() - 150);
 }
 
@@ -351,7 +367,7 @@ actions.define('new-folder', function () {
             data: {request_token: TOKEN, path: path},
             success: function (data) {
                 addFile($currentColumn, data);
-                cd(path);
+                enter(path);
             }
         });
     }
@@ -375,7 +391,7 @@ actions.define('new-file', function () {
             data: {request_token: TOKEN, path: path},
             success: function (data) {
                 addFile($currentColumn, data);
-                cd(path);
+                enter(path);
             },
             error: function () {
                 ui.shake($('.frame'));

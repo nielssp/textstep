@@ -25,7 +25,7 @@ class Upload extends \Blogstep\AuthenticatedSnippet
         foreach ($files as $file) {
             $target = $fs->get($file->name);
             if (!$target->moveHere($file)) {
-            return $this->error('could not upload file: ' . $file->name);
+                return $this->error('could not upload file: ' . $file->name);
             }
         }
         return $this->response;
