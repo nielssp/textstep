@@ -80,6 +80,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->root('snippet:Login');
         $this->m->router->error('snippet:NotFound');
         $this->m->router->auto('snippet:Demo');
+        $this->m->router->auto('snippet:ControlPanel');
+        $this->m->router->auto('snippet:Builder');
         $this->m->router->auto('snippet:Logout');
         $this->m->router->auto('snippet:Terminal');
         $this->m->router->match('open/**', 'snippet:Open');

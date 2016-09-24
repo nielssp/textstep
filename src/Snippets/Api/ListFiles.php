@@ -18,6 +18,7 @@ class ListFiles extends \Blogstep\AuthenticatedSnippet
             $path = $this->request->query['path'];
         }
         $fs = $this->m->files->get($path);
+        sleep(1);
         if ($fs->isReadable()) {
             return $this->json($fs->getDetailed());
         }

@@ -33,6 +33,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &.accept {
         background-color: lighten($frameBg, 7%);
     }
+    &.loading {
+        background-color: #fff;
+    }
     ul {
         position: absolute;
         top: 0;

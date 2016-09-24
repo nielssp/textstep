@@ -558,7 +558,6 @@ select:not([size="1"]) {
   .field ul, .field ol {
     margin-bottom: 6px; }
   .field > label:first-child {
-    font-weight: 600;
     font-style: normal;
     font-size: 0.95em;
     display: block;
@@ -796,10 +795,40 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     font-size: 0.9em;
     border: 1px solid #A2A2A2;
     border-right: 1px solid #4F4F4F;
-    border-bottom: 1px solid #4F4F4F; }
+    border-bottom: 1px solid #4F4F4F;
+    position: relative; }
     .frame-header > .actions {
-      float: right;
-      font-size: 0.8em; }
+      position: absolute;
+      top: 1px;
+      bottom: 1px;
+      right: 1px;
+      font-size: 0.8em;
+      text-align: right; }
+      .frame-header > .actions a {
+        display: block;
+        height: 100%;
+        width: 19px;
+        padding: 0;
+        margin: 0;
+        background-color: #000;
+        color: #fff;
+        text-align: center;
+        padding: 0;
+        font-weight: bold;
+        font-size: 0.9em;
+        border: 1px solid #A2A2A2;
+        border-right: 1px solid #4F4F4F;
+        border-bottom: 1px solid #4F4F4F;
+        position: relative; }
+        .frame-header > .actions a:active {
+          background-color: #fff;
+          border-color: #fff; }
+        .frame-header > .actions a[data-action="close"] {
+          background-image: url(../img/close2.png);
+          background-repeat: no-repeat;
+          background-position: center center; }
+          .frame-header > .actions a[data-action="close"]:active {
+            background-image: url(../img/close1.png); }
   .frame-content {
     background-color: #AEAAAE;
     border-top: 1px solid #000;
@@ -819,6 +848,17 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     width: auto;
     font-size: 0.95em;
     margin-top: 2px; }
+
+fieldset {
+  border: 1px solid #555;
+  border-bottom-color: #fff;
+  border-right-color: #fff;
+  padding: 5px;
+  margin-bottom: 10px; }
+  fieldset legend {
+    text-align: center;
+    padding: 0 5px;
+    font-size: 0.9em; }
 
 body {
   background-color: #AEAAAE; }

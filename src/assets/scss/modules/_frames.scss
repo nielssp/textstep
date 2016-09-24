@@ -20,10 +20,44 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border: 1px solid #A2A2A2;
     border-right: 1px solid #4F4F4F;
     border-bottom: 1px solid #4F4F4F;
+    position: relative;
     
     & > .actions {
-      float: right;
-      font-size: 0.8em;
+        position: absolute;
+        top: 1px;
+        bottom: 1px;
+        right: 1px;
+        font-size: 0.8em;
+        text-align: right;
+        a {
+            display: block;
+            height: 100%;
+            width: 19px;
+            padding: 0;
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+            text-align: center;
+            padding: 0;
+            font-weight: bold;
+            font-size: 0.9em;
+            border: 1px solid #A2A2A2;
+            border-right: 1px solid #4F4F4F;
+            border-bottom: 1px solid #4F4F4F;
+            position: relative;
+            &:active {
+                background-color: #fff;
+                border-color: #fff;
+            }
+            &[data-action="close"] {
+                background-image: url(../img/close2.png);
+                background-repeat: no-repeat;
+                background-position: center center;
+                &:active {
+                background-image: url(../img/close1.png);
+                }
+            }
+        }
     }
 }
 

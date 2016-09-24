@@ -22,6 +22,7 @@ var cwd = $currentColumn.data('path');
 $currentColumn.data('path', null);
 
 var stack = [];
+var previousStackSize = 0;
 
 var files = {};
 
@@ -227,53 +228,79 @@ function updateColumns()
 //    stackOffset = Math.max(0, Math.min(stackOffset, stack.length - 1), stack.length - length);
     // Always shows as much of the stack as possible: (maybe more confusing when moving up? but better overview)
     stackOffset = Math.max(0, stack.length - length);
-    for (var i = 0; i < length; i++) {
-        if (stackOffset + i < stack.length) {
-            var id = i;
-            updateColumn(columns.eq(id), stack[stackOffset + id]);
-            $currentColumn = columns.eq(id);
-        } else {
-            updateColumn(columns.eq(i), null);
+    $columns.find('a').removeClass('active');
+    if (stack.length >= previousStackSize) {
+        for (var i = 0; i < length; i++) {
+            var $column = columns.eq(i);
+            if (stackOffset + i < stack.length) {
+                updateColumn($column, stack[stackOffset + i]);
+                $currentColumn = columns.eq(i);
+            } else {
+                updateColumn($column, null);
+            }
+        }
+    } else {
+        $currentColumn = columns.eq(Math.min(length, stack.length) - 1);
+        for (var i = length - 1; i >= 0; i--) {
+            var $column = columns.eq(i);
+            if (stackOffset + i < stack.length) {
+                updateColumn($column, stack[stackOffset + i]);
+            } else {
+                updateColumn($column, null);
+            }
         }
     }
+    previousStackSize = stack.length;
     $('.header-path').text(cwd);
     document.title = cwd + ' – Files';
 }
 
 function updateColumn($column, path)
 {
-    if ($column.data('path') === path) {
-        $column.find('a').removeClass('active');
-        if (files.hasOwnProperty(path)) {
-            files[path].link.addClass('active');
-        }
-        return;
-    }
-    var $list = $column.children('ul');
-    $list.empty();
-    $column.data('path', null);
-    $column.removeClass('readonly');
-    if (path !== null) {
-        $.ajax({
-            url: PATH + '/api/list-files',
-            data: {path: path},
-            success: function (data) {
-                $list.empty();
-                $column.removeClass('readonly');
-                $column.data('path', path);
-                if (!data.write) {
-                    $column.addClass('readonly');
-                }
-                if (data.type === 'directory' && typeof data.files !== 'undefined') {
-                    for (var i = 0; i < data.files.length; i++) {
-                        var file = data.files[i];
-                        addFile($column, file);
-                    }
-                } else {
-                    addFileInfo($column, data);
-                }
+    if ($column.data('path') !== path) {
+        var $list = $column.children('ul');
+        $list.empty();
+        $column.data('path', null);
+        $column.removeClass('readonly');
+        if ($column.next().data('path') === path) {
+            $column.data('path', path);
+            $column.next().children('ul').children().appendTo($list);
+            if ($column.next().hasClass('readonly')) {
+                $column.addClass('readonly');
             }
-        });
+        } else if ($column.prev().data('path') === path) {
+            $column.data('path', path);
+            $column.prev().children('ul').children().appendTo($list);
+            if ($column.prev().hasClass('readonly')) {
+                $column.addClass('readonly');
+            }
+        } else if (path !== null) {
+            $column.addClass('loading');
+            $.ajax({
+                url: PATH + '/api/list-files',
+                data: {path: path},
+                success: function (data) {
+                    $column.removeClass('loading');
+                    $list.empty();
+                    $column.removeClass('readonly');
+                    $column.data('path', path);
+                    if (!data.write) {
+                        $column.addClass('readonly');
+                    }
+                    if (data.type === 'directory' && typeof data.files !== 'undefined') {
+                        for (var i = 0; i < data.files.length; i++) {
+                            var file = data.files[i];
+                            addFile($column, file);
+                        }
+                    } else {
+                        addFileInfo($column, data);
+                    }
+                }
+            });
+        }
+    }
+    if (files.hasOwnProperty(path)) {
+        files[path].link.addClass('active');
     }
 }
 

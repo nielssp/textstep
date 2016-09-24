@@ -5,7 +5,6 @@
 <ul>
 <li><a href="#" data-action="new-folder">New folder</a></li>
 <li><a href="#" data-action="new-file">New file</a></li>
-<li><a href="#" date-action="close">Close</a></li>
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>
@@ -54,7 +53,7 @@
 <div class="files-columns" data-token="<?php echo $token; ?>">
 <div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
 <ul>
-<?php foreach ($fs as $file) : ?>
+<?php foreach ($fs as $file): ?>
 <li>
 <a data-path="<?php echo $file->getPath(); ?>" class="<?php echo 'file file-' . $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a>
 </li><?php endforeach; ?>

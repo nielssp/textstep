@@ -3,14 +3,15 @@
 <header>Terminal</header>
 <nav>
 <ul>
-<li><a class="<?php if ($this->isCurrent('snippet:Files')) {
-    echo 'current';
-} ?>" href="<?php echo $this->link('snippet:Files'); ?>">Close</a></li>
+<li><a data-action="close" class="<?php if ($this->isCurrent('snippet:Files')) echo 'current'; ?>" href="<?php echo $this->link('snippet:Files'); ?>">Close</a></li>
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
         Terminal
+<span class="actions">
+<a href="" data-action="close"></a>
+</span>
 </div>
 <div class="frame-content">
 <textarea id="terminal" data-token="<?php echo $token; ?>"></textarea>

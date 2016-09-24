@@ -5,6 +5,8 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+var $ = require('jquery');
+
 $('[data-toggle]').each(function () {
     var $buttons = $(this).find($(this).data('toggle'));
     $buttons.click(function () {

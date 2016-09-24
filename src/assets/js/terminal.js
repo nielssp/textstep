@@ -26,6 +26,10 @@ var months = [
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
+actions.define('close', function () {
+    location.href = PATH + '/files' + cwd;
+});
+
 function convertPath(path)
 {
     path = path.trim();

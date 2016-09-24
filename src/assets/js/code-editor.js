@@ -20,6 +20,9 @@ var path = $('#editor').data('path');
 
 actions.define('new', newFile);
 actions.define('save', saveFile);
+actions.define('close', function () {
+    location.href = PATH + '/files' + path;
+});
 
 
 var codemirror = CodeMirror.fromTextArea($('#editor')[0], {
