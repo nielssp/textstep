@@ -25,4 +25,10 @@ $('[data-choice]').each(function () {
 $('[data-action="toggle-menu"]').click(function (e) {
     e.preventDefault();
     $('body').toggleClass('show-menu');
+    e.stopPropagation();
+});
+$('body').click(function (e) {
+    if ($('body').hasClass('show-menu')) {
+        $('body').removeClass('show-menu');
+    }
 });

@@ -979,16 +979,20 @@ main {
   display: block; }
 
 @media screen and (max-width: 767px) {
-  body.show-menu {
-    overflow-x: hidden; }
-    body.show-menu aside {
-      display: block;
-      position: absolute;
-      top: 35px;
-      left: 10px;
-      right: 10px;
-      width: auto;
-      z-index: 1000; } }
+  body.show-menu aside {
+    background-color: #3c3c53;
+    box-shadow: 1px 0 5px #000000;
+    display: block;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    padding: 10px 5px 10px 10px;
+    z-index: 1000; }
+  body.show-menu main {
+    opacity: 0.5; }
+  body.show-menu .shortcuts {
+    opacity: 0.5; } }
 @media screen and (min-width: 768px) {
   aside {
     display: block; }
