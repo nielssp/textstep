@@ -9,6 +9,9 @@
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
+<span class="actions-left">
+<a href="" data-action="toggle-menu"></a>
+</span>
 <span class="header-path"><?php echo \Jivoo\View\Html::h($fs->getPath()); ?></span>
         &ndash; Files
 </div>

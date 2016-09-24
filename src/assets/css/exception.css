@@ -797,14 +797,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-right: 1px solid #4F4F4F;
     border-bottom: 1px solid #4F4F4F;
     position: relative; }
-    .frame-header > .actions {
+    .frame-header > .actions, .frame-header .actions-left {
       position: absolute;
       top: 1px;
       bottom: 1px;
-      right: 1px;
-      font-size: 0.8em;
-      text-align: right; }
-      .frame-header > .actions a {
+      font-size: 0.8em; }
+      .frame-header > .actions a, .frame-header .actions-left a {
         display: block;
         height: 100%;
         width: 19px;
@@ -820,15 +818,27 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-right: 1px solid #4F4F4F;
         border-bottom: 1px solid #4F4F4F;
         position: relative; }
-        .frame-header > .actions a:active {
+        .frame-header > .actions a:active, .frame-header .actions-left a:active {
           background-color: #fff;
           border-color: #fff; }
-        .frame-header > .actions a[data-action="close"] {
+        .frame-header > .actions a[data-action="close"], .frame-header .actions-left a[data-action="close"] {
           background-image: url(../img/close2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .actions a[data-action="close"]:active {
+          .frame-header > .actions a[data-action="close"]:active, .frame-header .actions-left a[data-action="close"]:active {
             background-image: url(../img/close1.png); }
+        .frame-header > .actions a[data-action="toggle-menu"], .frame-header .actions-left a[data-action="toggle-menu"] {
+          background-image: url(../img/menu2.png);
+          background-repeat: no-repeat;
+          background-position: center center; }
+          .frame-header > .actions a[data-action="toggle-menu"]:active, .frame-header .actions-left a[data-action="toggle-menu"]:active {
+            background-image: url(../img/menu1.png); }
+    .frame-header > .actions, .frame-header > .actions-right {
+      text-align: right;
+      right: 1px; }
+    .frame-header > .actions-left {
+      text-align: left;
+      left: 1px; }
   .frame-content {
     background-color: #AEAAAE;
     border-top: 1px solid #000;

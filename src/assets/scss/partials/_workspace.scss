@@ -50,6 +50,21 @@ main {
     display: block;
 }
 
+@media screen and  (max-width: $sm - 1) {
+    body.show-menu {
+        overflow-x: hidden;
+        aside {
+            display: block;
+            position: absolute;
+            top: 10px + 25px;
+            left: 10px;
+            right: 10px;
+            width: auto;
+            z-index: 1000;
+        }
+    }
+}
+
 @media screen and  (min-width: $sm) {
     aside {
         display: block;

@@ -8,6 +8,9 @@
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
+<span class="actions-left">
+<a href="" data-action="toggle-menu"></a>
+</span>
         Terminal
 <span class="actions">
 <a href="" data-action="close"></a>

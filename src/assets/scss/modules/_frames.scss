@@ -22,13 +22,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-bottom: 1px solid #4F4F4F;
     position: relative;
     
-    & > .actions {
+    & > .actions, .actions-left {
         position: absolute;
         top: 1px;
         bottom: 1px;
-        right: 1px;
         font-size: 0.8em;
-        text-align: right;
         a {
             display: block;
             height: 100%;
@@ -57,7 +55,23 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 background-image: url(../img/close1.png);
                 }
             }
+            &[data-action="toggle-menu"] {
+                background-image: url(../img/menu2.png);
+                background-repeat: no-repeat;
+                background-position: center center;
+                &:active {
+                background-image: url(../img/menu1.png);
+                }
+            }
         }
+    }
+    & > .actions, & > .actions-right {
+        text-align: right;
+        right: 1px;
+    }
+    & > .actions-left {
+        text-align: left;
+        left: 1px;
     }
 }
 

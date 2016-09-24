@@ -1,5 +1,8 @@
 <div class="frame">
 <div class="frame-header">
+<span class="actions-left">
+<a href="" data-action="toggle-menu"></a>
+</span>
         Builder
 </div>
 <div class="frame-content">
