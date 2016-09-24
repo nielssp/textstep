@@ -10,6 +10,9 @@
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
+<span class="actions-left">
+<a href="" data-action="toggle-menu"></a>
+</span>
 <?php echo \Jivoo\View\Html::h($fs->getName()); ?>
         &ndash; Code Editor
 <span class="actions">

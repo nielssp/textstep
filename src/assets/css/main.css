@@ -979,8 +979,19 @@ main {
   display: block; }
 
 @media screen and (max-width: 767px) {
+  body.show-menu:before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #000;
+    z-index: 999;
+    opacity: 0.5; }
   body.show-menu aside {
-    background-color: #3c3c53;
+    background-color: #515171;
     box-shadow: 1px 0 5px #000000;
     display: block;
     position: fixed;

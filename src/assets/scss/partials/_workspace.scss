@@ -52,8 +52,20 @@ main {
 
 @media screen and  (max-width: $sm - 1) {
     body.show-menu {
+        &:before {
+            content: '';
+            display: block;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #000;
+            z-index: 999;
+            opacity: 0.5;
+        }
         aside {
-            background-color: darken($wsBg, 10%);
+            background-color: $wsBg;
             box-shadow: 1px 0 5px #000000;
             display: block;
             position: fixed;
