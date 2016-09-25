@@ -246,7 +246,12 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function isWritable()
     {
         if ($this->isSystem()) {
-            return is_writable($this->getRealPath());
+            if (file_exists($this->getRealPath())) {
+                return is_writable($this->getRealPath());
+            } elseif ($this->parent !== $this) {
+                return is_writable($this->parent->getRealPath());
+            }
+            return false;            
         }
         $mode = $this->getAllMode();
         if ($this->system->user->isMemberOf($this->getGroup())) {
@@ -323,25 +328,43 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     public function copy(File $destination)
     {
-        throw new \Exception('not implemented');
-        if ($this->type == 'directory') {
-            $destination->makeDirectory();
-            foreach ($this as $file) {
-                $file->copy(/*...*/);
-            }
-        } elseif (copy($this->getRealPath(), $destination->getRealPath())) {
-        }
         $this->assumeReadable();
         $destination->assumeWritable();
-        return false;
+        if ($this->getType() == 'directory') {
+            $destination->makeDirectory();
+            foreach ($this as $file) {
+                $file->copy($destination->get($file->getName()));
+            }
+        } elseif (!copy($this->getRealPath(), $destination->getRealPath())) {
+            return false;
+        }
+        $meta1 = $this->getMetadata();
+        $meta2 = $destination->getMetadata();
+        $meta2->override = $meta1;
+        $meta2->save();
+        return true;
     }
     
     public function move(File $destination)
     {
-        throw new \Exception('not implemented');
+        $this->assumeReadable();
         $this->assumeWritable();
         $destination->assumeWritable();
-        if (rename($this->getRealPath(), $destination->getRealPath())) {
+        if ($this->getType() == 'directory') {
+            $destination->makeDirectory();
+            foreach ($this as $file) {
+                $file->move($destination->get($file->getName()));
+            }
+            $meta1 = $this->getMetadata();
+            $meta2 = $destination->getMetadata();
+            $meta2->override = $meta1;
+            $meta2->save();
+            return $this->delete();
+        } elseif (rename($this->getRealPath(), $destination->getRealPath())) {
+            if (file_exists($this->getMetadataPath() . '.json')) {
+                rename($this->getMetadataPath() . '.json', $destination->getMetadataPath() . '.json');
+            }
+            return true;
         }
         return false;
     }
@@ -476,7 +499,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         if (file_exists($this->getMetadataPath() . '.json')) {
             unlink($this->getMetadataPath() . '.json');
         }
-        if ($this->type == 'directory') {
+        if ($this->getType() == 'directory') {
             if (is_dir($this->getMetadataPath() . '.dir')) {
                 rmdir($this->getMetadataPath() . '.dir');
             }

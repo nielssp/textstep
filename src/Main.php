@@ -96,6 +96,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\MakeFile');
         $this->m->router->auto('snippet:Api\Delete');
         $this->m->router->auto('snippet:Api\Edit');
+        $this->m->router->auto('snippet:Api\Copy');
+        $this->m->router->auto('snippet:Api\Move');
         $this->m->router->auto('snippet:Api\ChangeMode');
         $this->m->router->auto('snippet:Api\ChangeGroup');
         $this->m->router->auto('snippet:Api\ChangeOwner');

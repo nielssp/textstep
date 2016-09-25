@@ -104,6 +104,16 @@ var commands = {
         exec('delete', {path: convertPath(args)}, function (data) {
         });
     },
+    cp: function (args) {
+        args = args.split(' ');
+        exec('copy', {path: convertPath(args[0]), destination: convertPath(args[1])}, function (data) {
+        });
+    },
+    mv: function (args) {
+        args = args.split(' ');
+        exec('move', {path: convertPath(args[0]), destination: convertPath(args[1])}, function (data) {
+        });
+    },
     cat: function (args) {
         exec('download?path=' + convertPath(args), {}, function (data) {
             writeLine(data);

@@ -278,6 +278,13 @@ abstract class Snippet
         $this->enableLayout = false;
     }
     
+    protected function ok($message = '')
+    {
+        $response = $this->response;
+        $response->getBody()->write($message);
+        return $response->withStatus(\Jivoo\Http\Message\Status::OK);
+    }
+    
     protected function error($message, $status = \Jivoo\Http\Message\Status::BAD_REQUEST)
     {
         $response = $this->response;
