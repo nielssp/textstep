@@ -11,6 +11,9 @@ var actions = require('./common/actions');
 var CodeMirror = require('codemirror');
 require('codemirror/lib/codemirror.css');
 require('codemirror/mode/php/php');
+require('codemirror/mode/css/css');
+require('codemirror/mode/sass/sass');
+require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/htmlmixed/htmlmixed');
 
 var PATH = $('body').data('path').replace(/\/$/, '');
@@ -24,10 +27,23 @@ actions.define('close', function () {
     location.href = PATH + '/files' + path;
 });
 
-
+var mode = path.replace(/^.*\.([^.]+)$/, '$1');
+switch (mode) {
+    case 'scss':
+        mode = 'sass';
+        break;
+    case 'html':
+    case 'htm':
+        mode = 'php';
+        break;
+    case 'json':
+    case 'js':
+        mode = 'javascript';
+        break;
+}
 var codemirror = CodeMirror.fromTextArea($('#editor')[0], {
     lineNumbers: true,
-    mode: 'php'
+    mode: mode
 });
 
 
@@ -55,6 +71,7 @@ function newFile()
 function resizeView()
 {
     $('.CodeMirror').height($(window).height() - 200);
+    codemirror.refresh();
 }
 
 $(document).keydown(function (e) {

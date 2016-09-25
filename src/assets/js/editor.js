@@ -89,6 +89,7 @@ function newFile()
 function resizeView()
 {
     $('.CodeMirror').height($(window).height() - 200);
+    simplemde.refresh();
 }
 
 $(document).keydown(function (e) {
