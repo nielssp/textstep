@@ -358,7 +358,7 @@ $(window).resize(function () {
 $(document).keypress(function (e) {
     if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
         // TODO: Search/filter current folder
-//        console.log(e.key);
+        console.log(e);
     }
 });
 
