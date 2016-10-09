@@ -141,7 +141,8 @@ function resizeView()
 function flush()
 {
     $terminal.val(buffer);
-    $terminal.scrollTop($terminal.innerHeight());
+    $terminal[0].scrollTop = $terminal[0].scrollHeight;
+//    $terminal.scrollTop($terminal.innerHeight());
 }
 
 function write(content)

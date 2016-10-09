@@ -8,17 +8,28 @@ namespace Blogstep\Build;
 /**
  * 
  */
-class SiteMap
+class SiteMap extends SiteNode
 {
-    private $nodes = [];
+    private $buildPath;
     
-    public function addNode($path)
+    public function __construct(\Blogstep\Files\File $buildPath)
     {
-        $this->nodes[$path] = new SiteNode();
+        parent::__construct('');
+        $this->buildPath = $buildPath;
     }
     
-    public function toArray()
+    public function createFile($path)
     {
-        return $this->nodes;
+        $path = explode('/', $path);
+        $node = $this;
+        foreach ($path as $component) {
+            if ($component != '') {
+            }
+        }
+    }
+    
+    public function getBuildPath()
+    {
+        return $this->buildPath;
     }
 }

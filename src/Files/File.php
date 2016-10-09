@@ -100,6 +100,10 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return $this->system->root . '/system/metadata' . '/' . implode('.dir/', $this->path);
     }
     
+    /**
+     * 
+     * @return \Jivoo\Store\Config
+     */
     public function getMetadata()
     {
         if (! isset($this->metadata)) {
@@ -217,14 +221,14 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     private function assumeReadable()
     {
         if (!$this->isReadable()) {
-            throw new \Blogstep\UnauthorizedException('File is not readable');
+            throw new \Blogstep\UnauthorizedException('File is not readable: ' . $this->getPath());
         }
     }
     
     private function assumeWritable()
     {
         if (!$this->isWritable()) {
-            throw new \Blogstep\UnauthorizedException('File is not writable');
+            throw new \Blogstep\UnauthorizedException('File is not writable: ' . $this->getPath());
         }
     }
     
@@ -444,6 +448,12 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     {
         $this->assumeReadable();
         return file_get_contents($this->getRealPath());
+    }
+    
+    public function putContents($data)
+    {
+        $this->assumeWritable();
+        file_put_contents($this->getRealPath(), $data);
     }
     
     public function openStream($mode = 'rb')
