@@ -345,6 +345,12 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $meta1 = $this->getMetadata();
         $meta2 = $destination->getMetadata();
         $meta2->override = $meta1;
+        if (isset($this->system->user)) {
+            $meta2['owner'] = $this->system->user->getId();
+        }
+        $parent = $destination->getParent();
+        $meta2['group'] = $parent->getGroup();
+        $meta2['mode'] = $parent->getMode();
         $meta2->save();
         return true;
     }
@@ -453,7 +459,12 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function putContents($data)
     {
         $this->assumeWritable();
-        file_put_contents($this->getRealPath(), $data);
+        if (!$this->exists()) {
+            if (!$this->makeFile()) {
+                return false;
+            }
+        }
+        return file_put_contents($this->getRealPath(), $data);
     }
     
     public function openStream($mode = 'rb')
