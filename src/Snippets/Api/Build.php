@@ -27,6 +27,9 @@ class Build extends \Blogstep\AuthenticatedSnippet
         
         $compiler->run();
         
+        $target = $this->m->main->config->get('target', $this->m->main->p('target'));
+        $compiler->install($target);
+        
         return $this->ok();
     }
     

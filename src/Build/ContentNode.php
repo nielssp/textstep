@@ -26,6 +26,10 @@ class ContentNode extends FileNode
     
     public function __get($property)
     {
+        switch ($property) {
+            case 'published':
+                return $this->contentFile->getCreated();
+        }
         try {
             return parent::__get($property);
         } catch (InvalidPropertyException $e) {

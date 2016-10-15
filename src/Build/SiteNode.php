@@ -58,10 +58,10 @@ class SiteNode extends InternalNode
         parent::replace($node, $replacement);
         \Jivoo\Assume::that($node instanceof SiteNode);
         \Jivoo\Assume::that($replacement instanceof SiteNode);
-        $this->nodes[$replacement->name] = $replacement;
         if (isset($this->nodes[$node->name])) {
             unset($this->nodes[$node->name]);
         }
+        $this->nodes[$replacement->name] = $replacement;
     }
     
     public function clear()
@@ -70,12 +70,23 @@ class SiteNode extends InternalNode
         $this->nodes = [];
     }
     
-    public function get($name)
+    public function get($path)
     {
-        if (isset($this->nodes[$name])) {
-            return $this->nodes[$name];
+        $path = explode('/', $path);
+        $node = $this;
+        foreach ($path as $component) {
+            if ($component == '..') {
+                if (isset($node->parent)) {
+                    $node = $node->parent;
+                }
+            } elseif ($component != '' and $component != '.') {
+                if (!isset($node->nodes[$component])) {
+                    return null;
+                }
+                $node = $node->nodes[$component];
+            }
         }
-        return null;
+        return $node;
     }
     
     public function getName()
@@ -96,6 +107,29 @@ class SiteNode extends InternalNode
         return ltrim($this->parent->getPath() . '/', '/') . $this->name;
     }
     
+    public function getRelativePath(SiteNode $source)
+    {
+        $path = explode('/', $this->getPath());
+        $other = explode('/', $source->getPath());
+        while (true) {
+            if (!isset($path[0]) or !isset($other[0]) or $path[0] !== $other[0]) {
+                break;
+            }
+            array_shift($path);
+            array_shift($other);
+        }
+        $relative = '';
+        $ups = count($other) - 1;
+        for ($i = 0; $i < $ups; $i++) {
+            $relative .= '../';
+        }
+        $relative .= implode('/', $path);
+        if ($relative == '') {
+            return '.';
+        }
+        return $relative;
+    }
+    
     public function createDescendant($path)
     {
         $path = explode('/', $path);
@@ -106,12 +140,12 @@ class SiteNode extends InternalNode
         $last = array_pop($path);
         foreach ($path as $component) {
             if ($component != '') {
-                if ($node->get($component) === null) {
+                if (!isset($node->nodes[$component])) {
                     $dir = new DirNode($component);
                     $node->append($dir);
                     $this->getBuildPath()->get($dir->getPath())->makeDirectory();
                 }
-                $node = $node->get($component);
+                $node = $node->nodes[$component];
             }
         }
         $last = new SiteNode($last);
@@ -136,5 +170,24 @@ class SiteNode extends InternalNode
                 }
             }
         });
+    }
+    
+    public function tree($prefix = '')
+    {
+        $out = $this->getName();
+        $children = $this->getChildren();
+        $n = count($children);
+        for ($i = 0; $i < $n; $i++) {
+            $out .= PHP_EOL . $prefix;
+            $node = $children[$i];
+            if ($i == $n - 1) {
+                $out .= '└── ';
+                $out .= $node->tree($prefix . '    ');
+            } else {
+                $out .= '├── ';
+                $out .= $node->tree($prefix . '│   ');
+            }
+        }
+        return $out;
     }
 }

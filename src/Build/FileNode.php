@@ -31,4 +31,13 @@ class FileNode extends SiteNode
     {
         return $this->file;
     }
+    
+    public function getRelativePath(SiteNode $source)
+    {
+        $relative = parent::getRelativePath($source);
+        if ($relative == '.') {
+            return $this->getName();
+        }
+        return $relative;
+    }
 }

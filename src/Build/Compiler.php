@@ -44,9 +44,23 @@ class Compiler
         $this->tasks[] = $task;
     }
     
-    public function install($path)
+    private function installNode(SiteNode $node, $dest)
     {
-        
+        if ($node instanceof DirNode or $node instanceof SiteMap) {
+            if (!is_dir($dest)) {
+                mkdir($dest);
+            }
+        } elseif ($node instanceof FileNode) {
+            copy($node->getFile()->getRealPath(), $dest);
+        }
+        foreach ($node->getChildren() as $child) {
+            $this->installNode($child, $dest . '/' . $child->getName());
+        }
+    }
+    
+    public function install($dest)
+    {
+        $this->installNode($this->siteMap, $dest);
     }
     
     private function createPathStructure(SiteNode $dir, File $source)
@@ -75,32 +89,12 @@ class Compiler
         }
     }
     
-    public function tree(SiteNode $node, $prefix = '')
-    {
-        $out = $node->getName();
-        $children = $node->getChildren();
-        $n = count($children);
-        for ($i = 0; $i < $n; $i++) {
-            $out .= PHP_EOL . $prefix;
-            $node = $children[$i];
-            if ($i == $n - 1) {
-                $out .= '└── ';
-                $out .= $this->tree($node, $prefix . '    ');
-            } else {
-                $out .= '├── ';
-                $out .= $this->tree($node, $prefix . '│   ');
-            }
-        }
-        return $out;
-    }
-    
     public function run()
     {
         foreach ($this->tasks as $task) {
             $this->siteMap->accept($task, $this);
-            echo $task->getName() . ':' . PHP_EOL;
-            echo $this->tree($this->siteMap) . PHP_EOL;
+//            echo $task->getName() . ':' . PHP_EOL;
+//            echo $this->tree($this->siteMap) . PHP_EOL;
         }
-        exit;
     }
 }
