@@ -12,10 +12,19 @@ class Task
 {
     private $function;
     
-    private function __construct()
+    private $name;
+    
+    private function __construct($name)
     {
+        $this->name = $name;
     }
     
+    public function getName()
+    {
+        return $this->name;
+    }
+
+
     private function read($path)
     {
         $this->function = require $path;
@@ -30,7 +39,7 @@ class Task
     public static function load($path)
     {
         $name = basename($path, '.php');
-        $task = new self();
+        $task = new self($name);
         $task->read($path);
         return $task;
     }

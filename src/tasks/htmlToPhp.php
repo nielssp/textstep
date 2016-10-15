@@ -22,11 +22,15 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
         $name = $node->getName();
         if (Unicode::endsWith($name, '.html')) {
             $macros->siteNode = $node;
+            $macros->compiler = $compiler;
             $template = $node->getFile();
             $dest = $node->getFile()->getParent()->get($name . '.php');
             $node->setFile($template);
             $data = $templateCompiler->compile($template->getRealPath());
             $dest->putContents($data);
+            if (Unicode::startsWith($name, '_')) {
+                $node->detach();
+            }
         }
     }
     $visitChildren();

@@ -18,16 +18,6 @@ class SiteMap extends SiteNode
         $this->buildPath = $buildPath;
     }
     
-    public function createFile($path)
-    {
-        $path = explode('/', $path);
-        $node = $this;
-        foreach ($path as $component) {
-            if ($component != '') {
-            }
-        }
-    }
-    
     public function getBuildPath()
     {
         return $this->buildPath;

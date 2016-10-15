@@ -33,18 +33,21 @@ class BlogstepMacros extends Macros
         if (isset($this->siteNode) and isset($this->compiler)) {
             $pathFormat = $node->getProperty('bs:path');
             $var = $node->getProperty('bs:as');
-            foreach ($this->compiler->content->get($value) as $file) {
-                
+            $root = $this->siteNode->parent;
+            foreach ($this->compiler->content->get($value->__toString()) as $content) {
+                $node = new ContentNode($content);
+                $path = $node->convertPath($pathFormat);
+                $root->createDescendant($path)->replaceWith($node);
+                $template = $node->getBuildPath()->get($node->getPath() . '.html.php');
+                $node->setTemplate($template);
+                $code = '<?php ';
+                $code .= $var->code . ' = $this->content->get(' . var_export($content->getPath(), true) . ');';
+                $data = '[' . var_export(ltrim($var->code, '$'), true) . ' => ' . $var->code . ']';
+                $code .= 'echo $this->embed(' . var_export($this->siteNode->getPath(), true) . ', ' . $data . ');';
+                $template->putContents($code);
             }
             $this->siteNode->detach();
-            foreach ($this->siteNode->siteMap->content->get($value->__toString()) as $element) {
-                $node = $this->siteNode->siteMap->addNode($element->getPath($pathFormat));
-                $node->target = dirname($this->siteNode->target) . $node->path . '.php';
-                $code = '<?php echo $this->embed(' . var_export($this->siteNode->target, true) . ');';
-                file_put_contents($node->target, $code);
-                $node->content = $element;
-            }
-            $this->siteNode->delete();
+            $this->siteNode = null;
         }
     }
 }

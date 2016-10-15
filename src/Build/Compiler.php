@@ -75,10 +75,32 @@ class Compiler
         }
     }
     
+    public function tree(SiteNode $node, $prefix = '')
+    {
+        $out = $node->getName();
+        $children = $node->getChildren();
+        $n = count($children);
+        for ($i = 0; $i < $n; $i++) {
+            $out .= PHP_EOL . $prefix;
+            $node = $children[$i];
+            if ($i == $n - 1) {
+                $out .= '└── ';
+                $out .= $this->tree($node, $prefix . '    ');
+            } else {
+                $out .= '├── ';
+                $out .= $this->tree($node, $prefix . '│   ');
+            }
+        }
+        return $out;
+    }
+    
     public function run()
     {
         foreach ($this->tasks as $task) {
             $this->siteMap->accept($task, $this);
+            echo $task->getName() . ':' . PHP_EOL;
+            echo $this->tree($this->siteMap) . PHP_EOL;
         }
+        exit;
     }
 }

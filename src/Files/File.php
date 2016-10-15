@@ -37,6 +37,11 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     private $cache = [];
     
     /**
+     * @var bool
+     */
+    private $valid = true;
+    
+    /**
      * @var \Jivoo\Store\Config
      */
     private $metadata = null;
@@ -369,11 +374,13 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             $meta2 = $destination->getMetadata();
             $meta2->override = $meta1;
             $meta2->save();
+            $this->invalidate();
             return $this->delete();
         } elseif (rename($this->getRealPath(), $destination->getRealPath())) {
             if (file_exists($this->getMetadataPath() . '.json')) {
                 rename($this->getMetadataPath() . '.json', $destination->getMetadataPath() . '.json');
             }
+            $this->invalidate();
             return true;
         }
         return false;
@@ -517,16 +524,31 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             }
         }
         $this->assumeWritable();
-        if (file_exists($this->getMetadataPath() . '.json')) {
-            unlink($this->getMetadataPath() . '.json');
-        }
         if ($this->getType() == 'directory') {
+            if (!rmdir($this->getRealPath())) {
+                return false;
+            }
             if (is_dir($this->getMetadataPath() . '.dir')) {
                 rmdir($this->getMetadataPath() . '.dir');
             }
-            return rmdir($this->getRealPath());
+        } elseif (!unlink($this->getRealPath())) {
+            return false;
         }
-        return unlink($this->getRealPath());
+        if (file_exists($this->getMetadataPath() . '.json')) {
+            unlink($this->getMetadataPath() . '.json');
+        }
+        $this->invalidate();
+        return true;
+    }
+    
+    protected function invalidate()
+    {
+        $this->valid = false;
+        $parent = $this->getParent();
+        $name = $this->getName();
+        if (isset($parent->cache[$name])) {
+            unset($parent->cache[$name]);
+        }
     }
     
     public function getParent()
