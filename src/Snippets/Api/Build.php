@@ -20,6 +20,7 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyStructure.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/htmlToPhp.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/mdToHtml.php')));
+        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToHtml.php')));
         
         $compiler->clean();
         $compiler->createStructure($structure);

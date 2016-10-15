@@ -6,37 +6,42 @@
 namespace Blogstep\Build;
 
 use Blogstep\Files\File;
+use Jivoo\InvalidPropertyException;
 
 /**
  * A content node.
  */
 class ContentNode extends FileNode
 {
-    private $template;
+    private $contentFile;
     private $type;
     
-    public function __construct(File $file, File $template = null)
+    public function __construct(File $content, File $template = null)
     {
-        parent::__construct($file);
-        $this->template = $template;
-        $this->name = preg_replace('/\..+$/', '', $this->name);
-        $this->type = $file->getType();
+        parent::__construct(isset($template) ? $template : $content);
+        $this->contentFile = $content;
+        $this->name = preg_replace('/\..+$/', '', $content->getName());
+        $this->type = $content->getType();
     }
     
-    public function getTemplate()
+    public function __get($property)
     {
-        return $this->template;
+        try {
+            return parent::__get($property);
+        } catch (InvalidPropertyException $e) {
+            return null;
+        }
     }
     
-    public function setTemplate(File $template)
+    public function getContent()
     {
-        $this->template = $template;
+        return $this->contentFile;
     }
     
-    public function setFile(File $file)
+    public function setContent(File $content)
     {
-        parent::setFile($file);
-        $this->type = $file->getType();
+        $this->contentFile = $content;
+        $this->type = $content->getType();
     }
     
     public function getType()
@@ -52,5 +57,10 @@ class ContentNode extends FileNode
             }
             return $matches[1];
         }, $format);
+    }
+    
+    public function __toString()
+    {
+        return $this->getContent()->getContents();
     }
 }

@@ -83,6 +83,11 @@ class SiteNode extends InternalNode
         return $this->name;
     }
     
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
     public function getPath()
     {
         if (! isset($this->parent)) {

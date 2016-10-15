@@ -263,12 +263,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/view.git",
-                "reference": "706b68695244925b630428c5a314b14c9943aaae"
+                "reference": "e8b77d2346e0336cb109b2b8347757e7822fde83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/706b68695244925b630428c5a314b14c9943aaae",
-                "reference": "706b68695244925b630428c5a314b14c9943aaae",
+                "url": "https://api.github.com/repos/jivoo/view/zipball/e8b77d2346e0336cb109b2b8347757e7822fde83",
+                "reference": "e8b77d2346e0336cb109b2b8347757e7822fde83",
                 "shasum": ""
             },
             "require": {
@@ -306,7 +306,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-08-28 15:30:52"
+            "time": "2016-10-15 19:28:23"
         },
         {
             "name": "mgargano/simplehtmldom",
@@ -1613,16 +1613,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.1.4",
+            "version": "v3.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "f291ed25eb1435bddbe8a96caaef16469c2a092d"
+                "reference": "368b9738d4033c8b93454cb0dbd45d305135a6d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/f291ed25eb1435bddbe8a96caaef16469c2a092d",
-                "reference": "f291ed25eb1435bddbe8a96caaef16469c2a092d",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/368b9738d4033c8b93454cb0dbd45d305135a6d3",
+                "reference": "368b9738d4033c8b93454cb0dbd45d305135a6d3",
                 "shasum": ""
             },
             "require": {
@@ -1658,7 +1658,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-09-02 02:12:52"
+            "time": "2016-09-25 08:27:07"
         },
         {
             "name": "webmozart/assert",

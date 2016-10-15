@@ -25,7 +25,7 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
             $macros->compiler = $compiler;
             $template = $node->getFile();
             $dest = $node->getFile()->getParent()->get($name . '.php');
-            $node->setFile($template);
+            $node->setFile($dest);
             $data = $templateCompiler->compile($template->getRealPath());
             $dest->putContents($data);
             if (Unicode::startsWith($name, '_')) {

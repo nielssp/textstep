@@ -5,9 +5,12 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Build;
 
+use Jivoo\View\Compile\ForeachNode;
 use Jivoo\View\Compile\HtmlNode;
 use Jivoo\View\Compile\Macros;
+use Jivoo\View\Compile\PhpNode;
 use Jivoo\View\Compile\TemplateNode;
+use Jivoo\View\InvalidTemplateException;
 
 /**
  * BlogSTEP template macros.
@@ -16,7 +19,7 @@ class BlogstepMacros extends Macros
 {
     protected $namespace = 'bs';
 
-    protected $properties = ['path', 'as'];
+    protected $properties = ['path', 'as', 'paginate'];
     
     /**
      * @var SiteNode
@@ -36,12 +39,13 @@ class BlogstepMacros extends Macros
             $root = $this->siteNode->parent;
             foreach ($this->compiler->content->get($value->__toString()) as $content) {
                 $node = new ContentNode($content);
-                $path = $node->convertPath($pathFormat);
+                $path = $node->convertPath($pathFormat) . '.html';
+                $node->setName($node->getName() . '.html');
                 $root->createDescendant($path)->replaceWith($node);
-                $template = $node->getBuildPath()->get($node->getPath() . '.html.php');
-                $node->setTemplate($template);
+                $template = $node->getBuildPath()->get($path . '.php');
+                $node->setFile($template);
                 $code = '<?php ';
-                $code .= $var->code . ' = $this->content->get(' . var_export($content->getPath(), true) . ');';
+                $code .= $var->code . ' = $this->getContent(' . var_export($node->getPath(), true) . ');';
                 $data = '[' . var_export(ltrim($var->code, '$'), true) . ' => ' . $var->code . ']';
                 $code .= 'echo $this->embed(' . var_export($this->siteNode->getPath(), true) . ', ' . $data . ');';
                 $template->putContents($code);
@@ -49,5 +53,26 @@ class BlogstepMacros extends Macros
             $this->siteNode->detach();
             $this->siteNode = null;
         }
+    }
+    
+    public function foreachMacro(HtmlNode $node, TemplateNode $value)
+    {
+        if (!isset($value)) {
+            if ($node->prev instanceof ForeachNode) {
+                $foreachNode = $node->prev;
+                $node->detach();
+                $foreachNode->append($node);
+                return;
+            }
+            throw new InvalidTemplateException('Empty foreach-node must folow another foreach-node');
+        }
+        $var = $node->getProperty('bs:as');
+        $paginate = $node->getProperty('bs:paginate');
+        if (isset($paginate)) {
+            
+        }
+        $foreachNode = new ForeachNode(PhpNode::expr($value)->code . ' as ' . $var->code);
+        $node->replaceWith($foreachNode);
+        $foreachNode->append($node);
     }
 }
