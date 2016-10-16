@@ -72,6 +72,7 @@ class SiteNode extends InternalNode
     
     public function get($path)
     {
+        \Jivoo\Assume::isString($path);
         $path = explode('/', $path);
         $node = $this;
         foreach ($path as $component) {

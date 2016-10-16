@@ -55,6 +55,10 @@ class ContentNode extends FileNode
                 return $dom->__toString();
             case 'published':
                 return $this->originalFile->getCreated();
+            case 'year':
+                return date('Y', $this->published);
+            case 'month':
+                return date('m', $this->published);
             case 'metadata':
             case 'relativePath':
             case 'name':

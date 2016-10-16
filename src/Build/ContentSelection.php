@@ -17,6 +17,12 @@ class ContentSelection implements \IteratorAggregate, Selectable
     
     private $orderings = [];
     
+    private $nodes = null;
+    
+    private $limit = null;
+    
+    private $offset = 0;
+    
     public function __construct(ContentTree $map)
     {
         $this->map = $map;
@@ -49,24 +55,41 @@ class ContentSelection implements \IteratorAggregate, Selectable
         return $data;
     }
     
+    public function getNodes()
+    {
+        if (!isset($this->nodes)) {
+            $this->nodes = $this->map->getNodes();
+            $this->nodes = array_filter($this->nodes, function (ContentNode $node) {
+                foreach ($this->filters as $filter) {
+                    if (!$filter($node)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+            $this->nodes = self::sortAll($this->nodes, $this->orderings, false);
+            if (isset($this->limit)) {
+                $this->nodes = array_slice($this->nodes, $this->offset, $this->limit);
+            }
+        }
+        return $this->nodes;
+    }
+    
     public function getIterator()
     {
-        $nodes = $this->map->getNodes();
-        $nodes = array_filter($nodes, function (ContentNode $node) {
-            foreach ($this->filters as $filter) {
-                if (!$filter($node)) {
-                    return false;
-                }
-            }
-            return true;
-        });
-        $nodes = self::sortAll($nodes, $this->orderings, false);
-        return new \ArrayIterator($nodes);
+        return new \ArrayIterator($this->getNodes());
+    }
+    
+    protected function select()
+    {
+        $selection = clone $this;
+        $selection->nodes = null;
+        return $selection;
     }
 
     public function filter(callable $filter)
     {
-        $selection = clone $this;
+        $selection = $this->select();
         $selection->filters[] = $filter;
         return $selection;
     }
@@ -80,15 +103,34 @@ class ContentSelection implements \IteratorAggregate, Selectable
 
     public function orderBy($property)
     {
-        $selection = clone $this;
+        $selection = $this->select();
         $selection->orderings[] = [$property, false];
         return $selection;
     }
 
     public function orderByDescending($property)
     {
-        $selection = clone $this;
+        $selection = $this->select();
         $selection->orderings[] = [$property, true];
+        return $selection;
+    }
+
+    public function count()
+    {
+        return count($this->getNodes());
+    }
+
+    public function limit($limit)
+    {
+        $selection = $this->select();
+        $selection->limit = $limit;
+        return $selection;
+    }
+
+    public function offset($offset)
+    {
+        $selection = $this->select();
+        $selection->offset = $offset;
         return $selection;
     }
 }

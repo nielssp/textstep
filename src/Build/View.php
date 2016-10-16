@@ -14,7 +14,7 @@ class View extends \Jivoo\View\View
     
     public $currentNode = null;
 
-    public function __construct(SiteMap $siteMap)
+    public function __construct(SiteMap $siteMap, $uriPrefix)
     {
         parent::__construct(
             new \Jivoo\Http\Route\AssetScheme($siteMap->getBuildPath()->getRealPath()),
@@ -36,6 +36,15 @@ class View extends \Jivoo\View\View
                 return '#not-found';
             }
             return $link->getRelativePath($this->currentNode);
+        });
+        $this->addFunction('url', function ($link) use ($uriPrefix) {
+            if (!($link instanceof SiteNode)) {
+                $link = $this->siteMap->get($link);
+            }
+            if (!isset($link)) {
+                return '#not-found';
+            }
+            return $uriPrefix . $link->getPath();
         });
     }
 }

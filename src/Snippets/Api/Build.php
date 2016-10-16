@@ -15,19 +15,19 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $content = $this->m->files->get('content');
         $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
-
-        $compiler = new \Blogstep\Build\Compiler($destination, $content);
+        
+        $compiler = new \Blogstep\Build\Compiler($destination, $content, $this->m->main->config['user']);
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyStructure.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/htmlToPhp.php')));
+        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/mdToHtml.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToHtml.php')));
+        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToText.php')));
         
         $compiler->clean();
         $compiler->createStructure($structure);
         
         $compiler->run();
         
-        $target = $this->m->main->config->get('target', $this->m->main->p('target'));
+        $target = $this->m->main->config['user']->get('target', $this->m->main->p('target'));
         $compiler->install($target);
         
         return $this->ok();

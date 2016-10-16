@@ -14,4 +14,10 @@ interface Selectable extends \Traversable
     public function orderBy($property);
     
     public function orderByDescending($property);
+    
+    public function limit($limit);
+    
+    public function offset($offset);
+    
+    public function count();
 }

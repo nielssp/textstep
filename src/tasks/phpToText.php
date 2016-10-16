@@ -13,12 +13,14 @@ $view = null;
 
 return function (SiteNode $node, Compiler $compiler, callable $visitChildren) use ($view) {
     if (! isset($view)) {
-        $view = new Blogstep\Build\View($node->root);
+        $uriPrefix = rtrim($compiler->config->get('targetUri', ''), '/') . '/';
+        $view = new Blogstep\Build\View($node->root, $uriPrefix);
+        $view->data->config = $compiler->config->toArray();
         $view->data->content = $compiler->content;
     }
     if ($node instanceof \Blogstep\Build\FileNode) {
         $name = $node->getFile()->getPath();
-        if (Jivoo\Unicode::endsWith($name, '.html.php')) {
+        if (Jivoo\Unicode::endsWith($name, '.php')) {
             $path = $node->getPath();
             $view->currentNode = $node;
             $html = $view->render($path);

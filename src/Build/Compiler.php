@@ -23,13 +23,16 @@ class Compiler
     
     public $content;
     
+    public $config;
+    
     private $tasks = [];
     
-    public function __construct(File $buildDir, File $content)
+    public function __construct(File $buildDir, File $content, \Jivoo\Store\Document $config)
     {
         $this->siteMap = new SiteMap($buildDir);
         $this->buildDir = $buildDir;
         $this->content = new ContentTree($content);
+        $this->config = $config;
     }
     
     public function clean()
@@ -93,8 +96,6 @@ class Compiler
     {
         foreach ($this->tasks as $task) {
             $this->siteMap->accept($task, $this);
-//            echo $task->getName() . ':' . PHP_EOL;
-//            echo $this->tree($this->siteMap) . PHP_EOL;
         }
     }
 }

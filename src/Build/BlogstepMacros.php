@@ -30,14 +30,23 @@ class BlogstepMacros extends Macros
      * @var Compiler
      */
     public $compiler = null;
+    
+    private function evaluateExpr(TemplateNode $node)
+    {
+        if ($node instanceof PhpNode) {
+            $content = $this->compiler->content;
+            return eval('return ' . $node->code . ';');
+        }
+        return $node->__toString();
+    }
 
-    public function explodeMacro(HtmlNode $node, TemplateNode $value = null)
+    public function explodeMacro(HtmlNode $node, TemplateNode $value)
     {
         if (isset($this->siteNode) and isset($this->compiler)) {
             $pathFormat = $node->getProperty('bs:path');
             $var = $node->getProperty('bs:as');
             $root = $this->siteNode->parent;
-            foreach ($this->compiler->content->__get($value->__toString()) as $node) {
+            foreach ($this->evaluateExpr($value) as $node) {
                 $path = $node->convertPath($pathFormat) . '.html';
                 $node->setName($node->getName() . '.html');
                 $root->createDescendant($path)->replaceWith($node);

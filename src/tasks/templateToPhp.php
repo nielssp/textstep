@@ -31,6 +31,14 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
             if (Unicode::startsWith($name, '_')) {
                 $node->detach();
             }
+        } elseif (preg_match('/\.([a-z0-9]+)\.php$/i', $name)) {
+            if (Unicode::startsWith($name, '_')) {
+                $node->detach();
+            } else {
+                $replacement = new \Blogstep\Build\FileNode($node->getFile());
+                $replacement->setName(substr($name, 0, -4));
+                $node->replaceWith($replacement);
+            }
         }
     }
     $visitChildren();
