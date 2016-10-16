@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bf1c7d324107fa201da69478d3ce4e2d",
-    "content-hash": "5bffe83ba5c512d095f3f172b27c13ae",
+    "hash": "d090f398bf19b594d29c39c2cb5459eb",
+    "content-hash": "3497bb3aa7df5b06554e54affc2e7b76",
     "packages": [
         {
             "name": "composer/semver",
@@ -156,6 +156,54 @@
             "time": "2016-08-21 15:41:12"
         },
         {
+            "name": "jivoo/data",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jivoo/data.git",
+                "reference": "538a427da707951892ad64407eeb94a46bce51be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jivoo/data/zipball/538a427da707951892ad64407eeb94a46bce51be",
+                "reference": "538a427da707951892ad64407eeb94a46bce51be",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^1.2",
+                "ext-json": "*",
+                "jivoo/core": "^1.0",
+                "php": ">=5.4.0",
+                "psr/cache": "1.0",
+                "psr/log": "1.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Jivoo\\Data\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Niels Sonnich Poulsen",
+                    "email": "niels@nielssp.dk",
+                    "homepage": "http://nielssp.dk",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Jivoo query, migration, and ORM library.",
+            "homepage": "http://nielssp.dk",
+            "time": "2016-10-15 19:29:06"
+        },
+        {
             "name": "jivoo/http",
             "version": "v1.1.0",
             "source": {
@@ -263,12 +311,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/view.git",
-                "reference": "e8b77d2346e0336cb109b2b8347757e7822fde83"
+                "reference": "19f5feda0576c49c20b64bee342fd278e8d71448"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/e8b77d2346e0336cb109b2b8347757e7822fde83",
-                "reference": "e8b77d2346e0336cb109b2b8347757e7822fde83",
+                "url": "https://api.github.com/repos/jivoo/view/zipball/19f5feda0576c49c20b64bee342fd278e8d71448",
+                "reference": "19f5feda0576c49c20b64bee342fd278e8d71448",
                 "shasum": ""
             },
             "require": {
@@ -306,7 +354,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-10-15 19:28:23"
+            "time": "2016-10-15 22:17:51"
         },
         {
             "name": "mgargano/simplehtmldom",
@@ -1715,6 +1763,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "jivoo/view": 20,
+        "jivoo/data": 20,
         "jivoo/security": 20
     },
     "prefer-stable": false,

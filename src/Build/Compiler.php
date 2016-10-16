@@ -29,7 +29,7 @@ class Compiler
     {
         $this->siteMap = new SiteMap($buildDir);
         $this->buildDir = $buildDir;
-        $this->content = $content;
+        $this->content = new ContentTree($content);
     }
     
     public function clean()

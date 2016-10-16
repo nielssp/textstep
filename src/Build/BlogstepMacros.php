@@ -37,8 +37,7 @@ class BlogstepMacros extends Macros
             $pathFormat = $node->getProperty('bs:path');
             $var = $node->getProperty('bs:as');
             $root = $this->siteNode->parent;
-            foreach ($this->compiler->content->get($value->__toString()) as $content) {
-                $node = new ContentNode($content);
+            foreach ($this->compiler->content->__get($value->__toString()) as $node) {
                 $path = $node->convertPath($pathFormat) . '.html';
                 $node->setName($node->getName() . '.html');
                 $root->createDescendant($path)->replaceWith($node);
