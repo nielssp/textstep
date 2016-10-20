@@ -10,6 +10,7 @@ namespace Blogstep\Build;
  */
 class ContentTree implements \IteratorAggregate, Selectable
 {
+    use SelectableTrait;
 
     private $dir;
     
@@ -88,38 +89,8 @@ class ContentTree implements \IteratorAggregate, Selectable
         return new \ArrayIterator($this->getNodes());
     }
 
-    public function filter(callable $filter)
-    {
-        return $this->select()->filter($filter);
-    }
-
-    public function where($property, $value, $strict = true)
-    {
-        return $this->select()->where($property, $value, $strict);
-    }
-    
-    public function orderBy($property)
-    {
-        return $this->select()->orderBy($property);
-    }
-    
-    public function orderByDescending($property)
-    {
-        return $this->select()->orderByDescending($property);
-    }
-
     public function count()
     {
         return count($this->getNodes());
-    }
-
-    public function limit($limit)
-    {
-        return $this->select()->limit($limit);
-    }
-
-    public function offset($offset)
-    {
-        return $this->select()->limit($offset);
     }
 }

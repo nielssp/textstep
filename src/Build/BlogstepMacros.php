@@ -31,13 +31,19 @@ class BlogstepMacros extends Macros
      */
     public $compiler = null;
     
-    private function evaluateExpr(TemplateNode $node)
+    private $content = [];
+    
+    private function evaluate($_code, $_statement = false)
     {
-        if ($node instanceof PhpNode) {
-            $content = $this->compiler->content;
-            return eval('return ' . $node->code . ';');
+        extract($this->context, EXTR_SKIP);
+        if ($_statement) {
+            eval($_code);
+            $_ret = null;
+        } else {
+            $_ret = eval('return ' . $_code . ';');
         }
-        return $node->__toString();
+        $this->context = get_defined_vars();
+        return $_ret;
     }
 
     public function explodeMacro(HtmlNode $node, TemplateNode $value)
@@ -45,16 +51,31 @@ class BlogstepMacros extends Macros
         if (isset($this->siteNode) and isset($this->compiler)) {
             $pathFormat = $node->getProperty('bs:path');
             $var = $node->getProperty('bs:as');
+            $varName = ltrim($var->code, '$');
+            $this->context = [
+                'content' => $this->compiler->content
+            ];
             $root = $this->siteNode->parent;
-            foreach ($this->evaluateExpr($value) as $node) {
-                $path = $node->convertPath($pathFormat) . '.html';
-                $node->setName($node->getName() . '.html');
+            foreach ($this->evaluate($value->code) as $node) {
+                $this->context[$varName] = $node;
+                $path = $this->evaluate($pathFormat->code) . '.html';
+                $template = $root->getBuildPath()->get($path . '.php');
+                if ($node instanceof ContentNode) {
+                    $node->setName($node->getName() . '.html');
+                    $node->setFile($template);
+                } else {
+                    $node = new ObjectNode($template, $node);
+                    $node->setName(preg_replace('/\.php$/', '', $node->getName()));
+                }
                 $root->createDescendant($path)->replaceWith($node);
-                $template = $node->getBuildPath()->get($path . '.php');
-                $node->setFile($template);
                 $code = '<?php ';
-                $code .= $var->code . ' = $this->getContent(' . var_export($node->getPath(), true) . ');';
-                $data = '[' . var_export(ltrim($var->code, '$'), true) . ' => ' . $var->code . ']';
+                $code .= '$node = $this->getContent(' . var_export($node->getPath(), true) . ');';
+                if ($node instanceof ObjectNode) {
+                    $code .= $var->code . ' = $node->getObject();';
+                } else {
+                    $code .= $var->code . ' = $node;';
+                }
+                $data = '[' . var_export($varName, true) . ' => ' . $var->code . ']';
                 $code .= 'echo $this->embed(' . var_export($this->siteNode->getPath(), true) . ', ' . $data . ');';
                 $template->putContents($code);
             }

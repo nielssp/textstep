@@ -59,6 +59,8 @@ class ContentNode extends FileNode
                 return date('Y', $this->published);
             case 'month':
                 return date('m', $this->published);
+            case 'monthName':
+                return \Jivoo\I18n\I18n::date('F', $this->published);
             case 'metadata':
             case 'relativePath':
             case 'name':
@@ -105,7 +107,7 @@ class ContentNode extends FileNode
         return $this->dom;
     }
     
-    public function convertPath($format)
+    public function path($format)
     {
         return trim(preg_replace_callback('/%([a-zA-Z0-9_]+)%/', function ($matches) {
             $property = $matches[1];

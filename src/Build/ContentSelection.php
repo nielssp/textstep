@@ -11,11 +11,15 @@ namespace Blogstep\Build;
 class ContentSelection implements \IteratorAggregate, Selectable
 {
     
-    private $map;
+    private $source;
     
     private $filters = [];
     
     private $orderings = [];
+    
+    private $group = null;
+    
+    private $aggregate = [];
     
     private $nodes = null;
     
@@ -23,9 +27,9 @@ class ContentSelection implements \IteratorAggregate, Selectable
     
     private $offset = 0;
     
-    public function __construct(ContentTree $map)
+    public function __construct(Selectable $source)
     {
-        $this->map = $map;
+        $this->source = $source;
     }
 
     public static function sortAll(array $data, array $orderings)
@@ -58,7 +62,7 @@ class ContentSelection implements \IteratorAggregate, Selectable
     public function getNodes()
     {
         if (!isset($this->nodes)) {
-            $this->nodes = $this->map->getNodes();
+            $this->nodes = $this->source->getNodes();
             $this->nodes = array_filter($this->nodes, function (ContentNode $node) {
                 foreach ($this->filters as $filter) {
                     if (!$filter($node)) {
@@ -67,6 +71,29 @@ class ContentSelection implements \IteratorAggregate, Selectable
                 }
                 return true;
             });
+            if (isset($this->group)) {
+                $data = self::sortAll($this->nodes, array_map(function ($property) {
+                    return [$property, false];
+                }, $this->group));
+                $previous = null;
+                $this->nodes = [];
+                foreach ($data as $node) {
+                    if (isset($previous)) {
+                        if ($previous->compare($node)) {
+                            $previous->add($node);
+                            continue;
+                        }
+                        $previous->finish();
+                    }
+                    $properties = ContentGroup::getProperties($this->group, $node);
+                    $previous = new ContentGroup($properties, $this->aggregate);
+                    $previous->add($node);
+                    $this->nodes[] = $previous;
+                }
+                if (isset($previous)) {
+                    $previous->finish();
+                }
+            }
             $this->nodes = self::sortAll($this->nodes, $this->orderings, false);
             if (isset($this->limit)) {
                 $this->nodes = array_slice($this->nodes, $this->offset, $this->limit);
@@ -131,6 +158,30 @@ class ContentSelection implements \IteratorAggregate, Selectable
     {
         $selection = $this->select();
         $selection->offset = $offset;
+        return $selection;
+    }
+
+    public function aggregate($property, $func = 'sum', $alias = null)
+    {
+        $selection = $this->select();
+        if (! isset($alias)) {
+            $alias = $property . lcfirst($func);
+        }
+        $selection->aggregate[] = [$property, $func, $alias];
+        return $selection;
+    }
+
+    public function groupBy($properties)
+    {
+        $selection = $this->select();
+        if (! isset($selection->group)) {
+            $selection->group = [];
+        }
+        if (is_array($properties)) {
+            $selection->group = array_merge($selection->group, $properties);
+        } else {
+            $selection->group[] = $properties;
+        }
         return $selection;
     }
 }

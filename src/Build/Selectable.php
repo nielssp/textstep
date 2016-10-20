@@ -7,6 +7,8 @@ namespace Blogstep\Build;
 
 interface Selectable extends \Traversable
 {
+    public function getNodes();
+    
     public function where($property, $value, $strict = true);
     
     public function filter(callable $filter);
@@ -14,6 +16,10 @@ interface Selectable extends \Traversable
     public function orderBy($property);
     
     public function orderByDescending($property);
+    
+    public function groupBy($properties);
+    
+    public function aggregate($property, $func = 'sum', $alias = null);
     
     public function limit($limit);
     
