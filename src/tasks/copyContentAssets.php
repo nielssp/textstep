@@ -18,7 +18,7 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
         foreach ($attributes as $attribute) {
             foreach ($dom->find('[' . $attribute . ']') as $element) {
                 if (strpos($element->getAttribute($attribute), ':') === false) {
-                    $file = $origin->getParent()->get($element->getAttribute('src'));
+                    $file = $origin->getParent()->get($element->getAttribute($attribute));
                     $path = 'assets/' . $file->getPath();
                     $assetNode = $node->root->get($path);
                     if (!isset($assetNode)) {

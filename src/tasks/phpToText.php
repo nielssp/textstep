@@ -19,7 +19,7 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
         $view->data->content = $compiler->content;
         $availableFilters = $compiler->content->getFilters();
         $defaultFilters = $compiler->content->getDefaultFilters();
-        $view->addFunction('filter', function (Blogstep\Build\ContentNode $content, array $filters) use ($view, $availableFilters, $defaultFilters) {
+        $view->addFunction('filter', function (Blogstep\Build\ContentNode $content, array $filters = []) use ($view, $availableFilters, $defaultFilters) {
             $dom = $content->createDom();
             $filters = array_merge($filters, $defaultFilters);
             foreach ($filters as $name) {
