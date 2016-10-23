@@ -16,13 +16,18 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
         
-        $compiler = new \Blogstep\Build\Compiler($destination, $content, $this->m->main->config['user']);
+        $compiler = new \Blogstep\Build\Compiler($destination, $this->m->main->config['user']);
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyStructure.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/mdToHtml.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToText.php')));
         
         $compiler->clean();
+        $compiler->createContentTree($content);
+        
+        $id = function ($content) { return $content; };
+        $compiler->content->addHandler('html', $id);
+        $compiler->content->addHandler('htm', $id);
+        $compiler->content->addHandler('md', [new \Parsedown(), 'text']);
         $compiler->createStructure($structure);
         
         $compiler->run();

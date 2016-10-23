@@ -21,17 +21,16 @@ class Compiler
     
     private $buildDir;
     
-    public $content;
+    public $content = null;
     
     public $config;
     
     private $tasks = [];
     
-    public function __construct(File $buildDir, File $content, \Jivoo\Store\Document $config)
+    public function __construct(File $buildDir, \Jivoo\Store\Document $config)
     {
         $this->siteMap = new SiteMap($buildDir);
         $this->buildDir = $buildDir;
-        $this->content = new ContentTree($content);
         $this->config = $config;
     }
     
@@ -40,6 +39,15 @@ class Compiler
         foreach ($this->buildDir as $file) {
             $file->delete();
         }
+    }
+    
+    public function createContentTree(File $content)
+    {
+        $contentBuildDir = $this->buildDir->get('_content');
+        if (!$contentBuildDir->exists()) {
+            $contentBuildDir->makeDirectory();
+        }
+        $this->content = new ContentTree($content, $contentBuildDir);
     }
     
     public function addTask(Task $task)

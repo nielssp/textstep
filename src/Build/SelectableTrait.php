@@ -52,4 +52,9 @@ trait SelectableTrait
     {
         return $this->select()->groupBy($properties);
     }
+
+    public function groupByArray($property)
+    {
+        return $this->select()->groupByArray($property);
+    }
 }

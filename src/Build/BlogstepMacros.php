@@ -69,13 +69,16 @@ class BlogstepMacros extends Macros
                 }
                 $root->createDescendant($path)->replaceWith($node);
                 $code = '<?php ';
-                $code .= '$node = $this->getContent(' . var_export($node->getPath(), true) . ');';
+                $code .= '$node = $this->getNode(' . var_export($node->getPath(), true) . ');';
                 if ($node instanceof ObjectNode) {
                     $code .= $var->code . ' = $node->getObject();';
                 } else {
                     $code .= $var->code . ' = $node;';
                 }
-                $data = '[' . var_export($varName, true) . ' => ' . $var->code . ']';
+                $data = '['
+                    . var_export('node', true) . ' => $node, '
+                    . var_export($varName, true) . ' => ' . $var->code
+                    . ']';
                 $code .= 'echo $this->embed(' . var_export($this->siteNode->getPath(), true) . ', ' . $data . ');';
                 $template->putContents($code);
             }

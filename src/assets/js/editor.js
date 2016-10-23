@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 var actions = require('./common/actions');
+var paths = require('./common/paths');
 
 require('highlightjs/styles/solarized_dark.css');
 window.hljs = require('highlightjs/highlight.pack.js');
@@ -16,6 +17,7 @@ var PATH = $('body').data('path').replace(/\/$/, '');
 var TOKEN = $('#editor').data('token');
 
 var path = $('#editor').data('path');
+var cwd = paths.convert('..', path);
 
 actions.define('new', newFile);
 actions.define('save', saveFile);
@@ -34,6 +36,12 @@ var simplemde = new SimpleMDE({
     renderingConfig: {
         codeSyntaxHighlighting: true
     },
+    previewRender: function (text) {
+        var html = SimpleMDE.prototype.markdown(text);
+        return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
+            return 'src="' + PATH + '/api/download?path=' + encodeURIComponent(paths.convert(url, cwd)) + '"';
+        });
+    },
     toolbar: [
         {
             name: "custom",
@@ -41,8 +49,8 @@ var simplemde = new SimpleMDE({
                 saveFile();
             },
             className: "fa fa-save",
-            title: "Save",
-    },
+            title: "Save"
+        },
         "|",
         "bold",
         "italic",
@@ -64,7 +72,6 @@ var simplemde = new SimpleMDE({
         "guide"
     ]
 });
-
 
 function saveFile()
 {
@@ -89,7 +96,7 @@ function newFile()
 function resizeView()
 {
     $('.CodeMirror').height($(window).height() - 200);
-    simplemde.refresh();
+    simplemde.codemirror.refresh();
 }
 
 $(document).keydown(function (e) {

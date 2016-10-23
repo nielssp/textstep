@@ -22,11 +22,20 @@ class View extends \Jivoo\View\View
         );
         $this->siteMap = $siteMap;
         $this->addTemplateDir($siteMap->getBuildPath()->getRealPath());
-        $this->addFunction('getContent', function ($name) use ($siteMap) {
+        $this->addFunction('getNode', function ($name) use ($siteMap) {
             return $siteMap->get($name);
         });
         $this->addFunction('isCurrent', function ($link) {
-            return false;
+            if (!($link instanceof SiteNode)) {
+                $link = $this->siteMap->get($link);
+            }
+            if (!isset($link)) {
+                return false;
+            }
+            if ($this->currentNode->getName() == 'index.html') {
+                return $link === $this->currentNode->parent;
+            }
+            return $link === $this->currentNode;
         });
         $this->addFunction('link', function ($link) {
             if (!($link instanceof SiteNode)) {

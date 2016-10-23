@@ -19,6 +19,8 @@ class ContentSelection implements \IteratorAggregate, Selectable
     
     private $group = null;
     
+    private $arrayGroup = null;
+    
     private $aggregate = [];
     
     private $nodes = null;
@@ -93,6 +95,22 @@ class ContentSelection implements \IteratorAggregate, Selectable
                 if (isset($previous)) {
                     $previous->finish();
                 }
+            }
+            if (isset($this->arrayGroup)) {
+                $groups = [];
+                $property = $this->arrayGroup;
+                foreach ($this->nodes as $node) {
+                    foreach ($node->$property as $value) {
+                        if (!isset($groups[$value])) {
+                            $groups[$value] = new ContentGroup(['group' => $value], $this->aggregate);
+                        }
+                        $groups[$value]->add($node);
+                    }
+                }
+                foreach ($groups as $group) {
+                    $group->finish();
+                }
+                $this->nodes = $groups;
             }
             $this->nodes = self::sortAll($this->nodes, $this->orderings, false);
             if (isset($this->limit)) {
@@ -184,4 +202,12 @@ class ContentSelection implements \IteratorAggregate, Selectable
         }
         return $selection;
     }
+
+    public function groupByArray($property)
+    {
+        $selection = $this->select();
+        $selection->arrayGroup = $property;
+        return $selection;
+    }
+
 }

@@ -19,6 +19,8 @@ interface Selectable extends \Traversable
     
     public function groupBy($properties);
     
+    public function groupByArray($property);
+    
     public function aggregate($property, $func = 'sum', $alias = null);
     
     public function limit($limit);

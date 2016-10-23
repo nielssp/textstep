@@ -14,18 +14,26 @@ class ContentTree implements \IteratorAggregate, Selectable
 
     private $dir;
     
+    private $buildDir;
+    
     private $namespaces = [];
     
     private $nodes = null;
     
     private $properties;
     
+    private $preprocessors = [];
+    
+    private $handlers;
+    
     private $recursive = false;
     
-    public function __construct(\Blogstep\Files\File $dir, $properties = [])
+    public function __construct(\Blogstep\Files\File $dir, \Blogstep\Files\File $buildDir, $properties = [], $handlers = [])
     {
         $this->dir = $dir;
+        $this->buildDir = $buildDir;
         $this->properties = $properties;
+        $this->handlers = $handlers;
         $propFile = $dir->get('.properties.php');
         if ($propFile->exists() and $propFile->isReadable()) {
             $properties = include $propFile->getRealPath();
@@ -37,9 +45,23 @@ class ContentTree implements \IteratorAggregate, Selectable
     public function __get($namespace)
     {
         if (!isset($this->namespaces[$namespace])) {
-            $this->namespaces[$namespace] = new ContentTree($this->dir->get($namespace), $this->properties);
+            $buildDir = $this->buildDir->get($namespace);
+            if (!$buildDir->exists()) {
+                $buildDir->makeDirectory();
+            }
+            $this->namespaces[$namespace] = new ContentTree($this->dir->get($namespace), $buildDir, $this->properties, $this->handlers);
         }
         return $this->namespaces[$namespace];
+    }
+    
+    public function addHandler($type, callable $handler)
+    {
+        $this->handlers[$type] = $handler;
+    }
+    
+    public function addPreprocessor(callable $preprocessor)
+    {
+        $this->preprocessors[] = $preprocessor;
     }
     
     public function addProperty($name, callable $getter)
@@ -52,7 +74,7 @@ class ContentTree implements \IteratorAggregate, Selectable
         $this->recursive = $recursive;
     }
     
-    private function select()
+    protected function select()
     {
         return new ContentSelection($this);
     }
@@ -63,13 +85,26 @@ class ContentTree implements \IteratorAggregate, Selectable
         foreach ($dir as $file) {
             $name = $file->getName();
             if ($name[0] != '.') {
-                if ($file->getType() == 'directory') {
+                $type = $file->getType();
+                if ($type == 'directory') {
                     if ($this->recursive) {
                         $path = $relativePath == '' ? $name : $relativePath . '/' . $name;
+                        $buildDir = $this->buildDir->get($path);
+                        if (!$buildDir->exists()) {
+                            $buildDir->makeDirectory();
+                        }
                         $nodes = array_merge($nodes, $this->getNodesIn($file, $path));
                     }
-                } else {
-                    $nodes[] = new ContentNode($file, $relativePath, $this->properties);
+                } elseif (isset($this->handlers[$type])) {
+                    $name .= '.html';
+                    $outFile = $this->buildDir->get($relativePath == '' ? $name : $relativePath . '/' . $name);
+                    $outFile->putContents(call_user_func($this->handlers[$type], $file->getContents()));
+                    $content = new ContentNode($outFile, $relativePath, $this->properties);
+                    $metadata = $content->getMetadata();
+                    if (!isset($metadata['published'])) {
+                        $metadata['published'] = $file->getCreated();
+                    }
+                    $nodes[] = $content;
                 }
             }
         }

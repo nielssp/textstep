@@ -17,15 +17,12 @@ class ContentNode extends FileNode
     private $relativePath;
     private $type;
     private $dom = null;
-    private $originalFile;
-    private $metadata;
+    private $metadata = null;
     private $propertyDefinitions;
     
     public function __construct(File $content, $relativePath, array $properties, File $template = null)
     {
-        parent::__construct(isset($template) ? $template : $content);
-        $this->originalFile = $content;
-        $this->metadata = $content->getMetadata()->toArray();
+        parent::__construct($content);
         $this->relativePath = $relativePath;
         $this->contentFile = $content;
         $this->propertyDefinitions = $properties;
@@ -54,7 +51,13 @@ class ContentNode extends FileNode
                 }
                 return $dom->__toString();
             case 'published':
-                return $this->originalFile->getCreated();
+                $published = $this->getMetadata()->get('published');
+                if (!isset($published)) {
+                    return time();
+                } elseif (is_string($published)) {
+                    return strtotime($published);
+                }
+                return $published;
             case 'year':
                 return date('Y', $this->published);
             case 'month':
@@ -62,16 +65,39 @@ class ContentNode extends FileNode
             case 'monthName':
                 return \Jivoo\I18n\I18n::date('F', $this->published);
             case 'metadata':
+                return $this->getMetadata();
             case 'relativePath':
             case 'name':
             case 'originalFile':
                 return $this->$property;
+        }
+        if (isset($this->getMetadata()[$property])) {
+            return $this->getMetadata()[$property];
         }
         try {
             return parent::__get($property);
         } catch (InvalidPropertyException $e) {
             return null;
         }
+    }
+    
+    public function getMetadata()
+    {
+        if (!isset($this->metadata)) {
+            $dom = $this->getDom();
+            $data = [];
+            foreach ($dom->find('comment') as $comment) {
+                if (preg_match('/^<!-- *(\{.*\}) *-->$/ms', $comment->innertext, $matches) === 1) {
+                    $json = json_decode($matches[1], true);
+                    if (is_array($json)) {
+                        $data = array_merge($data, $json);
+                        $comment->outertext = '';
+                    }
+                }
+            }
+            $this->metadata = new \Jivoo\Store\Document($data);
+        }
+        return $this->metadata;
     }
     
     public function getContent()
