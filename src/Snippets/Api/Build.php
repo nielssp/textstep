@@ -19,6 +19,7 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $compiler = new \Blogstep\Build\Compiler($destination, $this->m->main->config['user']);
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyStructure.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
+        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyContentAssets.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToText.php')));
         
         $compiler->clean();
@@ -28,6 +29,16 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $compiler->content->addHandler('html', $id);
         $compiler->content->addHandler('htm', $id);
         $compiler->content->addHandler('md', [new \Parsedown(), 'text']);
+        
+        $dir = scandir($this->m->main->p('src/filters'));
+        foreach ($dir as $file) {
+            if (\Jivoo\Unicode::endsWith($file, '.php')) {
+                $name = substr($file, 0, -4);
+                $compiler->content->addFilter($name, require $this->m->main->p('src/filters/' . $file));
+            }
+        }
+        $compiler->content->setDefaultFilters(['links']);
+        
         $compiler->createStructure($structure);
         
         $compiler->run();

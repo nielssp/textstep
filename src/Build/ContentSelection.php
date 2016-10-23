@@ -100,11 +100,14 @@ class ContentSelection implements \IteratorAggregate, Selectable
                 $groups = [];
                 $property = $this->arrayGroup;
                 foreach ($this->nodes as $node) {
-                    foreach ($node->$property as $value) {
-                        if (!isset($groups[$value])) {
-                            $groups[$value] = new ContentGroup(['group' => $value], $this->aggregate);
+                    $values = $node->$property;
+                    if (isset($values) and is_array($values)) {
+                        foreach ($values as $value) {
+                            if (!isset($groups[$value])) {
+                                $groups[$value] = new ContentGroup(['group' => $value], $this->aggregate);
+                            }
+                            $groups[$value]->add($node);
                         }
-                        $groups[$value]->add($node);
                     }
                 }
                 foreach ($groups as $group) {

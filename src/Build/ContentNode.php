@@ -15,19 +15,19 @@ class ContentNode extends FileNode
 {
     private $contentFile;
     private $relativePath;
-    private $type;
+    private $origin;
     private $dom = null;
     private $metadata = null;
     private $propertyDefinitions;
     
-    public function __construct(File $content, $relativePath, array $properties, File $template = null)
+    public function __construct(File $origin, File $content, $relativePath, array $properties, File $template = null)
     {
         parent::__construct($content);
+        $this->origin = $origin;
         $this->relativePath = $relativePath;
         $this->contentFile = $content;
         $this->propertyDefinitions = $properties;
         $this->name = preg_replace('/\..+$/', '', $content->getName());
-        $this->type = $content->getType();
     }
     
     public function __get($property)
@@ -43,13 +43,8 @@ class ContentNode extends FileNode
                     return $title->innertext;
                 }
                 return '';
-            case 'contentWithoutTitle':
-                $dom = $this->getDom();
-                $title = $dom->find('h1', 0);
-                if (isset($title)) {
-                    $title->outertext = '';
-                }
-                return $dom->__toString();
+            case 'hasBreak':
+                return $this->getDom()->find('.break', 0) !== null;
             case 'published':
                 $published = $this->getMetadata()->get('published');
                 if (!isset($published)) {
@@ -72,7 +67,7 @@ class ContentNode extends FileNode
                 return $this->$property;
         }
         if (isset($this->getMetadata()[$property])) {
-            return $this->getMetadata()[$property];
+            return $this->getMetadata()->get($property);
         }
         try {
             return parent::__get($property);
@@ -108,12 +103,11 @@ class ContentNode extends FileNode
     public function setContent(File $content)
     {
         $this->contentFile = $content;
-        $this->type = $content->getType();
     }
     
-    public function getType()
+    public function getOrigin()
     {
-        return $this->type;
+        return $this->origin;
     }
     
     /**
@@ -124,13 +118,24 @@ class ContentNode extends FileNode
     public function getDom()
     {
         if (!isset($this->dom)) {
-            $this->dom = new \SimpleHtmlDom\simple_html_dom();
-            $file = $this->getContent()->getContents();
-            if (!$this->dom->load($file, true, false)) {
-                throw new \Blogstep\RuntimeException('Could not parse content: ' . $this->getContent()->getPath());
-            }
+            $this->dom = $this->createDom();
         }
         return $this->dom;
+    }
+    
+    public function createDom()
+    {
+        $dom = new \SimpleHtmlDom\simple_html_dom();
+        if (isset($this->dom)) {
+            $dom = $dom->load($this->dom->__toString(), true, false);
+        } else {
+            $file = $this->getContent()->getContents();
+            $dom->load($file, true, false);
+        }
+        if (!$dom) {
+          throw new \Blogstep\RuntimeException('Could not parse content: ' . $this->getContent()->getPath());
+        }
+        return $dom;
     }
     
     public function path($format)

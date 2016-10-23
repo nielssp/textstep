@@ -5,10 +5,13 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Build;
 
+use Blogstep\Files\File;
+use IteratorAggregate;
+
 /**
  * Collection of content.
  */
-class ContentTree implements \IteratorAggregate, Selectable
+class ContentTree implements IteratorAggregate, Selectable
 {
     use SelectableTrait;
 
@@ -22,18 +25,21 @@ class ContentTree implements \IteratorAggregate, Selectable
     
     private $properties;
     
-    private $preprocessors = [];
+    private $filters;
+    
+    private $defaultFilters = [];
     
     private $handlers;
     
     private $recursive = false;
     
-    public function __construct(\Blogstep\Files\File $dir, \Blogstep\Files\File $buildDir, $properties = [], $handlers = [])
+    public function __construct(File $dir, File $buildDir, $properties = [], $handlers = [], $filters = [])
     {
         $this->dir = $dir;
         $this->buildDir = $buildDir;
         $this->properties = $properties;
         $this->handlers = $handlers;
+        $this->filters = $filters;
         $propFile = $dir->get('.properties.php');
         if ($propFile->exists() and $propFile->isReadable()) {
             $properties = include $propFile->getRealPath();
@@ -59,9 +65,24 @@ class ContentTree implements \IteratorAggregate, Selectable
         $this->handlers[$type] = $handler;
     }
     
-    public function addPreprocessor(callable $preprocessor)
+    public function addFilter($name, callable $filter)
     {
-        $this->preprocessors[] = $preprocessor;
+        $this->filters[$name] = $filter;
+    }
+
+    public function getFilters()
+    {
+        return $this->filters;
+    }
+    
+    public function getDefaultFilters()
+    {
+        return $this->defaultFilters;
+    }
+    
+    public function setDefaultFilters($filters)
+    {
+        $this->defaultFilters = $filters;
     }
     
     public function addProperty($name, callable $getter)
@@ -79,7 +100,7 @@ class ContentTree implements \IteratorAggregate, Selectable
         return new ContentSelection($this);
     }
     
-    private function getNodesIn(\Blogstep\Files\File $dir, $relativePath)
+    private function getNodesIn(File $dir, $relativePath)
     {
         $nodes = [];
         foreach ($dir as $file) {
@@ -99,7 +120,7 @@ class ContentTree implements \IteratorAggregate, Selectable
                     $name .= '.html';
                     $outFile = $this->buildDir->get($relativePath == '' ? $name : $relativePath . '/' . $name);
                     $outFile->putContents(call_user_func($this->handlers[$type], $file->getContents()));
-                    $content = new ContentNode($outFile, $relativePath, $this->properties);
+                    $content = new ContentNode($file, $outFile, $relativePath, $this->properties);
                     $metadata = $content->getMetadata();
                     if (!isset($metadata['published'])) {
                         $metadata['published'] = $file->getCreated();
