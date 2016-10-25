@@ -26,7 +26,8 @@
     "jivoo/view": "dev-master",
     "jivoo/security": "dev-master",
     "mgargano/simplehtmldom": "^1.5",
-    "erusev/parsedown": "^1.6"
+    "erusev/parsedown": "^1.6",
+    "badcow/lorem-ipsum": "^1.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^4.0",

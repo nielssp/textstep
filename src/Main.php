@@ -92,6 +92,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\ListFiles');
         $this->m->router->auto('snippet:Api\Upload');
         $this->m->router->auto('snippet:Api\Build');
+        $this->m->router->auto('snippet:Api\GenerateTestContent');
         $this->m->router->auto('snippet:Api\Download');
         $this->m->router->auto('snippet:Api\MakeDir');
         $this->m->router->auto('snippet:Api\MakeFile');
