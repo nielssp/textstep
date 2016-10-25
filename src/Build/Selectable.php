@@ -28,4 +28,6 @@ interface Selectable extends \Traversable
     public function offset($offset);
     
     public function count();
+    
+    public function paginate($itemsPerPage);
 }

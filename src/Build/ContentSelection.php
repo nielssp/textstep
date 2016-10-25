@@ -213,4 +213,26 @@ class ContentSelection implements \IteratorAggregate, Selectable
         return $selection;
     }
 
+    public function paginate($itemsPerPage)
+    {
+        \Jivoo\Assume::that($itemsPerPage > 0);
+        $items = $this->getNodes();
+        $length = count($items);
+        $numPages = max(ceil($length / $itemsPerPage), 1);
+        $currentPage = new ContentPage(1, $numPages, 0, $length);
+        $counter = 0;
+        $pages = [$currentPage];
+        for ($i = 0; $i < $length; $i++) {
+            if ($counter >= $itemsPerPage) {
+                $currentPage->finish();
+                $currentPage = new ContentPage($currentPage->page + 1, $numPages, $i, $length);
+                $pages[] = $currentPage;
+                $counter = 0;
+            }
+            $currentPage->add($items[$i]);
+            $counter++;
+        }
+        $currentPage->finish();
+        return $pages;
+    }
 }

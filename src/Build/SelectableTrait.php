@@ -57,4 +57,9 @@ trait SelectableTrait
     {
         return $this->select()->groupByArray($property);
     }
+    
+    public function paginate($itemsPerPage)
+    {
+        return $this->select()->paginate($itemsPerPage);
+    }
 }
