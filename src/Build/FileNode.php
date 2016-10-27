@@ -12,6 +12,8 @@ class FileNode extends SiteNode
 {
     private $file;
     
+    private $data = [];
+    
     public function __construct(\Blogstep\Files\File $file)
     {
         parent::__construct($file->getName());
@@ -21,6 +23,16 @@ class FileNode extends SiteNode
     public function setFile(\Blogstep\Files\File $file)
     {
         $this->file = $file;
+    }
+    
+    public function getData()
+    {
+        return $this->data;
+    }
+    
+    public function setData(array $data)
+    {
+        $this->data = $data;
     }
     
     /**

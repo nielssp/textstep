@@ -35,7 +35,7 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
         if (Jivoo\Unicode::endsWith($name, '.php')) {
             $path = $node->getPath();
             $view->currentNode = $node;
-            $html = $view->render($path);
+            $html = $view->render($path, $node->getData());
             $file = $node->root->getBuildPath()->get($path);
             $file->putContents($html);
             $node->setFile($file);

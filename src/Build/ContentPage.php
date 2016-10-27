@@ -19,4 +19,12 @@ class ContentPage extends ContentGroup
             'totalItems' => $total
         ], [['*', 'count', 'itemsOnPage']]);
     }
+    
+    public function path($base = '')
+    {
+        if ($this->page === 1) {
+            return $base;
+        }
+        return rtrim($base, '/') . '/page' . $this->page;
+    }
 }
