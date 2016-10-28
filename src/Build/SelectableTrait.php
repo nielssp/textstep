@@ -58,8 +58,18 @@ trait SelectableTrait
         return $this->select()->groupByArray($property);
     }
     
-    public function paginate($itemsPerPage)
+    public function paginate($itemsPerPage, array $pageProperties = [])
     {
-        return $this->select()->paginate($itemsPerPage);
+        return $this->select()->paginate($itemsPerPage, $pageProperties);
+    }
+    
+    public function map(callable $function)
+    {
+        return $this->select()->map($function);
+    }
+    
+    public function flatMap(callable $function)
+    {
+        return $this->select()->flatMap($function);
     }
 }

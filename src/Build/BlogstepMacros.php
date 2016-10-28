@@ -31,7 +31,9 @@ class BlogstepMacros extends Macros
      */
     public $compiler = null;
     
-    private $content = [];
+    private $context = [];
+    
+    private $explodes = [];
     
     private function evaluate($_code, $_statement = false)
     {
@@ -56,21 +58,22 @@ class BlogstepMacros extends Macros
                 'content' => $this->compiler->content
             ];
             $root = $this->siteNode->parent;
-            foreach ($this->evaluate($value->code) as $node) {
-                $this->context[$varName] = $node;
-                $path = $this->evaluate($pathFormat->code) . '.html';
-                $template = $root->getBuildPath()->get($path . '.php');
-                if ($node instanceof ContentNode) {
-                    $node->setName($node->getName() . '.html');
-                    $node->setFile($template);
+            foreach ($this->evaluate($value->code) as $item) {
+                $this->context[$varName] = $item;
+                $path = $this->evaluate($pathFormat->code);
+                $template = $root->getBuildPath()->get(ltrim($path . '.php', '/'));
+                $descendant = $root->createDescendant($path);
+                if ($item instanceof ContentNode) {
+                    $item->setName($descendant->getName());
+                    $item->setFile($template);
                 } else {
-                    $node = new ObjectNode($template, $node);
-                    $node->setName(preg_replace('/\.php$/', '', $node->getName()));
+                    $item = new ObjectNode($template, $item);
+                    $item->setName(preg_replace('/\.php$/', '', $item->getName()));
                 }
-                $root->createDescendant($path)->replaceWith($node);
+                $descendant->replaceWith($item);
                 $code = '<?php ';
-                $code .= '$node = $this->getNode(' . var_export($node->getPath(), true) . ');';
-                if ($node instanceof ObjectNode) {
+                $code .= '$node = $this->getNode(' . var_export($item->getPath(), true) . ');';
+                if ($item instanceof ObjectNode) {
                     $code .= $var->code . ' = $node->getObject();';
                 } else {
                     $code .= $var->code . ' = $node;';

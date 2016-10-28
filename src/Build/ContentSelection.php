@@ -213,19 +213,19 @@ class ContentSelection implements \IteratorAggregate, Selectable
         return $selection;
     }
 
-    public function paginate($itemsPerPage)
+    public function paginate($itemsPerPage, array $pageProperties = [])
     {
         \Jivoo\Assume::that($itemsPerPage > 0);
         $items = $this->getNodes();
         $length = count($items);
         $numPages = max(ceil($length / $itemsPerPage), 1);
-        $currentPage = new ContentPage(1, $numPages, 0, $length);
+        $currentPage = new ContentPage($pageProperties, 1, $numPages, 0, $length);
         $counter = 0;
         $pages = [$currentPage];
         for ($i = 0; $i < $length; $i++) {
             if ($counter >= $itemsPerPage) {
+                $currentPage = new ContentPage($pageProperties, $currentPage->page + 1, $numPages, $i, $length);
                 $currentPage->finish();
-                $currentPage = new ContentPage($currentPage->page + 1, $numPages, $i, $length);
                 $pages[] = $currentPage;
                 $counter = 0;
             }
@@ -235,4 +235,25 @@ class ContentSelection implements \IteratorAggregate, Selectable
         $currentPage->finish();
         return $pages;
     }
+    
+    public function map(callable $function)
+    {
+        $nodes = [];
+        foreach ($this as $node) {
+            $nodes[] = $function($node);
+        }
+        return $nodes;
+    }
+
+    public function flatMap(callable $function)
+    {
+        $nodes = [];
+        foreach ($this as $node1) {
+            foreach ($function($node1) as $node2) {
+                $nodes[] = $node2;
+            }
+        }
+        return $nodes;
+    }
+
 }

@@ -29,5 +29,9 @@ interface Selectable extends \Traversable
     
     public function count();
     
-    public function paginate($itemsPerPage);
+    public function paginate($itemsPerPage, array $pageProperties = []);
+    
+    public function map(callable $function);
+    
+    public function flatMap(callable $function);
 }

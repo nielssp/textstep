@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d1e964fc0b46e593e0b3384a3a8bb707",
-    "content-hash": "0d0d01e229b388680a9dbe55f1b74cb4",
+    "hash": "733c38beba740724d64fe798977d392a",
+    "content-hash": "754520484732a7b80e5c422f8ab3e097",
     "packages": [
         {
             "name": "badcow/lorem-ipsum",
@@ -153,16 +153,16 @@
         },
         {
             "name": "jivoo/core",
-            "version": "v1.1.1",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/core.git",
-                "reference": "d5421fff68d8849a42b1bffd50351b122d0a43a7"
+                "reference": "62830a3e797604f9b7a21798b92951f0e6d7888c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/core/zipball/d5421fff68d8849a42b1bffd50351b122d0a43a7",
-                "reference": "d5421fff68d8849a42b1bffd50351b122d0a43a7",
+                "url": "https://api.github.com/repos/jivoo/core/zipball/62830a3e797604f9b7a21798b92951f0e6d7888c",
+                "reference": "62830a3e797604f9b7a21798b92951f0e6d7888c",
                 "shasum": ""
             },
             "require": {
@@ -196,20 +196,20 @@
             ],
             "description": "Jivoo common classes.",
             "homepage": "http://nielssp.dk",
-            "time": "2016-08-21 15:41:12"
+            "time": "2016-09-25 18:44:58"
         },
         {
             "name": "jivoo/http",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/http.git",
-                "reference": "87bb6efd38e16fd5b1eb45895c9e2016b61e7fce"
+                "reference": "e2268c82fc7e9b47039c2eb0bf6ea087219a6f04"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/http/zipball/87bb6efd38e16fd5b1eb45895c9e2016b61e7fce",
-                "reference": "87bb6efd38e16fd5b1eb45895c9e2016b61e7fce",
+                "url": "https://api.github.com/repos/jivoo/http/zipball/e2268c82fc7e9b47039c2eb0bf6ea087219a6f04",
+                "reference": "e2268c82fc7e9b47039c2eb0bf6ea087219a6f04",
                 "shasum": ""
             },
             "require": {
@@ -248,7 +248,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-08-20 12:02:28"
+            "time": "2016-09-17 19:54:48"
         },
         {
             "name": "jivoo/security",
@@ -256,12 +256,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/security.git",
-                "reference": "0f24515f27d454d528d027d7c788c16958da0ec0"
+                "reference": "53063531f7a93363086ff8ed90cb9893b44536db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/security/zipball/0f24515f27d454d528d027d7c788c16958da0ec0",
-                "reference": "0f24515f27d454d528d027d7c788c16958da0ec0",
+                "url": "https://api.github.com/repos/jivoo/security/zipball/53063531f7a93363086ff8ed90cb9893b44536db",
+                "reference": "53063531f7a93363086ff8ed90cb9893b44536db",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-09-17 08:53:42"
+            "time": "2016-09-17 12:36:53"
         },
         {
             "name": "jivoo/view",
@@ -306,12 +306,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/view.git",
-                "reference": "886a492a60f9e4b74e15bd70f74b00c6503dee8d"
+                "reference": "1400983ee7f2d0d567171a831be910deb9f5c9e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/886a492a60f9e4b74e15bd70f74b00c6503dee8d",
-                "reference": "886a492a60f9e4b74e15bd70f74b00c6503dee8d",
+                "url": "https://api.github.com/repos/jivoo/view/zipball/1400983ee7f2d0d567171a831be910deb9f5c9e4",
+                "reference": "1400983ee7f2d0d567171a831be910deb9f5c9e4",
                 "shasum": ""
             },
             "require": {
@@ -349,7 +349,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-10-16 10:46:55"
+            "time": "2016-10-28 21:32:45"
         },
         {
             "name": "mgargano/simplehtmldom",
@@ -1656,16 +1656,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.1.5",
+            "version": "v3.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "368b9738d4033c8b93454cb0dbd45d305135a6d3"
+                "reference": "7ff51b06c6c3d5cc6686df69004a42c69df09e27"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/368b9738d4033c8b93454cb0dbd45d305135a6d3",
-                "reference": "368b9738d4033c8b93454cb0dbd45d305135a6d3",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/7ff51b06c6c3d5cc6686df69004a42c69df09e27",
+                "reference": "7ff51b06c6c3d5cc6686df69004a42c69df09e27",
                 "shasum": ""
             },
             "require": {
@@ -1701,7 +1701,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2016-09-25 08:27:07"
+            "time": "2016-10-24 18:41:13"
         },
         {
             "name": "webmozart/assert",

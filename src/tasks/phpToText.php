@@ -13,22 +13,7 @@ $view = null;
 
 return function (SiteNode $node, Compiler $compiler, callable $visitChildren) use ($view) {
     if (! isset($view)) {
-        $uriPrefix = rtrim($compiler->config->get('targetUri', ''), '/') . '/';
-        $view = new Blogstep\Build\View($node->root, $uriPrefix);
-        $view->data->config = $compiler->config->toArray();
-        $view->data->content = $compiler->content;
-        $availableFilters = $compiler->content->getFilters();
-        $defaultFilters = $compiler->content->getDefaultFilters();
-        $view->addFunction('filter', function (Blogstep\Build\ContentNode $content, array $filters = []) use ($view, $availableFilters, $defaultFilters) {
-            $dom = $content->createDom();
-            $filters = array_merge($filters, $defaultFilters);
-            foreach ($filters as $name) {
-                if (isset($availableFilters[$name])) {
-                    call_user_func($availableFilters[$name], $view, $content, $dom);
-                }
-            }
-            return $dom->__toString();
-        });
+        $view = new Blogstep\Build\View($node->root, $compiler);
     }
     if ($node instanceof \Blogstep\Build\FileNode) {
         $name = $node->getFile()->getPath();

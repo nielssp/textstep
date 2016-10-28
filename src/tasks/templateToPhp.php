@@ -28,7 +28,7 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
             $node->setFile($dest);
             $data = $templateCompiler->compile($template->getRealPath());
             $dest->putContents($data);
-            if (Unicode::startsWith($name, '_')) {
+            if (isset($node->parent) and Unicode::startsWith($name, '_')) {
                 $node->detach();
             }
         } elseif (preg_match('/\.([a-z0-9]+)\.php$/i', $name)) {
