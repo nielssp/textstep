@@ -17,8 +17,9 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
         $dom = $node->getDom();
         foreach ($attributes as $attribute) {
             foreach ($dom->find('[' . $attribute . ']') as $element) {
-                if (strpos($element->getAttribute($attribute), ':') === false) {
-                    $file = $origin->getParent()->get($element->getAttribute($attribute));
+                $url = $element->getAttribute($attribute);
+                if (strpos($url, ':') === false and !Jivoo\Unicode::startsWith($url, '//')) {
+                    $file = $origin->getParent()->get($url);
                     $path = 'assets/' . $file->getPath();
                     $assetNode = $node->root->get($path);
                     if (!isset($assetNode)) {

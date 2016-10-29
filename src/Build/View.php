@@ -72,8 +72,11 @@ class View extends \Jivoo\View\View
         $this->forceAbsolute = true;
     }
     
-    public function link($link)
+    public function link($link = null, $absolute = false)
     {
+        if (!isset($link)) {
+            $link = $this->currentNode;
+        }
         if (!($link instanceof SiteNode)) {
             $link = $this->siteMap->get($link);
         }
@@ -83,13 +86,16 @@ class View extends \Jivoo\View\View
         if ($link->getName() == 'index.html') {
             $link = $link->parent;
         }
-        if ($this->forceAbsolute or !$this->compiler->config->get('relativePaths', true)) {
+        if ($absolute or $this->forceAbsolute or !$this->compiler->config->get('relativePaths', true)) {
             return $this->absPrefix . $link->getPath();
         }
         return $link->getRelativePath($this->currentNode);
     }
     
-    public function url($link) {
+    public function url($link = null) {
+        if (!isset($link)) {
+            $link = $this->currentNode;
+        }
         if (!($link instanceof SiteNode)) {
             $link = $this->siteMap->get($link);
         }

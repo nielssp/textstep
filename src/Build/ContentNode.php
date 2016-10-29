@@ -19,6 +19,7 @@ class ContentNode extends FileNode
     private $dom = null;
     private $metadata = null;
     private $propertyDefinitions;
+    private $contentName;
     
     public function __construct(File $origin, File $content, $relativePath, array $properties, File $template = null)
     {
@@ -28,6 +29,7 @@ class ContentNode extends FileNode
         $this->contentFile = $content;
         $this->propertyDefinitions = $properties;
         $this->name = preg_replace('/\..+$/', '', $content->getName());
+        $this->contentName = $this->name;
     }
     
     public function __get($property)
@@ -61,8 +63,9 @@ class ContentNode extends FileNode
                 return \Jivoo\I18n\I18n::date('F', $this->published);
             case 'metadata':
                 return $this->getMetadata();
-            case 'relativePath':
             case 'name':
+                return $this->contentName;
+            case 'relativePath':
             case 'originalFile':
                 return $this->$property;
         }
@@ -149,7 +152,7 @@ class ContentNode extends FileNode
     {
         return trim(preg_replace_callback('/%([a-zA-Z0-9_]+)%/', function ($matches) {
             $property = $matches[1];
-            $value = $this->$property;
+            $value = $this->__get($property);
             if (isset($value)) {
                 return $value;
             }
