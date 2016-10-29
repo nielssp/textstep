@@ -19,4 +19,5 @@ return function (View $view, ContentNode $contentNode, simple_html_dom $dom) {
             $sibling = $sibling->nextSibling();
         }
     }
+    $dom->load(rtrim($dom->__toString()), true, false);
 };

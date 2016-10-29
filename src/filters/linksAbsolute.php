@@ -17,6 +17,9 @@ return function (\Blogstep\Build\View $view, ContentNode $contentNode, simple_ht
         foreach ($dom->find('[' . $attribute . '^=bs:]') as $element) {
             $path = preg_replace('/^bs:/', '', $element->getAttribute($attribute));
             $link = $view->currentNode->root->get($path);
+            if (!isset($link)) {
+                throw new \RuntimeException('Could not find node: ' . $path . ' (in ' . $contentNode->getPath() . ')');
+            }
             $element->setAttribute($attribute, $view->url($link));
         }
     }

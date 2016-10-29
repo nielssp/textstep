@@ -21,6 +21,7 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyContentAssets.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToText.php')));
+        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/minifyAssets.php')));
         
         $compiler->clean();
         $compiler->createContentTree($content);

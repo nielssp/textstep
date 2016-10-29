@@ -6,6 +6,8 @@ require 'vendor/autoload.php';
 
 $main = new Blogstep\Main('user');
 
-$main->config['system']['showExceptions'] = true;
+// Development configuration:
+// $main->config['system']['showExceptions'] = true;
+// $main->config['system']['logLevel'] = Psr\Log\LogLevel::DEBUG;
 
 $main->run();
