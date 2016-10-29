@@ -19,6 +19,8 @@ class View extends \Jivoo\View\View
     private $defaultFilters;
     
     public $currentNode = null;
+    
+    private $forceAbsolute = false;
 
     public function __construct(SiteMap $siteMap, Compiler $compiler)
     {
@@ -35,7 +37,7 @@ class View extends \Jivoo\View\View
         $this->availableFilters = $compiler->content->getFilters();
         $this->defaultFilters = $compiler->content->getDefaultFilters();
         
-        foreach (['getNode', 'isCurrent', 'link', 'url', 'filter'] as $f) {
+        foreach (['getNode', 'isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter'] as $f) {
             $this->addFunction($f, [$this, $f]);
         }
     }
@@ -59,6 +61,11 @@ class View extends \Jivoo\View\View
         return $link === $this->currentNode;
     }
     
+    public function forceAbsoluteLinks()
+    {
+        $this->forceAbsolute = true;
+    }
+    
     public function link($link)
     {
         if (!($link instanceof SiteNode)) {
@@ -69,6 +76,9 @@ class View extends \Jivoo\View\View
         }
         if ($link->getName() == 'index.html') {
             $link = $link->parent;
+        }
+        if ($this->forceAbsolute) {
+            return $this->uriPrefix . $link->getPath();
         }
         return $link->getRelativePath($this->currentNode);
     }
@@ -105,5 +115,11 @@ class View extends \Jivoo\View\View
             }
         }
         return $dom->__toString();
+    }
+    
+    public function render($template, $data = array(), $withLayout = true)
+    {
+        $this->forceAbsolute = false;
+        return parent::render($template, $data, $withLayout);
     }
 }
