@@ -12,7 +12,11 @@ class View extends \Jivoo\View\View
 {
     private $siteMap;
     
+    private $compiler;
+    
     private $uriPrefix;
+    
+    private $absPrefix;
     
     private $availableFilters;
     
@@ -28,7 +32,9 @@ class View extends \Jivoo\View\View
             new \Jivoo\Http\Route\AssetScheme($siteMap->getBuildPath()->getRealPath()),
             new \Jivoo\Http\Router()
         );
+        $this->compiler = $compiler;
         $this->uriPrefix = rtrim($compiler->config->get('targetUri', ''), '/') . '/';
+        $this->absPrefix = parse_url($this->uriPrefix, PHP_URL_PATH);
         $this->siteMap = $siteMap;
         $this->addTemplateDir($siteMap->getBuildPath()->getRealPath());
         
@@ -77,8 +83,8 @@ class View extends \Jivoo\View\View
         if ($link->getName() == 'index.html') {
             $link = $link->parent;
         }
-        if ($this->forceAbsolute) {
-            return $this->uriPrefix . $link->getPath();
+        if ($this->forceAbsolute or !$this->compiler->config->get('relativePaths', true)) {
+            return $this->absPrefix . $link->getPath();
         }
         return $link->getRelativePath($this->currentNode);
     }
