@@ -10,7 +10,7 @@ use Blogstep\Build\ContentNode;
 use Blogstep\Build\View;
 use SimpleHtmlDom\simple_html_dom;
 
-return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $maxWidth = 625, $maxHeight = 625, $quality = 100, $linkFull = true) {
+return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $maxWidth = 640, $maxHeight = 480, $quality = 100, $linkFull = true) {
     if (!extension_loaded('gd')) {
         trigger_error('imageSize: missing extension: gd', E_USER_WARNING);
         return;
