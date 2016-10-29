@@ -90,6 +90,11 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return '';
     }
     
+    public function getSize()
+    {
+        return (int) filesize($this->getRealPath());
+    }
+    
     public function getModified()
     {
         return (int) filemtime($this->getRealPath());

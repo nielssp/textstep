@@ -82,11 +82,7 @@ class SiteNode extends InternalNode
                 }
             } elseif ($component != '' and $component != '.') {
                 if (!isset($node->nodes[$component])) {
-                    if (isset($node->nodes[$component . '.html'])) {
-                        $component = $component . '.html';
-                    } else {
-                        return null;
-                    }
+                    return null;
                 }
                 $node = $node->nodes[$component];
             }

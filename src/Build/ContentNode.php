@@ -138,6 +138,13 @@ class ContentNode extends FileNode
         return $dom;
     }
     
+    public function reloadDom()
+    {
+        if (isset($this->dom)) {
+            $this->dom->load($this->dom->__toString(), true, false);
+        }
+    }
+    
     public function path($format)
     {
         return trim(preg_replace_callback('/%([a-zA-Z0-9_]+)%/', function ($matches) {

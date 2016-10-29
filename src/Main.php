@@ -122,14 +122,14 @@ class Main implements \Psr\Log\LoggerAwareInterface
         ob_start();
         
         // Set timezone (required by file logger)
-        if (!isset($this->config['i18n']['timeZone'])) {
+        if (!isset($this->config['user']['timeZone'])) {
             $defaultTimeZone = 'UTC';
             \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
                 $defaultTimeZone = @date_default_timezone_get();
             });
-            $this->config['i18n']['timeZone'] = $defaultTimeZone;
+            $this->config['user']['timeZone'] = $defaultTimeZone;
         }
-        if (!date_default_timezone_set($this->config['i18n']['timeZone'])) {
+        if (!date_default_timezone_set($this->config['user']['timeZone'])) {
             date_default_timezone_set('UTC');
         }
         
