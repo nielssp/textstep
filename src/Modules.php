@@ -23,6 +23,7 @@ namespace Blogstep;
  * @property Files\FileSystem $files
  * @property \Jivoo\Http\Cookie\CookiePool $cookies
  * @property \Jivoo\Security\Auth $auth
+ * @property UserModel $users
  */
 class Modules extends \Jivoo\Modules
 {
@@ -42,5 +43,6 @@ class Modules extends \Jivoo\Modules
         'files' => 'Blogstep\Files\FileSystem',
         'cookies' => 'Jivoo\Http\Cookie\CookiePool',
         'auth' => 'Jivoo\Security\Auth',
+        'users' => 'Blogstep\UserModel',
     ];
 }

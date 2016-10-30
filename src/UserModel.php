@@ -77,6 +77,19 @@ class UserModel implements \Jivoo\Security\UserModel
         return $this->groups;
     }
     
+    public function createGroup($name, $id = null)
+    {
+        $groups = $this->getGroups();
+        if (! isset($id)) {
+            $id = max(array_keys($groups)) + 1;
+        }
+        $state = $this->state->write('groups');
+        $state[$id] = ['name' => $name];
+        $state->close();
+        $this->groups[$id] = new Group($id, $name);
+        return $this->groups[$id];
+    }
+    
     public function getUser($userId)
     {
         if ($userId === 0) {
@@ -97,6 +110,20 @@ class UserModel implements \Jivoo\Security\UserModel
         $groups = $this->getGroups();
         if (isset($groups[$groupId])) {
             return $groups[$groupId];
+        }
+        return null;
+    }
+    
+    public function findGroup($name)
+    {
+        if ($name === 'system') {
+            return $this->systemGroup;
+        }
+        $groups = $this->getGroups();
+        foreach ($groups as $group) {
+            if ($group->getName() === $name) {
+                return $group;
+            }
         }
         return null;
     }

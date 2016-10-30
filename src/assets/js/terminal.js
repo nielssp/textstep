@@ -247,6 +247,25 @@ $terminal.keydown(function (e) {
         }
         e.preventDefault();
         e.stopPropagation();
+    } else if (e.key == 'ArrowLeft' || e.key == 'Backspace') {
+        var start = $terminal[0].selectionStart;
+        var end = $terminal[0].selectionEnd;
+        if (start === end) {
+            if (start <= buffer.length) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+    }
+});
+
+$terminal.click(function () {
+    var start = $terminal[0].selectionStart;
+    var end = $terminal[0].selectionEnd;
+    if (start === end) {
+        if (start < buffer.length) {
+            $terminal[0].selectionStart = $terminal.val().length;
+        }
     }
 });
 

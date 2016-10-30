@@ -107,7 +107,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     private function getMetadataPath()
     {
-        return $this->system->root . '/system/metadata' . '/' . implode('.dir/', $this->path);
+        return $this->getRealPath() . '/.metadata.json';
     }
     
     /**
@@ -117,22 +117,17 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function getMetadata()
     {
         if (! isset($this->metadata)) {
-            if (preg_match('/^\/system\/metadata/', $this->getPath()) === 1) {
-                $this->metadata = new \Jivoo\Store\Config();
-                $this->metadata['owner'] = 0;
-                $this->metadata['group'] = 0;
-                $this->metadata['mode'] = 0;
-            } elseif ($this->getType() !== 'unknown') {
-                if ($this->type === 'directory') {
-                    \Jivoo\Utilities::dirExists(
-                        $this->getMetadataPath() . '.dir',
-                        true,
-                        true
-                    );
+            if ($this->getType()  === 'directory') {
+                $store = new \Jivoo\Store\JsonStore($this->getMetadataPath());
+                if ($store->touch()) {
+                    $this->metadata = new \Jivoo\Store\Config($store);
+                } else {
+                    $this->metadata = new \Jivoo\Store\Config();
+                    $this->metadata['mode'] = 0x00;
+                    if (is_readable($this->getRealPath())) {
+                        $this->metadata['mode'] = 0x2A;
+                    }
                 }
-                $store = new \Jivoo\Store\JsonStore($this->getMetadataPath() . '.json');
-                $store->touch();
-                $this->metadata = new \Jivoo\Store\Config($store);
             } elseif (isset($this->parent)) {
                 return $this->parent->getMetadata();
             } else {
@@ -150,9 +145,15 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     public function setMultiple($values, $recursive = false)
     {
+        if ($this->getType() !== 'directory') {
+            return false;
+        }
         if ($recursive) {
             foreach ($this as $file) {
-                $file->setMultiple($values, $recursive);
+                try {
+                    $file->setMultiple($values, $recursive);
+                } catch (\Blogstep\UnauthorizedException $e) {
+                }
             }
         }
         $this->assumeWritable();
@@ -163,9 +164,15 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     public function set($name, $value, $recursive = false)
     {
+        if ($this->getType() !== 'directory') {
+            return false;
+        }
         if ($recursive) {
             foreach ($this as $file) {
-                $file->set($name, $value, $recursive);
+                try {
+                    $file->set($name, $value, $recursive);
+                } catch (\Blogstep\UnauthorizedException $e) {
+                }
             }
         }
         $this->assumeWritable();
@@ -382,9 +389,6 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             $this->invalidate();
             return $this->delete();
         } elseif (rename($this->getRealPath(), $destination->getRealPath())) {
-            if (file_exists($this->getMetadataPath() . '.json')) {
-                rename($this->getMetadataPath() . '.json', $destination->getMetadataPath() . '.json');
-            }
             $this->invalidate();
             return true;
         }
@@ -399,19 +403,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $this->assumeWritable();
         $file->moveTo($this->getRealPath());
         $this->type = \Jivoo\Utilities::getFileExtension($this->getName());
-        $metadata = $this->getMetadata();
-        if (isset($this->system->user)) {
-            $metadata['owner'] = $this->system->user->getId();
-        }
-        $parent = $this->getParent();
-        $metadata['group'] = $parent->getGroup();
-        $metadata['mode'] = $parent->getMode();
-        if ($metadata->save()) {
-            return true;
-        }
-        $this->type = 'unknown';
-        unlink($this->getRealPath());
-        return false;
+        return true;
     }
     
     public function makeDirectory()
@@ -446,18 +438,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $this->assumeWritable();
         if (touch($this->getRealPath())) {
             $this->type = \Jivoo\Utilities::getFileExtension($this->getName());
-            $metadata = $this->getMetadata();
-            if (isset($this->system->user)) {
-                $metadata['owner'] = $this->system->user->getId();
-            }
-            $parent = $this->getParent();
-            $metadata['group'] = $parent->getGroup();
-            $metadata['mode'] = $parent->getMode();
-            if ($metadata->save()) {
-                return true;
-            }
-            $this->type = 'unknown';
-            unlink($this->getRealPath());
+            return true;
         }
         return false;
     }
@@ -533,14 +514,11 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             if (!rmdir($this->getRealPath())) {
                 return false;
             }
-            if (is_dir($this->getMetadataPath() . '.dir')) {
-                rmdir($this->getMetadataPath() . '.dir');
+            if (file_exists($this->getMetadataPath())) {
+                rmdir($this->getMetadataPath());
             }
         } elseif (!unlink($this->getRealPath())) {
             return false;
-        }
-        if (file_exists($this->getMetadataPath() . '.json')) {
-            unlink($this->getMetadataPath() . '.json');
         }
         $this->invalidate();
         return true;
