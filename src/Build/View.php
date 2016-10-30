@@ -111,13 +111,16 @@ class View extends \Jivoo\View\View
     public function filter(ContentNode $content, array $filters = []) {
         $dom = $content->createDom();
         $filters = array_merge($filters, $this->defaultFilters);
-        foreach ($filters as $name) {
-            $paramStart = strpos($name, '(');
-            $param = [];
-            if ($paramStart !== false) {
-                $param = substr($name, $paramStart + 1, -1);
-                $name = substr($name, 0, $paramStart);
-                $param = \Jivoo\Json::decode('[' . $param . ']'); 
+        foreach ($filters as $name => $param) {
+            if (is_int($name)) {
+                $name = $param;
+                $paramStart = strpos($name, '(');
+                $param = [];
+                if ($paramStart !== false) {
+                    $param = substr($name, $paramStart + 1, -1);
+                    $name = substr($name, 0, $paramStart);
+                    $param = \Jivoo\Json::decode('[' . $param . ']'); 
+                }
             }
             if (isset($this->availableFilters[$name])) {
                 call_user_func_array($this->availableFilters[$name], array_merge(
@@ -131,6 +134,8 @@ class View extends \Jivoo\View\View
     
     public function render($template, $data = array(), $withLayout = true)
     {
+//        $this->resources->clear();
+        $this->blocks->clear();
         $this->forceAbsolute = false;
         return parent::render($template, $data, $withLayout);
     }

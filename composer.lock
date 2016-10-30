@@ -306,12 +306,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/view.git",
-                "reference": "1400983ee7f2d0d567171a831be910deb9f5c9e4"
+                "reference": "bd5cf293eb4c8d55c4317aac0c106ef774755828"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/1400983ee7f2d0d567171a831be910deb9f5c9e4",
-                "reference": "1400983ee7f2d0d567171a831be910deb9f5c9e4",
+                "url": "https://api.github.com/repos/jivoo/view/zipball/bd5cf293eb4c8d55c4317aac0c106ef774755828",
+                "reference": "bd5cf293eb4c8d55c4317aac0c106ef774755828",
                 "shasum": ""
             },
             "require": {
@@ -349,7 +349,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-10-28 21:32:45"
+            "time": "2016-10-30 10:36:19"
         },
         {
             "name": "matthiasmullie/minify",

@@ -94,7 +94,7 @@ class Compiler
     {
         foreach ($source as $file) {
             $name = $file->getName();
-            if (!Unicode::startsWith($name, '.')) {
+            if (!Unicode::startsWith($name, '.') and $name !== 'filters')  { // TODO: ignore system
                 $this->createPathStructure($this->siteMap, $file);
             }
         }

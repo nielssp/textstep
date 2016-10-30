@@ -38,6 +38,15 @@ class Build extends \Blogstep\AuthenticatedSnippet
                 $compiler->content->addFilter($name, require $this->m->main->p('src/filters/' . $file));
             }
         }
+        if ($structure->get('filters')->getType() === 'directory') {
+            foreach ($structure->get('filters') as $file) {
+                if (\Jivoo\Unicode::endsWith($file->getName(), '.php')) {
+                    $name = substr($file->getName(), 0, -4);
+                    $compiler->content->addFilter($name, require $file->getRealPath());
+                }
+            }
+        }
+        
         $compiler->content->setDefaultFilters(['links']);
         
         $compiler->createStructure($structure);
