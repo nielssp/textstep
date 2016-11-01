@@ -17,9 +17,6 @@ return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $ma
     }
     $reloadDom = false;
     foreach ($dom->find('img') as $element) {
-        if ($element->hasAttribute('width') or $element->hasAttribute('height')) {
-            continue;
-        }
         $src = $element->getAttribute('src');
         if (Jivoo\Unicode::startsWith($src, 'bs:')) {
             $path = preg_replace('/^bs:/', '', $src);
@@ -42,12 +39,25 @@ return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $ma
         $width = $type[0];
         $height = $type[1];
         if ($width > $maxWidth or $height > $maxHeight) {
-            $ratio = $width / $height;
+            if (isset($element->width) and isset($element->height)) {
+                $requestedWidth = $element->width;
+                $requestedHeight = $element->height;
+            } elseif (isset($element->width)) {
+                $requestedWidth = $element->width;
+                $requestedHeight = floor($requestedWidth * $height / $width);
+            } elseif (isset($element->height)) {
+                $requestedHeight = $element->height;
+                $requestedWidth = floor($requestedHeight * $width / $height);
+            } else {
+                $requestedWidth = $width;
+                $requestedHeight = $height;
+            }
+            $ratio = $requestedWidth / $requestedHeight;
             if ($ratio < $maxWidth / $maxHeight) {
-                $targetHeight = min($height, $maxHeight);
+                $targetHeight = min($requestedHeight, $maxHeight);
                 $targetWidth = floor($targetHeight * $ratio);
             } else {
-                $targetWidth = min($width, $maxWidth);
+                $targetWidth = min($requestedWidth, $maxWidth);
                 $targetHeight = floor($targetWidth / $ratio);
             }
             $destType = $quality == 100 ? 'png' : 'jpeg';
