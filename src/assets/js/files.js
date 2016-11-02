@@ -438,7 +438,7 @@ actions.define('rename', function () {
     if (stack.length <= 1) {
         return;
     }
-    var name = prompt('Enter the new name:');
+    var name = prompt('Enter the new name:', files[cwd].data.name);
     if (name !== null) {
         if (name === '') {
             alert('Invalid name');
@@ -471,5 +471,13 @@ actions.define('trash', function () {
                 refresh();
             }
         });
+    }
+});
+
+$(document).keydown(function (e) {
+    if (e.key === 'F2') {
+        actions.active('rename');
+        e.preventDefault();
+        e.stopPropagation();
     }
 });

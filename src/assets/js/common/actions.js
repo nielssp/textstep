@@ -10,6 +10,7 @@ var $ = require('jquery');
 exports.define = defineAction;
 exports.enable = enable;
 exports.disable = disable;
+exports.active = activate;
 
 function defineAction(name, callback)
 {
@@ -19,6 +20,11 @@ function defineAction(name, callback)
         callback();
         return false;
     });
+}
+
+function activate(name)
+{
+    $('[data-action="' + name + '"]').click();
 }
 
 function enable(name)
