@@ -46,7 +46,6 @@ body {
   font-family: "Open Sans", sans-serif;
   color: #000000;
   font-size: 87.5%;
-  margin: 10px;
   height: 100%; }
 
 header, footer, section, nav {
@@ -895,6 +894,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 aside {
   float: left;
   width: 220px;
+  padding: 10px 0 0 10px;
   display: none; }
   aside header {
     background-color: #000;
@@ -976,9 +976,12 @@ aside {
           font-weight: normal; }
 
 main {
-  margin-right: 64px;
+  margin-right: 68px;
   display: block;
-  min-height: 100%; }
+  min-height: 100%;
+  padding: 10px 0 10px 0; }
+  main > .frame {
+    min-height: 100%; }
 
 @media screen and (max-width: 767px) {
   body.show-menu:before {
@@ -1014,13 +1017,11 @@ main {
     margin-left: 230px; } }
 .shortcuts {
   float: right;
-  width: 64px;
-  margin-top: 0px;
+  margin: 10px 10px 0 0;
   text-align: center; }
   .shortcuts .shortcut {
     position: relative;
     height: 64px;
-    margin-left: 16px;
     /*margin-bottom: 16px;*/
     width: 48px;
     cursor: pointer;
