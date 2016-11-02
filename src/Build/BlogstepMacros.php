@@ -19,7 +19,7 @@ class BlogstepMacros extends Macros
 {
     protected $namespace = 'bs';
 
-    protected $properties = ['path', 'as', 'paginate'];
+    protected $properties = ['path', 'as'];
     
     /**
      * @var SiteNode
@@ -32,8 +32,6 @@ class BlogstepMacros extends Macros
     public $compiler = null;
     
     private $context = [];
-    
-    private $explodes = [];
     
     private function evaluate($_code, $_statement = false)
     {
@@ -48,7 +46,7 @@ class BlogstepMacros extends Macros
         return $_ret;
     }
 
-    public function explodeMacro(HtmlNode $node, TemplateNode $value)
+    public function forkMacro(HtmlNode $node, TemplateNode $value)
     {
         if (isset($this->siteNode) and isset($this->compiler)) {
             $pathFormat = $node->getProperty('bs:path');
@@ -102,10 +100,6 @@ class BlogstepMacros extends Macros
             throw new InvalidTemplateException('Empty foreach-node must folow another foreach-node');
         }
         $var = $node->getProperty('bs:as');
-        $paginate = $node->getProperty('bs:paginate');
-        if (isset($paginate)) {
-            
-        }
         $foreachNode = new ForeachNode(PhpNode::expr($value)->code . ' as ' . $var->code);
         $node->replaceWith($foreachNode);
         $foreachNode->append($node);
