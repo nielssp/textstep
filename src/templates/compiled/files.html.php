@@ -1,4 +1,4 @@
-<?php $this->import('dist/files.js'); ?><div class="frame">
+<?php $this->import('css/files.css;dist/files.js'); ?><div class="frame">
 <?php echo $this->begin('appmenu'); ?><div>
 <header>Editor</header>
 <nav>
@@ -47,6 +47,9 @@
 </button>
 <button data-action="paste">
 <span class="icon icon-edit-paste"></span>
+</button>
+<button data-action="rename">
+<span class="icon icon-edit-rename"></span>
 </button>
 <button data-action="trash">
 <span class="icon icon-edit-trash"></span>

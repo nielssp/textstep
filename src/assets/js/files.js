@@ -9,6 +9,10 @@
 var $ = require('jquery');
 var actions = require('./common/actions');
 var ui = require('./common/ui');
+var paths = require('./common/paths');
+var dragula = require('dragula');
+
+require('dragula/dist/dragula.min.css');
 
 var PATH = $('body').data('path').replace(/\/$/, '');
 
@@ -314,6 +318,8 @@ function openFile(name, $column)
     });
 }
 
+var drag = dragula([]);
+
 function createColumns()
 {
     var current = $columns.children().length;
@@ -325,11 +331,13 @@ function createColumns()
             $column.append('<ul>');
             $column.appendTo($columns);
             initColumn($column);
+            drag.containers.push($column.children()[0]);
         }
     } else if (ideal < current) {
         var remove = current - ideal;
         for (var i = 0; i < remove; i++) {
             $columns.children().last().remove();
+            drag.containers.splice(-1);
         }
     } else {
         return false;
@@ -426,8 +434,34 @@ actions.define('new-file', function () {
         });
     }
 });
+actions.define('rename', function () {
+    if (stack.length <= 1) {
+        return;
+    }
+    var name = prompt('Enter the new name:');
+    if (name !== null) {
+        if (name === '') {
+            alert('Invalid name');
+        }
+        var path = cwd;
+        var destination = paths.convert(name, stack[stack.length - 2]);
+        $.ajax({
+            url: PATH + '/api/move',
+            method: 'post',
+            data: {request_token: TOKEN, path: path, destination: destination},
+            success: function (data) {
+                goUp();
+                refresh();
+                enter(destination);
+            },
+            error: function () {
+                ui.shake($('.frame'));
+            }
+        });
+    }
+});
 actions.define('trash', function () {
-    if (confirm('Delete file: ' + cwd)) {
+    if (confirm('Permanently delete file: ' + cwd)) {
         $.ajax({
             url: PATH + '/api/delete',
             method: 'post',

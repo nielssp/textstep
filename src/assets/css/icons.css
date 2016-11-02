@@ -138,6 +138,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .toolbar .icon-edit-plus:before {
   background-image: url(../img/icons/22/edit-plus.png); }
 
+.icon-edit-rename:before {
+  background-image: url(../img/icons/32/edit-rename.png); }
+
+.files-columns .icon-size-16 .icon-edit-rename:before {
+  background-image: url(../img/icons/16/edit-rename.png); }
+
+.toolbar .icon-edit-rename:before {
+  background-image: url(../img/icons/22/edit-rename.png); }
+
 .icon-go-up:before {
   background-image: url(../img/icons/32/go-up.png); }
 
