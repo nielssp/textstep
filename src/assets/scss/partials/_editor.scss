@@ -7,6 +7,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 .editor-frame {
     padding: 0;
+    display: flex;
+    flex-direction: column;
 
     .editor-statusbar {
         color: $frameFg;
@@ -60,9 +62,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     }
 
     .CodeMirror {
+        flex-grow: 1;
         border-radius: 0;
         border-bottom: 1px solid #666;
         border-top: 1px solid #666;
-        height: 400px;
+        
+        .CodeMirror-scroll {
+            overflow: auto!important;
+        }
     }
 }

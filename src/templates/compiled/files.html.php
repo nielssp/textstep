@@ -15,8 +15,7 @@
 <span class="header-path"><?php echo \Jivoo\View\Html::h($fs->getPath()); ?></span>
         &ndash; Files
 </div>
-<div class="frame-content">
-<div class="toolbar">
+<div class="frame-toolbar">
 <div class="button-group">
 <button data-action="back" title="Go back">
 <span class="icon icon-go-back"></span>
@@ -31,13 +30,13 @@
 <span class="icon icon-go-home"></span>
 </button>
 </div>
-<span class="toolbar-separator"></span>
+<span class="frame-toolbar-separator"></span>
 <div class="button-group">
 <button data-action="new-folder">
 <span class="icon icon-edit-new-folder"></span>
 </button>
 </div>
-<span class="toolbar-separator"></span>
+<span class="frame-toolbar-separator"></span>
 <div class="button-group">
 <button data-action="cut">
 <span class="icon icon-edit-cut"></span>
@@ -56,7 +55,7 @@
 </button>
 </div>
 </div>
-<div class="files-columns" data-token="<?php echo $token; ?>">
+<div class="frame-content files-columns" data-token="<?php echo $token; ?>">
 <div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
 <ul>
 <?php foreach ($fs as $file): ?>
@@ -65,7 +64,6 @@
 </li><?php endforeach; ?>
 
 </ul>
-</div>
 </div>
 </div>
 </div>

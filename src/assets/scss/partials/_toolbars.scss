@@ -5,9 +5,7 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
-.toolbar {
-    margin-bottom: 10px; 
-    
+.frame-toolbar {
     & > * {
         vertical-align: top;
     }

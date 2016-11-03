@@ -9,7 +9,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 $size32: '.shortcuts, .files-grid';
 $size16: '.files-columns';
-$size22: '.toolbar';
+$size22: '.frame-toolbar';
 
 @mixin icon($name) {
     .icon-#{$name} {

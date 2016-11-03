@@ -7,10 +7,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 .files-columns {
     position: relative;
+    display: flex;
+    align-items: stretch;
     & > .files-panel {
         float: left;
         width: 100%;
-        height: 100%;
     }
     &:after {
         content: ' ';
@@ -26,6 +27,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     margin-bottom: 5px;
     overflow-y: scroll;
     min-height: 200px;
+    flex-grow: 1;
     position: relative;
     &.readonly {
         background-color: #A59B9B;

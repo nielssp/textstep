@@ -50,10 +50,24 @@ main {
     margin-right: 48px + 20px;
     display: block;
     min-height: 100%;
-    padding: 10px 0 10px 0;
+    padding: 10px 0 10px 10px;
+    display: flex;
+    flex-direction: column;
     
     & > .frame {
-        min-height: 100%;
+        flex-grow: 1;
+        
+        @media screen and  (max-width: $sm - 1) {
+            & > .frame-header {
+                padding: 10px 6px;
+
+                & > .actions, & > .actions-left {
+                    a {
+                        width: 35px;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -96,7 +110,7 @@ main {
         display: block;
     }
     main {
-        margin-left: 230px;
+        margin-left: 210px;
     }
 }
 

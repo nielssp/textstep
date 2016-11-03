@@ -786,7 +786,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 .frame {
   text-align: left;
-  border: 1px solid #000; }
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column; }
   .frame-header {
     background-color: #000;
     color: #fff;
@@ -797,7 +799,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border: 1px solid #A2A2A2;
     border-right: 1px solid #4F4F4F;
     border-bottom: 1px solid #4F4F4F;
-    position: relative; }
+    position: relative;
+    flex-grow: 0; }
     .frame-header > .actions, .frame-header .actions-left {
       position: absolute;
       top: 1px;
@@ -840,11 +843,21 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .frame-header > .actions-left {
       text-align: left;
       left: 1px; }
+  .frame-toolbar {
+    background-color: #AEAAAE;
+    border-top: 1px solid #000;
+    color: #000;
+    padding: 6px;
+    flex-grow: 0; }
+    .frame-toolbar ~ .frame-content {
+      padding-top: 0;
+      border-top: none; }
   .frame-content {
     background-color: #AEAAAE;
     border-top: 1px solid #000;
     color: #000;
-    padding: 6px; }
+    padding: 6px;
+    flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
 
@@ -877,13 +890,11 @@ Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
-.toolbar {
-  margin-bottom: 10px; }
-  .toolbar > * {
-    vertical-align: top; }
-  .toolbar-separator {
-    display: inline-block;
-    width: 10px; }
+.frame-toolbar > * {
+  vertical-align: top; }
+.frame-toolbar-separator {
+  display: inline-block;
+  width: 10px; }
 
 /*
 BlogSTEP 
@@ -979,9 +990,16 @@ main {
   margin-right: 68px;
   display: block;
   min-height: 100%;
-  padding: 10px 0 10px 0; }
+  padding: 10px 0 10px 10px;
+  display: flex;
+  flex-direction: column; }
   main > .frame {
-    min-height: 100%; }
+    flex-grow: 1; }
+    @media screen and (max-width: 767px) {
+      main > .frame > .frame-header {
+        padding: 10px 6px; }
+        main > .frame > .frame-header > .actions a, main > .frame > .frame-header > .actions-left a {
+          width: 35px; } }
 
 @media screen and (max-width: 767px) {
   body.show-menu:before {
@@ -1014,7 +1032,7 @@ main {
     display: block; }
 
   main {
-    margin-left: 230px; } }
+    margin-left: 210px; } }
 .shortcuts {
   float: right;
   margin: 10px 10px 0 0;
@@ -1071,7 +1089,9 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 .editor-frame {
-  padding: 0; }
+  padding: 0;
+  display: flex;
+  flex-direction: column; }
   .editor-frame .editor-statusbar {
     color: #000000; }
   .editor-frame .editor-toolbar {
@@ -1105,10 +1125,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .editor-frame .editor-toolbar.disabled-for-preview a:not(.no-disable) {
       background: transparent; }
   .editor-frame .CodeMirror {
+    flex-grow: 1;
     border-radius: 0;
     border-bottom: 1px solid #666;
-    border-top: 1px solid #666;
-    height: 400px; }
+    border-top: 1px solid #666; }
+    .editor-frame .CodeMirror .CodeMirror-scroll {
+      overflow: auto !important; }
 
 /*
 BlogSTEP 
@@ -1117,11 +1139,12 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 .files-columns {
-  position: relative; }
+  position: relative;
+  display: flex;
+  align-items: stretch; }
   .files-columns > .files-panel {
     float: left;
-    width: 100%;
-    height: 100%; }
+    width: 100%; }
   .files-columns:after {
     content: ' ';
     display: block;
@@ -1134,6 +1157,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   margin-bottom: 5px;
   overflow-y: scroll;
   min-height: 200px;
+  flex-grow: 1;
   position: relative; }
   .files-panel.readonly {
     background-color: #A59B9B; }

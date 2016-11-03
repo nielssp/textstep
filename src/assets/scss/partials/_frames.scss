@@ -11,6 +11,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &-header {
         @include frame-header;
     }
+    &-toolbar {
+        @include frame-toolbar;
+        & ~ .frame-content {
+            padding-top: 0;
+            border-top: none;
+        }
+    }
     &-content {
         @include frame-content;
     }

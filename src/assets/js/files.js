@@ -354,13 +354,11 @@ function resizeView()
 $columns.empty();
 createColumns();
 cd(cwd);
-resizeView();
 
 $(window).resize(function () {
     if (createColumns()) {
         updateColumns();
     }
-    resizeView();
 });
 
 $(document).keypress(function (e) {

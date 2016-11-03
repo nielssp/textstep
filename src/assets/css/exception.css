@@ -785,7 +785,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 .frame {
   text-align: left;
-  border: 1px solid #000; }
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column; }
   .frame-header {
     background-color: #000;
     color: #fff;
@@ -796,7 +798,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border: 1px solid #A2A2A2;
     border-right: 1px solid #4F4F4F;
     border-bottom: 1px solid #4F4F4F;
-    position: relative; }
+    position: relative;
+    flex-grow: 0; }
     .frame-header > .actions, .frame-header .actions-left {
       position: absolute;
       top: 1px;
@@ -839,11 +842,21 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .frame-header > .actions-left {
       text-align: left;
       left: 1px; }
+  .frame-toolbar {
+    background-color: #AEAAAE;
+    border-top: 1px solid #000;
+    color: #000;
+    padding: 6px;
+    flex-grow: 0; }
+    .frame-toolbar ~ .frame-content {
+      padding-top: 0;
+      border-top: none; }
   .frame-content {
     background-color: #AEAAAE;
     border-top: 1px solid #000;
     color: #000;
-    padding: 6px; }
+    padding: 6px;
+    flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
 
