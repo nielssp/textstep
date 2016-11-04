@@ -856,7 +856,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-top: 1px solid #000;
     color: #000;
     padding: 6px;
-    flex-grow: 1; }
+    flex-grow: 1;
+    display: flex;
+    position: relative;
+    align-items: stretch; }
+    .frame-content > .stretch {
+      flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
 

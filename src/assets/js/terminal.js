@@ -133,11 +133,6 @@ var commands = {
     }
 };
 
-function resizeView()
-{
-    $terminal.height($(window).height() - 200);
-}
-
 function flush()
 {
     $terminal.val(buffer);
@@ -272,6 +267,3 @@ $terminal.click(function () {
 exec('who-am-i', {}, function (data) {
     user = data;
 });
-
-resizeView();
-$(window).resize(resizeView);

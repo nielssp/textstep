@@ -857,7 +857,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-top: 1px solid #000;
     color: #000;
     padding: 6px;
-    flex-grow: 1; }
+    flex-grow: 1;
+    display: flex;
+    position: relative;
+    align-items: stretch; }
+    .frame-content > .stretch {
+      flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
 
@@ -1128,9 +1133,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     flex-grow: 1;
     border-radius: 0;
     border-bottom: 1px solid #666;
-    border-top: 1px solid #666; }
+    border-top: 1px solid #666;
+    position: relative; }
     .editor-frame .CodeMirror .CodeMirror-scroll {
-      overflow: auto !important; }
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      padding: 10px; }
 
 /*
 BlogSTEP 
@@ -1154,7 +1165,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   border: 1px solid #555;
   border-right: 1px solid #fff;
   border-bottom: 1px solid #fff;
-  margin-bottom: 5px;
   overflow-y: scroll;
   min-height: 200px;
   flex-grow: 1;

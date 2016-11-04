@@ -29,10 +29,10 @@ var SimpleMDE = require('simplemde');
 
 var simplemde = new SimpleMDE({
     autofocus: true,
-//        autosave: {
-//            enabled: true,
-//            uniqueId: 'todo'
-//        },
+    autosave: {
+        enabled: true,
+        uniqueId: path
+    },
     renderingConfig: {
         codeSyntaxHighlighting: true
     },
@@ -81,6 +81,7 @@ function saveFile()
         data: {request_token: TOKEN, path: path, data: simplemde.value()},
         success: function (data) {
             alert('Saved!');
+            simplemde.clearAutosavedValue();
         },
         error: function () {
             alert('could not save file');

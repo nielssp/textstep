@@ -17,6 +17,6 @@
 </span>
 </div>
 <div class="frame-content">
-<textarea id="terminal" data-token="<?php echo $token; ?>"></textarea>
+<textarea id="terminal" class="stretch" data-token="<?php echo $token; ?>"></textarea>
 </div>
 </div>

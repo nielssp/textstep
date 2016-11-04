@@ -66,9 +66,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-radius: 0;
         border-bottom: 1px solid #666;
         border-top: 1px solid #666;
+        position: relative;
         
         .CodeMirror-scroll {
-            overflow: auto!important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            padding: 10px;
         }
     }
 }
