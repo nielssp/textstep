@@ -5,7 +5,23 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+exports.dirName = dirName;
+exports.fileName = fileName;
 exports.convert = convert;
+
+function dirName(path)
+{
+    var path = path.replace(/\/[^\/]+$/, '');
+    if (path === '') {
+        return '/';
+    }
+    return path;
+}
+
+function fileName(path)
+{
+    return path.replace(/^.*\//, '');
+}
 
 function convert(path, cwd)
 {

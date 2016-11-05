@@ -13,15 +13,21 @@ class Move extends \Blogstep\AuthenticatedSnippet
     
     public function post(array $data)
     {
-        if (!isset($data['path']) or !isset($data['destination'])) {
+        if (isset($data['paths'])) {
+            $paths = $data['paths'];
+        } elseif (isset($data['path']) and isset($data['destination'])) {
+            $paths = [$data['path'] => $data['destination']];
+        } else {
             return $this->error('Expected data: path, destination');
         }
-        $fs = $this->m->files->get($data['path']);
-        $dest = $this->m->files->get($data['destination']);
-        if ($fs->move($dest)) {
-            return $this->ok();
+        foreach ($paths as $path => $destination) {
+            $fs = $this->m->files->get($path);
+            $dest = $this->m->files->get($destination);
+            if (!$fs->move($dest)) {
+                return $this->error('File could not be moved');
+            }
         }
-        return $this->error('File could not be copied');
+        return $this->ok();
     }
     
     public function get()

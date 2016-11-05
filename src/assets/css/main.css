@@ -1205,7 +1205,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   overflow: hidden;
   text-overflow: ellipsis;
   width: 96px;
-  text-align: center; }
+  text-align: center;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; }
   .file:before {
     font-size: 32px;
     display: inline-block;
@@ -1218,7 +1220,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     display: block;
     margin: 0 auto; }
   .file.duplicate {
-    color: #555500; }
+    color: #005500; }
 
 a.file:hover, a.file:active, a.file.active {
   background-color: #fff;

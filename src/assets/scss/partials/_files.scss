@@ -72,6 +72,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     text-overflow: ellipsis;
     width: 96px;
     text-align: center;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 
     @include icon-size(32px);
     &:before {
@@ -80,7 +82,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     }
     
     &.duplicate {
-        color: #555500;
+        color: #005500;
     }
 }
 

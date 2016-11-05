@@ -24,3 +24,25 @@ exports.shake = function (el, amount) {
                         .finish();
             });
 };
+
+exports.onLongPress = function(el, callback) {
+    var touching = false;
+    
+    var start = function (e) {
+        touching = true;
+    };
+    
+    var end = function (e) {
+        touching = false;
+    };
+    
+    el.addEventListener('touchstart', start);
+    el.addEventListener('touchend', end);
+    el.addEventListener('touchcancel', end);
+    el.addEventListener('touchmove', end);
+    el.addEventListener('contextmenu', function (e) {
+        if (touching) {
+            return callback(e);
+        }
+    });
+};

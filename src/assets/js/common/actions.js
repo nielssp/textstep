@@ -13,6 +13,8 @@ exports.disable = disable;
 exports.activate = activate;
 exports.bind = bind;
 
+var actions = {};
+
 var keyMap = {};
 
 $(window).keydown(function (e) {
@@ -63,6 +65,7 @@ function bind(key, action)
 
 function defineAction(name, callback)
 {
+    actions[name] = callback;
     $('[data-action="' + name + '"]').click(function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -73,7 +76,7 @@ function defineAction(name, callback)
 
 function activate(name)
 {
-    $('[data-action="' + name + '"]').click();
+    actions[name]();
 }
 
 function enable(name)

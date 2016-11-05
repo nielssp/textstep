@@ -13,15 +13,20 @@ class Delete extends \Blogstep\AuthenticatedSnippet
     
     public function post(array $data)
     {
-        $path = '';
-        if (isset($data['path'])) {
-            $path = $data['path'];
+        if (isset($data['paths'])) {
+            $paths = $data['paths'];
+        } elseif (isset($data['path'])) {
+            $paths = [$data['path']];
+        } else {
+            return $this->error('Expected data: path');
         }
-        $fs = $this->m->files->get($path);
-        if ($fs->delete()) {
-            return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
+        foreach ($paths as $path) {
+            $fs = $this->m->files->get($path);
+            if (!$fs->delete()) {
+                return $this->error('File could not be deleted');
+            }
         }
-        return $this->response->withStatus(\Jivoo\Http\Message\Status::INTERNAL_SERVER_ERROR);
+        return $this->ok();
     }
     
     public function get()

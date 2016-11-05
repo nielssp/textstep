@@ -97,6 +97,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .files-list .file-uploading:before {
   background-image: url(../img/icons/16/file-uploading.png); }
 
+.file-multiple:before {
+  background-image: url(../img/icons/32/file-multiple.png); }
+
+.files-list .file-multiple:before {
+  background-image: url(../img/icons/16/file-multiple.png); }
+
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }
 

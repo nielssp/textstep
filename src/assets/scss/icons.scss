@@ -107,6 +107,7 @@ $size22: '.frame-toolbar';
 @include filetype('html');
 @include filetype('php');
 @include filetype('uploading');
+@include filetype('multiple');
 
 @include icon('edit-copy');
 @include icon('edit-cut');
