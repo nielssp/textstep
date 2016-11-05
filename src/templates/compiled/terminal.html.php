@@ -8,15 +8,17 @@
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
-<span class="actions-left">
+<div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
-</span>
-        Terminal
-<span class="actions">
-<a href="" data-action="close"></a>
-</span>
 </div>
-<div class="frame-content">
+<div class="frame-header-title">
+            Terminal
+</div>
+<div class="frame-header-actions">
+<a href="" data-action="close"></a>
+</div>
+</div>
+<div class="frame-content frame-content-flex">
 <textarea id="terminal" class="stretch" data-token="<?php echo $token; ?>"></textarea>
 </div>
 </div>

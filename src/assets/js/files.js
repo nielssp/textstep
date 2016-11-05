@@ -20,6 +20,8 @@ var $columns = $('.files-columns');
 
 var TOKEN = $columns.data('token');
 
+var $shelf = $('.files-shelf > .files-grid');
+
 var $currentColumn = $columns.children().first();
 
 var cwd = $currentColumn.data('path');
@@ -131,16 +133,14 @@ function createFile(file)
 
 function addFile($column, file)
 {
-    var $li = $('<li>');
     var $file = createFile(file);
-    $li.append($file);
-    $column.children('ul').append($li);
+    $column.children('.files-list').append($file);
     return $file;
 }
 
 function addFileInfo($column, file)
 {
-    var $li = $('<li class="file-info">');
+    var $li = $('<div class="file-info">');
     var $icon = $('<span class="file">');
     $icon.addClass('file-' + file.type);
     if (!file.read) {
@@ -159,7 +159,7 @@ function addFileInfo($column, file)
             open(file.path);
         }).appendTo($li);
     }
-    $column.children('ul').append($li);
+    $column.children('.files-list').replaceWith($li);
 }
 
 var originalCwd = cwd;
@@ -262,19 +262,24 @@ function updateColumns()
 function updateColumn($column, path)
 {
     if ($column.data('path') !== path) {
-        var $list = $column.children('ul');
+        var $list = $column.children('.files-list');
+        if ($list.length === 0) {
+            $column.empty();
+            $list = $('<div class="files-list">');
+            $column.append($list);
+        }
         $list.empty();
         $column.data('path', null);
         $column.removeClass('readonly');
         if ($column.next().data('path') === path) {
             $column.data('path', path);
-            $column.next().children('ul').children().appendTo($list);
+            $column.next().children('.files-list').children().appendTo($list);
             if ($column.next().hasClass('readonly')) {
                 $column.addClass('readonly');
             }
         } else if ($column.prev().data('path') === path) {
             $column.data('path', path);
-            $column.prev().children('ul').children().appendTo($list);
+            $column.prev().children('.files-list').children().appendTo($list);
             if ($column.prev().hasClass('readonly')) {
                 $column.addClass('readonly');
             }
@@ -318,7 +323,27 @@ function openFile(name, $column)
     });
 }
 
-var drag = dragula([]);
+//var drag = dragula([$shelf[0]], {
+//    copy: true,
+//    revertOnSpill: true
+//});
+//
+//var currentMousePos = { x: -1, y: -1 };
+//$(document).mousemove(function(event) {
+//    currentMousePos.x = event.pageX;
+//    currentMousePos.y = event.pageY;
+//});
+
+//drag.on('cloned', function (clone, original, type) {
+//    clone.style.width = '';
+//    clone.style.height = '';
+//    if (type === 'mirror') {
+//        console.log(1);
+//        clone.style.left = currentMousePos.x + 'px';
+//        clone.style.top = currentMousePos.y + 'px';
+//    }
+//    $(clone).removeClass('active');
+//});
 
 function createColumns()
 {
@@ -328,16 +353,16 @@ function createColumns()
         var add = ideal - current;
         for (var i = 0; i < add; i++) {
             var $column = $('<div class="files-panel">');
-            $column.append('<ul>');
+            $column.append('<div class="files-list">');
             $column.appendTo($columns);
             initColumn($column);
-            drag.containers.push($column.children()[0]);
+//            drag.containers.push($column.children()[0]);
         }
     } else if (ideal < current) {
         var remove = current - ideal;
         for (var i = 0; i < remove; i++) {
             $columns.children().last().remove();
-            drag.containers.splice(-1);
+//            drag.containers.splice(-1);
         }
     } else {
         return false;
@@ -467,6 +492,34 @@ actions.define('trash', function () {
             success: function (data) {
                 goUp();
                 refresh();
+            }
+        });
+    }
+});
+actions.define('cut', function () {
+    if (files.hasOwnProperty(cwd)) {
+        files[cwd].link.clone().removeClass('active').appendTo($shelf);
+        goUp();
+    }
+});
+actions.define('paste', function () {
+    if ($shelf.children().length > 0) {
+        var $pastee = $shelf.children().last();
+        var path = $pastee.data('path');
+        var file = files[path];
+        var destination = paths.convert(file.data.name, cwd);
+        $.ajax({
+            url: PATH + '/api/move',
+            method: 'post',
+            data: {request_token: TOKEN, path: path, destination: destination},
+            success: function (data) {
+                $pastee.remove();
+                file.link.remove();
+                refresh();
+//                enter(destination);
+            },
+            error: function () {
+                ui.shake($('.frame'));
             }
         });
     }

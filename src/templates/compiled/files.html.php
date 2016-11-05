@@ -9,11 +9,13 @@
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
-<span class="actions-left">
+<div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
-</span>
+</div>
+<div class="frame-header-title">
 <span class="header-path"><?php echo \Jivoo\View\Html::h($fs->getPath()); ?></span>
-        &ndash; Files
+            &ndash; Files
+</div>
 </div>
 <div class="frame-toolbar">
 <div class="button-group">
@@ -55,15 +57,19 @@
 </button>
 </div>
 </div>
-<div class="frame-content files-columns" data-token="<?php echo $token; ?>">
+<div class="frame-content frame-content-flex">
+<div class="files-columns" data-token="<?php echo $token; ?>">
 <div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
-<ul>
+<div class="files-list">
 <?php foreach ($fs as $file): ?>
-<li>
-<a data-path="<?php echo $file->getPath(); ?>" class="<?php echo 'file file-' . $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a>
-</li><?php endforeach; ?>
+<a data-path="<?php echo $file->getPath(); ?>" class="<?php echo 'file file-' . $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a><?php endforeach; ?>
 
-</ul>
+</div>
+</div>
+</div>
+<div class="files-shelf">
+<div class="files-grid">
+</div>
 </div>
 </div>
 </div>

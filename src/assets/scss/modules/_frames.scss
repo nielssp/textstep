@@ -15,8 +15,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 @mixin frame-header {
     background-color: #000;
     color: #fff;
-    text-align: center;
-    padding: 2px 6px;
     font-weight: bold;
     font-size: 0.9em;
     border: 1px solid #A2A2A2;
@@ -24,18 +22,17 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-bottom: 1px solid #4F4F4F;
     position: relative;
     flex-grow: 0;
+    display: flex;
     
-    & > .actions, .actions-left {
-        position: absolute;
-        top: 1px;
-        bottom: 1px;
+    & > .frame-header-actions {
         font-size: 0.8em;
+        padding: 1px 1px 1px 0;
         a {
             display: block;
             height: 100%;
             width: 19px;
             padding: 0;
-            margin: 0;
+            margin: 0 0 0 1px;
             background-color: #000;
             color: #fff;
             text-align: center;
@@ -68,13 +65,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             }
         }
     }
-    & > .actions, & > .actions-right {
-        text-align: right;
-        right: 1px;
-    }
-    & > .actions-left {
-        text-align: left;
-        left: 1px;
+    & > .frame-header-title {
+        flex-grow: 1;
+        padding: 2px 6px;
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 }
 
@@ -92,7 +89,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     color: #000;
     padding:6px;
     flex-grow: 1;
-    display: flex;
     position: relative;
     align-items: stretch;
     

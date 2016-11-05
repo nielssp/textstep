@@ -791,26 +791,23 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   .frame-header {
     background-color: #000;
     color: #fff;
-    text-align: center;
-    padding: 2px 6px;
     font-weight: bold;
     font-size: 0.9em;
     border: 1px solid #A2A2A2;
     border-right: 1px solid #4F4F4F;
     border-bottom: 1px solid #4F4F4F;
     position: relative;
-    flex-grow: 0; }
-    .frame-header > .actions, .frame-header .actions-left {
-      position: absolute;
-      top: 1px;
-      bottom: 1px;
-      font-size: 0.8em; }
-      .frame-header > .actions a, .frame-header .actions-left a {
+    flex-grow: 0;
+    display: flex; }
+    .frame-header > .frame-header-actions {
+      font-size: 0.8em;
+      padding: 1px 1px 1px 0; }
+      .frame-header > .frame-header-actions a {
         display: block;
         height: 100%;
         width: 19px;
         padding: 0;
-        margin: 0;
+        margin: 0 0 0 1px;
         background-color: #000;
         color: #fff;
         text-align: center;
@@ -821,27 +818,28 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-right: 1px solid #4F4F4F;
         border-bottom: 1px solid #4F4F4F;
         position: relative; }
-        .frame-header > .actions a:active, .frame-header .actions-left a:active {
+        .frame-header > .frame-header-actions a:active {
           background-color: #fff;
           border-color: #fff; }
-        .frame-header > .actions a[data-action="close"], .frame-header .actions-left a[data-action="close"] {
+        .frame-header > .frame-header-actions a[data-action="close"] {
           background-image: url(../img/close2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .actions a[data-action="close"]:active, .frame-header .actions-left a[data-action="close"]:active {
+          .frame-header > .frame-header-actions a[data-action="close"]:active {
             background-image: url(../img/close1.png); }
-        .frame-header > .actions a[data-action="toggle-menu"], .frame-header .actions-left a[data-action="toggle-menu"] {
+        .frame-header > .frame-header-actions a[data-action="toggle-menu"] {
           background-image: url(../img/menu2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .actions a[data-action="toggle-menu"]:active, .frame-header .actions-left a[data-action="toggle-menu"]:active {
+          .frame-header > .frame-header-actions a[data-action="toggle-menu"]:active {
             background-image: url(../img/menu1.png); }
-    .frame-header > .actions, .frame-header > .actions-right {
-      text-align: right;
-      right: 1px; }
-    .frame-header > .actions-left {
-      text-align: left;
-      left: 1px; }
+    .frame-header > .frame-header-title {
+      flex-grow: 1;
+      padding: 2px 6px;
+      text-align: center;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap; }
   .frame-toolbar {
     background-color: #AEAAAE;
     border-top: 1px solid #000;
@@ -857,13 +855,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     color: #000;
     padding: 6px;
     flex-grow: 1;
-    display: flex;
     position: relative;
     align-items: stretch; }
     .frame-content > .stretch {
       flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
+    .frame-content-flex {
+      display: flex;
+      flex-direction: column; }
 
 .login-frame {
   margin: 14% auto 0 auto;

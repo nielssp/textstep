@@ -5,12 +5,25 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
+.file {
+    list-style-type: none;
+}
+
+.files-shelf {
+    border: 1px solid #555;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    flex-grow: 0;
+    min-height: 64px;
+}
+
 .files-columns {
     position: relative;
+    flex-grow: 1;
     display: flex;
     align-items: stretch;
     & > .files-panel {
-        float: left;
         width: 100%;
     }
     &:after {
@@ -37,71 +50,110 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &.loading {
         background-color: #fff;
     }
-    ul {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-left: 1px solid #000;
-        border-top: 1px solid #000;
-        margin: 0;
-        list-style-type: none;
+}
 
-        a {
-            @include icon-size(16px);
-            &, &:link, &:visited {
-                display: block;
-                padding: 8px 5px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+.files-grid,
+.files-list,
+.file-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-left: 1px solid #000;
+    border-top: 1px solid #000;
+    margin: 0;
+}
 
-                @media screen and (min-width: $sm) {
-                    padding: 1px 5px;
-                }
-            }
-            &.file-directory {
-                background-image: url(../img/arrow.png);
-                background-repeat: no-repeat;
-                background-position: right 8px center;
-            }
-            &:before {
-                vertical-align: middle;
-                margin-right: 5px;
-            }
-            &:hover, &:active, &.active {
-                background-color: #fff;
-                text-decoration: none;
-            }
-            &:focus {
-                outline: 1px solid #000;
-            }
+.file {
+    padding: 8px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 96px;
+    text-align: center;
+
+    @include icon-size(32px);
+    &:before {
+        display: block;
+        margin: 0 auto;
+    }
+}
+
+a.file {
+    &:hover, &:active, &.active {
+        background-color: #fff;
+        text-decoration: none;
+    }
+    &:focus {
+        outline: 1px solid #000;
+    }
+}
+
+.files-grid {
+    display: flex;
+}
+
+.files-list {
+    .file {
+        display: block;
+        padding: 8px 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: auto;
+        text-align: left;
+
+        @media screen and (min-width: $sm) {
+            padding: 1px 5px;
         }
-
-        .file-info {
-            text-align: center;
-            padding: 10px;
-
-            .file-icon {
-                display: block;
-                margin-bottom: 10px;
-            }
-            .file-name {
-                display: block;
-                word-wrap: break-word;
-                margin-bottom: 10px;
-            }
-            .file-modified {
-                display: block;
-                color: lighten($frameFg, 30%);
-                margin-bottom: 10px;
-            }
-            .file-access {
-                display: block;
-                color: lighten($frameFg, 30%);
-                margin-bottom: 10px;
-            }
+        @include icon-size(16px);
+        &:before {
+            vertical-align: middle;
+            margin: 0 5px 0 0;
         }
+    }
+    a.file {
+        &.file-directory {
+            background-image: url(../img/arrow.png);
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+        &:hover, &:active, &.active {
+            background-color: #fff;
+            text-decoration: none;
+        }
+        &:focus {
+            outline: 1px solid #000;
+        }
+    }
+}
+
+.file-info {
+    text-align: center;
+    padding: 10px;
+
+    .file {
+        text-align: center;
+    }
+
+    .file-icon {
+        display: block;
+        margin-bottom: 10px;
+    }
+    .file-name {
+        display: block;
+        word-wrap: break-word;
+        margin-bottom: 10px;
+    }
+    .file-modified {
+        display: block;
+        color: lighten($frameFg, 30%);
+        margin-bottom: 10px;
+    }
+    .file-access {
+        display: block;
+        color: lighten($frameFg, 30%);
+        margin-bottom: 10px;
     }
 }

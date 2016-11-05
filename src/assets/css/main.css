@@ -792,26 +792,23 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   .frame-header {
     background-color: #000;
     color: #fff;
-    text-align: center;
-    padding: 2px 6px;
     font-weight: bold;
     font-size: 0.9em;
     border: 1px solid #A2A2A2;
     border-right: 1px solid #4F4F4F;
     border-bottom: 1px solid #4F4F4F;
     position: relative;
-    flex-grow: 0; }
-    .frame-header > .actions, .frame-header .actions-left {
-      position: absolute;
-      top: 1px;
-      bottom: 1px;
-      font-size: 0.8em; }
-      .frame-header > .actions a, .frame-header .actions-left a {
+    flex-grow: 0;
+    display: flex; }
+    .frame-header > .frame-header-actions {
+      font-size: 0.8em;
+      padding: 1px 1px 1px 0; }
+      .frame-header > .frame-header-actions a {
         display: block;
         height: 100%;
         width: 19px;
         padding: 0;
-        margin: 0;
+        margin: 0 0 0 1px;
         background-color: #000;
         color: #fff;
         text-align: center;
@@ -822,27 +819,28 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-right: 1px solid #4F4F4F;
         border-bottom: 1px solid #4F4F4F;
         position: relative; }
-        .frame-header > .actions a:active, .frame-header .actions-left a:active {
+        .frame-header > .frame-header-actions a:active {
           background-color: #fff;
           border-color: #fff; }
-        .frame-header > .actions a[data-action="close"], .frame-header .actions-left a[data-action="close"] {
+        .frame-header > .frame-header-actions a[data-action="close"] {
           background-image: url(../img/close2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .actions a[data-action="close"]:active, .frame-header .actions-left a[data-action="close"]:active {
+          .frame-header > .frame-header-actions a[data-action="close"]:active {
             background-image: url(../img/close1.png); }
-        .frame-header > .actions a[data-action="toggle-menu"], .frame-header .actions-left a[data-action="toggle-menu"] {
+        .frame-header > .frame-header-actions a[data-action="toggle-menu"] {
           background-image: url(../img/menu2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .actions a[data-action="toggle-menu"]:active, .frame-header .actions-left a[data-action="toggle-menu"]:active {
+          .frame-header > .frame-header-actions a[data-action="toggle-menu"]:active {
             background-image: url(../img/menu1.png); }
-    .frame-header > .actions, .frame-header > .actions-right {
-      text-align: right;
-      right: 1px; }
-    .frame-header > .actions-left {
-      text-align: left;
-      left: 1px; }
+    .frame-header > .frame-header-title {
+      flex-grow: 1;
+      padding: 2px 6px;
+      text-align: center;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap; }
   .frame-toolbar {
     background-color: #AEAAAE;
     border-top: 1px solid #000;
@@ -858,13 +856,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     color: #000;
     padding: 6px;
     flex-grow: 1;
-    display: flex;
     position: relative;
     align-items: stretch; }
     .frame-content > .stretch {
       flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
+    .frame-content-flex {
+      display: flex;
+      flex-direction: column; }
 
 .login-frame {
   margin: 14% auto 0 auto;
@@ -1001,10 +1001,10 @@ main {
   main > .frame {
     flex-grow: 1; }
     @media screen and (max-width: 767px) {
-      main > .frame > .frame-header {
-        padding: 10px 6px; }
-        main > .frame > .frame-header > .actions a, main > .frame > .frame-header > .actions-left a {
-          width: 35px; } }
+      main > .frame > .frame-header > .frame-header-actions a {
+        width: 35px; }
+      main > .frame > .frame-header > .frame-header-title {
+        padding: 10px 6px; } }
 
 @media screen and (max-width: 767px) {
   body.show-menu:before {
@@ -1149,12 +1149,23 @@ Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
+.file {
+  list-style-type: none; }
+
+.files-shelf {
+  border: 1px solid #555;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  position: relative;
+  flex-grow: 0;
+  min-height: 64px; }
+
 .files-columns {
   position: relative;
+  flex-grow: 1;
   display: flex;
   align-items: stretch; }
   .files-columns > .files-panel {
-    float: left;
     width: 100%; }
   .files-columns:after {
     content: ' ';
@@ -1175,62 +1186,98 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     background-color: #bfbcbf; }
   .files-panel.loading {
     background-color: #fff; }
-  .files-panel ul {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-left: 1px solid #000;
-    border-top: 1px solid #000;
-    margin: 0;
-    list-style-type: none; }
-    .files-panel ul a:before {
-      font-size: 16px;
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      background-size: 16px 16px;
-      display: inline-block;
-      content: ''; }
-    .files-panel ul a, .files-panel ul a:link, .files-panel ul a:visited {
-      display: block;
-      padding: 8px 5px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis; }
-      @media screen and (min-width: 768px) {
-        .files-panel ul a, .files-panel ul a:link, .files-panel ul a:visited {
-          padding: 1px 5px; } }
-    .files-panel ul a.file-directory {
-      background-image: url(../img/arrow.png);
-      background-repeat: no-repeat;
-      background-position: right 8px center; }
-    .files-panel ul a:before {
-      vertical-align: middle;
-      margin-right: 5px; }
-    .files-panel ul a:hover, .files-panel ul a:active, .files-panel ul a.active {
-      background-color: #fff;
-      text-decoration: none; }
-    .files-panel ul a:focus {
-      outline: 1px solid #000; }
-    .files-panel ul .file-info {
-      text-align: center;
-      padding: 10px; }
-      .files-panel ul .file-info .file-icon {
-        display: block;
-        margin-bottom: 10px; }
-      .files-panel ul .file-info .file-name {
-        display: block;
-        word-wrap: break-word;
-        margin-bottom: 10px; }
-      .files-panel ul .file-info .file-modified {
-        display: block;
-        color: #4d4d4d;
-        margin-bottom: 10px; }
-      .files-panel ul .file-info .file-access {
-        display: block;
-        color: #4d4d4d;
-        margin-bottom: 10px; }
+
+.files-grid,
+.files-list,
+.file-info {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-left: 1px solid #000;
+  border-top: 1px solid #000;
+  margin: 0; }
+
+.file {
+  padding: 8px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 96px;
+  text-align: center; }
+  .file:before {
+    font-size: 32px;
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-size: 32px 32px;
+    display: inline-block;
+    content: ''; }
+  .file:before {
+    display: block;
+    margin: 0 auto; }
+
+a.file:hover, a.file:active, a.file.active {
+  background-color: #fff;
+  text-decoration: none; }
+a.file:focus {
+  outline: 1px solid #000; }
+
+.files-grid {
+  display: flex; }
+
+.files-list .file {
+  display: block;
+  padding: 8px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: auto;
+  text-align: left; }
+  @media screen and (min-width: 768px) {
+    .files-list .file {
+      padding: 1px 5px; } }
+  .files-list .file:before {
+    font-size: 16px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-size: 16px 16px;
+    display: inline-block;
+    content: ''; }
+  .files-list .file:before {
+    vertical-align: middle;
+    margin: 0 5px 0 0; }
+.files-list a.file.file-directory {
+  background-image: url(../img/arrow.png);
+  background-repeat: no-repeat;
+  background-position: right 8px center; }
+.files-list a.file:hover, .files-list a.file:active, .files-list a.file.active {
+  background-color: #fff;
+  text-decoration: none; }
+.files-list a.file:focus {
+  outline: 1px solid #000; }
+
+.file-info {
+  text-align: center;
+  padding: 10px; }
+  .file-info .file {
+    text-align: center; }
+  .file-info .file-icon {
+    display: block;
+    margin-bottom: 10px; }
+  .file-info .file-name {
+    display: block;
+    word-wrap: break-word;
+    margin-bottom: 10px; }
+  .file-info .file-modified {
+    display: block;
+    color: #4d4d4d;
+    margin-bottom: 10px; }
+  .file-info .file-access {
+    display: block;
+    color: #4d4d4d;
+    margin-bottom: 10px; }
 
 /*# sourceMappingURL=main.css.map */

@@ -10,14 +10,16 @@
 </nav>
 </div><?php echo $this->end(); ?>
 <div class="frame-header">
-<span class="actions-left">
+<div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
-</span>
+</div>
+<div class="frame-header-title">
 <?php echo \Jivoo\View\Html::h($fs->getName()); ?>
-        &ndash; Code Editor
-<span class="actions">
+            &ndash; Code Editor
+</div>
+<div class="frame-header-actions">
 <a href="" data-action="close"></a>
-</span>
+</div>
 </div>
 <div class="frame-content editor-frame">
 <textarea id="editor" data-token="<?php echo $token; ?>" data-path="<?php echo $fs->getPath(); ?>" data-type="<?php echo $fs->getType(); ?>"><?php echo \Jivoo\View\Html::h($content); ?></textarea>

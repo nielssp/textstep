@@ -8,7 +8,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 @import "partials/base";
 
 $size32: '.shortcuts, .files-grid';
-$size16: '.files-columns';
+$size16: '.files-list';
 $size22: '.frame-toolbar';
 
 @mixin icon($name) {
@@ -38,24 +38,52 @@ $size22: '.frame-toolbar';
 @mixin filetype($name) {
     .file-#{$name} {
         &:before {
-            background-image: url(../img/icons/16/file-#{$name}.png);
+            background-image: url(../img/icons/32/file-#{$name}.png);
+        }
+    }
+    
+    #{$size16} {
+        .file-#{$name} {
+            &:before {
+                background-image: url(../img/icons/16/file-#{$name}.png);
+            }
         }
     }
 }
 
 .file {
     &:before {
-        background-image: url(../img/icons/16/file-unknown.png);
+        background-image: url(../img/icons/32/file-unknown.png);
     }
     &.file-directory {
         &.active {
             &:before {
-                background-image: url(../img/icons/16/file-directory-open.png);
+                background-image: url(../img/icons/32/file-directory-open.png);
             }
         }
         &.locked {
             &:before {
-                background-image: url(../img/icons/16/file-directory-locked.png);
+                background-image: url(../img/icons/32/file-directory-locked.png);
+            }
+        }
+    }
+}
+
+#{$size16} {
+    .file {
+        &:before {
+            background-image: url(../img/icons/16/file-unknown.png);
+        }
+        &.file-directory {
+            &.active {
+                &:before {
+                    background-image: url(../img/icons/16/file-directory-open.png);
+                }
+            }
+            &.locked {
+                &:before {
+                    background-image: url(../img/icons/16/file-directory-locked.png);
+                }
             }
         }
     }

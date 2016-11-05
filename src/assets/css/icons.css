@@ -24,10 +24,17 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 /*$wsBg: #1E6290;*/
 .file:before {
-  background-image: url(../img/icons/16/file-unknown.png); }
+  background-image: url(../img/icons/32/file-unknown.png); }
 .file.file-directory.active:before {
-  background-image: url(../img/icons/16/file-directory-open.png); }
+  background-image: url(../img/icons/32/file-directory-open.png); }
 .file.file-directory.locked:before {
+  background-image: url(../img/icons/32/file-directory-locked.png); }
+
+.files-list .file:before {
+  background-image: url(../img/icons/16/file-unknown.png); }
+.files-list .file.file-directory.active:before {
+  background-image: url(../img/icons/16/file-directory-open.png); }
+.files-list .file.file-directory.locked:before {
   background-image: url(../img/icons/16/file-directory-locked.png); }
 
 .file-info .file:before {
@@ -61,24 +68,39 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   content: ''; }
 
 .file-directory:before {
+  background-image: url(../img/icons/32/file-directory.png); }
+
+.files-list .file-directory:before {
   background-image: url(../img/icons/16/file-directory.png); }
 
 .file-md:before {
+  background-image: url(../img/icons/32/file-md.png); }
+
+.files-list .file-md:before {
   background-image: url(../img/icons/16/file-md.png); }
 
 .file-html:before {
+  background-image: url(../img/icons/32/file-html.png); }
+
+.files-list .file-html:before {
   background-image: url(../img/icons/16/file-html.png); }
 
 .file-php:before {
+  background-image: url(../img/icons/32/file-php.png); }
+
+.files-list .file-php:before {
   background-image: url(../img/icons/16/file-php.png); }
 
 .file-uploading:before {
+  background-image: url(../img/icons/32/file-uploading.png); }
+
+.files-list .file-uploading:before {
   background-image: url(../img/icons/16/file-uploading.png); }
 
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }
 
-.files-columns .icon-size-16 .icon-edit-copy:before {
+.files-list .icon-size-16 .icon-edit-copy:before {
   background-image: url(../img/icons/16/edit-copy.png); }
 
 .frame-toolbar .icon-edit-copy:before {
@@ -87,7 +109,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-cut:before {
   background-image: url(../img/icons/32/edit-cut.png); }
 
-.files-columns .icon-size-16 .icon-edit-cut:before {
+.files-list .icon-size-16 .icon-edit-cut:before {
   background-image: url(../img/icons/16/edit-cut.png); }
 
 .frame-toolbar .icon-edit-cut:before {
@@ -96,7 +118,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-paste:before {
   background-image: url(../img/icons/32/edit-paste.png); }
 
-.files-columns .icon-size-16 .icon-edit-paste:before {
+.files-list .icon-size-16 .icon-edit-paste:before {
   background-image: url(../img/icons/16/edit-paste.png); }
 
 .frame-toolbar .icon-edit-paste:before {
@@ -105,7 +127,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-new-folder:before {
   background-image: url(../img/icons/32/edit-new-folder.png); }
 
-.files-columns .icon-size-16 .icon-edit-new-folder:before {
+.files-list .icon-size-16 .icon-edit-new-folder:before {
   background-image: url(../img/icons/16/edit-new-folder.png); }
 
 .frame-toolbar .icon-edit-new-folder:before {
@@ -114,7 +136,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-trash:before {
   background-image: url(../img/icons/32/edit-trash.png); }
 
-.files-columns .icon-size-16 .icon-edit-trash:before {
+.files-list .icon-size-16 .icon-edit-trash:before {
   background-image: url(../img/icons/16/edit-trash.png); }
 
 .frame-toolbar .icon-edit-trash:before {
@@ -123,7 +145,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-undo:before {
   background-image: url(../img/icons/32/edit-undo.png); }
 
-.files-columns .icon-size-16 .icon-edit-undo:before {
+.files-list .icon-size-16 .icon-edit-undo:before {
   background-image: url(../img/icons/16/edit-undo.png); }
 
 .frame-toolbar .icon-edit-undo:before {
@@ -132,7 +154,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-plus:before {
   background-image: url(../img/icons/32/edit-plus.png); }
 
-.files-columns .icon-size-16 .icon-edit-plus:before {
+.files-list .icon-size-16 .icon-edit-plus:before {
   background-image: url(../img/icons/16/edit-plus.png); }
 
 .frame-toolbar .icon-edit-plus:before {
@@ -141,7 +163,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-rename:before {
   background-image: url(../img/icons/32/edit-rename.png); }
 
-.files-columns .icon-size-16 .icon-edit-rename:before {
+.files-list .icon-size-16 .icon-edit-rename:before {
   background-image: url(../img/icons/16/edit-rename.png); }
 
 .frame-toolbar .icon-edit-rename:before {
@@ -150,7 +172,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-go-up:before {
   background-image: url(../img/icons/32/go-up.png); }
 
-.files-columns .icon-size-16 .icon-go-up:before {
+.files-list .icon-size-16 .icon-go-up:before {
   background-image: url(../img/icons/16/go-up.png); }
 
 .frame-toolbar .icon-go-up:before {
@@ -159,7 +181,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-go-forward:before {
   background-image: url(../img/icons/32/go-forward.png); }
 
-.files-columns .icon-size-16 .icon-go-forward:before {
+.files-list .icon-size-16 .icon-go-forward:before {
   background-image: url(../img/icons/16/go-forward.png); }
 
 .frame-toolbar .icon-go-forward:before {
@@ -168,7 +190,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-go-back:before {
   background-image: url(../img/icons/32/go-back.png); }
 
-.files-columns .icon-size-16 .icon-go-back:before {
+.files-list .icon-size-16 .icon-go-back:before {
   background-image: url(../img/icons/16/go-back.png); }
 
 .frame-toolbar .icon-go-back:before {
@@ -177,7 +199,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-go-home:before {
   background-image: url(../img/icons/32/go-home.png); }
 
-.files-columns .icon-size-16 .icon-go-home:before {
+.files-list .icon-size-16 .icon-go-home:before {
   background-image: url(../img/icons/16/go-home.png); }
 
 .frame-toolbar .icon-go-home:before {
@@ -186,7 +208,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-reload:before {
   background-image: url(../img/icons/32/reload.png); }
 
-.files-columns .icon-size-16 .icon-reload:before {
+.files-list .icon-size-16 .icon-reload:before {
   background-image: url(../img/icons/16/reload.png); }
 
 .frame-toolbar .icon-reload:before {
@@ -195,7 +217,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-unlock:before {
   background-image: url(../img/icons/32/unlock.png); }
 
-.files-columns .icon-size-16 .icon-unlock:before {
+.files-list .icon-size-16 .icon-unlock:before {
   background-image: url(../img/icons/16/unlock.png); }
 
 .frame-toolbar .icon-unlock:before {

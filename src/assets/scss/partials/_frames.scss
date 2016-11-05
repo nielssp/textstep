@@ -20,6 +20,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     }
     &-content {
         @include frame-content;
+        
+        &-flex {
+            display: flex;
+            flex-direction: column;
+        }
     }
 }
 

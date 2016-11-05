@@ -59,12 +59,13 @@ main {
         
         @media screen and  (max-width: $sm - 1) {
             & > .frame-header {
-                padding: 10px 6px;
-
-                & > .actions, & > .actions-left {
+                & > .frame-header-actions {
                     a {
                         width: 35px;
                     }
+                }
+                & > .frame-header-title {
+                    padding: 10px 6px;
                 }
             }
         }

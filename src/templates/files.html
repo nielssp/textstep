@@ -11,11 +11,13 @@
     </div>
 
     <div class="frame-header">
-        <span class="actions-left">
+        <div class="frame-header-actions">
             <a href="" data-action="toggle-menu"></a>
-        </span>
-        <span class="header-path" j:text="{$fs->getPath()}">path goes here</span>
-        &ndash; Files
+        </div>
+        <div class="frame-header-title">
+            <span class="header-path" j:text="{$fs->getPath()}">path goes here</span>
+            &ndash; Files
+        </div>
     </div>
 
     <div class="frame-toolbar">
@@ -63,13 +65,17 @@
         </div>
     </div>
 
-    <div class="frame-content files-columns" data-token="{$token}">
+    <div class="frame-content frame-content-flex">
+        <div class="files-columns" data-token="{$token}">
             <div class="files-panel" data-path="{$fs->getPath()}">
-                <ul>
-                    <li j:foreach="{$fs as $file}">
-                        <a j:href="{$file}" j:text="{$file->getName()}" data-path="{$file->getPath()}" class="{'file file-' . $file->getType()}">File name goes here</a>
-                    </li>
-                </ul>
+                <div class="files-list">
+                    <a j:foreach="{$fs as $file}" j:href="{$file}" j:text="{$file->getName()}" data-path="{$file->getPath()}" class="{'file file-' . $file->getType()}">File name goes here</a>
+                </div>
             </div>
         </div>
+        <div class="files-shelf">
+            <div class="files-grid">
+            </div>
+        </div>
+    </div>
 </div>

@@ -12,14 +12,16 @@
     </div>
 
     <div class="frame-header">
-        <span class="actions-left">
+        <div class="frame-header-actions">
             <a href="" data-action="toggle-menu"></a>
-        </span>
-        <span j:outertext="{$fs->getName()}">name goes here</span>
-        &ndash; Code Editor
-        <span class="actions">
+        </div>
+        <div class="frame-header-title">
+            <span j:outertext="{$fs->getName()}">name goes here</span>
+            &ndash; Code Editor
+        </div>
+        <div class="frame-header-actions">
             <a href="" data-action="close"></a>
-        </span>
+        </div>
     </div>
 
     <div class="frame-content editor-frame">
