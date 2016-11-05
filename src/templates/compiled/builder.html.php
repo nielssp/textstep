@@ -11,18 +11,12 @@
 <label>Destination</label>
 <input type="text" />
 </div>
-<div class="field">
-<label>Radio list</label>
-<ul class="checkbox-list">
-<li><label><input type="radio" name="radio" />
-                            Option 1</label></li>
-<li><label><input type="radio" name="radio" />
-                            Option 2</label></li>
-<li><label><input type="radio" name="radio" />
-                            Option 3</label></li>
-</ul>
-</div>
 <input type="submit" value="Build" />
 </form>
+<div class="progress primary active" data-progress="0">
+<div class="progress-bar" style="width:0%;">0%</div>
+<div class="label">Ready to build</div>
+</div>
+<textarea readonly="readonly"></textarea>
 </div>
 </div>

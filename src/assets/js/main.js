@@ -6,6 +6,7 @@
  */
 
 var $ = require('jquery');
+window.$ = $;
 
 $('[data-toggle]').each(function () {
     var $buttons = $(this).find($(this).data('toggle'));
