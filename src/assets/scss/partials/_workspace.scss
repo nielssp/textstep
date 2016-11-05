@@ -22,6 +22,10 @@ aside {
         border-right: 1.5px solid #403E3B;
         border-bottom: 1.5px solid #403E3B;
         box-shadow: inset -1px -1px 0px #9A9286;
+        @media screen and (max-width: $sm - 1) {
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
     }
 
     nav {
@@ -33,12 +37,22 @@ aside {
                 a {
                     display: block;
                     @include button;
+                    &, &:link, &:visited, &:active {
+                        @media screen and (max-width: $sm - 1) {
+                            padding-top: 6px;
+                            padding-bottom: 6px;
+                        }
+                    }
                 }
                 #{$buttons} {
                     display: block;
                     width: 100%;
                     &:default {
                         font-weight: normal;
+                    }           
+                    @media screen and (max-width: $sm - 1) {
+                        padding-top: 6px;
+                        padding-bottom: 6px;
                     }
                 }
             }
@@ -57,7 +71,7 @@ main {
     & > .frame {
         flex-grow: 1;
         
-        @media screen and  (max-width: $sm - 1) {
+        @media screen and (max-width: $sm - 1) {
             & > .frame-header {
                 & > .frame-header-actions {
                     a {

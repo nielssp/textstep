@@ -1,9 +1,11 @@
 <div class="frame">
 <div class="frame-header">
-<span class="actions-left">
+<div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
-</span>
-        Builder
+</div>
+<div class="frame-header-title">
+            Builder
+</div>
 </div>
 <div class="frame-content">
 <form>

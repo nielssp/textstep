@@ -1,9 +1,11 @@
 <div class="frame">
 <div class="frame-header">
-<span class="actions-left">
+<div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
-</span>
-        Control Panel
+</div>
+<div class="frame-header-title">
+            Control Panel
+</div>
 </div>
 <div class="frame-content editor-frame">
         not implemented

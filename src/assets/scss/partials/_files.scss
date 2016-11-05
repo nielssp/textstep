@@ -87,9 +87,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 }
 
 a.file {
-    &:hover, &:active, &.active {
-        background-color: #fff;
+    &:hover, &:active {
+        background-color: rgba(255, 255, 255, 0.3);
         text-decoration: none;
+    }
+    &.active {
+        background-color: #fff;
     }
     &:focus {
         outline: 1px solid #000;
@@ -119,19 +122,10 @@ a.file {
             margin: 0 5px 0 0;
         }
     }
-    a.file {
-        &.file-directory {
-            background-image: url(../img/arrow.png);
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-        }
-        &:hover, &:active, &.active {
-            background-color: #fff;
-            text-decoration: none;
-        }
-        &:focus {
-            outline: 1px solid #000;
-        }
+    a.file-directory {
+        background-image: url(../img/arrow.png);
+        background-repeat: no-repeat;
+        background-position: right 8px center;
     }
 }
 

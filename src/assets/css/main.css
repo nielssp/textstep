@@ -962,6 +962,10 @@ aside {
     border-right: 1.5px solid #403E3B;
     border-bottom: 1.5px solid #403E3B;
     box-shadow: inset -1px -1px 0px #9A9286; }
+    @media screen and (max-width: 767px) {
+      aside header {
+        padding-top: 6px;
+        padding-bottom: 6px; } }
   aside nav ul {
     margin-left: 0;
     margin-bottom: 16px; }
@@ -1024,11 +1028,19 @@ aside {
             height: 16px; }
           aside nav ul li a .icon + .label {
             margin-left: 0px; }
+        @media screen and (max-width: 767px) {
+          aside nav ul li a, aside nav ul li a:link, aside nav ul li a:visited, aside nav ul li a:active {
+            padding-top: 6px;
+            padding-bottom: 6px; } }
       aside nav ul li .button, aside nav ul li button, aside nav ul li input[type=button], aside nav ul li input[type=reset], aside nav ul li input[type=submit] {
         display: block;
         width: 100%; }
         aside nav ul li .button:default, aside nav ul li button:default, aside nav ul li input[type=button]:default, aside nav ul li input[type=reset]:default, aside nav ul li input[type=submit]:default {
           font-weight: normal; }
+        @media screen and (max-width: 767px) {
+          aside nav ul li .button, aside nav ul li button, aside nav ul li input[type=button], aside nav ul li input[type=reset], aside nav ul li input[type=submit] {
+            padding-top: 6px;
+            padding-bottom: 6px; } }
 
 main {
   margin-right: 68px;
@@ -1261,9 +1273,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   .file.duplicate {
     color: #005500; }
 
-a.file:hover, a.file:active, a.file.active {
-  background-color: #fff;
+a.file:hover, a.file:active {
+  background-color: rgba(255, 255, 255, 0.3);
   text-decoration: none; }
+a.file.active {
+  background-color: #fff; }
 a.file:focus {
   outline: 1px solid #000; }
 
@@ -1292,15 +1306,10 @@ a.file:focus {
   .files-list .file:before {
     vertical-align: middle;
     margin: 0 5px 0 0; }
-.files-list a.file.file-directory {
+.files-list a.file-directory {
   background-image: url(../img/arrow.png);
   background-repeat: no-repeat;
   background-position: right 8px center; }
-.files-list a.file:hover, .files-list a.file:active, .files-list a.file.active {
-  background-color: #fff;
-  text-decoration: none; }
-.files-list a.file:focus {
-  outline: 1px solid #000; }
 
 .file-info {
   text-align: center;
