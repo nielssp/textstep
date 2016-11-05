@@ -502,19 +502,28 @@ actions.define('cut', function () {
         goUp();
     }
 });
+actions.define('copy', function () {
+    if (files.hasOwnProperty(cwd)) {
+        files[cwd].link.clone().removeClass('active').addClass('duplicate').appendTo($shelf);
+        goUp();
+    }
+});
 actions.define('paste', function () {
     if ($shelf.children().length > 0) {
         var $pastee = $shelf.children().last();
+        var duplicate = $pastee.hasClass('duplicate');
         var path = $pastee.data('path');
         var file = files[path];
         var destination = paths.convert(file.data.name, cwd);
         $.ajax({
-            url: PATH + '/api/move',
+            url: PATH + (duplicate ? '/api/copy' : '/api/move'),
             method: 'post',
             data: {request_token: TOKEN, path: path, destination: destination},
             success: function (data) {
                 $pastee.remove();
-                file.link.remove();
+                if (!duplicate) {
+                    file.link.remove();
+                }
                 refresh();
 //                enter(destination);
             },
@@ -524,11 +533,8 @@ actions.define('paste', function () {
         });
     }
 });
-
-$(document).keydown(function (e) {
-    if (e.key === 'F2') {
-        actions.active('rename');
-        e.preventDefault();
-        e.stopPropagation();
-    }
-});
+actions.bind('F2', 'rename');
+actions.bind('C-C', 'copy');
+actions.bind('C-X', 'cut');
+actions.bind('C-V', 'paste');
+actions.bind('Delete', 'trash');

@@ -1217,6 +1217,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   .file:before {
     display: block;
     margin: 0 auto; }
+  .file.duplicate {
+    color: #555500; }
 
 a.file:hover, a.file:active, a.file.active {
   background-color: #fff;

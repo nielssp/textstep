@@ -78,6 +78,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         display: block;
         margin: 0 auto;
     }
+    
+    &.duplicate {
+        color: #555500;
+    }
 }
 
 a.file {
