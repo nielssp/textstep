@@ -37,6 +37,9 @@
 <button data-action="new-folder">
 <span class="icon icon-edit-new-folder"></span>
 </button>
+<button data-action="upload">
+<span class="icon icon-edit-upload"></span>
+</button>
 </div>
 <span class="frame-toolbar-separator"></span>
 <div class="button-group">

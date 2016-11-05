@@ -175,6 +175,24 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .frame-toolbar .icon-edit-rename:before {
   background-image: url(../img/icons/22/edit-rename.png); }
 
+.icon-edit-upload:before {
+  background-image: url(../img/icons/32/edit-upload.png); }
+
+.files-list .icon-size-16 .icon-edit-upload:before {
+  background-image: url(../img/icons/16/edit-upload.png); }
+
+.frame-toolbar .icon-edit-upload:before {
+  background-image: url(../img/icons/22/edit-upload.png); }
+
+.icon-edit-new-file:before {
+  background-image: url(../img/icons/32/edit-new-file.png); }
+
+.files-list .icon-size-16 .icon-edit-new-file:before {
+  background-image: url(../img/icons/16/edit-new-file.png); }
+
+.frame-toolbar .icon-edit-new-file:before {
+  background-image: url(../img/icons/22/edit-new-file.png); }
+
 .icon-go-up:before {
   background-image: url(../img/icons/32/go-up.png); }
 

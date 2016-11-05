@@ -1268,6 +1268,11 @@ a.file:focus {
   padding: 10px; }
   .file-info .file {
     text-align: center; }
+  .file-info .file-thumbnail {
+    max-width: 100%;
+    max-height: 50%;
+    display: block;
+    margin: 0 auto; }
   .file-info .file-icon {
     display: block;
     margin-bottom: 10px; }

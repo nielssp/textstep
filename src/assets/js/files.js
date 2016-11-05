@@ -161,10 +161,21 @@ function addFile($column, file)
 function addFileInfo($column, file)
 {
     var $li = $('<div class="file-info">');
-    var $icon = $('<span class="file">');
-    $icon.addClass('file-' + file.type);
-    if (!file.read) {
-        $icon.addClass('locked');
+    var $icon;
+    switch (file.type.toLowerCase()) {
+        case 'jpeg':
+        case 'jpg':
+        case 'png':
+        case 'ico':
+            $icon = $('<img class="file-thumbnail">');
+            $icon.attr('src', PATH + '/api/download?path=' + encodeURIComponent(file.path));
+            break;
+        default:
+            $icon = $('<span class="file">');
+            $icon.addClass('file-' + file.type);
+            if (!file.read) {
+                $icon.addClass('locked');
+            }
     }
     var $name = $('<span class="file-name">');
     $name.text(file.name);
@@ -538,6 +549,37 @@ actions.define('new-file', function () {
             }
         });
     }
+});
+actions.define('upload', function () {
+    var $fileInput = $('<input type="file" />').appendTo($('body'));
+    var $column = $currentColumn;
+    $fileInput.hide();
+    $fileInput.click();
+    $fileInput.change(function () {
+        var files = $fileInput[0].files;
+        var data = new FormData();
+        data.append('request_token', TOKEN);
+        for (var i = 0; i < files.length; i++) {
+            data.append('file' + i, files[i]);
+            addFile($column, {
+                name: files[i].name,
+                path: $column.data('path') + '/' + files[i].name,
+                type: 'uploading'
+            });
+        }
+        var request = new XMLHttpRequest();
+        request.open("POST", PATH + '/api/upload?path=' + $column.data('path'));
+        request.send(data);
+        request.onreadystatechange = function () {
+            if (this.readyState === 3 || this.readyState === 4) {
+                var path = $column.data('path');
+                $column.data('path', null);
+                updateColumn($column, path);
+                $fileInput.remove();
+            }
+        };
+        return false;
+    });
 });
 actions.define('rename', function () {
     if (stack.length <= 1) {
