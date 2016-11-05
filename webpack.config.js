@@ -9,9 +9,11 @@ module.exports = {
       files: "./files",
       terminal: "./terminal"
     },
+    devtool: 'source-map',
     output: {
         path: __dirname + "/src/assets/",
-        filename: "dist/[name].js"
+        filename: "dist/[name].js",
+        sourceMapFilename: "[file].map"
     },
     node: {
       fs: "empty"
@@ -29,7 +31,7 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin("init"),
-        new webpack.optimize.UglifyJsPlugin({minimize: true}),
+        new webpack.optimize.UglifyJsPlugin({minimize: true, sourceMap: true}),
         new ExtractTextPlugin({
           filename: "css/[name].css"
         })

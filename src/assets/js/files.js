@@ -160,6 +160,9 @@ function addFile($column, file)
 
 function addFileInfo($column, file)
 {
+    if (!files.hasOwnProperty(file.path)) {
+        createFile(file);
+    }
     var $li = $('<div class="file-info">');
     var $icon;
     switch (file.type.toLowerCase()) {
@@ -601,8 +604,8 @@ actions.define('rename', function () {
             method: 'post',
             data: {request_token: TOKEN, path: path, destination: destination},
             success: function (data) {
-                refresh();
                 enter(destination);
+                refresh();
             },
             error: function () {
                 ui.shake($('.frame'));
