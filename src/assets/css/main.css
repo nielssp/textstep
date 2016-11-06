@@ -862,6 +862,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       flex-grow: 1; }
     .frame-content > *:last-child {
       margin-bottom: 0; }
+    .frame-content > img {
+      max-width: 100%; }
     .frame-content-flex {
       display: flex;
       flex-direction: column; }
@@ -1137,6 +1139,16 @@ main {
       .shortcuts .shortcut:active label {
         bottom: 0;
         right: 0; }
+
+#viewer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000; }
+  #viewer img {
+    display: none; }
 
 /*
 BlogSTEP 

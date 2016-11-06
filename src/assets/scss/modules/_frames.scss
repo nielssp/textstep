@@ -99,4 +99,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     & > *:last-child {
         margin-bottom: 0;
     }
+    
+    & > img {
+        max-width: 100%;
+    }
 }

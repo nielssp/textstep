@@ -1,0 +1,30 @@
+<div class="frame" j:import="css/viewer.css;dist/viewer.js">
+
+    <div j:assign="appmenu">
+        <header>Viewer</header>
+        <nav>
+            <ul>
+                <li><a data-action="close">Close</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="frame-header">
+        <div class="frame-header-actions">
+            <a href="" data-action="toggle-menu"></a>
+        </div>
+        <div class="frame-header-title">
+            <span j:innertext="{$selection->getName()}" id="viewer-name">name goes here</span>
+            &ndash; Viewer
+        </div>
+        <div class="frame-header-actions">
+            <a href="" data-action="close"></a>
+        </div>
+    </div>
+
+    <div class="frame-content">
+        <div id="viewer">
+            <img j:foreach="{$images as $image}" class="{$selection == $image ? 'active' : ''}" j:src="{['snippet' => 'Api\Download', 'query' => ['path' => $image->getPath()]]}" alt="{$image->getName()}" data-path="{$image->getPath()}"/>
+        </div>
+    </div>
+</div>

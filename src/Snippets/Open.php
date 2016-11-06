@@ -20,6 +20,9 @@ class Open extends \Blogstep\AuthenticatedSnippet
         if (preg_match('/\.md$/i', $fs->getName()) === 1) {
             return $this->redirect(['snippet' => 'Editor', 'parameters' => $this->routeParameters]);
         }
+        if (preg_match('/\.(?:jpe?g|png|gif|ico)$/i', $fs->getName()) === 1) {
+            return $this->redirect(['snippet' => 'Viewer', 'parameters' => $this->routeParameters]);
+        }
         // TODO: file associations
         return $this->redirect(['snippet' => 'CodeEditor', 'parameters' => $this->routeParameters]);
     }
