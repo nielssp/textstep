@@ -11,7 +11,7 @@ use Jivoo\Unicode;
 /**
  * Site compiler.
  */
-class Compiler
+class Compiler extends \Blogstep\Task\TaskBase
 {
     
     /**
@@ -26,6 +26,8 @@ class Compiler
     public $config;
     
     private $tasks = [];
+    
+    private $currentTask = 0;
     
     public function __construct(File $buildDir, \Jivoo\Store\Document $config)
     {
@@ -106,4 +108,25 @@ class Compiler
             $this->siteMap->accept($task, $this);
         }
     }
+
+    public function getName()
+    {
+        return 'compiler';
+    }
+
+    public function isDone()
+    {
+        
+    }
+
+    public function resume(array $state)
+    {
+        
+    }
+
+    public function suspend()
+    {
+        
+    }
+
 }

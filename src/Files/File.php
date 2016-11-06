@@ -64,7 +64,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         }
         $files = [];
         foreach ($names as $name) {
-            if ($name == '.' or $name == '..') {
+            if ($name == '.' or $name == '..' or $name == '.metadata.json') {
                 continue;
             }
             $files[] = $this->get($name);
@@ -353,22 +353,22 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $destination->assumeWritable();
         if ($this->getType() == 'directory') {
             $destination->makeDirectory();
+            $meta1 = $this->getMetadata();
+            $meta2 = $destination->getMetadata();
+            $meta2->override = $meta1;
+            if (isset($this->system->user)) {
+                $meta2['owner'] = $this->system->user->getId();
+            }
+            $parent = $destination->getParent();
+            $meta2['group'] = $parent->getGroup();
+            $meta2['mode'] = $parent->getMode();
+            $meta2->save();
             foreach ($this as $file) {
                 $file->copy($destination->get($file->getName()));
             }
         } elseif (!copy($this->getRealPath(), $destination->getRealPath())) {
             return false;
         }
-        $meta1 = $this->getMetadata();
-        $meta2 = $destination->getMetadata();
-        $meta2->override = $meta1;
-        if (isset($this->system->user)) {
-            $meta2['owner'] = $this->system->user->getId();
-        }
-        $parent = $destination->getParent();
-        $meta2['group'] = $parent->getGroup();
-        $meta2['mode'] = $parent->getMode();
-        $meta2->save();
         return true;
     }
     
