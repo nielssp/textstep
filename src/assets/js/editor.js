@@ -29,10 +29,6 @@ var SimpleMDE = require('simplemde');
 
 var simplemde = new SimpleMDE({
     autofocus: true,
-    autosave: {
-        enabled: true,
-        uniqueId: path
-    },
     renderingConfig: {
         codeSyntaxHighlighting: true
     },
