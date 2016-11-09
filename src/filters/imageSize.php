@@ -38,7 +38,7 @@ return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $ma
         }
         $width = $type[0];
         $height = $type[1];
-        if ($width > $maxWidth or $height > $maxHeight) {
+        if ($width > $maxWidth or $height > $maxHeight or isset($element->width) or isset($element->height)) {
             if (isset($element->width) and isset($element->height)) {
                 $requestedWidth = $element->width;
                 $requestedHeight = $element->height;
