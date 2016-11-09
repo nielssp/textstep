@@ -968,6 +968,9 @@ aside {
       aside header {
         padding-top: 6px;
         padding-bottom: 6px; } }
+    aside header .version {
+      float: right;
+      color: #555; }
   aside nav ul {
     margin-left: 0;
     margin-bottom: 16px; }

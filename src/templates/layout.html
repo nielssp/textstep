@@ -14,7 +14,10 @@
 
         <aside>
             <div j:block="appmenu"></div>
-            <header>Workspace (<span j:text="{$user ? $user->getUsername() : ''}">username</span>)</header>
+            <header>
+                Workspace (<span j:text="{$user ? $user->getUsername() : ''}">username</span>)
+                <span class="version" j:innertext="{'v' . Blogstep\Main::VERSION}">version</span>
+            </header>
             <nav>
                 <ul>
                     <li><a j:href="snippet:Files">File system</a></li>

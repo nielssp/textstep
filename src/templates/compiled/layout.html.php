@@ -10,7 +10,10 @@
 <body data-path="<?php echo $this->link(''); ?>">
 <aside>
 <?php echo $this->block('appmenu'); ?>
-<header>Workspace (<span><?php echo \Jivoo\View\Html::h($user ? $user->getUsername() : ''); ?></span>)</header>
+<header>
+                Workspace (<span><?php echo \Jivoo\View\Html::h($user ? $user->getUsername() : ''); ?></span>)
+<span class="version"><?php echo \Jivoo\View\Html::h('v' . Blogstep\Main::VERSION); ?></span>
+</header>
 <nav>
 <ul>
 <li><a class="<?php if ($this->isCurrent('snippet:Files')) echo 'current'; ?>" href="<?php echo $this->link('snippet:Files'); ?>">File system</a></li>
