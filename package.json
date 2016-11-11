@@ -1,6 +1,5 @@
 {
   "name": "blogstep",
-  "version": "0.1.0",
   "dependencies": {
     "dragula": "^3.7.2",
     "highlightjs": "^8.7.0",

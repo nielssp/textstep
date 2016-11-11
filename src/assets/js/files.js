@@ -445,6 +445,7 @@ function updateColumn($column, path)
                     } else {
                         addFileInfo($column, data);
                     }
+                    $column.trigger('loaded');
                 }
             });
         }
@@ -741,8 +742,55 @@ actions.define('paste', function () {
         });
     }
 });
+actions.define('focus-prev', function () {
+    var $current = $currentColumn.find('.file:focus');
+    if ($current.length > 0) {
+        var $prev = $current.prev();
+        if ($prev.length > 0) {
+            $prev.focus();
+        }
+    } else {
+        $currentColumn.find('.file').last().focus();
+    }
+});
+actions.define('focus-next', function () {
+    var $current = $currentColumn.find('.file:focus');
+    if ($current.length > 0) {
+        var $next = $current.next();
+        if ($next.length > 0) {
+            $next.focus();
+        }
+    } else {
+        $currentColumn.find('.file').first().focus();
+    }
+});
+actions.define('enter', function () {
+    var $current = $currentColumn.find('.file:focus');
+    if ($current.length > 0) {
+        enter($current.data('path'));
+        $currentColumn.one('loaded', function () {
+            $(this).find('.file').first().focus();
+        });
+    }
+});
+actions.define('exit', function () {
+    if (stack.length > 1) {
+        var path = cwd;
+        goUp();
+        files[path].link.focus();
+    }
+});
 actions.bind('F2', 'rename');
 actions.bind('C-C', 'copy');
 actions.bind('C-X', 'cut');
 actions.bind('C-V', 'paste');
 actions.bind('Delete', 'trash');
+
+actions.bind('C-H', 'exit');
+actions.bind('C-K', 'focus-prev');
+actions.bind('C-J', 'focus-next');
+actions.bind('C-L', 'enter');
+actions.bind('ArrowLeft', 'exit');
+actions.bind('ArrowUp', 'focus-prev');
+actions.bind('ArrowDown', 'focus-next');
+actions.bind('ArrowRight', 'enter');
