@@ -127,8 +127,12 @@ function initFile($file, file)
             }
         } else if (event.shiftKey) {
             var last = selection[selection.length - 1];
+            var oldSelectionRoot = selectionRoot;
             if (!$file.hasClass('active')) {
                 select(file.path);
+            }
+            if (selectionRoot !== oldSelectionRoot) {
+                last = selection[0];
             }
             if (files.hasOwnProperty(last)) {
                 var $other = files[last].link;
@@ -235,11 +239,10 @@ function goUp()
     touchSelectMode = false;
     if (stack.length > 1) {
         selection = [cwd];
-        selectionRoot = stack[stack.length - 2];
     } else {
         selection = [];
-        selectionRoot = '/';
     }
+    selectionRoot = stack[stack.length - 1];
     updateColumns();
     history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
 }
@@ -274,12 +277,14 @@ function unselect(path)
     var idx = selection.indexOf(path);
     if (idx >= 0) {
         selection.splice(idx, 1);
+        console.log(selection);
         files[path].link.removeClass('active');
         if (selection.length === 0) {
             touchSelectMode = false;
+            $currentColumn.next().children('.file-info').empty();
             enter(selectionRoot);
         } else {
-            var $fileInfo = $currentColumn.children('.file-info');
+            var $fileInfo = $currentColumn.next().children('.file-info');
             if ($fileInfo.length > 0) {
                 var $name = $fileInfo.children('.file-name');
                 $name.text(selection.length + ' files');
@@ -296,19 +301,40 @@ function select(path)
             return;
         }
         selectionRoot = dir;
+        var newSelection = [];
+        for (var i = 0; i < stack.length; i++) {
+            if (stack[i] === selectionRoot && i + 1 < stack.length) {
+                newSelection.push(stack[i+1]);
+                break;
+            }
+        }
+        cd(dir);
+        selection = newSelection;
+        if (selection.length > 0) {
+            files[selection[0]].link.addClass('active');
+        }
+    } else if (selection.length === 1 && paths.dirName(selection[0]) !== selectionRoot) {
         selection = [];
     }
     selection.push(path);
+    console.log(selection, selectionRoot);
     files[path].link.addClass('active');
-    var $fileInfo = $currentColumn.children('.file-info');
+    var $fileInfo = $currentColumn.next().children('.file-info');
     if ($fileInfo.length > 0) {
         $fileInfo.empty();
         var $icon = $('<span class="file file-multiple">');
         var $name = $('<span class="file-name">');
         $name.text(selection.length + ' files');
         $fileInfo.append($icon).append($name);
+    } else if ($currentColumn.next().length > 0) {
+        $currentColumn.next().empty();
+        var $fileInfo = $('<div class="file-info">');
+        $fileInfo.appendTo($currentColumn.next());
+        var $icon = $('<span class="file file-multiple">');
+        var $name = $('<span class="file-name">');
+        $name.text(selection.length + ' files');
+        $fileInfo.append($icon).append($name);
     }
-    console.log(selection);
 }
 
 function cd(path)
@@ -331,11 +357,10 @@ function cd(path)
     touchSelectMode = false;
     if (stack.length > 1) {
         selection = [path];
-        selectionRoot = stack[stack.length - 2];
     } else {
         selection = [];
-        selectionRoot = '/';
     }
+    selectionRoot = stack[stack.length - 1];
     updateColumns();
 }
 
@@ -377,7 +402,7 @@ function updateColumns()
 
 function updateColumn($column, path)
 {
-    if ($column.data('path') !== path) {
+    if ($column.data('path') !== path || path === null) {
         var $list = $column.children('.files-list');
         if ($list.length === 0) {
             $column.empty();
