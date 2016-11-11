@@ -38,7 +38,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
     overflow-y: scroll;
-    min-height: 200px;
+    /*min-height: 200px;*/
     flex-grow: 1;
     position: relative;
     &.readonly {

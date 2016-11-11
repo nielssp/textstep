@@ -119,11 +119,31 @@ function initFile($file, file)
         return false;
     });
     $file.click(function (event) {
-        if (event.shiftKey || touchSelectMode) {
+        if (event.ctrlKey || touchSelectMode) {
             if ($file.hasClass('active')) {
                 unselect(file.path);
             } else {
                 select(file.path);
+            }
+        } else if (event.shiftKey) {
+            var last = selection[selection.length - 1];
+            if (!$file.hasClass('active')) {
+                select(file.path);
+            }
+            if (files.hasOwnProperty(last)) {
+                var $other = files[last].link;
+                if ($other.parent().is($file.parent())) {
+                    var between = false;
+                    $file.parent().children().each(function () {
+                        var $child = $(this);
+                        if ($child.is($file) || $child.is($other)) {
+                            between = !between;
+                        }
+                        if (between && !$child.hasClass('active')) {
+                            select($child.data('path'));
+                        }
+                    });
+                }
             }
         } else {
             enter(file.path);
