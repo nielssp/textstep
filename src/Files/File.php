@@ -387,6 +387,9 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             $meta2->override = $meta1;
             $meta2->save();
             $this->invalidate();
+            if (file_exists($this->getMetadataPath())) {
+                unlink($this->getMetadataPath());
+            }
             return $this->delete();
         } elseif (rename($this->getRealPath(), $destination->getRealPath())) {
             $this->invalidate();
@@ -511,11 +514,11 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         }
         $this->assumeWritable();
         if ($this->getType() == 'directory') {
+            if (file_exists($this->getMetadataPath())) {
+                unlink($this->getMetadataPath());
+            }
             if (!rmdir($this->getRealPath())) {
                 return false;
-            }
-            if (file_exists($this->getMetadataPath())) {
-                rmdir($this->getMetadataPath());
             }
         } elseif (!unlink($this->getRealPath())) {
             return false;
