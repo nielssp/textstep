@@ -10,17 +10,14 @@ var $ = require('jquery');
 exports.shake = function (el, amount) {
     amount = typeof amount === "undefined" ? 10 : amount;
     var dbl = amount * 2;
-    return $(el).width($(el).width()).height($(el.height()))
-            .css('position', 'absolute')
-            .animate({left: '+=' + amount}, 50)
-            .animate({left: '-=' + dbl}, 50)
-            .animate({left: '+=' + dbl}, 50)
-            .animate({left: '-=' + amount}, 50)
+    return $(el).width($(el).width())
+            .animate({marginLeft: '+=' + amount}, 50)
+            .animate({marginLeft: '-=' + dbl}, 50)
+            .animate({marginLeft: '+=' + dbl}, 50)
+            .animate({marginLeft: '-=' + amount}, 50)
             .queue(function () {
-                $(el).css('position', '')
-                        .css('width', '')
-                        .css('height', '')
-                        .css('left', '')
+                $(el).css('width', '')
+                        .css('margin-left', '')
                         .finish();
             });
 };
