@@ -380,6 +380,7 @@ function updateColumns()
     // Always shows as much of the stack as possible: (maybe more confusing when moving up? but better overview)
     stackOffset = Math.max(0, stack.length - length);
     $columns.find('a').removeClass('active');
+    $currentColumn.children('.filter').remove();
     if (stack.length >= previousStackSize) {
         for (var i = 0; i < length; i++) {
             var $column = columns.eq(i);
@@ -519,25 +520,81 @@ function createColumns()
     return true;
 }
 
-function resizeView()
+function matchFilter(filter)
 {
-    $columns.height($(window).height() - 150);
+    var matchCase = true;
+    if (filter === filter.toLowerCase()) {
+        matchCase = false;
+    }
+    var match = null;
+    $currentColumn.find('.file').each(function () {
+        var name = $(this).text();
+        if (!matchCase) name = name.toLowerCase();
+        if (name.slice(0, filter.length) === filter) {
+            match = $(this);
+            return false;
+        }
+    });
+    return match;
 }
 
-$columns.empty();
-createColumns();
-cd(cwd);
-
-$(window).resize(function () {
-    if (createColumns()) {
-        updateColumns();
+function updateFilter()
+{
+    var $filter = $currentColumn.children('.filter');
+    $currentColumn.find('.match').removeClass('match');
+    if ($filter.length > 0) {
+        if ($filter.val() === '') {
+            $filter.remove();
+        } else {
+            var match = matchFilter($filter.val());
+            if (match !== null) {
+                match.addClass('match');
+            }
+        }
     }
-});
+}
 
-$(document).keypress(function (e) {
-    if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
-        // TODO: Search/filter current folder
-        console.log(e);
+$(window).keydown(function (e) {
+    if (e.defaultPrevented) {
+        return;
+    }
+    if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
+        return;
+    }
+    var $filter = $currentColumn.children('.filter');
+    if (e.key === 'Escape') {
+        if ($filter.length > 0) {
+            $filter.remove();
+            return false;
+        }
+        return;
+    }
+    if (e.key === 'Enter') {
+        if ($filter.length > 0) {
+            var match = matchFilter($filter.val());
+            if (match !== null) {
+                $filter.remove();
+                match.click();
+            }
+            return false;
+        }
+        return;
+    }
+    if (e.key.length !== 1) {
+        return;
+    }
+    if ($filter.length === 0) {
+        $('<input type="text" class="filter">')
+                .val(e.key)
+                .appendTo($currentColumn)
+                .focus()
+                .keyup(updateFilter)
+                .blur(function () {
+                    $(this).remove();
+                    updateFilter();
+                });
+        updateFilter();
+        return false;
     }
 });
 
@@ -791,3 +848,13 @@ actions.bind('ArrowLeft', 'exit');
 actions.bind('ArrowUp', 'focus-prev');
 actions.bind('ArrowDown', 'focus-next');
 actions.bind('ArrowRight', 'enter');
+
+$columns.empty();
+createColumns();
+cd(cwd);
+
+$(window).resize(function () {
+    if (createColumns()) {
+        updateColumns();
+    }
+});

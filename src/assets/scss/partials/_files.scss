@@ -50,6 +50,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &.loading {
         background-color: #fff;
     }
+    
+    .filter {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
 }
 
 .files-grid,
@@ -94,7 +101,7 @@ a.file {
     &.active {
         background-color: #fff;
     }
-    &:focus {
+    &:focus, &.match {
         outline: 1px solid #000;
     }
 }

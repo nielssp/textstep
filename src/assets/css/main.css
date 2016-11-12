@@ -1253,6 +1253,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     background-color: #bfbcbf; }
   .files-panel.loading {
     background-color: #fff; }
+  .files-panel .filter {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%; }
 
 .files-grid,
 .files-list,
@@ -1294,7 +1299,7 @@ a.file:hover, a.file:active {
   text-decoration: none; }
 a.file.active {
   background-color: #fff; }
-a.file:focus {
+a.file:focus, a.file.match {
   outline: 1px solid #000; }
 
 .files-grid {

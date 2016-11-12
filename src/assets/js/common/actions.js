@@ -35,8 +35,6 @@ $(window).keydown(function (e) {
     console.log('pressed ' + key);
     if (keyMap.hasOwnProperty(key)) {
         activate(keyMap[key]);
-        e.preventDefault();
-        e.stopPropagation();
         return false;
     }
 });
