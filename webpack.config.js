@@ -8,7 +8,8 @@ module.exports = {
       viewer: "./viewer",
       "code-editor": "./code-editor",
       files: "./files",
-      terminal: "./terminal"
+      terminal: "./terminal",
+      build: "./build"
     },
     devtool: 'source-map',
     output: {

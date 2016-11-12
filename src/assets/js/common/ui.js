@@ -43,3 +43,19 @@ exports.onLongPress = function(el, callback) {
         }
     });
 };
+
+exports.setProgress = function(el, progress, status) {
+    var bar = el.children[0];
+    var label = el.children[1];
+    progress = Math.floor(progress);
+    if (progress >= 100) {
+        el.className = 'progress success';
+    } else {
+        el.className = 'progress active';
+    }
+    bar.style.width = progress + '%';
+    bar.innerText = progress + '%';
+    if (typeof status !== 'undefined') {
+        label.innerText = status;
+    }
+};
