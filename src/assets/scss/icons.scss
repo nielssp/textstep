@@ -9,7 +9,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 $size32: '.shortcuts, .files-grid';
 $size16: '.files-list';
-$size22: '.frame-toolbar';
+$size22: '.frame-toolbar, .login-frame';
 
 @mixin icon($name) {
     .icon-#{$name} {
@@ -19,7 +19,7 @@ $size22: '.frame-toolbar';
     }
     
     #{$size16} {
-        .icon-size-16 .icon-#{$name} {
+        .icon-#{$name} {
             &:before {
                 background-image: url(../img/icons/16/#{$name}.png);
             }

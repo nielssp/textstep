@@ -9,7 +9,9 @@
 </head>
 <body>
 <div class="frame login-frame">
-<div class="frame-header">Log out</div>
+<div class="frame-header">
+<div class="frame-header-title">Log out</div>
+</div>
 <div class="frame-content">
 <form action="<?php echo $this->link([]); ?>" method="post" id="logout">
 <input type="hidden" name="request_token" value="<?php echo $token; ?>" />

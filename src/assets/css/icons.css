@@ -46,11 +46,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   display: inline-block;
   content: ''; }
 
-.frame-toolbar button .icon {
+.frame-toolbar button .icon, .login-frame button .icon {
   font-size: 22px;
   height: 22px;
   width: 22px; }
-  .frame-toolbar button .icon:before {
+  .frame-toolbar button .icon:before, .login-frame button .icon:before {
     font-size: 22px;
     display: inline-block;
     width: 22px;
@@ -58,7 +58,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     background-size: 22px 22px;
     display: inline-block;
     content: ''; }
-.frame-toolbar .icon:before {
+.frame-toolbar .icon:before, .login-frame .icon:before {
   font-size: 22px;
   display: inline-block;
   width: 22px;
@@ -106,145 +106,145 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }
 
-.files-list .icon-size-16 .icon-edit-copy:before {
+.files-list .icon-edit-copy:before {
   background-image: url(../img/icons/16/edit-copy.png); }
 
-.frame-toolbar .icon-edit-copy:before {
+.frame-toolbar .icon-edit-copy:before, .login-frame .icon-edit-copy:before {
   background-image: url(../img/icons/22/edit-copy.png); }
 
 .icon-edit-cut:before {
   background-image: url(../img/icons/32/edit-cut.png); }
 
-.files-list .icon-size-16 .icon-edit-cut:before {
+.files-list .icon-edit-cut:before {
   background-image: url(../img/icons/16/edit-cut.png); }
 
-.frame-toolbar .icon-edit-cut:before {
+.frame-toolbar .icon-edit-cut:before, .login-frame .icon-edit-cut:before {
   background-image: url(../img/icons/22/edit-cut.png); }
 
 .icon-edit-paste:before {
   background-image: url(../img/icons/32/edit-paste.png); }
 
-.files-list .icon-size-16 .icon-edit-paste:before {
+.files-list .icon-edit-paste:before {
   background-image: url(../img/icons/16/edit-paste.png); }
 
-.frame-toolbar .icon-edit-paste:before {
+.frame-toolbar .icon-edit-paste:before, .login-frame .icon-edit-paste:before {
   background-image: url(../img/icons/22/edit-paste.png); }
 
 .icon-edit-new-folder:before {
   background-image: url(../img/icons/32/edit-new-folder.png); }
 
-.files-list .icon-size-16 .icon-edit-new-folder:before {
+.files-list .icon-edit-new-folder:before {
   background-image: url(../img/icons/16/edit-new-folder.png); }
 
-.frame-toolbar .icon-edit-new-folder:before {
+.frame-toolbar .icon-edit-new-folder:before, .login-frame .icon-edit-new-folder:before {
   background-image: url(../img/icons/22/edit-new-folder.png); }
 
 .icon-edit-trash:before {
   background-image: url(../img/icons/32/edit-trash.png); }
 
-.files-list .icon-size-16 .icon-edit-trash:before {
+.files-list .icon-edit-trash:before {
   background-image: url(../img/icons/16/edit-trash.png); }
 
-.frame-toolbar .icon-edit-trash:before {
+.frame-toolbar .icon-edit-trash:before, .login-frame .icon-edit-trash:before {
   background-image: url(../img/icons/22/edit-trash.png); }
 
 .icon-edit-undo:before {
   background-image: url(../img/icons/32/edit-undo.png); }
 
-.files-list .icon-size-16 .icon-edit-undo:before {
+.files-list .icon-edit-undo:before {
   background-image: url(../img/icons/16/edit-undo.png); }
 
-.frame-toolbar .icon-edit-undo:before {
+.frame-toolbar .icon-edit-undo:before, .login-frame .icon-edit-undo:before {
   background-image: url(../img/icons/22/edit-undo.png); }
 
 .icon-edit-plus:before {
   background-image: url(../img/icons/32/edit-plus.png); }
 
-.files-list .icon-size-16 .icon-edit-plus:before {
+.files-list .icon-edit-plus:before {
   background-image: url(../img/icons/16/edit-plus.png); }
 
-.frame-toolbar .icon-edit-plus:before {
+.frame-toolbar .icon-edit-plus:before, .login-frame .icon-edit-plus:before {
   background-image: url(../img/icons/22/edit-plus.png); }
 
 .icon-edit-rename:before {
   background-image: url(../img/icons/32/edit-rename.png); }
 
-.files-list .icon-size-16 .icon-edit-rename:before {
+.files-list .icon-edit-rename:before {
   background-image: url(../img/icons/16/edit-rename.png); }
 
-.frame-toolbar .icon-edit-rename:before {
+.frame-toolbar .icon-edit-rename:before, .login-frame .icon-edit-rename:before {
   background-image: url(../img/icons/22/edit-rename.png); }
 
 .icon-edit-upload:before {
   background-image: url(../img/icons/32/edit-upload.png); }
 
-.files-list .icon-size-16 .icon-edit-upload:before {
+.files-list .icon-edit-upload:before {
   background-image: url(../img/icons/16/edit-upload.png); }
 
-.frame-toolbar .icon-edit-upload:before {
+.frame-toolbar .icon-edit-upload:before, .login-frame .icon-edit-upload:before {
   background-image: url(../img/icons/22/edit-upload.png); }
 
 .icon-edit-new-file:before {
   background-image: url(../img/icons/32/edit-new-file.png); }
 
-.files-list .icon-size-16 .icon-edit-new-file:before {
+.files-list .icon-edit-new-file:before {
   background-image: url(../img/icons/16/edit-new-file.png); }
 
-.frame-toolbar .icon-edit-new-file:before {
+.frame-toolbar .icon-edit-new-file:before, .login-frame .icon-edit-new-file:before {
   background-image: url(../img/icons/22/edit-new-file.png); }
 
 .icon-go-up:before {
   background-image: url(../img/icons/32/go-up.png); }
 
-.files-list .icon-size-16 .icon-go-up:before {
+.files-list .icon-go-up:before {
   background-image: url(../img/icons/16/go-up.png); }
 
-.frame-toolbar .icon-go-up:before {
+.frame-toolbar .icon-go-up:before, .login-frame .icon-go-up:before {
   background-image: url(../img/icons/22/go-up.png); }
 
 .icon-go-forward:before {
   background-image: url(../img/icons/32/go-forward.png); }
 
-.files-list .icon-size-16 .icon-go-forward:before {
+.files-list .icon-go-forward:before {
   background-image: url(../img/icons/16/go-forward.png); }
 
-.frame-toolbar .icon-go-forward:before {
+.frame-toolbar .icon-go-forward:before, .login-frame .icon-go-forward:before {
   background-image: url(../img/icons/22/go-forward.png); }
 
 .icon-go-back:before {
   background-image: url(../img/icons/32/go-back.png); }
 
-.files-list .icon-size-16 .icon-go-back:before {
+.files-list .icon-go-back:before {
   background-image: url(../img/icons/16/go-back.png); }
 
-.frame-toolbar .icon-go-back:before {
+.frame-toolbar .icon-go-back:before, .login-frame .icon-go-back:before {
   background-image: url(../img/icons/22/go-back.png); }
 
 .icon-go-home:before {
   background-image: url(../img/icons/32/go-home.png); }
 
-.files-list .icon-size-16 .icon-go-home:before {
+.files-list .icon-go-home:before {
   background-image: url(../img/icons/16/go-home.png); }
 
-.frame-toolbar .icon-go-home:before {
+.frame-toolbar .icon-go-home:before, .login-frame .icon-go-home:before {
   background-image: url(../img/icons/22/go-home.png); }
 
 .icon-reload:before {
   background-image: url(../img/icons/32/reload.png); }
 
-.files-list .icon-size-16 .icon-reload:before {
+.files-list .icon-reload:before {
   background-image: url(../img/icons/16/reload.png); }
 
-.frame-toolbar .icon-reload:before {
+.frame-toolbar .icon-reload:before, .login-frame .icon-reload:before {
   background-image: url(../img/icons/22/reload.png); }
 
 .icon-unlock:before {
   background-image: url(../img/icons/32/unlock.png); }
 
-.files-list .icon-size-16 .icon-unlock:before {
+.files-list .icon-unlock:before {
   background-image: url(../img/icons/16/unlock.png); }
 
-.frame-toolbar .icon-unlock:before {
+.frame-toolbar .icon-unlock:before, .login-frame .icon-unlock:before {
   background-image: url(../img/icons/22/unlock.png); }
 
 /*# sourceMappingURL=icons.css.map */

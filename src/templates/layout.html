@@ -15,7 +15,7 @@
         <aside>
             <div j:block="appmenu"></div>
             <header>
-                Workspace (<span j:text="{$user ? $user->getUsername() : ''}">username</span>)
+                Workspace (<span j:text="{$user ? $user->getName() : ''}">username</span>)
                 <span class="version" j:innertext="{'v' . Blogstep\Main::VERSION}">version</span>
             </header>
             <nav>
@@ -46,9 +46,40 @@
         </div>
 
         <main>
-        <div j:block="content"></div>
+            <div j:block="content"></div>
         </main>
-        
+
+        <div id="login-overlay">
+            <div class="frame login-frame">
+                <div class="frame-header">
+                    <div class="frame-header-title">Log in</div>
+                </div>
+                <div class="frame-content">
+                    <form action="{$this->link([])}" method="post" id="login">
+                        <input type="hidden" name="request_token" value="{$token}" />
+                        <div class="field">
+                            <label for="username">Username</label>
+                            <input type="text" name="username" id="username" value="{$user ? $user->getName() : ''}" />
+                        </div>
+                        <div class="field">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" id="password" />
+                        </div>
+                        <div class="field remember">
+                            <input type="checkbox" name="remember[remember]" value="remember" id="remember_remember" />
+                            <label for="remember_remember">Remember</label>
+                        </div>
+                        <div class="buttons">
+                            <button type="submit" title="Log in">
+                                <span class="icon icon-unlock">
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <script j:imports />
     </body>
 </html>

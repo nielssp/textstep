@@ -7,19 +7,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta j:block="meta" />
 
-        <link j:imports="css/main.css" />
+        <link j:imports="css/main.css;css/icons.css;dist/init.js;dist/login.js" />
 
     </head>
-    <body>
+    <body data-path="{$this->link('')}">
 
         <div class="frame login-frame">
-            <div class="frame-header">Log in</div>
+            <div class="frame-header">
+                <div class="frame-header-title">Log in</div>
+            </div>
             <div class="frame-content">
                 <form action="{$this->link([])}" method="post" id="login">
                     <input type="hidden" name="request_token" value="{$token}" />
                     <div class="field">
                         <label for="username">Username</label>
-                        <input type="text" name="username" id="username" />
+                        <input type="text" name="username" id="username" value="{isset($username) ? $username : ''}" />
                     </div>
                     <div class="field">
                         <label for="password">Password</label>
@@ -30,15 +32,15 @@
                         <label for="remember_remember">Remember</label>
                     </div>
                     <div class="buttons">
-                        <button type="submit">
+                        <button type="submit" title="Log in">
                             <span class="icon icon-unlock">
                             </span>
-                            <span class="label">Log in</span>
                         </button>
                     </div>
                 </form>
             </div>
         </div>
 
+        <script j:imports />
     </body>
 </html>

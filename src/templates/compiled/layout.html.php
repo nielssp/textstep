@@ -42,6 +42,36 @@
 <main>
 <?php echo $this->block('content'); ?>
 </main>
+<div id="login-overlay">
+<div class="frame login-frame">
+<div class="frame-header">
+<div class="frame-header-title">Log in</div>
+</div>
+<div class="frame-content">
+<form action="<?php echo $this->link([]); ?>" method="post" id="login">
+<input type="hidden" name="request_token" value="<?php echo $token; ?>" />
+<div class="field">
+<label for="username">Username</label>
+<input type="text" name="username" id="username" value="<?php echo $user ? $user->getName() : ''; ?>" />
+</div>
+<div class="field">
+<label for="password">Password</label>
+<input type="password" name="password" id="password" />
+</div>
+<div class="field remember">
+<input type="checkbox" name="remember[remember]" value="remember" id="remember_remember" />
+<label for="remember_remember">Remember</label>
+</div>
+<div class="buttons">
+<button type="submit" title="Log in">
+<span class="icon icon-unlock">
+</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+</div>
 <?php echo $this->resourceBlock("script"); ?>
 </body>
 </html>

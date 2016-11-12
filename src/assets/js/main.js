@@ -6,6 +6,7 @@
  */
 
 var $ = require('jquery');
+var ui = require('./common/ui');
 window.$ = $;
 
 $('[data-toggle]').each(function () {

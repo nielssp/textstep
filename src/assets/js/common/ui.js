@@ -60,12 +60,52 @@ exports.setProgress = function(el, progress, status) {
     }
 };
 
-exports.handleError = function (event, jqxhr, settings, thrownError) {
-    if (typeof jqxhr.responseJSON !== 'undefined') {
-        alert(jqxhr.responseJSON.message);
+exports.handleLogin = function (done) {
+    var path = $('body').data('path').replace(/\/$/, '');
+    $('#login').find('input').prop('disabled', false);
+    $('#login').submit(function () {
+        var token = $(this).find('[name="request_token"]').val();
+        $(this).find('input').prop('disabled', true);
+        $.ajax({
+            url: path,
+            method: 'post',
+            data: {
+                request_token: token,
+                username: $('#username').val(),
+                password: $('#password').val(),
+                remember: $('#remember_remember').is(':checked') ? { remember: 'remember' } : null
+            },
+            success: function () {
+                $('#login').off('submit');
+                $('#password').val('');
+                done();
+            },
+            error: function (xhr) {
+                $('#login').find('input').prop('disabled', false);
+                exports.shake($('.login-frame'));
+                $('#username').select();
+                $('#password').val('');
+            },
+            global: false
+        });
+        return false;
+    });
+};
+
+exports.handleError = function (event, xhr, settings, thrownError) {
+    if (xhr.status === 401) {
+        $('#login-overlay').show();
+        $('#password').focus();
+        exports.handleLogin(function () {
+            $('#login-overlay').hide();
+            $.ajax(settings);
+        });
+        return;
+    } else if (typeof xhr.responseJSON !== 'undefined') {
+        alert(xhr.responseJSON.message);
     } else {
-        alert(jqxhr.responseText);
+        alert(xhr.responseText);
     }
-    exports.shake($('.frame'));
-    console.log(event, jqxhr, settings, thrownError);
+    exports.shake($('main > .frame'));
+    console.log(event, xhr, settings, thrownError);
 };

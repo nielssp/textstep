@@ -558,6 +558,9 @@ $(window).keydown(function (e) {
     if (e.defaultPrevented) {
         return;
     }
+    if ($('input:focus').length > 0) {
+        return;
+    }
     if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
         return;
     }

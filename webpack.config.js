@@ -9,7 +9,8 @@ module.exports = {
       "code-editor": "./code-editor",
       files: "./files",
       terminal: "./terminal",
-      build: "./build"
+      build: "./build",
+      login: "./login"
     },
     devtool: 'source-map',
     output: {

@@ -28,10 +28,15 @@ class Login extends \Blogstep\Snippet
             } else {
                 $this->m->auth->session->create();
             }
+            if ($this->request->isAjax()) {
+                return $this->ok();
+            }
             return $this->redirect('snippet:Files');
         } else {
-            echo 'incorrect username or password';
-            exit;
+            if ($this->request->isAjax()) {
+                return $this->error('Invalid username or password', \Jivoo\Http\Message\Status::FORBIDDEN);
+            }
+            $this->viewData['username'] = $data['username'];
         }
         return $this->render();
     }
