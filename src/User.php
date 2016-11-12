@@ -13,8 +13,6 @@ use Blogstep\Files\File;
 class User
 {
     
-    private $id;
-    
     private $username;
     
     private $hash;
@@ -25,22 +23,16 @@ class User
     
     private $groups;
     
-    public function __construct($id, $username, $hash, File $home, $primaryGroupId, array $groupIds)
+    public function __construct($username, $hash, File $home, $primaryGroupId, array $groups)
     {
-        $this->id = $id;
         $this->username = $username;
         $this->hash = $hash;
         $this->home = $home;
-        $this->primaryGroup = $primaryGroupId;
-        $this->groups = $groupIds;
+        $this->primaryGroup = strval($primaryGroupId);
+        $this->groups = array_map('strval', $groups);
     }
     
-    public function getId()
-    {
-        return $this->id;
-    }
-    
-    public function getUsername()
+    public function getName()
     {
         return $this->username;
     }
@@ -55,14 +47,19 @@ class User
         return $this->home;
     }
     
-    public function getPrimaryGroupId()
+    public function getPrimaryGroup()
     {
         return $this->primaryGroup;
     }
     
-    public function isMemberOf($groupId)
+    public function getGroups()
     {
-        return $groupId === $this->primaryGroup or in_array($groupId, $this->groups, true);
+        return $this->groups;
+    }
+    
+    public function isMemberOf($group)
+    {
+        return $group === $this->primaryGroup or in_array($group, $this->groups, true);
     }
     
     /**

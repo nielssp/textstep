@@ -34,8 +34,8 @@ class UserModel implements \Jivoo\Security\UserModel
     public function __construct(File $fs)
     {
         $this->fs = $fs;
-        $this->systemGroup = new Group(0, 'system');
-        $this->system = new User(0, 'system', null, $fs->get('system'), 0, []);
+        $this->systemGroup = new Group('system');
+        $this->system = new User('system', null, $fs->get('system'), 'system', []);
         $this->state = new \Jivoo\Store\StateMap($fs->get('system')->getRealPath());
     }
     
@@ -44,18 +44,17 @@ class UserModel implements \Jivoo\Security\UserModel
         if (! isset($this->users)) {
             $state = $this->state->read('users');
             $this->users = [];
-            foreach ($state as $id => $data) {
-                $user = $state->getSubset($id);
-                if (!isset($user['username'])) {
-                    // TODO: Warning
+            foreach ($state as $name => $data) {
+                $user = $state->getSubset($name);
+                if (!isset($user['username']) or $name !== $user['username']) {
+                    trigger_error('missing or incorrect name for user: ' . $name, E_USER_WARNING);
                     continue;
                 }
-                $this->users[$id] = new User(
-                    $id,
+                $this->users[$name] = new User(
                     $user['username'],
                     $user->get('hash', ''),
                     $this->fs->get($user->get('home', '/home/' . $user['username'])),
-                    $user->get('group', -1),
+                    $user->get('group', ''),
                     $user->get('groups', [])
                 );
             }
@@ -69,51 +68,54 @@ class UserModel implements \Jivoo\Security\UserModel
         if (! isset($this->groups)) {
             $state = $this->state->read('groups');
             $this->groups = [];
-            foreach ($state as $id => $group) {
-                $this->groups[$id] = new Group($id, $group['name']);
+            foreach ($state as $name => $group) {
+                if (!isset($group['name']) or $name !== $group['name']) {
+                    trigger_error('missing or incorrect name for group: ' . $name, E_USER_WARNING);
+                    continue;
+                }
+                $this->groups[$name] = new Group($group['name']);
             }
             $state->close();
         }
         return $this->groups;
     }
     
-    public function createGroup($name, $id = null)
+    public function createGroup($name)
     {
-        $groups = $this->getGroups();
-        if (! isset($id)) {
-            $id = max(array_keys($groups)) + 1;
-        }
         $state = $this->state->write('groups');
-        $state[$id] = ['name' => $name];
+        $state[$name] = ['name' => $name];
         $state->close();
-        $this->groups[$id] = new Group($id, $name);
-        return $this->groups[$id];
+        $this->groups[$name] = new Group($name);
+        return $this->groups[$name];
     }
     
-    public function getUser($userId)
+    public function getUser($user)
     {
-        if ($userId === 0) {
+        if ($user === 'system') {
             return $this->system;
         }
         $users = $this->getUsers();
-        if (isset($users[$userId])) {
-            return $users[$userId];
+        if (isset($users[$user])) {
+            return $users[$user];
         }
         return null;
     }
     
-    public function getGroup($groupId)
+    public function getGroup($group)
     {
-        if ($groupId === 0) {
+        if ($group === 'system') {
             return $this->systemGroup;
         }
         $groups = $this->getGroups();
-        if (isset($groups[$groupId])) {
-            return $groups[$groupId];
+        if (isset($groups[$group])) {
+            return $groups[$group];
         }
         return null;
     }
     
+    /**
+     * @deprecated since version 0.2.0
+     */
     public function findGroup($name)
     {
         if ($name === 'system') {
@@ -136,7 +138,7 @@ class UserModel implements \Jivoo\Security\UserModel
         $sessions[$sessionId] = $validUntil;
         $sessions->close();
         $state = $this->state->write('sessions');
-        $state[$sessionId] = $user->getId();
+        $state[$sessionId] = $user->getName();
         $state->close();
         return $sessionId;
     }
@@ -160,12 +162,7 @@ class UserModel implements \Jivoo\Security\UserModel
 
     public function findUser(array $data)
     {
-        foreach ($this->getUsers() as $id => $user) {
-            if ($user->getUsername() === $data['username']) {
-                return $user;
-            }
-        }
-        return null;
+        return $this->getUser($data['username']);
     }
     
     public function getPassword($user)

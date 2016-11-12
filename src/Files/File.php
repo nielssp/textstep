@@ -150,8 +150,8 @@ class File implements \IteratorAggregate, HasRoute
     
     private function isSystem()
     {
-        return ! isset($this->system->user) or $this->system->user->getId() === 0 or
-            $this->system->user->isMemberOf(0);
+        return ! isset($this->system->user) or $this->system->user->getName() === 'system' or
+            $this->system->user->isMemberOf('system');
     }
     
     public function setMultiple($values, $recursive = false)
@@ -194,12 +194,12 @@ class File implements \IteratorAggregate, HasRoute
     
     public function getOwner()
     {
-        return $this->getMetadata()->get('owner', 0);
+        return $this->getMetadata()->get('owner', 'system');
     }
     
     public function getGroup()
     {
-        return $this->getMetadata()->get('group', 0);
+        return $this->getMetadata()->get('group', 'system');
     }
     
     public function getMode()
@@ -277,7 +277,7 @@ class File implements \IteratorAggregate, HasRoute
         if ($this->system->user->isMemberOf($this->getGroup())) {
             $mode |= $this->getGroupMode();
         }
-        if ($this->system->user->getId() === $this->getOwner()) {
+        if ($this->system->user->getName() === $this->getOwner()) {
             $mode |= $this->getUserMode();
         }
         return ($mode & 0x2) !== 0;
@@ -297,7 +297,7 @@ class File implements \IteratorAggregate, HasRoute
         if ($this->system->user->isMemberOf($this->getGroup())) {
             $mode |= $this->getGroupMode();
         }
-        if ($this->system->user->getId() === $this->getOwner()) {
+        if ($this->system->user->getName() === $this->getOwner()) {
             $mode |= $this->getUserMode();
         }
         return ($mode & 0x1) !== 0;
@@ -392,7 +392,7 @@ class File implements \IteratorAggregate, HasRoute
             $meta2 = $destination->getMetadata();
             $meta2->override = $meta1;
             if (isset($this->system->user)) {
-                $meta2['owner'] = $this->system->user->getId();
+                $meta2['owner'] = $this->system->user->getName();
             }
             $parent = $destination->getParent();
             $meta2['group'] = $parent->getGroup();
@@ -488,7 +488,7 @@ class File implements \IteratorAggregate, HasRoute
             $this->type = 'directory';
             $metadata = $this->getMetadata();
             if (isset($this->system->user)) {
-                $metadata['owner'] = $this->system->user->getId();
+                $metadata['owner'] = $this->system->user->getName();
             }
             $parent = $this->getParent();
             $metadata['group'] = $parent->getGroup();

@@ -17,10 +17,10 @@ class Setup extends \Blogstep\AuthenticatedSnippet
             if (!$dir->exists()) {
                 $dir->makeDirectory();
             }
-            $dir->set('owner', $user->getId(), $recursive);
-            $dir->set('group', $group->getId(), $recursive);
+            $dir->set('owner', $user->getName(), $recursive);
+            $dir->set('group', $group->getName(), $recursive);
             $dir->setModeString($mode, $recursive);
-        } catch (\Blogstep\UnauthorizedException $e) {
+        } catch (\Blogstep\Files\FileException $e) {
         }
     }
     
@@ -32,8 +32,8 @@ class Setup extends \Blogstep\AuthenticatedSnippet
         if (!isset($userGroup)) {
             $userGroup = $this->m->users->createGroup('users');
         }
-        $systemUser = $this->m->users->getUser(0);
-        $systemGroup = $this->m->users->getGroup(0);
+        $systemUser = $this->m->users->getUser('system');
+        $systemGroup = $this->m->users->getGroup('system');
         $user = $this->m->auth->user;
         $this->createOwnedDir($fs, $user, $userGroup, 'rwr-r-', false);
         $this->createOwnedDir($fs->get('build'), $user, $userGroup, 'rwrwr-');
@@ -42,7 +42,7 @@ class Setup extends \Blogstep\AuthenticatedSnippet
         $this->createOwnedDir($fs->get('home'), $user, $userGroup, 'rwr-r-', false);
         $this->createOwnedDir($fs->get('system'), $systemUser, $systemGroup, 'rwrw--');
         foreach ($this->m->users->getUsers() as $user) {
-            $group = $this->m->users->getGroup($user->getPrimaryGroupId());
+            $group = $this->m->users->getGroup($user->getPrimaryGroup());
             if (!isset($group)) {
                 $group = $userGroup;
             }

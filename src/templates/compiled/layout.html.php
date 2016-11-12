@@ -11,7 +11,7 @@
 <aside>
 <?php echo $this->block('appmenu'); ?>
 <header>
-                Workspace (<span><?php echo \Jivoo\View\Html::h($user ? $user->getUsername() : ''); ?></span>)
+                Workspace (<span><?php echo \Jivoo\View\Html::h($user ? $user->getName() : ''); ?></span>)
 <span class="version"><?php echo \Jivoo\View\Html::h('v' . Blogstep\Main::VERSION); ?></span>
 </header>
 <nav>

@@ -266,6 +266,10 @@ function enter(path)
 
 function removeSelection()
 {
+    if (selection.length === 1 && selection[0] === selectionRoot) {
+        goUp();
+        return;
+    }
     selection.forEach(function (path) {
         files[path].link.removeClass('active');
     });
