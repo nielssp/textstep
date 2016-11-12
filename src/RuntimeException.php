@@ -10,4 +10,12 @@ namespace Blogstep;
  */
 class RuntimeException extends \RuntimeException
 {
+    
+    public function toArray()
+    {
+        return [
+            'code' => $this->getCode(),
+            'message' => $this->getMessage()
+        ];
+    }
 }

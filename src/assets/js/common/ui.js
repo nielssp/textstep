@@ -59,3 +59,13 @@ exports.setProgress = function(el, progress, status) {
         label.innerText = status;
     }
 };
+
+exports.handleError = function (event, jqxhr, settings, thrownError) {
+    if (typeof jqxhr.responseJSON !== 'undefined') {
+        alert(jqxhr.responseJSON.message);
+    } else {
+        alert(jqxhr.responseText);
+    }
+    exports.shake($('.frame'));
+    console.log(event, jqxhr, settings, thrownError);
+};

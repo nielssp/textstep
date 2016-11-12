@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 var actions = require('./common/actions');
+var ui = require('./common/ui');
 
 var CodeMirror = require('codemirror');
 require('codemirror/lib/codemirror.css');
@@ -20,6 +21,8 @@ var PATH = $('body').data('path').replace(/\/$/, '');
 var TOKEN = $('#editor').data('token');
 
 var path = $('#editor').data('path');
+
+$(document).ajaxError(ui.handleError);
 
 actions.define('new', newFile);
 actions.define('save', saveFile);
@@ -56,9 +59,6 @@ function saveFile()
         data: {request_token: TOKEN, path: path, data: $('#editor').val()},
         success: function (data) {
             alert('Saved!');
-        },
-        error: function () {
-            alert('could not save file');
         }
     });
 }

@@ -8,6 +8,7 @@
 var $ = require('jquery');
 var actions = require('./common/actions');
 var paths = require('./common/paths');
+var ui = require('./common/ui');
 
 require('highlightjs/styles/solarized_dark.css');
 window.hljs = require('highlightjs/highlight.pack.js');
@@ -18,6 +19,8 @@ var TOKEN = $('#editor').data('token');
 
 var path = $('#editor').data('path');
 var cwd = paths.convert('..', path);
+
+$(document).ajaxError(ui.handleError);
 
 actions.define('new', newFile);
 actions.define('save', saveFile);
@@ -78,9 +81,6 @@ function saveFile()
         success: function (data) {
             alert('Saved!');
             simplemde.clearAutosavedValue();
-        },
-        error: function () {
-            alert('could not save file');
         }
     });
 }

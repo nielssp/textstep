@@ -8,7 +8,7 @@ namespace Blogstep\Files;
 /**
  * Description of FileSystemRoot
  */
-class FileSystem extends File
+class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
 {
     /**
      * @var \Blogstep\User
@@ -20,16 +20,28 @@ class FileSystem extends File
      */
     protected $root;
     
+    /**
+     * @var \Psr\Log\LoggerInterface
+     */
+    protected $logger;
+    
     public function __construct($rootPath, \Blogstep\User $user = null)
     {
         parent::__construct($this, [], 'directory');
         \Jivoo\Assume::that(is_dir($rootPath));
         $this->root = rtrim($rootPath, '/');
         $this->user = $user;
+        $this->logger = new \Psr\Log\NullLogger();
     }
     
     public function setAuthentication(\Blogstep\User $user)
     {
         $this->user = $user;
     }
+
+    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
 }

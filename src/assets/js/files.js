@@ -37,6 +37,8 @@ var selectionRoot = '/';
 
 var stackOffset = 0;
 
+$(document).ajaxError(ui.handleError);
+
 function open(path)
 {
     location.href = PATH + '/open' + path;
@@ -592,9 +594,6 @@ actions.define('new-file', function () {
             success: function (data) {
                 addFile($currentColumn, data);
                 enter(path);
-            },
-            error: function () {
-                ui.shake($('.frame'));
             }
         });
     }
@@ -652,9 +651,6 @@ actions.define('rename', function () {
             success: function (data) {
                 enter(destination);
                 refresh();
-            },
-            error: function () {
-                ui.shake($('.frame'));
             }
         });
     }
@@ -735,9 +731,6 @@ actions.define('paste', function () {
                     });
                 }
                 refresh();
-            },
-            error: function () {
-                ui.shake($('.frame'));
             }
         });
     }

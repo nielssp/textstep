@@ -186,33 +186,37 @@ abstract class Snippet
             }
         }
         $this->viewData['token'] = $this->m->token;
-        $before = $this->before();
-        if (isset($before)) {
-            return $this->after($before);
+        try {
+            $before = $this->before();
+            if (isset($before)) {
+                return $this->after($before);
+            }
+            if ($this->request->isGet()) {
+                return $this->after($this->get());
+            }
+            if (! $this->hasValidData($this->dataKey)) {
+                return $this->error('Invalid request token.');
+            }
+            if (isset($this->dataKey)) {
+                $data = $this->request->data[$this->dataKey];
+            } else {
+                $data = $this->request->data;
+            }
+            switch ($this->request->method) {
+                case 'POST':
+                    return $this->after($this->post($data));
+                case 'PUT':
+                    return $this->after($this->put($data));
+                case 'PATCH':
+                    return $this->after($this->patch($data));
+                case 'DELETE':
+                    return $this->after($this->delete());
+            }
+            return $this->after($this->invalid());
+        } catch (RuntimeException $e) {
+            $this->m->logger->warning($e->getMessage(), ['exception' => $e]);
+            return $this->error($e);
         }
-        if ($this->request->isGet()) {
-            return $this->after($this->get());
-        }
-        if (! $this->hasValidData($this->dataKey)) {
-            throw new \Exception('Incorrect request token. Request=' . $this->request->data['request_token'] . ' Session=' . $this->m->token);
-            return $this->after($this->get());
-        }
-        if (isset($this->dataKey)) {
-            $data = $this->request->data[$this->dataKey];
-        } else {
-            $data = $this->request->data;
-        }
-        switch ($this->request->method) {
-            case 'POST':
-                return $this->after($this->post($data));
-            case 'PUT':
-                return $this->after($this->put($data));
-            case 'PATCH':
-                return $this->after($this->patch($data));
-            case 'DELETE':
-                return $this->after($this->delete());
-        }
-        return $this->after($this->invalid());
     }
 
     /**
@@ -285,8 +289,14 @@ abstract class Snippet
         return $response->withStatus(\Jivoo\Http\Message\Status::OK);
     }
     
-    protected function error($message, $status = \Jivoo\Http\Message\Status::BAD_REQUEST)
+    protected function error($message, $status = \Jivoo\Http\Message\Status::INTERNAL_SERVER_ERROR)
     {
+        if ($message instanceof \Exception) {
+            if ($message instanceof RuntimeException) {
+                return $this->json($message->toArray())->withStatus($status);
+            }
+            $message = $message->getMessage();
+        }
         $response = $this->response;
         $response->getBody()->write($message);
         return $response->withStatus($status);

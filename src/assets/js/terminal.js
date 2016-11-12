@@ -7,6 +7,7 @@
 
 var $ = require('jquery');
 var actions = require('./common/actions');
+var ui = require('./common/ui');
 
 var $terminal = $('#terminal');
 
@@ -166,7 +167,14 @@ function exec(command, data, success)
         data: data,
         success: success,
         error: function (xhr) {
-            writeLine(xhr.status + ' ' + xhr.statusText);
+            ui.shake($('.frame'));
+            if (xhr.status === 404) {
+                writeLine(xhr.status + ' ' + command + ': command not found');
+            } else if (typeof xhr.responseJSON !== 'undefined') {
+                writeLine(xhr.status + '(' + xhr.responseJSON.code + ') ' + xhr.responseJSON.message);
+            } else {
+                writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
+            }
         },
         complete: prompt
     });

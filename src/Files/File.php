@@ -5,10 +5,21 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Files;
 
+use Blogstep\UnauthorizedException;
+use Jivoo\Assume;
+use Jivoo\Http\Message\PhpStream;
+use Jivoo\Http\Message\UploadedFile;
+use Jivoo\Http\Route\HasRoute;
+use Jivoo\I18n\I18n;
+use Jivoo\InvalidArgumentException;
+use Jivoo\Store\Config;
+use Jivoo\Store\JsonStore;
+use Jivoo\Utilities;
+
 /**
  * A file system node.
  */
-class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
+class File implements \IteratorAggregate, HasRoute
 {
     
     /**
@@ -42,7 +53,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     private $valid = true;
     
     /**
-     * @var \Jivoo\Store\Config
+     * @var Config
      */
     private $metadata = null;
     
@@ -112,17 +123,17 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     /**
      * 
-     * @return \Jivoo\Store\Config
+     * @return Config
      */
     public function getMetadata()
     {
         if (! isset($this->metadata)) {
-            if ($this->getType()  === 'directory') {
-                $store = new \Jivoo\Store\JsonStore($this->getMetadataPath());
+            if ($this->isDirectory()) {
+                $store = new JsonStore($this->getMetadataPath());
                 if ($store->touch()) {
-                    $this->metadata = new \Jivoo\Store\Config($store);
+                    $this->metadata = new Config($store);
                 } else {
-                    $this->metadata = new \Jivoo\Store\Config();
+                    $this->metadata = new Config();
                     $this->metadata['mode'] = 0x00;
                     if (is_readable($this->getRealPath())) {
                         $this->metadata['mode'] = 0x2A;
@@ -131,7 +142,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             } elseif (isset($this->parent)) {
                 return $this->parent->getMetadata();
             } else {
-                return new \Jivoo\Store\Config();
+                return new Config();
             }
         }
         return $this->metadata;
@@ -145,14 +156,14 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     public function setMultiple($values, $recursive = false)
     {
-        if ($this->getType() !== 'directory') {
+        if (!$this->isDirectory()) {
             return false;
         }
         if ($recursive) {
             foreach ($this as $file) {
                 try {
                     $file->setMultiple($values, $recursive);
-                } catch (\Blogstep\UnauthorizedException $e) {
+                } catch (UnauthorizedException $e) {
                 }
             }
         }
@@ -164,14 +175,14 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     
     public function set($name, $value, $recursive = false)
     {
-        if ($this->getType() !== 'directory') {
+        if (!$this->isDirectory()) {
             return false;
         }
         if ($recursive) {
             foreach ($this as $file) {
                 try {
                     $file->set($name, $value, $recursive);
-                } catch (\Blogstep\UnauthorizedException $e) {
+                } catch (UnauthorizedException $e) {
                 }
             }
         }
@@ -211,7 +222,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     public function setModeString($str, $recursive = false)
     {
         $mode = 0;
-        \Jivoo\Assume::that(strlen($str) === 6);
+        Assume::that(strlen($str) === 6);
         for ($i = 0; $i < 6; $i++) {
             if ($str[$i] !== '-') {
                 $mode |= 0x20 >> $i;
@@ -238,14 +249,22 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
     private function assumeReadable()
     {
         if (!$this->isReadable()) {
-            throw new \Blogstep\UnauthorizedException('File is not readable: ' . $this->getPath());
+            $dir = $this->isDirectory() ? $this : $this->parent;
+            throw new FileException(
+                I18n::get('Directory is not readable: %1', $dir->getPath()),
+                FileException::NOT_READABLE
+            );
         }
     }
     
     private function assumeWritable()
     {
         if (!$this->isWritable()) {
-            throw new \Blogstep\UnauthorizedException('File is not writable: ' . $this->getPath());
+            $dir = $this->isDirectory() ? $this : $this->parent;
+            throw new FileException(
+                I18n::get('Directory is not writable: %1', $dir->getPath()),
+                FileException::NOT_WRITABLE
+            );
         }
     }
     
@@ -335,11 +354,16 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
                 if (is_dir($real)) {
                     $this->type = 'directory';
                 } else {
-                    $this->type = \Jivoo\Utilities::getFileExtension($real);
+                    $this->type = Utilities::getFileExtension($real);
                 }
             }
         }
         return $this->type;
+    }
+    
+    public function isDirectory()
+    {
+        return $this->getType() === 'directory';
     }
     
     public function exists()
@@ -347,11 +371,22 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         return file_exists($this->getRealPath());
     }
     
+    public function isInside(File $dir)
+    {
+        return \Jivoo\Unicode::startsWith($this->getPath(), $dir->getPath());
+    }
+    
     public function copy(File $destination)
     {
         $this->assumeReadable();
         $destination->assumeWritable();
-        if ($this->getType() == 'directory') {
+        if ($this->isDirectory()) {
+            if ($destination->isInside($this)) {
+                throw new FileException(
+                    I18n::get('Cannot copy directory into itself: %1', $this->getPath()),
+                    FileException::DESTINATION_INSIDE_SOURCE
+                );
+            }
             $destination->makeDirectory();
             $meta1 = $this->getMetadata();
             $meta2 = $destination->getMetadata();
@@ -367,7 +402,21 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
                 $file->copy($destination->get($file->getName()));
             }
         } elseif (!copy($this->getRealPath(), $destination->getRealPath())) {
-            return false;
+            if ($destination->exists()) {
+                throw new FileException(
+                    I18n::get('Destination exists: %1', $destination->getPath()),
+                    FileException::DESTINATION_EXISTS
+                );
+            } elseif (!$destination->getParent()->isDirectory()) {
+                throw new FileException(
+                    I18n::get('Destination is not a directory: %1', $destination->getParent()->getPath()),
+                    FileException::NOT_A_DIRECTORY
+                );
+            }
+            throw new FileException(
+                I18n::get('Could not copy to destination: %1', $destination->getPath()),
+                FileException::COPY_ERROR
+            );
         }
         return true;
     }
@@ -377,7 +426,13 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         $this->assumeReadable();
         $this->assumeWritable();
         $destination->assumeWritable();
-        if ($this->getType() == 'directory') {
+        if ($this->isDirectory()) {
+            if ($destination->isInside($this)) {
+                throw new FileException(
+                    I18n::get('Cannot move directory into itself: %1', $this->getPath()),
+                    FileException::DESTINATION_INSIDE_SOURCE
+                );
+            }
             $destination->makeDirectory();
             foreach ($this as $file) {
                 $file->move($destination->get($file->getName()));
@@ -395,17 +450,31 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             $this->invalidate();
             return true;
         }
-        return false;
+        if ($destination->exists()) {
+            throw new FileException(
+                I18n::get('Destination exists: %1', $destination->getPath()),
+                FileException::DESTINATION_EXISTS
+            );
+        } elseif (!$destination->getParent()->isDirectory()) {
+            throw new FileException(
+                I18n::get('Destination is not a directory: %1', $destination->getParent()->getPath()),
+                FileException::NOT_A_DIRECTORY
+            );
+        }
+        throw new FileException(
+            I18n::get('Could not move to destination: %1', $destination->getPath()),
+            FileException::MOVE_ERROR
+        );
     }
     
-    public function moveHere(\Jivoo\Http\Message\UploadedFile $file)
+    public function moveHere(UploadedFile $file)
     {
         if ($this->exists()) {
             return false;
         }
         $this->assumeWritable();
         $file->moveTo($this->getRealPath());
-        $this->type = \Jivoo\Utilities::getFileExtension($this->getName());
+        $this->type = Utilities::getFileExtension($this->getName());
         return true;
     }
     
@@ -440,7 +509,7 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
         }
         $this->assumeWritable();
         if (touch($this->getRealPath())) {
-            $this->type = \Jivoo\Utilities::getFileExtension($this->getName());
+            $this->type = Utilities::getFileExtension($this->getName());
             return true;
         }
         return false;
@@ -500,9 +569,9 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
                 throw new \Exception('not implemented');
                 break;
             default:
-                throw new \Jivoo\InvalidArgumentException('undefined file mode: ' + $mode);
+                throw new InvalidArgumentException('undefined file mode: ' + $mode);
         }
-        return new \Jivoo\Http\Message\PhpStream($this->getRealPath(), $mode);
+        return new PhpStream($this->getRealPath(), $mode);
     }
     
     public function delete($recursive = true)
@@ -513,15 +582,39 @@ class File implements \IteratorAggregate, \Jivoo\Http\Route\HasRoute
             }
         }
         $this->assumeWritable();
-        if ($this->getType() == 'directory') {
+        if ($this->isDirectory()) {
             if (file_exists($this->getMetadataPath())) {
                 unlink($this->getMetadataPath());
             }
             if (!rmdir($this->getRealPath())) {
-                return false;
+                if (!$this->exists()) {
+                    throw new FileException(
+                        I18n::get('Directory does not exist: %1', $this->getPath()),
+                        FileException::NOT_FOUND
+                    );
+                }
+                if (iterator_count($this->getIterator()) > 0) {
+                    throw new FileException(
+                        I18n::get('Directory is not empty: %1', $this->getPath()),
+                        FileException::NOT_EMPTY
+                    );
+                }
+                throw new FileException(
+                    I18n::get('Could not delete directory: %1', $this->getPath()),
+                    FileException::DELETE_ERROR
+                );
             }
         } elseif (!unlink($this->getRealPath())) {
-            return false;
+            if (!$this->exists()) {
+                throw new FileException(
+                    I18n::get('File does not exist: %1', $this->getPath()),
+                    FileException::NOT_FOUND
+                );
+            }
+            throw new FileException(
+                I18n::get('Could not delete file: %1', $this->getPath()),
+                FileException::DELETE_ERROR
+            );
         }
         $this->invalidate();
         return true;

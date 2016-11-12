@@ -8,7 +8,7 @@ namespace Blogstep;
 /**
  * Description of UnauthorizedException
  */
-class UnauthorizedException extends \RuntimeException
+class UnauthorizedException extends RuntimeException
 {
     //put your code here
 }
