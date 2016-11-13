@@ -263,10 +263,9 @@ dl {
   color: #666666;
   text-shadow: 1px 1px 0 #eee;
   background-color: #AEAAAE;
-  cursor: default;
-  outline: none; }
+  cursor: default; }
 .button[disabled] .icon, button[disabled] .icon, input[type=button][disabled] .icon, input[type=reset][disabled] .icon, input[type=submit][disabled] .icon {
-  opacity: 0.5; }
+  opacity: 0.3; }
 .button .icon, button .icon, input[type=button] .icon, input[type=reset] .icon, input[type=submit] .icon {
   display: inline-block; }
   .button .icon:before, button .icon:before, input[type=button] .icon:before, input[type=reset] .icon:before, input[type=submit] .icon:before {
@@ -457,10 +456,9 @@ select:not([size]), select[size="1"] {
     color: #666666;
     text-shadow: 1px 1px 0 #eee;
     background-color: #AEAAAE;
-    cursor: default;
-    outline: none; }
+    cursor: default; }
   select:not([size])[disabled] .icon, select[size="1"][disabled] .icon {
-    opacity: 0.5; }
+    opacity: 0.3; }
   select:not([size]) .icon, select[size="1"] .icon {
     display: inline-block; }
     select:not([size]) .icon:before, select[size="1"] .icon:before {
@@ -901,11 +899,15 @@ Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
-.frame-toolbar > * {
-  vertical-align: top; }
 .frame-toolbar-separator {
   display: inline-block;
   width: 10px; }
+  @media screen and (max-width: 479px) {
+    .frame-toolbar-separator {
+      display: none; } }
+@media screen and (max-width: 479px) {
+  .frame-toolbar button[disabled] {
+    display: none; } }
 
 /*
 BlogSTEP 
@@ -1019,10 +1021,9 @@ aside {
           color: #666666;
           text-shadow: 1px 1px 0 #eee;
           background-color: #AEAAAE;
-          cursor: default;
-          outline: none; }
+          cursor: default; }
         aside nav ul li a[disabled] .icon {
-          opacity: 0.5; }
+          opacity: 0.3; }
         aside nav ul li a .icon {
           display: inline-block; }
           aside nav ul li a .icon:before {

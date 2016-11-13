@@ -241,8 +241,10 @@ function goUp()
     touchSelectMode = false;
     if (stack.length > 1) {
         selection = [cwd];
+        actions.enableGroup('selection');
     } else {
         selection = [];
+        actions.disableGroup('selection');
     }
     selectionRoot = stack[stack.length - 1];
     updateColumns();
@@ -275,6 +277,7 @@ function removeSelection()
     });
     selection = [];
     touchSelectMode = false;
+    actions.disableGroup('selection');
     enter(selectionRoot);
 }
 
@@ -322,6 +325,7 @@ function select(path)
     } else if (selection.length === 1 && paths.dirName(selection[0]) !== selectionRoot) {
         selection = [];
     }
+    actions.enableGroup('selection');
     selection.push(path);
     console.log(selection, selectionRoot);
     files[path].link.addClass('active');
@@ -363,8 +367,10 @@ function cd(path)
     touchSelectMode = false;
     if (stack.length > 1) {
         selection = [path];
+        actions.enableGroup('selection');
     } else {
         selection = [];
+        actions.disableGroup('selection');
     }
     selectionRoot = stack[stack.length - 1];
     updateColumns();
@@ -449,8 +455,14 @@ function updateColumn($column, path)
                             var file = data.files[i];
                             addFile($column, file);
                         }
+                        if ($column.is($currentColumn)) {
+                            actions.enableGroup('dir');
+                        }
                     } else {
                         addFileInfo($column, data);
+                        if ($column.is($currentColumn)) {
+                            actions.disableGroup('dir');
+                        }
                     }
                     $column.trigger('loaded');
                 }
@@ -565,24 +577,6 @@ $(window).keydown(function (e) {
         return;
     }
     var $filter = $currentColumn.children('.filter');
-    if (e.key === 'Escape') {
-        if ($filter.length > 0) {
-            $filter.remove();
-            return false;
-        }
-        return;
-    }
-    if (e.key === 'Enter') {
-        if ($filter.length > 0) {
-            var match = matchFilter($filter.val());
-            if (match !== null) {
-                $filter.remove();
-                match.click();
-            }
-            return false;
-        }
-        return;
-    }
     if (e.key.length !== 1) {
         return;
     }
@@ -591,6 +585,23 @@ $(window).keydown(function (e) {
                 .val(e.key)
                 .appendTo($currentColumn)
                 .focus()
+                .keydown(function (e) {
+                    if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
+                        return;
+                    }
+                    if (e.key === 'Escape') {
+                        $(this).remove();
+                        updateFilter();
+                        return false;
+                    } else if (e.key === 'Enter') {
+                        var $match = $currentColumn.find('.match');
+                        if ($match.length > 0) {
+                            $(this).remove();
+                            $match.click();
+                        }
+                        return false;
+                    }
+                })
                 .keyup(updateFilter)
                 .blur(function () {
                     $(this).remove();
@@ -604,16 +615,16 @@ $(window).keydown(function (e) {
 
 actions.define('back', function () {
     history.back();
-});
+}, ['nav']);
 actions.define('foreward', function () {
     history.go(1);
-});
+}, ['nav']);
 actions.define('up', function () {
     goUp();
-});
+}, ['nav']);
 actions.define('home', function () {
     enter('/');
-});
+}, ['nav']);
 actions.define('new-folder', function () {
     var name = prompt('Enter the new name:');
     if (name !== null) {
@@ -637,7 +648,7 @@ actions.define('new-folder', function () {
             }
         });
     }
-});
+}, ['dir']);
 actions.define('new-file', function () {
     var name = prompt('Enter the new name:');
     if (name !== null) {
@@ -661,7 +672,7 @@ actions.define('new-file', function () {
             }
         });
     }
-});
+}, ['dir']);
 actions.define('upload', function () {
     var $fileInput = $('<input type="file" />').appendTo($('body'));
     var $column = $currentColumn;
@@ -692,7 +703,7 @@ actions.define('upload', function () {
         };
         return false;
     });
-});
+}, ['dir']);
 actions.define('rename', function () {
     if (stack.length <= 1) {
         return;
@@ -718,7 +729,7 @@ actions.define('rename', function () {
             }
         });
     }
-});
+}, ['selection']);
 actions.define('trash', function () {
     var confirmation;
     var data = {request_token: TOKEN};
@@ -740,7 +751,7 @@ actions.define('trash', function () {
             }
         });
     }
-});
+}, ['selection']);
 actions.define('cut', function () {
     if (selection.length === 1) {
         files[selection[0]].link.clone().removeClass('active').appendTo($shelf);
@@ -752,7 +763,7 @@ actions.define('cut', function () {
         $file.appendTo($shelf);
     }
     removeSelection();
-});
+}, ['selection']);
 actions.define('copy', function () {
     if (selection.length === 1) {
         files[selection[0]].link.clone().removeClass('active').addClass('duplicate').appendTo($shelf);
@@ -764,7 +775,7 @@ actions.define('copy', function () {
         $file.appendTo($shelf);
     }
     removeSelection();
-});
+}, ['selection']);
 actions.define('paste', function () {
     if ($shelf.children().length > 0) {
         var $pastee = $shelf.children().last();
@@ -798,7 +809,7 @@ actions.define('paste', function () {
             }
         });
     }
-});
+}, ['dir']);
 actions.define('focus-prev', function () {
     var $current = $currentColumn.find('.file:focus');
     if ($current.length > 0) {
@@ -809,7 +820,7 @@ actions.define('focus-prev', function () {
     } else {
         $currentColumn.find('.file').last().focus();
     }
-});
+}, ['nav']);
 actions.define('focus-next', function () {
     var $current = $currentColumn.find('.file:focus');
     if ($current.length > 0) {
@@ -820,7 +831,7 @@ actions.define('focus-next', function () {
     } else {
         $currentColumn.find('.file').first().focus();
     }
-});
+}, ['nav']);
 actions.define('enter', function () {
     var $current = $currentColumn.find('.file:focus');
     if ($current.length > 0) {
@@ -829,14 +840,14 @@ actions.define('enter', function () {
             $(this).find('.file').first().focus();
         });
     }
-});
+}, ['nav']);
 actions.define('exit', function () {
     if (stack.length > 1) {
         var path = cwd;
         goUp();
         files[path].link.focus();
     }
-});
+}, ['nav']);
 actions.bind('F2', 'rename');
 actions.bind('C-C', 'copy');
 actions.bind('C-X', 'cut');
@@ -851,6 +862,9 @@ actions.bind('ArrowLeft', 'exit');
 actions.bind('ArrowUp', 'focus-prev');
 actions.bind('ArrowDown', 'focus-next');
 actions.bind('ArrowRight', 'enter');
+
+actions.disableGroup('selection');
+actions.disableGroup('dir');
 
 $columns.empty();
 createColumns();

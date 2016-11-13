@@ -10,10 +10,14 @@ var $ = require('jquery');
 exports.define = defineAction;
 exports.enable = enable;
 exports.disable = disable;
+exports.enableGroup = enableGroup;
+exports.disableGroup = disableGroup;
 exports.activate = activate;
 exports.bind = bind;
 
 var actions = {};
+
+var actionGroups = {};
 
 var keyMap = {};
 
@@ -30,6 +34,9 @@ $(window).keydown(function (e) {
     }
     if (e.shiftKey) {
         key += 's-';
+    }
+    if (e.metaKey) {
+        key += 'm-';
     }
     key += e.key.toLowerCase();
     console.log('pressed ' + key);
@@ -61,7 +68,7 @@ function bind(key, action)
     keyMap[key] = action;
 }
 
-function defineAction(name, callback)
+function defineAction(name, callback, groups)
 {
     actions[name] = callback;
     $('[data-action="' + name + '"]').click(function (e) {
@@ -70,11 +77,37 @@ function defineAction(name, callback)
         callback();
         return false;
     });
+    if (typeof groups !== 'undefined') {
+        groups.forEach(function (group) {
+            if (!actionGroups.hasOwnProperty(group)) {
+                actionGroups[group] = [];
+            }
+            actionGroups[group].push(name);
+        });
+    }
 }
 
 function activate(name)
 {
     actions[name]();
+}
+
+function enableGroup(group)
+{
+    if (actionGroups.hasOwnProperty(group)) {
+        actionGroups[group].forEach(function (name) {
+            enable(name);
+        });
+    }
+}
+
+function disableGroup(group)
+{
+    if (actionGroups.hasOwnProperty(group)) {
+        actionGroups[group].forEach(function (name) {
+            disable(name);
+        });
+    }
 }
 
 function enable(name)
