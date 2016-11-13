@@ -242,9 +242,11 @@ function goUp()
     if (stack.length > 1) {
         selection = [cwd];
         actions.enableGroup('selection');
+        actions.enableGroup('selection-single');
     } else {
         selection = [];
         actions.disableGroup('selection');
+        actions.disableGroup('selection-single');
     }
     selectionRoot = stack[stack.length - 1];
     updateColumns();
@@ -278,6 +280,7 @@ function removeSelection()
     selection = [];
     touchSelectMode = false;
     actions.disableGroup('selection');
+    actions.disableGroup('selection-single');
     enter(selectionRoot);
 }
 
@@ -293,6 +296,11 @@ function unselect(path)
             $currentColumn.next().children('.file-info').empty();
             enter(selectionRoot);
         } else {
+            if (selection.length === 1) {
+                actions.enableGroup('selection-single');
+            } else {
+                actions.disableGroup('selection-single');
+            }
             var $fileInfo = $currentColumn.next().children('.file-info');
             if ($fileInfo.length > 0) {
                 var $name = $fileInfo.children('.file-name');
@@ -327,6 +335,11 @@ function select(path)
     }
     actions.enableGroup('selection');
     selection.push(path);
+    if (selection.length === 1) {
+        actions.enableGroup('selection-single');
+    } else {
+        actions.disableGroup('selection-single');
+    }
     console.log(selection, selectionRoot);
     files[path].link.addClass('active');
     var $fileInfo = $currentColumn.next().children('.file-info');
@@ -368,9 +381,11 @@ function cd(path)
     if (stack.length > 1) {
         selection = [path];
         actions.enableGroup('selection');
+        actions.enableGroup('selection-single');
     } else {
         selection = [];
         actions.disableGroup('selection');
+        actions.disableGroup('selection-single');
     }
     selectionRoot = stack[stack.length - 1];
     updateColumns();
@@ -736,7 +751,7 @@ actions.define('rename', function () {
             }
         });
     }
-}, ['selection']);
+}, ['selection-single']);
 actions.define('trash', function () {
     var confirmation;
     var data = {request_token: TOKEN};
@@ -871,6 +886,7 @@ actions.bind('ArrowDown', 'focus-next');
 actions.bind('ArrowRight', 'enter');
 
 actions.disableGroup('selection');
+actions.disableGroup('selection-single');
 actions.disableGroup('dir');
 
 $columns.empty();

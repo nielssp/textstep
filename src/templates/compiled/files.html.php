@@ -22,40 +22,40 @@
 <button data-action="back" title="Go back">
 <span class="icon icon-go-back"></span>
 </button>
-<button data-action="foward">
+<button data-action="foward" title="Go forward">
 <span class="icon icon-go-forward"></span>
 </button>
-<button data-action="up">
+<button data-action="up" title="Go to parent">
 <span class="icon icon-go-up"></span>
 </button>
-<button data-action="home">
+<button data-action="home" title="Go to root">
 <span class="icon icon-go-home"></span>
 </button>
 </div>
 <span class="frame-toolbar-separator"></span>
 <div class="button-group">
-<button data-action="new-folder">
-<span class="icon icon-edit-new-folder"></span>
+<button data-action="new-file" title="Create file">
+<span class="icon icon-edit-new-file"></span>
 </button>
-<button data-action="upload">
+<button data-action="upload" title="Upload file">
 <span class="icon icon-edit-upload"></span>
 </button>
 </div>
 <span class="frame-toolbar-separator"></span>
 <div class="button-group">
-<button data-action="cut">
+<button data-action="cut" title="Move selection to shelf">
 <span class="icon icon-edit-cut"></span>
 </button>
-<button data-action="copy">
+<button data-action="copy" title="Copy selection to shelf">
 <span class="icon icon-edit-copy"></span>
 </button>
-<button data-action="paste">
+<button data-action="paste" title="Place item from shelf">
 <span class="icon icon-edit-paste"></span>
 </button>
-<button data-action="rename">
+<button data-action="rename" title="Rename">
 <span class="icon icon-edit-rename"></span>
 </button>
-<button data-action="trash">
+<button data-action="trash" title="Delete selection">
 <span class="icon icon-edit-trash"></span>
 </button>
 </div>
