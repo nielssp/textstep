@@ -666,6 +666,11 @@ class File implements \IteratorAggregate, HasRoute
         if ($relativePath[0] == '/') {
             return $this->system->getRelative(explode('/', $relativePath));
         }
+        if ($relativePath[0] == '~') {
+            $relativePath = explode('/', $relativePath);
+            array_shift($relativePath);
+            return $this->system->user->getHome()->getRelative($relativePath);
+        }
         return $this->getRelative(explode('/', $relativePath));
     }
 }
