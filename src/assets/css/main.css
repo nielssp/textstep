@@ -906,8 +906,11 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .frame-toolbar-separator {
       display: none; } }
 @media screen and (max-width: 479px) {
-  .frame-toolbar button[disabled] {
-    display: none; } }
+  .frame-toolbar {
+    overflow-y: auto;
+    white-space: nowrap; }
+    .frame-toolbar button[disabled] {
+      display: none; } }
 
 /*
 BlogSTEP 

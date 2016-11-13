@@ -335,6 +335,7 @@ function select(path)
     }
     actions.enableGroup('selection');
     selection.push(path);
+    actions.disableGroup('dir');
     if (selection.length === 1) {
         actions.enableGroup('selection-single');
     } else {
