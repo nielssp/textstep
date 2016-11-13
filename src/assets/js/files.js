@@ -894,6 +894,13 @@ $columns.empty();
 createColumns();
 cd(cwd);
 
+$columns.click(function (e) {
+    if (e.defaultPrevented) {
+        return;
+    }
+    removeSelection();
+});
+
 $(window).resize(function () {
     if (createColumns()) {
         updateColumns();
