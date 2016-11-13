@@ -471,6 +471,13 @@ function updateColumn($column, path)
     }
     if (files.hasOwnProperty(path)) {
         files[path].link.addClass('active');
+        if ($column.is($currentColumn)) {
+            if (files[path].data.type === 'directory') {
+                actions.enableGroup('dir');
+            } else {
+                actions.disableGroup('dir');
+            }
+        }
     }
 }
 
