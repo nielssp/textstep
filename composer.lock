@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "bccfd6473a62cbd70a1499c793f15e01",
-    "content-hash": "9ee6db837307924005ddd695159024d8",
+    "hash": "99f118bb59f35a5c669b8ae92f0a694c",
+    "content-hash": "5aa36008ba4c545a9430f7e96b9c664c",
     "packages": [
         {
             "name": "badcow/lorem-ipsum",
@@ -114,17 +114,20 @@
         },
         {
             "name": "erusev/parsedown",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7"
+                "reference": "20ff8bbb57205368b4b42d094642a3e52dac85fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7",
-                "reference": "3ebbd730b5c2cf5ce78bc1bf64071407fc6674b7",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/20ff8bbb57205368b4b42d094642a3e52dac85fb",
+                "reference": "20ff8bbb57205368b4b42d094642a3e52dac85fb",
                 "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
             },
             "type": "library",
             "autoload": {
@@ -149,20 +152,20 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2015-10-04 16:44:32"
+            "time": "2016-11-02 15:56:58"
         },
         {
             "name": "jivoo/core",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/core.git",
-                "reference": "62830a3e797604f9b7a21798b92951f0e6d7888c"
+                "reference": "a852de0be2588b5829a7d2e998cd7f279fbf7c85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/core/zipball/62830a3e797604f9b7a21798b92951f0e6d7888c",
-                "reference": "62830a3e797604f9b7a21798b92951f0e6d7888c",
+                "url": "https://api.github.com/repos/jivoo/core/zipball/a852de0be2588b5829a7d2e998cd7f279fbf7c85",
+                "reference": "a852de0be2588b5829a7d2e998cd7f279fbf7c85",
                 "shasum": ""
             },
             "require": {
@@ -196,20 +199,20 @@
             ],
             "description": "Jivoo common classes.",
             "homepage": "http://nielssp.dk",
-            "time": "2016-09-25 18:44:58"
+            "time": "2016-10-30 20:48:11"
         },
         {
             "name": "jivoo/http",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/http.git",
-                "reference": "e2268c82fc7e9b47039c2eb0bf6ea087219a6f04"
+                "reference": "bd1b69e295ca33c05085723a98335445e07ea541"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/http/zipball/e2268c82fc7e9b47039c2eb0bf6ea087219a6f04",
-                "reference": "e2268c82fc7e9b47039c2eb0bf6ea087219a6f04",
+                "url": "https://api.github.com/repos/jivoo/http/zipball/bd1b69e295ca33c05085723a98335445e07ea541",
+                "reference": "bd1b69e295ca33c05085723a98335445e07ea541",
                 "shasum": ""
             },
             "require": {
@@ -248,7 +251,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-09-17 19:54:48"
+            "time": "2016-11-14 18:52:09"
         },
         {
             "name": "jivoo/security",
@@ -353,16 +356,16 @@
         },
         {
             "name": "matthiasmullie/minify",
-            "version": "1.3.39",
+            "version": "1.3.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/matthiasmullie/minify.git",
-                "reference": "1a6cb6b457690034bde461593edb510949bdd6e7"
+                "reference": "101a56354da8de185eb3464bb27f05cec798bb89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/1a6cb6b457690034bde461593edb510949bdd6e7",
-                "reference": "1a6cb6b457690034bde461593edb510949bdd6e7",
+                "url": "https://api.github.com/repos/matthiasmullie/minify/zipball/101a56354da8de185eb3464bb27f05cec798bb89",
+                "reference": "101a56354da8de185eb3464bb27f05cec798bb89",
                 "shasum": ""
             },
             "require": {
@@ -405,7 +408,7 @@
                 "minifier",
                 "minify"
             ],
-            "time": "2016-10-27 22:32:49"
+            "time": "2016-11-11 20:29:29"
         },
         {
             "name": "matthiasmullie/path-converter",
@@ -1183,16 +1186,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.27",
+            "version": "4.8.28",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c062dddcb68e44b563f66ee319ddae2b5a322a90"
+                "reference": "558a3a0d28b4cb7e4a593a4fbd2220e787076225"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c062dddcb68e44b563f66ee319ddae2b5a322a90",
-                "reference": "c062dddcb68e44b563f66ee319ddae2b5a322a90",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/558a3a0d28b4cb7e4a593a4fbd2220e787076225",
+                "reference": "558a3a0d28b4cb7e4a593a4fbd2220e787076225",
                 "shasum": ""
             },
             "require": {
@@ -1251,7 +1254,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-07-21 06:48:14"
+            "time": "2016-11-14 06:25:28"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -1595,16 +1598,16 @@
         },
         {
             "name": "sebastian/recursion-context",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/recursion-context.git",
-                "reference": "913401df809e99e4f47b27cdd781f4a258d58791"
+                "reference": "79860854756415e1cec8d186c9cf261cafd87dfc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/913401df809e99e4f47b27cdd781f4a258d58791",
-                "reference": "913401df809e99e4f47b27cdd781f4a258d58791",
+                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/79860854756415e1cec8d186c9cf261cafd87dfc",
+                "reference": "79860854756415e1cec8d186c9cf261cafd87dfc",
                 "shasum": ""
             },
             "require": {
@@ -1644,7 +1647,7 @@
             ],
             "description": "Provides functionality to recursively process PHP variables",
             "homepage": "http://www.github.com/sebastianbergmann/recursion-context",
-            "time": "2015-11-11 19:50:13"
+            "time": "2016-11-14 15:54:23"
         },
         {
             "name": "sebastian/version",
