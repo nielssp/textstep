@@ -172,7 +172,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->auth->authenticate(null);
         
         // Initialize assets
-        $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'));
+        $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'), null, true);
         
         // Initialize view
         $this->m->view = new \Jivoo\View\View($this->m->assets, $this->m->router, $this->config['user']['view'], $this->m->logger);

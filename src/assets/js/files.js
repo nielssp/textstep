@@ -898,6 +898,9 @@ $columns.click(function (e) {
     if (e.defaultPrevented) {
         return;
     }
+    if (selection.length === 1 && selection[0] === selectionRoot) {
+        return;
+    }
     removeSelection();
 });
 
