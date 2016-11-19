@@ -20,6 +20,20 @@ class ObjectNode extends FileNode
         $this->object = $object;
     }
     
+    public static function init(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
+    {
+        $node = new static($fileRoot->get($state['file']), unserialize($state['object']));
+        $node->resume($root, $fileRoot, $state);
+        return $node;
+    }
+    
+    public function suspend()
+    {
+        return array_merge(parent::suspend(), [
+            'object' => serialize($this->object)
+        ]);
+    }
+    
     public function getObject()
     {
         return $this->object;

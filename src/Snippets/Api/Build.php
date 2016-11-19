@@ -23,40 +23,49 @@ class Build extends \Blogstep\AuthenticatedSnippet
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToText.php')));
         $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/minifyAssets.php')));
         
-        $compiler->clean();
-        $compiler->createContentTree($content);
+        $runner = new \Blogstep\Task\Runner('build');
         
-        $id = function ($content) { return $content; };
-        $compiler->content->addHandler('html', $id);
-        $compiler->content->addHandler('htm', $id);
-        $compiler->content->addHandler('md', [new \Parsedown(), 'text']);
+        $runner->add(new \Blogstep\Task\UnitTask('clean', [$compiler, 'clean'], 'Cleaning'), function () use ($compiler, $content, $structure) {
+            $compiler->createContentTree($content);
+            
+            $id = function ($content) { return $content; };
+            $compiler->content->addHandler('html', $id);
+            $compiler->content->addHandler('htm', $id);
+            $compiler->content->addHandler('md', [new \Parsedown(), 'text']);
         
-        $dir = scandir($this->m->main->p('src/filters'));
-        foreach ($dir as $file) {
-            if (\Jivoo\Unicode::endsWith($file, '.php')) {
-                $name = substr($file, 0, -4);
-                $compiler->content->addFilter($name, require $this->m->main->p('src/filters/' . $file));
-            }
-        }
-        if ($structure->get('filters')->getType() === 'directory') {
-            foreach ($structure->get('filters') as $file) {
-                if (\Jivoo\Unicode::endsWith($file->getName(), '.php')) {
-                    $name = substr($file->getName(), 0, -4);
-                    $compiler->content->addFilter($name, require $file->getRealPath());
+        
+            $dir = scandir($this->m->main->p('src/filters'));
+            foreach ($dir as $file) {
+                if (\Jivoo\Unicode::endsWith($file, '.php')) {
+                    $name = substr($file, 0, -4);
+                    $compiler->content->addFilter($name, require $this->m->main->p('src/filters/' . $file));
                 }
             }
-        }
+            if ($structure->get('filters')->getType() === 'directory') {
+                foreach ($structure->get('filters') as $file) {
+                    if (\Jivoo\Unicode::endsWith($file->getName(), '.php')) {
+                        $name = substr($file->getName(), 0, -4);
+                        $compiler->content->addFilter($name, require $file->getRealPath());
+                    }
+                }
+            }
+
+            $compiler->content->setDefaultFilters(['links']);
+        });
+        $runner->add(new \Blogstep\Task\UnitTask('structure', function () use ($compiler, $structure) {
+            $compiler->createStructure($structure);
+        }, 'Creating structure'));
+        $runner->add($compiler);
+        $runner->add(new \Blogstep\Task\UnitTask('install', function () use ($compiler) {
+            $target = $this->m->main->config['user']->get('target', $this->m->main->p('target'));
+            $compiler->install($target);
+        }, 'Installing'));
         
-        $compiler->content->setDefaultFilters(['links']);
+        $state = new \Jivoo\Store\JsonStore($this->m->files->get('build.json')->getRealPath());
+        $state->touch();
         
-        $compiler->createStructure($structure);
-        
-        $compiler->run();
-        
-        $target = $this->m->main->config['user']->get('target', $this->m->main->p('target'));
-        $compiler->install($target);
-        
-        return $this->ok();
+        $service = new \Blogstep\Task\Service($this->m->logger, $this->request, $state);
+        $service->run($runner);
     }
     
     public function get()

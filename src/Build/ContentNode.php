@@ -21,7 +21,7 @@ class ContentNode extends FileNode
     private $propertyDefinitions;
     private $contentName;
     
-    public function __construct(File $origin, File $content, $relativePath, array $properties, File $template = null)
+    public function __construct(File $origin, File $content, $relativePath, array $properties)
     {
         parent::__construct($content);
         $this->origin = $origin;
@@ -30,6 +30,39 @@ class ContentNode extends FileNode
         $this->propertyDefinitions = $properties;
         $this->name = preg_replace('/\..+$/', '', $content->getName());
         $this->contentName = $this->name;
+    }
+
+    public static function init(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
+    {
+        $node = new static(
+            $fileRoot->get($state['origin']),
+            $fileRoot->get($state['contentFile']),
+            $state['relativePath'],
+            []
+        );
+        $node->resume($root, $fileRoot, $state);
+        return $node;
+    }
+    
+    public function resume(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
+    {
+        parent::resume($root, $fileRoot, $state);
+        $this->contentFile = $fileRoot->get($state['contentFile']);
+        $this->dom = unserialize($state['dom']);
+        $this->metadata = unserialize($state['metadata']);
+        $this->contentName = $state['contentName'];
+    }
+    
+    public function suspend()
+    {
+        return array_merge(parent::suspend(), [
+            'contentFile' => $this->contentFile->getPath(),
+            'relativePath' => $this->relativePath,
+            'origin' => $this->origin->getPath(),
+            'dom' => serialize($this->dom),
+            'metadata' => serialize($this->metadata),
+            'contentName' => $this->contentName
+        ]);
     }
     
     public function __get($property)

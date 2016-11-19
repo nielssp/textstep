@@ -23,6 +23,33 @@ class SiteNode extends InternalNode
         $this->name = $name;
     }
     
+    public static function init(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
+    {
+        $node = new static($state['name']);
+        $node->resume($root, $fileRoot, $state);
+        return $node;
+    }
+    
+    public function resume(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
+    {
+        $this->name = $state['name'];
+        $this->clear();
+        $this->root = $root;
+        foreach ($state['nodes'] as $child) {
+            $this->append(call_user_func([$child[0], 'init'], $root, $fileRoot, $child[1]));
+        }
+    }
+    
+    public function suspend()
+    {
+        return [
+            'name' => $this->name,
+            'nodes' => array_map(function ($node) {
+                return [get_class($node), $node->suspend()];
+            }, $this->nodes)
+        ];
+    }
+    
     public function append(TemplateNode $node)
     {
         parent::append($node);

@@ -179,17 +179,22 @@ class UserModel implements \Jivoo\Security\UserModel
             $users = $this->getUsers();
             if (isset($users[$state[$sessionId]])) {
                 $user = $users[$state[$sessionId]];
-                $sessions = $user->getSessions();
-                if (! isset($sessions[$sessionId])) {
-                    $user = null;
-                } elseif ($sessions[$sessionId] < time()) {
-                    $user = null;
-                    unset($sessions[$sessionId]);
+                try {
+                    $sessions = $user->getSessions();
+                    if (! isset($sessions[$sessionId])) {
+                        $user = null;
+                    } elseif ($sessions[$sessionId] < time()) {
+                        $user = null;
+                        unset($sessions[$sessionId]);
+                    }
+                    $sessions->close();
+                } catch (\Jivoo\Store\AccessException $e) {
+                   $user = null;
                 }
-                if (! isset($user)) {
-                    // Upgrade lock and delete session in $state ?
-                }
-                $sessions->close();
+            }
+            if (! isset($user)) {
+                $state = $this->state->write('sessions');
+                unset($state[$sessionId]);
             }
         }
         $state->close();

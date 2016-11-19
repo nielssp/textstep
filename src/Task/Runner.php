@@ -69,7 +69,7 @@ class Runner implements SuspendableTask
         } else {
             $taskProgress = 0;
         }
-        return floor($this->currentTask / $n + $taskProgress);
+        return floor($this->currentTask / $n * 100 + $taskProgress);
     }
 
     public function getStatus()

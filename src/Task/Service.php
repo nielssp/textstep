@@ -35,8 +35,10 @@ class Service
     public function run(SuspendableTask $task)
     {
         $state = new \Jivoo\Store\State($this->store, true);
-        $task->resume($state->get($task->getName(), []));
-        $max = 1;
+        if (isset($state[$task->getName()])) {
+            $task->resume($state->get($task->getName(), []));
+        }
+        $max = 10;
         $server = $this->request->getServerParams();
         $start = $server['REQUEST_TIME'];
         $end = $start + $max;
@@ -53,7 +55,7 @@ class Service
                 $task->run();
             } catch (\Exception $e) {
                 $this->logger->error(
-                    \Jivoo\I18n\I18n::get('Asynchronous task failed: %1', $e->getMessage()), array('exception' => $e)
+                    \Jivoo\I18n\I18n::get('Task failed: %1', $e->getMessage()), array('exception' => $e)
                 );
                 echo 'error: ' . $e->getMessage() . "\n";
                 break;
@@ -77,7 +79,7 @@ class Service
             ob_flush();
             flush();
         }
-        $state[$name] = $task->suspend();
+        $state[$task->getName()] = $task->suspend();
         $state->close();
         exit;
     }

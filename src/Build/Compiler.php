@@ -104,9 +104,15 @@ class Compiler extends \Blogstep\Task\TaskBase
     
     public function run()
     {
-        foreach ($this->tasks as $task) {
-            $this->siteMap->accept($task, $this);
+        if (!isset($this->tasks[$this->currentTask])) {
+            return;
         }
+        $task = $this->tasks[$this->currentTask];
+        $this->currentTask++;
+        $n = count($this->tasks);
+        $this->status('Running task ' . $this->currentTask . ' of ' . $n . ': ' . $task->getName());
+        $this->siteMap->accept($task, $this);
+        $this->progress(floor($this->currentTask / count($this->tasks) * 100));
     }
 
     public function getName()
@@ -116,17 +122,26 @@ class Compiler extends \Blogstep\Task\TaskBase
 
     public function isDone()
     {
-        
+        return !isset($this->tasks[$this->currentTask]);
     }
 
     public function resume(array $state)
     {
-        
+        $this->currentTask = $state['currentTask'];
+        $fileRoot = $this->buildDir->get('/');
+        $this->siteMap->resume($this->siteMap, $fileRoot, $state['siteMap']);
+        if (isset($this->content) and isset($state['content'])) {
+            $this->content->resume($this->siteMap, $state['content']);
+        }
     }
 
     public function suspend()
     {
-        
+        return [
+            'currentTask' => $this->currentTask,
+            'siteMap' => $this->siteMap->suspend(),
+            'content' => isset($this->content) ? $this->content->suspend() : null
+        ];
     }
 
 }

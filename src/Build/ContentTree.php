@@ -48,6 +48,34 @@ class ContentTree implements IteratorAggregate, Selectable
         $this->recursive = $dir->get('.recursive')->exists();
     }
     
+    public function resume(SiteMap $siteMap, array $state)
+    {
+        foreach ($state['namespaces'] as $namespace => $subState) {
+            $this->__get($namespace)->resume($siteMap, $subState);
+        }
+        if (isset($state['nodes'])) {
+            $this->nodes = [];
+            foreach ($state['nodes'] as $path) {
+                $this->nodes[] = $siteMap->get($path);
+            }
+        }
+    }
+    
+    public function suspend()
+    {
+        $state = ['namespaces' => []];
+        foreach ($this->namespaces as $namespace => $tree) {
+            $state['namespaces'][$namespace] = $tree->suspend();
+        }
+        if (isset($this->nodes)) {
+            $state['nodes'] = [];
+            foreach ($this->nodes as $node) {
+                $state['nodes'][] = $node->getPath();
+            }
+        }
+        return $state;
+    }
+    
     public function __get($namespace)
     {
         if (!isset($this->namespaces[$namespace])) {
