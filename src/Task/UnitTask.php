@@ -37,7 +37,7 @@ class UnitTask implements SuspendableTask
 
     public function getStatus()
     {
-        return $this->message;
+        return $this->done ? null : $this->message;
     }
 
     public function isDone()

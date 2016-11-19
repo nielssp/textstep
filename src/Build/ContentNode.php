@@ -49,7 +49,9 @@ class ContentNode extends FileNode
         parent::resume($root, $fileRoot, $state);
         $this->contentFile = $fileRoot->get($state['contentFile']);
         $this->dom = unserialize($state['dom']);
-        $this->metadata = unserialize($state['metadata']);
+        if (isset($state['metadata'])) {
+            $this->metadata = new \Jivoo\Store\Document($state['metadata']);
+        }
         $this->contentName = $state['contentName'];
     }
     
@@ -60,7 +62,7 @@ class ContentNode extends FileNode
             'relativePath' => $this->relativePath,
             'origin' => $this->origin->getPath(),
             'dom' => serialize($this->dom),
-            'metadata' => serialize($this->metadata),
+            'metadata' => isset($this->metadata) ? $this->metadata->toArray() : null,
             'contentName' => $this->contentName
         ]);
     }

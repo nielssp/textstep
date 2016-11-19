@@ -38,7 +38,7 @@ class Service
         if (isset($state[$task->getName()])) {
             $task->resume($state->get($task->getName(), []));
         }
-        $max = 10;
+        $max = 1;
         $server = $this->request->getServerParams();
         $start = $server['REQUEST_TIME'];
         $end = $start + $max;
