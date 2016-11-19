@@ -32,11 +32,15 @@ class Service
         $this->store = $store;
     }
 
-    public function run(SuspendableTask $task)
+    public function run(SuspendableTask $task, callable $finally = null)
     {
         $state = new \Jivoo\Store\State($this->store, true);
+        $objects = new ObjectContainer();
+        if (isset($state['_objects'])) {
+            $objects->resume($state->get('_objects', []));
+        }
         if (isset($state[$task->getName()])) {
-            $task->resume($state->get($task->getName(), []));
+            $task->resume($state->get($task->getName(), []), $objects);
         }
         $max = 1;
         $server = $this->request->getServerParams();
@@ -48,6 +52,9 @@ class Service
             echo 'status: ' . \Jivoo\I18n\I18n::get('Done!') . "\n";
             echo "done:\n";
             $state->close();
+            if (isset($finally)) {
+                call_user_func($finally);
+            }
             exit;
         }
         while (true) {
@@ -79,8 +86,12 @@ class Service
             ob_flush();
             flush();
         }
-        $state[$task->getName()] = $task->suspend();
+        $state[$task->getName()] = $task->suspend($objects);
+        $state['_objects'] = $objects->suspend();
         $state->close();
+        if ($task->isDone() and isset($finally)) {
+            call_user_func($finally);
+        }
         exit;
     }
 

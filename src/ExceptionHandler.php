@@ -124,7 +124,12 @@ class ExceptionHandler
             include $this->errorPaths['errorTemplate'];
             $response->getBody()->write(ob_get_clean());
         }
-        $this->m->server->serve($response);
+        try {
+          $this->m->server->serve($response);
+        } catch (\Exception $e) {
+            echo $response->getBody();
+            exit;
+        }
     }
 
     /**

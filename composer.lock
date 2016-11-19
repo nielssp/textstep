@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "99f118bb59f35a5c669b8ae92f0a694c",
-    "content-hash": "5aa36008ba4c545a9430f7e96b9c664c",
+    "hash": "fbf6e6fdfc6eca0b2ee21c89d557cdec",
+    "content-hash": "aaed9ac0f53cee302a61128859f17c53",
     "packages": [
         {
             "name": "badcow/lorem-ipsum",
@@ -203,16 +203,16 @@
         },
         {
             "name": "jivoo/http",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/http.git",
-                "reference": "bd1b69e295ca33c05085723a98335445e07ea541"
+                "reference": "c38da3131abf4ee058bb152b507de119f4ef81ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/http/zipball/bd1b69e295ca33c05085723a98335445e07ea541",
-                "reference": "bd1b69e295ca33c05085723a98335445e07ea541",
+                "url": "https://api.github.com/repos/jivoo/http/zipball/c38da3131abf4ee058bb152b507de119f4ef81ef",
+                "reference": "c38da3131abf4ee058bb152b507de119f4ef81ef",
                 "shasum": ""
             },
             "require": {
@@ -251,7 +251,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-11-14 18:52:09"
+            "time": "2016-11-14 19:30:10"
         },
         {
             "name": "jivoo/security",
@@ -309,12 +309,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/view.git",
-                "reference": "bd5cf293eb4c8d55c4317aac0c106ef774755828"
+                "reference": "f1c07033105e1fb6b7b09799af8e4e8626a4aad4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/bd5cf293eb4c8d55c4317aac0c106ef774755828",
-                "reference": "bd5cf293eb4c8d55c4317aac0c106ef774755828",
+                "url": "https://api.github.com/repos/jivoo/view/zipball/f1c07033105e1fb6b7b09799af8e4e8626a4aad4",
+                "reference": "f1c07033105e1fb6b7b09799af8e4e8626a4aad4",
                 "shasum": ""
             },
             "require": {
@@ -352,7 +352,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2016-10-30 10:36:19"
+            "time": "2016-11-19 22:22:33"
         },
         {
             "name": "matthiasmullie/minify",
@@ -1137,16 +1137,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "1.4.8",
+            "version": "1.4.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da"
+                "reference": "3b402f65a4cc90abf6e1104e388b896ce209631b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
-                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3b402f65a4cc90abf6e1104e388b896ce209631b",
+                "reference": "3b402f65a4cc90abf6e1104e388b896ce209631b",
                 "shasum": ""
             },
             "require": {
@@ -1182,7 +1182,7 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-09-15 10:49:45"
+            "time": "2016-11-15 14:06:22"
         },
         {
             "name": "phpunit/phpunit",
@@ -1314,22 +1314,22 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "1.2.0",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "937efb279bd37a375bcadf584dec0726f84dbf22"
+                "reference": "6a1ed12e8b2409076ab22e3897126211ff8b1f7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/937efb279bd37a375bcadf584dec0726f84dbf22",
-                "reference": "937efb279bd37a375bcadf584dec0726f84dbf22",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/6a1ed12e8b2409076ab22e3897126211ff8b1f7f",
+                "reference": "6a1ed12e8b2409076ab22e3897126211ff8b1f7f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.3",
                 "sebastian/diff": "~1.2",
-                "sebastian/exporter": "~1.2"
+                "sebastian/exporter": "~1.2 || ~2.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.4"
@@ -1374,7 +1374,7 @@
                 "compare",
                 "equality"
             ],
-            "time": "2015-07-26 15:48:44"
+            "time": "2016-11-19 09:18:40"
         },
         {
             "name": "sebastian/diff",

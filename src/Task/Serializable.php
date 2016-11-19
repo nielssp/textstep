@@ -8,10 +8,10 @@ namespace Blogstep\Task;
 
 /**
  */
-interface Suspendable
+interface Serializable
 {
     
-    public function resume(array $state, ObjectContainer $objects);
+    public function resume(array $state, ObjectContainer $serializer);
     
-    public function suspend(ObjectContainer $objects);
+    public function suspend(ObjectContainer $serializer);
 }

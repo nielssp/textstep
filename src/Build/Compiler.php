@@ -39,7 +39,9 @@ class Compiler extends \Blogstep\Task\TaskBase
     public function clean()
     {
         foreach ($this->buildDir as $file) {
-            $file->delete();
+            if ($file->getName() !== '.build.json') {
+                $file->delete();
+            }
         }
     }
     
@@ -125,22 +127,19 @@ class Compiler extends \Blogstep\Task\TaskBase
         return !isset($this->tasks[$this->currentTask]);
     }
 
-    public function resume(array $state)
+    public function resume(array $state, \Blogstep\Task\ObjectContainer $objects)
     {
         $this->currentTask = $state['currentTask'];
-        $fileRoot = $this->buildDir->get('/');
-        $this->siteMap->resume($this->siteMap, $fileRoot, $state['siteMap']);
-        if (isset($this->content) and isset($state['content'])) {
-            $this->content->resume($this->siteMap, $state['content']);
-        }
+        $this->siteMap = unserialize($state['siteMap']);
+        $this->content = unserialize($state['content']);
     }
 
-    public function suspend()
+    public function suspend(\Blogstep\Task\ObjectContainer $objects)
     {
         return [
             'currentTask' => $this->currentTask,
-            'siteMap' => $this->siteMap->suspend(),
-            'content' => isset($this->content) ? $this->content->suspend() : null
+            'siteMap' => serialize($this->siteMap),
+            'content' => serialize($this->content)
         ];
     }
 

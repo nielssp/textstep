@@ -11,7 +11,7 @@ use IteratorAggregate;
 /**
  * Collection of content.
  */
-class ContentTree implements IteratorAggregate, Selectable
+class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Suspendable, \Serializable
 {
     use SelectableTrait;
 
@@ -47,31 +47,49 @@ class ContentTree implements IteratorAggregate, Selectable
         }
         $this->recursive = $dir->get('.recursive')->exists();
     }
-    
-    public function resume(SiteMap $siteMap, array $state)
+
+    public function serialize()
+    {
+        return serialize([
+            $this->dir,
+            $this->buildDir,
+            $this->namespaces,
+            $this->nodes,
+            $this->defaultFilters,
+            $this->recursive
+        ]);
+    }
+
+    public function unserialize($serialized)
+    {
+        list(
+            $this->dir,
+            $this->buildDir,
+            $this->namespaces,
+            $this->nodes,
+            $this->defaultFilters,
+            $this->recursive
+        ) = unserialize($serialized);
+    }
+
+    public function resume(array $state, \Blogstep\Task\ObjectContainer $objects)
     {
         foreach ($state['namespaces'] as $namespace => $subState) {
-            $this->__get($namespace)->resume($siteMap, $subState);
+            $this->__get($namespace)->resume($subState, $objects);
         }
         if (isset($state['nodes'])) {
-            $this->nodes = [];
-            foreach ($state['nodes'] as $path) {
-                $this->nodes[] = $siteMap->get($path);
-            }
+            $this->nodes = $objects->getArray($state['nodes']);
         }
     }
     
-    public function suspend()
+    public function suspend(\Blogstep\Task\ObjectContainer $objects)
     {
         $state = ['namespaces' => []];
         foreach ($this->namespaces as $namespace => $tree) {
             $state['namespaces'][$namespace] = $tree->suspend();
         }
         if (isset($this->nodes)) {
-            $state['nodes'] = [];
-            foreach ($this->nodes as $node) {
-                $state['nodes'][] = $node->getPath();
-            }
+            $state['nodes'] = $objects->addArray($this->nodes);
         }
         return $state;
     }
@@ -177,4 +195,5 @@ class ContentTree implements IteratorAggregate, Selectable
     {
         return count($this->getNodes());
     }
+
 }

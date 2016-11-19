@@ -15,6 +15,7 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
     if ($node instanceof Blogstep\Build\ContentNode) {
         $origin = $node->getOrigin();
         $dom = $node->getDom();
+        $domChanged = false;
         foreach ($attributes as $attribute) {
             foreach ($dom->find('[' . $attribute . ']') as $element) {
                 $url = $element->getAttribute($attribute);
@@ -30,8 +31,12 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
                         $assetNode->setFile($dest);
                     }
                     $element->setAttribute($attribute, 'bs:' . $assetNode->getPath());
+                    $domChanged = true;
                 }
             }
+        }
+        if ($domChanged) {
+            $node->getContent()->putContents($dom->__toString());
         }
     }
     $visitChildren();

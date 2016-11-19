@@ -16,8 +16,15 @@ var TOKEN = $('#build').data('token');
 
 var progressBar = $('#build-progress')[0];
 
+var doCancel = false;
+
+$(document).ajaxError(ui.handleError);
+
 function build()
 {
+    doCancel = false;
+    actions.disable('build');
+    actions.enable('cancel');
     ui.setProgress(progressBar, 0, 'Building...');
     
     var progress = 0;
@@ -54,6 +61,9 @@ function build()
 
     var done = false;
     var repeat = function () {
+        if (doCancel) {
+            return;
+        }
         var received = 0;
         post(PATH + '/api/build', function (text, state, status) {
             var events = text.split(/[\n\r]/);
@@ -67,6 +77,8 @@ function build()
                         case 'done':
                             updateProgress(100);
                             done = true;
+                            actions.enable('build');
+                            actions.disable('cancel');
                             return;
                         case 'error':
                             done = true;
@@ -92,4 +104,22 @@ function build()
     repeat();
 }
 
+function cancel()
+{
+    doCancel = true;
+    $.ajax({
+        url: PATH + '/api/delete',
+        method: 'post',
+        data: {
+            request_token: TOKEN,
+            path: '/build/.build.json'
+        },
+        success: function () {
+            actions.enable('build');
+            actions.disable('cancel');
+        }
+    });
+}
+
 actions.define('build', build);
+actions.define('cancel', cancel);

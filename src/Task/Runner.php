@@ -36,22 +36,22 @@ class Runner implements SuspendableTask
         return $this->name;
     }
     
-    public function suspend()
+    public function suspend(ObjectContainer $objects)
     {
         $state = [
             'currentTask' => $this->currentTask,
             'tasks' => []
         ];
         foreach ($this->tasks as $key => $task) {
-            $state['tasks'][$key] = $task->suspend();
+            $state['tasks'][$key] = $task->suspend($objects);
         }
         return $state;
     }
     
-    public function resume(array $state)
+    public function resume(array $state, ObjectContainer $objects)
     {
         foreach ($state['tasks'] as $key => $taskState) {
-            $this->tasks[$key]->resume($taskState);
+            $this->tasks[$key]->resume($taskState, $objects);
         }
         $this->currentTask = $state['currentTask'];
     }

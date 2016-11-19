@@ -45,12 +45,12 @@ class UnitTask implements SuspendableTask
         return $this->done;
     }
 
-    public function suspend()
+    public function suspend(ObjectContainer $objects = null)
     {
         return ['done' => $this->done];
     }
 
-    public function resume(array $state)
+    public function resume(array $state, ObjectContainer $objects = null)
     {
         $this->done = $state['done'];
     }

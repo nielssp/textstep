@@ -61,11 +61,13 @@ class Build extends \Blogstep\AuthenticatedSnippet
             $compiler->install($target);
         }, 'Installing'));
         
-        $state = new \Jivoo\Store\JsonStore($this->m->files->get('build.json')->getRealPath());
+        $state = new \Jivoo\Store\JsonStore($this->m->files->get('build/.build.json')->getRealPath());
         $state->touch();
         
         $service = new \Blogstep\Task\Service($this->m->logger, $this->request, $state);
-        $service->run($runner);
+        $service->run($runner, function () {
+            $this->m->files->get('build/.build.json')->delete();
+        });
     }
     
     public function get()

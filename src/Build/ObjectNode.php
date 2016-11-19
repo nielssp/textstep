@@ -14,6 +14,8 @@ class ObjectNode extends FileNode
 {
     private $object;
     
+    private $objectPath = null;
+    
     public function __construct(File $template, $object)
     {
         parent::__construct($template);
@@ -22,7 +24,12 @@ class ObjectNode extends FileNode
     
     public static function init(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
     {
-        $node = new static($fileRoot->get($state['file']), unserialize($state['object']));
+        if (is_array($state['object'])) {
+            $node = new static($fileRoot->get($state['file']), null);
+            $node->objectPath = $state['object'][0];
+        } else {
+            $node = new static($fileRoot->get($state['file']), unserialize($state['object']));
+        }
         $node->resume($root, $fileRoot, $state);
         return $node;
     }
@@ -30,12 +37,18 @@ class ObjectNode extends FileNode
     public function suspend()
     {
         return array_merge(parent::suspend(), [
-            'object' => serialize($this->object)
+            'object' => $this->object instanceof SiteNode
+                ? [$this->object->getPath()]
+                : serialize($this->object)
         ]);
     }
     
     public function getObject()
     {
+        if (isset($this->objectPath)) {
+            $this->object = $this->root->get($this->objectPath);
+            $this->objectPath = null;
+        }
         return $this->object;
     }
 }

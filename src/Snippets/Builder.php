@@ -10,4 +10,11 @@ namespace Blogstep\Snippets;
  */
 class Builder extends \Blogstep\AuthenticatedSnippet
 {
+    public function get()
+    {
+        if ($this->m->files->get('build/.build.json')->exists()) {
+            $this->viewData['inProgress'] = true;
+        }
+        return $this->render();
+    }
 }

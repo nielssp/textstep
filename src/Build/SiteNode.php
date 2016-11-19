@@ -30,23 +30,27 @@ class SiteNode extends InternalNode
         return $node;
     }
     
-    public function resume(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
+    public function resume(array $state, \Blogstep\Task\ObjectContainer $objects)
     {
         $this->name = $state['name'];
-        $this->clear();
-        $this->root = $root;
-        foreach ($state['nodes'] as $child) {
-            $this->append(call_user_func([$child[0], 'init'], $root, $fileRoot, $child[1]));
-        }
+        $this->root = $objects->get($state['root']);
+        $this->content = $objects->getArray($state['content']);
+        $this->nodes = $objects->getArray($state['nodes']);
+        $this->parent = $objects->get($state['parent']);
+        $this->next = $objects->get($state['next']);
+        $this->prev = $objects->get($state['prev']);
     }
     
-    public function suspend()
+    public function suspend(\Blogstep\Task\ObjectContainer $objects)
     {
         return [
             'name' => $this->name,
-            'nodes' => array_map(function ($node) {
-                return [get_class($node), $node->suspend()];
-            }, $this->nodes)
+            'root' => $objects->add($this->root),
+            'content' => $objects->addArray($this->content),
+            'nodes' => $objects->addArray($this->nodes),
+            'parent' => $objects->add($this->parent),
+            'next' => $objects->add($this->next),
+            'prev' => $objects->add($this->prev)
         ];
     }
     
