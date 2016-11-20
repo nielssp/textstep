@@ -31,41 +31,6 @@ class ContentNode extends FileNode
         $this->name = preg_replace('/\..+$/', '', $content->getName());
         $this->contentName = $this->name;
     }
-
-    public static function init(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
-    {
-        $node = new static(
-            $fileRoot->get($state['origin']),
-            $fileRoot->get($state['contentFile']),
-            $state['relativePath'],
-            []
-        );
-        $node->resume($root, $fileRoot, $state);
-        return $node;
-    }
-    
-    public function resume(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
-    {
-        parent::resume($root, $fileRoot, $state);
-        $this->contentFile = $fileRoot->get($state['contentFile']);
-        $this->dom = unserialize($state['dom']);
-        if (isset($state['metadata'])) {
-            $this->metadata = new \Jivoo\Store\Document($state['metadata']);
-        }
-        $this->contentName = $state['contentName'];
-    }
-    
-    public function suspend()
-    {
-        return array_merge(parent::suspend(), [
-            'contentFile' => $this->contentFile->getPath(),
-            'relativePath' => $this->relativePath,
-            'origin' => $this->origin->getPath(),
-            'dom' => serialize($this->dom),
-            'metadata' => isset($this->metadata) ? $this->metadata->toArray() : null,
-            'contentName' => $this->contentName
-        ]);
-    }
     
     public function __get($property)
     {

@@ -10,8 +10,7 @@ namespace Blogstep\Task;
  */
 interface Serializable
 {
+    public function unserialize(array $serialized, Serializer $serializer);
     
-    public function resume(array $state, ObjectContainer $serializer);
-    
-    public function suspend(ObjectContainer $serializer);
+    public function serialize(Serializer $serializer);
 }

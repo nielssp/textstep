@@ -25,24 +25,30 @@ class Service
      */
     private $store;
     
-    public function __construct(\Psr\Log\LoggerInterface $logger, \Jivoo\Http\ActionRequest $request, \Jivoo\Store\Store $store)
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+    
+    public function __construct(\Psr\Log\LoggerInterface $logger, \Jivoo\Http\ActionRequest $request, \Jivoo\Store\Store $store, \Blogstep\Task\Serializer $serializer)
     {
         $this->logger = $logger;
         $this->request = $request;
         $this->store = $store;
+        $this->serializer = $serializer;
     }
 
-    public function run(SuspendableTask $task, callable $finally = null)
+    public function run(Task $task, callable $finally = null)
     {
         $state = new \Jivoo\Store\State($this->store, true);
-        $objects = new ObjectContainer();
-        if (isset($state['_objects'])) {
-            $objects->resume($state->get('_objects', []));
+        if (isset($state['_serializer'])) {
+            $this->serializer->unserializeAll($state->get('_serializer', []));
         }
         if (isset($state[$task->getName()])) {
-            $task->resume($state->get($task->getName(), []), $objects);
+            $task->unserialize($state->get($task->getName(), []), $this->serializer);
         }
-        $max = 1;
+        $this->serializer->clear();
+        $max = 0;
         $server = $this->request->getServerParams();
         $start = $server['REQUEST_TIME'];
         $end = $start + $max;
@@ -86,8 +92,8 @@ class Service
             ob_flush();
             flush();
         }
-        $state[$task->getName()] = $task->suspend($objects);
-        $state['_objects'] = $objects->suspend();
+        $state[$task->getName()] = $task->serialize($this->serializer);
+        $state['_serializer'] = $this->serializer->serializeAll();
         $state->close();
         if ($task->isDone() and isset($finally)) {
             call_user_func($finally);

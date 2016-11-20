@@ -8,7 +8,7 @@ namespace Blogstep\Task;
 /**
  * Suspendable task runner.
  */
-class Runner implements SuspendableTask
+class Runner implements Task
 {
     private $name;
 
@@ -23,7 +23,7 @@ class Runner implements SuspendableTask
         $this->name = $name;
     }
     
-    public function add(SuspendableTask $task, callable $callback = null)
+    public function add(Task $task, callable $callback = null)
     {
         $this->tasks[] = $task;
         if (isset($callback)) {
@@ -34,26 +34,6 @@ class Runner implements SuspendableTask
     public function getName()
     {
         return $this->name;
-    }
-    
-    public function suspend(ObjectContainer $objects)
-    {
-        $state = [
-            'currentTask' => $this->currentTask,
-            'tasks' => []
-        ];
-        foreach ($this->tasks as $key => $task) {
-            $state['tasks'][$key] = $task->suspend($objects);
-        }
-        return $state;
-    }
-    
-    public function resume(array $state, ObjectContainer $objects)
-    {
-        foreach ($state['tasks'] as $key => $taskState) {
-            $this->tasks[$key]->resume($taskState, $objects);
-        }
-        $this->currentTask = $state['currentTask'];
     }
     
     public function getProgress()
@@ -100,6 +80,26 @@ class Runner implements SuspendableTask
         } else {
             $this->tasks[$this->currentTask]->run();
         }
+    }
+
+    public function serialize(Serializer $serializer)
+    {
+        $state = [
+            'currentTask' => $this->currentTask,
+            'tasks' => []
+        ];
+        foreach ($this->tasks as $key => $task) {
+            $state['tasks'][$key] = $task->serialize($serializer);
+        }
+        return $state;
+    }
+
+    public function unserialize(array $serialized, Serializer $serializer)
+    {
+        foreach ($serialized['tasks'] as $key => $taskState) {
+            $this->tasks[$key]->unserialize($taskState, $serializer);
+        }
+        $this->currentTask = $serialized['currentTask'];
     }
 
 }

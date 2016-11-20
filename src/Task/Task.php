@@ -10,7 +10,7 @@ namespace Blogstep\Task;
  * A task. Can be suspended and resumed later. The
  * actual computation happens in {@see run()}.
  */
-interface SuspendableTask extends Suspendable
+interface Task extends Serializable
 {
     
     public function getName();

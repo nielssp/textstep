@@ -127,20 +127,22 @@ class Compiler extends \Blogstep\Task\TaskBase
         return !isset($this->tasks[$this->currentTask]);
     }
 
-    public function resume(array $state, \Blogstep\Task\ObjectContainer $objects)
+    public function serialize(\Blogstep\Task\Serializer $serializer)
     {
-        $this->currentTask = $state['currentTask'];
-        $this->siteMap = unserialize($state['siteMap']);
-        $this->content = unserialize($state['content']);
+        return $serializer->serialize([
+            $this->currentTask,
+            $this->siteMap,
+            $this->content
+        ]);
     }
 
-    public function suspend(\Blogstep\Task\ObjectContainer $objects)
+    public function unserialize(array $serialized, \Blogstep\Task\Serializer $serializer)
     {
-        return [
-            'currentTask' => $this->currentTask,
-            'siteMap' => serialize($this->siteMap),
-            'content' => serialize($this->content)
-        ];
+        list(
+            $this->currentTask,
+            $this->siteMap,
+            $this->content
+        ) = $serializer->unserialize($serialized);
     }
 
 }

@@ -20,28 +20,6 @@ class FileNode extends SiteNode
         $this->file = $file;
     }
     
-    public static function init(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
-    {
-        $node = new static($fileRoot->get($state['file']));
-        $node->resume($root, $fileRoot, $state);
-        return $node;
-    }
-    
-    public function resume(SiteMap $root, \Blogstep\Files\FileSystem $fileRoot, array $state)
-    {
-        parent::resume($root, $fileRoot, $state);
-        $this->file = $fileRoot->get($state['file']);
-        $this->data = unserialize($state['data']);
-    }
-    
-    public function suspend()
-    {
-        return array_merge(parent::suspend(), [
-            'file' => $this->file->getPath(),
-            'data' => serialize($this->data)
-        ]);
-    }
-    
     public function setFile(\Blogstep\Files\File $file)
     {
         $this->file = $file;

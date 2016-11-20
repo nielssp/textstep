@@ -8,7 +8,7 @@ namespace Blogstep\Task;
 /**
  * A simple task consisting of a single function call.
  */
-class UnitTask implements SuspendableTask
+class UnitTask implements Task
 {
     private $name;
     
@@ -45,16 +45,6 @@ class UnitTask implements SuspendableTask
         return $this->done;
     }
 
-    public function suspend(ObjectContainer $objects = null)
-    {
-        return ['done' => $this->done];
-    }
-
-    public function resume(array $state, ObjectContainer $objects = null)
-    {
-        $this->done = $state['done'];
-    }
-
     public function run()
     {
         if ($this->done) {
@@ -62,6 +52,16 @@ class UnitTask implements SuspendableTask
         }
         call_user_func($this->callable);
         $this->done = true;
+    }
+
+    public function serialize(Serializer $serializer)
+    {
+        return ['done' => $this->done];
+    }
+
+    public function unserialize(array $serialized, Serializer $serializer)
+    {
+        $this->done = $serialized['done'];
     }
 
 }

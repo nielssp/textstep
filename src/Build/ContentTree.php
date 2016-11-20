@@ -11,7 +11,7 @@ use IteratorAggregate;
 /**
  * Collection of content.
  */
-class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Suspendable, \Serializable
+class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Serializable
 {
     use SelectableTrait;
 
@@ -23,7 +23,7 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Suspe
     
     private $nodes = null;
     
-    private $properties;
+    private $properties = [];
     
     private $filters;
     
@@ -37,20 +37,14 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Suspe
     {
         $this->dir = $dir;
         $this->buildDir = $buildDir;
-        $this->properties = $properties;
         $this->handlers = $handlers;
         $this->filters = $filters;
-        $propFile = $dir->get('.properties.php');
-        if ($propFile->exists() and $propFile->isReadable()) {
-            $properties = include $propFile->getRealPath();
-            $this->properties = array_merge($this->properties, $properties);
-        }
         $this->recursive = $dir->get('.recursive')->exists();
     }
 
-    public function serialize()
+    public function serialize(\Blogstep\Task\Serializer $serializer)
     {
-        return serialize([
+        return $serializer->serialize([
             $this->dir,
             $this->buildDir,
             $this->namespaces,
@@ -60,7 +54,7 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Suspe
         ]);
     }
 
-    public function unserialize($serialized)
+    public function unserialize(array $serialized, \Blogstep\Task\Serializer $serializer)
     {
         list(
             $this->dir,
@@ -69,29 +63,7 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Suspe
             $this->nodes,
             $this->defaultFilters,
             $this->recursive
-        ) = unserialize($serialized);
-    }
-
-    public function resume(array $state, \Blogstep\Task\ObjectContainer $objects)
-    {
-        foreach ($state['namespaces'] as $namespace => $subState) {
-            $this->__get($namespace)->resume($subState, $objects);
-        }
-        if (isset($state['nodes'])) {
-            $this->nodes = $objects->getArray($state['nodes']);
-        }
-    }
-    
-    public function suspend(\Blogstep\Task\ObjectContainer $objects)
-    {
-        $state = ['namespaces' => []];
-        foreach ($this->namespaces as $namespace => $tree) {
-            $state['namespaces'][$namespace] = $tree->suspend();
-        }
-        if (isset($this->nodes)) {
-            $state['nodes'] = $objects->addArray($this->nodes);
-        }
-        return $state;
+        ) = $serializer->unserialize($serialized);
     }
     
     public function __get($namespace)

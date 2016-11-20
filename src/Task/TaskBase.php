@@ -8,7 +8,7 @@ namespace Blogstep\Task;
 /**
  * Implements progress and status updates.
  */
-abstract class TaskBase implements SuspendableTask
+abstract class TaskBase implements Task
 {
 
     /**
