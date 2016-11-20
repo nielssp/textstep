@@ -45,13 +45,13 @@ class Compiler extends \Blogstep\Task\TaskBase
         }
     }
     
-    public function createContentTree(File $content)
+    public function createContentTree(File $content, ContentHandler $handler)
     {
         $contentBuildDir = $this->buildDir->get('_content');
         if (!$contentBuildDir->exists()) {
             $contentBuildDir->makeDirectory();
         }
-        $this->content = new ContentTree($content, $contentBuildDir);
+        $this->content = new ContentTree($content, $contentBuildDir, $handler);
     }
     
     public function addTask(Task $task)

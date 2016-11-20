@@ -5,10 +5,16 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Snippets\Api;
 
+use Blogstep\AuthenticatedSnippet;
+use Blogstep\Build\Compiler;
+use Blogstep\Build\ContentHandler;
+use Blogstep\Build\Task;
+use Jivoo\Unicode;
+
 /**
  * Site builder.
  */
-class FastBuild extends \Blogstep\AuthenticatedSnippet
+class FastBuild extends AuthenticatedSnippet
 {
     public function post(array $data)
     {
@@ -16,39 +22,39 @@ class FastBuild extends \Blogstep\AuthenticatedSnippet
         $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
         
-        $compiler = new \Blogstep\Build\Compiler($destination, $this->m->main->config['user']);
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyStructure.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/copyContentAssets.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/phpToText.php')));
-        $compiler->addTask(\Blogstep\Build\Task::load($this->m->main->p('src/tasks/minifyAssets.php')));
+        $compiler = new Compiler($destination, $this->m->main->config['user']);
+        $compiler->addTask(Task::load($this->m->main->p('src/tasks/copyStructure.php')));
+        $compiler->addTask(Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
+        $compiler->addTask(Task::load($this->m->main->p('src/tasks/copyContentAssets.php')));
+        $compiler->addTask(Task::load($this->m->main->p('src/tasks/phpToText.php')));
+        $compiler->addTask(Task::load($this->m->main->p('src/tasks/minifyAssets.php')));
         
         $compiler->clean();
-        $compiler->createContentTree($content);
+        $handler = new ContentHandler();
         
         $id = function ($content) { return $content; };
-        $compiler->content->addHandler('html', $id);
-        $compiler->content->addHandler('htm', $id);
-        $compiler->content->addHandler('md', [new \Parsedown(), 'text']);
+        $handler->addHandler('html', $id);
+        $handler->addHandler('htm', $id);
+        $handler->addHandler('md', [new \Parsedown(), 'text']);
         
         $dir = scandir($this->m->main->p('src/filters'));
         foreach ($dir as $file) {
-            if (\Jivoo\Unicode::endsWith($file, '.php')) {
+            if (Unicode::endsWith($file, '.php')) {
                 $name = substr($file, 0, -4);
-                $compiler->content->addFilter($name, require $this->m->main->p('src/filters/' . $file));
+                $handler->addFilter($name, require $this->m->main->p('src/filters/' . $file));
             }
         }
         if ($structure->get('filters')->getType() === 'directory') {
             foreach ($structure->get('filters') as $file) {
-                if (\Jivoo\Unicode::endsWith($file->getName(), '.php')) {
+                if (Unicode::endsWith($file->getName(), '.php')) {
                     $name = substr($file->getName(), 0, -4);
-                    $compiler->content->addFilter($name, require $file->getRealPath());
+                    $handler->addFilter($name, require $file->getRealPath());
                 }
             }
-        }
+        }        
+        $handler->setDefaultFilters(['links']);
         
-        $compiler->content->setDefaultFilters(['links']);
-        
+        $compiler->createContentTree($content, $handler);
         $compiler->createStructure($structure);
         
         while (!$compiler->isDone()) {

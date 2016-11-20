@@ -11,12 +11,13 @@ use Jivoo\InvalidPropertyException;
 /**
  * A content node.
  */
-class ContentNode extends FileNode
+class ContentNode extends FileNode implements \Blogstep\Task\Serializable
 {
     private $contentFile;
     private $relativePath;
     private $origin;
     private $dom = null;
+    private $domChanged = false;
     private $metadata = null;
     private $propertyDefinitions;
     private $contentName;
@@ -30,6 +31,19 @@ class ContentNode extends FileNode
         $this->propertyDefinitions = $properties;
         $this->name = preg_replace('/\..+$/', '', $content->getName());
         $this->contentName = $this->name;
+    }
+
+    public function serialize(\Blogstep\Task\Serializer $serializer)
+    {
+        if ($this->domChanged) {
+            $this->contentFile->putContents($this->dom->__toString());
+        }
+        return $serializer->serializeProperties($this, ['dom', 'domChanged']);
+    }
+
+    public function unserialize(array $serialized, \Blogstep\Task\Serializer $serializer)
+    {
+        $serializer->unserializePropreties($this, $serialized);
     }
     
     public function __get($property)
@@ -90,6 +104,7 @@ class ContentNode extends FileNode
                     if (is_array($json)) {
                         $data = array_merge($data, $json);
                         $comment->outertext = '';
+                        $this->domChanged = true;
                     }
                 }
             }

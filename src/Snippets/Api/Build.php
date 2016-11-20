@@ -7,6 +7,7 @@ namespace Blogstep\Snippets\Api;
 
 use Blogstep\AuthenticatedSnippet;
 use Blogstep\Build\Compiler;
+use Blogstep\Build\ContentHandler;
 use Blogstep\Build\Task;
 use Blogstep\Files\File;
 use Blogstep\Task\Runner;
@@ -36,6 +37,31 @@ class Build extends AuthenticatedSnippet
             return $this->m->files->get($serialized['path']);
         });
         
+        $handler = new ContentHandler();
+        $serializer->set('contentHandler', $handler);
+
+        $id = function ($content) { return $content; };
+        $handler->addHandler('html', $id);
+        $handler->addHandler('htm', $id);
+        $handler->addHandler('md', [new \Parsedown(), 'text']);
+
+        $dir = scandir($this->m->main->p('src/filters'));
+        foreach ($dir as $file) {
+            if (Unicode::endsWith($file, '.php')) {
+                $name = substr($file, 0, -4);
+                $handler->addFilter($name, require $this->m->main->p('src/filters/' . $file));
+            }
+        }
+        if ($structure->get('filters')->getType() === 'directory') {
+            foreach ($structure->get('filters') as $file) {
+                if (Unicode::endsWith($file->getName(), '.php')) {
+                    $name = substr($file->getName(), 0, -4);
+                    $handler->addFilter($name, require $file->getRealPath());
+                }
+            }
+        }
+        $handler->setDefaultFilters(['links']);
+        
         $compiler = new Compiler($destination, $this->m->main->config['user']);
         $compiler->addTask(Task::load($this->m->main->p('src/tasks/copyStructure.php')));
         $compiler->addTask(Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
@@ -45,34 +71,9 @@ class Build extends AuthenticatedSnippet
         
         $runner = new Runner('build');
         
-        $runner->add(new UnitTask('clean', [$compiler, 'clean'], 'Cleaning'), function () use ($compiler, $content, $structure) {
-            $compiler->createContentTree($content);
-            
-            $id = function ($content) { return $content; };
-            $compiler->content->addHandler('html', $id);
-            $compiler->content->addHandler('htm', $id);
-            $compiler->content->addHandler('md', [new \Parsedown(), 'text']);
-        
-        
-            $dir = scandir($this->m->main->p('src/filters'));
-            foreach ($dir as $file) {
-                if (Unicode::endsWith($file, '.php')) {
-                    $name = substr($file, 0, -4);
-                    $compiler->content->addFilter($name, require $this->m->main->p('src/filters/' . $file));
-                }
-            }
-            if ($structure->get('filters')->getType() === 'directory') {
-                foreach ($structure->get('filters') as $file) {
-                    if (Unicode::endsWith($file->getName(), '.php')) {
-                        $name = substr($file->getName(), 0, -4);
-                        $compiler->content->addFilter($name, require $file->getRealPath());
-                    }
-                }
-            }
-
-            $compiler->content->setDefaultFilters(['links']);
-        });
-        $runner->add(new UnitTask('structure', function () use ($compiler, $structure) {
+        $runner->add(new UnitTask('clean', [$compiler, 'clean'], 'Cleaning'));
+        $runner->add(new UnitTask('structure', function () use ($compiler, $structure, $content, $handler) {
+            $compiler->createContentTree($content, $handler);
             $compiler->createStructure($structure);
         }, 'Creating structure'));
         $runner->add($compiler);

@@ -18,6 +18,8 @@ class Runner implements Task
     
     private $currentTask = 0;
     
+    private $message = null;
+    
     public function __construct($name)
     {
         $this->name = $name;
@@ -54,10 +56,7 @@ class Runner implements Task
 
     public function getStatus()
     {
-        if (isset($this->tasks[$this->currentTask])) {
-            return $this->tasks[$this->currentTask]->getStatus();
-        }
-        return null;
+        return $this->message;
     }
 
     public function isDone()
@@ -67,6 +66,7 @@ class Runner implements Task
 
     public function run()
     {
+        $this->message = null;
         if (!isset($this->tasks[$this->currentTask])) {
             return;
         }
@@ -79,6 +79,7 @@ class Runner implements Task
             $this->currentTask++;
         } else {
             $this->tasks[$this->currentTask]->run();
+            $this->message = $this->tasks[$this->currentTask]->getStatus();
         }
     }
 

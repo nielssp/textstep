@@ -18,9 +18,7 @@ class View extends \Jivoo\View\View
     
     private $absPrefix;
     
-    private $availableFilters;
-    
-    private $defaultFilters;
+    private $contentHandler;
     
     public $currentNode = null;
     
@@ -40,8 +38,7 @@ class View extends \Jivoo\View\View
         
         $this->data->config = $compiler->config->toArray();
         $this->data->content = $compiler->content;
-        $this->availableFilters = $compiler->content->getFilters();
-        $this->defaultFilters = $compiler->content->getDefaultFilters();
+        $this->contentHandler = $compiler->content->getHandler();
         
         foreach (['getNode', 'isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter'] as $f) {
             $this->addFunction($f, [$this, $f]);
@@ -110,7 +107,8 @@ class View extends \Jivoo\View\View
     
     public function filter(ContentNode $content, array $filters = []) {
         $dom = $content->createDom();
-        $filters = array_merge($filters, $this->defaultFilters);
+        $filters = array_merge($filters, $this->contentHandler->getDefaultFilters());
+        $available = $this->contentHandler->getFilters();
         foreach ($filters as $name => $param) {
             if (is_int($name)) {
                 $name = $param;
@@ -122,8 +120,8 @@ class View extends \Jivoo\View\View
                     $param = \Jivoo\Json::decode('[' . $param . ']'); 
                 }
             }
-            if (isset($this->availableFilters[$name])) {
-                call_user_func_array($this->availableFilters[$name], array_merge(
+            if (isset($available[$name])) {
+                call_user_func_array($available[$name], array_merge(
                     [$this, $content, $dom],
                     $param
                 ));

@@ -11,7 +11,7 @@ use IteratorAggregate;
 /**
  * Collection of content.
  */
-class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Serializable
+class ContentTree implements IteratorAggregate, Selectable
 {
     use SelectableTrait;
 
@@ -23,47 +23,21 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Seria
     
     private $nodes = null;
     
-    private $properties = [];
-    
-    private $filters;
-    
-    private $defaultFilters = [];
-    
-    private $handlers;
-    
     private $recursive = false;
     
-    public function __construct(File $dir, File $buildDir, $properties = [], $handlers = [], $filters = [])
+    private $handler;
+    
+    public function __construct(File $dir, File $buildDir, ContentHandler $handler)
     {
         $this->dir = $dir;
         $this->buildDir = $buildDir;
-        $this->handlers = $handlers;
-        $this->filters = $filters;
+        $this->handler = $handler;
         $this->recursive = $dir->get('.recursive')->exists();
     }
-
-    public function serialize(\Blogstep\Task\Serializer $serializer)
+    
+    public function getHandler()
     {
-        return $serializer->serialize([
-            $this->dir,
-            $this->buildDir,
-            $this->namespaces,
-            $this->nodes,
-            $this->defaultFilters,
-            $this->recursive
-        ]);
-    }
-
-    public function unserialize(array $serialized, \Blogstep\Task\Serializer $serializer)
-    {
-        list(
-            $this->dir,
-            $this->buildDir,
-            $this->namespaces,
-            $this->nodes,
-            $this->defaultFilters,
-            $this->recursive
-        ) = $serializer->unserialize($serialized);
+        return $this->handler;
     }
     
     public function __get($namespace)
@@ -73,39 +47,9 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Seria
             if (!$buildDir->exists()) {
                 $buildDir->makeDirectory();
             }
-            $this->namespaces[$namespace] = new ContentTree($this->dir->get($namespace), $buildDir, $this->properties, $this->handlers);
+            $this->namespaces[$namespace] = new ContentTree($this->dir->get($namespace), $buildDir, $this->handler);
         }
         return $this->namespaces[$namespace];
-    }
-    
-    public function addHandler($type, callable $handler)
-    {
-        $this->handlers[$type] = $handler;
-    }
-    
-    public function addFilter($name, callable $filter)
-    {
-        $this->filters[$name] = $filter;
-    }
-
-    public function getFilters()
-    {
-        return $this->filters;
-    }
-    
-    public function getDefaultFilters()
-    {
-        return $this->defaultFilters;
-    }
-    
-    public function setDefaultFilters($filters)
-    {
-        $this->defaultFilters = $filters;
-    }
-    
-    public function addProperty($name, callable $getter)
-    {
-        $this->properties[$name] = $getter;
     }
     
     public function setRecursive($recursive = true)
@@ -134,11 +78,11 @@ class ContentTree implements IteratorAggregate, Selectable, \Blogstep\Task\Seria
                         }
                         $nodes = array_merge($nodes, $this->getNodesIn($file, $path));
                     }
-                } elseif (isset($this->handlers[$type])) {
+                } elseif ($this->handler->hasHandler($type)) {
                     $name .= '.html';
                     $outFile = $this->buildDir->get($relativePath == '' ? $name : $relativePath . '/' . $name);
-                    $outFile->putContents(call_user_func($this->handlers[$type], $file->getContents()));
-                    $content = new ContentNode($file, $outFile, $relativePath, $this->properties);
+                    $outFile->putContents(call_user_func($this->handler->getHandler($type), $file->getContents()));
+                    $content = new ContentNode($file, $outFile, $relativePath, []); // TODO: properties, subhandlers?
                     $metadata = $content->getMetadata();
                     if (!isset($metadata['published'])) {
                         $metadata['published'] = $file->getCreated();

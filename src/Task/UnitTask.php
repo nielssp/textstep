@@ -37,7 +37,7 @@ class UnitTask implements Task
 
     public function getStatus()
     {
-        return $this->done ? null : $this->message;
+        return $this->message;
     }
 
     public function isDone()
@@ -48,6 +48,7 @@ class UnitTask implements Task
     public function run()
     {
         if ($this->done) {
+            $this->message = null;
             return;
         }
         call_user_func($this->callable);

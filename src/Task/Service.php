@@ -41,6 +41,9 @@ class Service
     public function run(Task $task, callable $finally = null)
     {
         $state = new \Jivoo\Store\State($this->store, true);
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
         if (isset($state['_serializer'])) {
             $this->serializer->unserializeAll($state->get('_serializer', []));
         }

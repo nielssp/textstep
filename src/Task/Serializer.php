@@ -67,17 +67,25 @@ class Serializer
         if ($object instanceof Serializable) {
             return ['o', $class, $object->serialize($this)];
         }
+        return ['o', $class, $this->serializeProperties($object)];
+    }
+    
+    public function serializeProperties($object, $skipProperties = [])
+    {
         $properties = [];
         foreach ($this->getProperties($object) as $property) {
-            if ($property->isPublic()) {
-                $properties[$property->getName()] = $this->serialize($property->getvalue($object));
-            } else {
-                $property->setAccessible(true);
-                $properties[$property->getName()] = $this->serialize($property->getvalue($object));
-                $property->setAccessible(false);
+            $name = $property->getName();
+            if (!in_array($name, $skipProperties)) {
+                if ($property->isPublic()) {
+                    $properties[$name] = $this->serialize($property->getvalue($object));
+                } else {
+                    $property->setAccessible(true);
+                    $properties[$name] = $this->serialize($property->getvalue($object));
+                    $property->setAccessible(false);
+                }
             }
         }
-        return ['o', $class, $properties];
+        return $properties;
     }
     
     public function unserialize(array $serialized)
@@ -116,20 +124,24 @@ class Serializer
         } else if ($object instanceof Serializable) {
             $object->unserialize($serialized[2], $this);
         } else {
-            $properties = $serialized[2];
-            foreach ($this->getProperties($object) as $property) {
-                if (array_key_exists($property->getName(), $properties)) {
-                    if ($property->isPublic()) {
-                        $property->setValue($object, $this->unserialize($properties[$property->getName()]));
-                    } else {
-                        $property->setAccessible(true);
-                        $property->setValue($object, $this->unserialize($properties[$property->getName()]));
-                        $property->setAccessible(false);
-                    }
+            $this->unserializePropreties($object, $serialized[2]);
+        }
+        return $object;
+    }
+    
+    public function unserializePropreties($object, array $properties)
+    {
+        foreach ($this->getProperties($object) as $property) {
+            if (array_key_exists($property->getName(), $properties)) {
+                if ($property->isPublic()) {
+                    $property->setValue($object, $this->unserialize($properties[$property->getName()]));
+                } else {
+                    $property->setAccessible(true);
+                    $property->setValue($object, $this->unserialize($properties[$property->getName()]));
+                    $property->setAccessible(false);
                 }
             }
         }
-        return $object;
     }
     
     private function getProperties($object)
