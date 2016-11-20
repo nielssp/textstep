@@ -58,7 +58,9 @@ class FastBuild extends AuthenticatedSnippet
         $compiler->createStructure($structure);
         
         while (!$compiler->isDone()) {
-            $compiler->run();
+            $compiler->run(function () {
+                return true;
+            });
         }
         
         $target = $this->m->main->config['user']->get('target', $this->m->main->p('target'));
