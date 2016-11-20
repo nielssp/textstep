@@ -36,5 +36,5 @@ interface Task extends Serializable
     /**
      * Run task for a bit.
      */
-    public function run();
+    public function run(callable $checkTime);
 }

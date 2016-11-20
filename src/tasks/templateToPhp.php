@@ -17,7 +17,7 @@ $macros = new BlogstepMacros();
 
 $templateCompiler->addMacros($macros);
 
-return function (SiteNode $node, Compiler $compiler, callable $visitChildren) use ($templateCompiler, $macros) {
+return function (SiteNode $node, Compiler $compiler) use ($templateCompiler, $macros) {
     if ($node instanceof Blogstep\Build\FileNode) {
         $name = $node->getName();
         if (Unicode::endsWith($name, '.html')) {
@@ -41,5 +41,4 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
             }
         }
     }
-    $visitChildren();
 };

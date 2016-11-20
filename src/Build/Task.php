@@ -31,9 +31,9 @@ class Task
         \Jivoo\Assume::that(is_callable($this->function));
     }
     
-    public function __invoke(SiteNode $siteNode, Compiler $compiler, callable $visitChildren)
+    public function __invoke(SiteNode $siteNode, Compiler $compiler)
     {
-        call_user_func($this->function, $siteNode, $compiler, $visitChildren);
+        call_user_func($this->function, $siteNode, $compiler);
     }
 
     public static function load($path)

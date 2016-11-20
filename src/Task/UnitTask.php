@@ -45,7 +45,7 @@ class UnitTask implements Task
         return $this->done;
     }
 
-    public function run()
+    public function run(callable $checkTime)
     {
         if ($this->done) {
             $this->message = null;

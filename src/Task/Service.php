@@ -30,12 +30,23 @@ class Service
      */
     private $serializer;
     
+    private $start = 0;
+    
+    private $max = 5;
+    
+    private $end = 0;
+    
     public function __construct(\Psr\Log\LoggerInterface $logger, \Jivoo\Http\ActionRequest $request, \Jivoo\Store\Store $store, \Blogstep\Task\Serializer $serializer)
     {
         $this->logger = $logger;
         $this->request = $request;
         $this->store = $store;
         $this->serializer = $serializer;
+    }
+    
+    public function checkTime()
+    {
+        return time() < $this->end;
     }
 
     public function run(Task $task, callable $finally = null)
@@ -51,10 +62,9 @@ class Service
             $task->unserialize($state->get($task->getName(), []), $this->serializer);
         }
         $this->serializer->clear();
-        $max = 1;
         $server = $this->request->getServerParams();
-        $start = $server['REQUEST_TIME'];
-        $end = $start + $max;
+        $this->start = $server['REQUEST_TIME'];
+        $this->end = $this->start + $this->max;
         header('Content-Type: text/plain');
         header('Cache-Control: no-cache');
         if ($task->isDone()) {
@@ -68,7 +78,7 @@ class Service
         }
         while (true) {
             try {
-                $task->run();
+                $task->run([$this, 'checkTime']);
             } catch (\Exception $e) {
                 $this->logger->error(
                     \Jivoo\I18n\I18n::get('Task failed: %1', $e->getMessage()), array('exception' => $e)
@@ -89,10 +99,9 @@ class Service
                 echo "done:\n";
                 break;
             }
-            if (time() >= $end) {
+            if (!$this->checkTime()) {
                 break;
             }
-            ob_flush();
             flush();
         }
         $state[$task->getName()] = $task->serialize($this->serializer);

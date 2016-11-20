@@ -11,7 +11,7 @@ use Blogstep\Build\SiteNode;
 
 $view = null;
 
-return function (SiteNode $node, Compiler $compiler, callable $visitChildren) use ($view) {
+return function (SiteNode $node, Compiler $compiler) use ($view) {
     if (! isset($view)) {
         $view = new Blogstep\Build\View($node->root, $compiler);
     }
@@ -26,5 +26,4 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
             $node->setFile($file);
         }
     }
-    $visitChildren();
 };

@@ -76,7 +76,7 @@ class Build extends AuthenticatedSnippet
             $compiler->createContentTree($content, $handler);
             $compiler->createStructure($structure);
         }, 'Creating structure'));
-        $runner->add($compiler);
+        $runner->add($compiler, 7);
         $runner->add(new UnitTask('install', function () use ($compiler) {
             $target = $this->m->main->config['user']->get('target', $this->m->main->p('target'));
             $compiler->install($target);

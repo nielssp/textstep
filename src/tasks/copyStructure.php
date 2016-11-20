@@ -11,7 +11,7 @@ use Blogstep\Build\DirNode;
 use Blogstep\Build\FileNode;
 use Blogstep\Build\SiteNode;
 
-return function (SiteNode $node, Compiler $compiler, callable $visitChildren) {
+return function (SiteNode $node, Compiler $compiler) {
     if ($node instanceof FileNode) {
         $dest = $node->root->getBuildPath()->get($node->getPath());
         $node->getFile()->copy($dest);
@@ -19,5 +19,4 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) {
     } elseif ($node instanceof DirNode) {
         $node->root->getBuildPath()->get($node->getPath())->makeDirectory();
     }
-    $visitChildren();
 };

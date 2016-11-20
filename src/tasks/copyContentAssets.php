@@ -11,7 +11,7 @@ use Blogstep\Build\SiteNode;
 
 $attributes = ['src', 'href'];
 
-return function (SiteNode $node, Compiler $compiler, callable $visitChildren) use ($attributes) {
+return function (SiteNode $node, Compiler $compiler) use ($attributes) {
     if ($node instanceof Blogstep\Build\ContentNode) {
         $origin = $node->getOrigin();
         $dom = $node->getDom();
@@ -39,5 +39,4 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) us
             $node->getContent()->putContents($dom->__toString());
         }
     }
-    $visitChildren();
 };

@@ -173,6 +173,23 @@ class SiteNode extends InternalNode
         });
     }
     
+    private function flattenTo(&$array)
+    {
+        $array[] = $this;
+        foreach ($this->getChildren() as $child) {
+            if ($child instanceof SiteNode) {
+                $child->flattenTo($array);
+            }
+        }
+    }
+    
+    public function flatten()
+    {
+        $array = [];
+        $this->flattenTo($array);
+        return $array;
+    }
+    
     public function tree($prefix = '')
     {
         $out = $this->getName();

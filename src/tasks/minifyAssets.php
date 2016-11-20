@@ -11,7 +11,7 @@ use Blogstep\Build\FileNode;
 use Blogstep\Build\SiteNode;
 use Jivoo\Utilities;
 
-return function (SiteNode $node, Compiler $compiler, callable $visitChildren) {
+return function (SiteNode $node, Compiler $compiler) {
     if ($node instanceof FileNode) {
         $ext = Utilities::getFileExtension($node->getName());
         $destName = preg_replace('/\.[^\.]+$/', '.min.' . $ext, $node->getName());
@@ -29,5 +29,4 @@ return function (SiteNode $node, Compiler $compiler, callable $visitChildren) {
                 break;
         }
     }
-    $visitChildren();
 };

@@ -29,6 +29,10 @@ class Compiler extends \Blogstep\Task\TaskBase
     
     private $currentTask = 0;
     
+    private $remainingNodes = null;
+    
+    private $total = 0;
+    
     public function __construct(File $buildDir, \Jivoo\Store\Document $config)
     {
         $this->siteMap = new SiteMap($buildDir);
@@ -104,17 +108,38 @@ class Compiler extends \Blogstep\Task\TaskBase
         }
     }
     
-    public function run()
+    public function run(callable $checkTime)
     {
+        if (isset($this->remainingNodes) and !count($this->remainingNodes)) {
+            $this->currentTask++;
+            $this->remainingNodes = null;
+        }
         if (!isset($this->tasks[$this->currentTask])) {
             return;
         }
         $task = $this->tasks[$this->currentTask];
-        $this->currentTask++;
         $n = count($this->tasks);
-        $this->status('Running task ' . $this->currentTask . ' of ' . $n . ': ' . $task->getName());
-        $this->siteMap->accept($task, $this);
-        $this->progress(floor($this->currentTask / count($this->tasks) * 100));
+        $this->status(null);
+        if (!isset($this->remainingNodes)) {
+            $this->remainingNodes = $this->siteMap->flatten();
+            $this->total = count($this->remainingNodes);
+        }
+        while (count($this->remainingNodes)) {
+            $node = array_shift($this->remainingNodes);
+            $task($node, $this);
+            if (!$checkTime()) {
+                break;
+            }
+        }
+        $remaining = count($this->remainingNodes);
+        $taskProgress = 0;
+        if ($this->total > 0) {
+            $taskProgress = ($this->total - $remaining) / $this->total * 100 / $n;
+        }
+        $this->progress(floor($this->currentTask / $n * 100 + $taskProgress));
+        $this->status(
+            'Running "' . $task->getName() . '" on ' . $remaining  . ' nodes'
+        );
     }
 
     public function getName()
@@ -131,6 +156,8 @@ class Compiler extends \Blogstep\Task\TaskBase
     {
         return $serializer->serialize([
             $this->currentTask,
+            $this->remainingNodes,
+            $this->total,
             $this->siteMap,
             $this->content
         ]);
@@ -140,6 +167,8 @@ class Compiler extends \Blogstep\Task\TaskBase
     {
         list(
             $this->currentTask,
+            $this->remainingNodes,
+            $this->total,
             $this->siteMap,
             $this->content
         ) = $serializer->unserialize($serialized);
