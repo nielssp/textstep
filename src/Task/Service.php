@@ -51,7 +51,7 @@ class Service
             $task->unserialize($state->get($task->getName(), []), $this->serializer);
         }
         $this->serializer->clear();
-        $max = 0;
+        $max = 1;
         $server = $this->request->getServerParams();
         $start = $server['REQUEST_TIME'];
         $end = $start + $max;

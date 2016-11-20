@@ -11,10 +11,10 @@
 
     <div class="frame-content">
         <form id="build" data-token="{$token}" >
-            <div class="field">
+<!--            <div class="field">
                 <label>Destination</label>
                 <input type="text" />
-            </div>
+            </div>-->
         <input type="submit" value="Build" data-action="build" disabled="{isset($inProgress)}?" />
         <input type="submit" value="Cancel" data-action="cancel" disabled="{!isset($inProgress)}?"  />
         </form>
@@ -26,6 +26,6 @@
             <div class="label" j:else>Ready to build</div>
         </div>
         
-        <textarea readonly="readonly"></textarea>
+        <textarea readonly="readonly" id="status-history"></textarea>
     </div>
 </div>

@@ -14,8 +14,6 @@ class Runner implements Task
 
     protected $tasks = [];
     
-    protected $callbacks = [];
-    
     private $currentTask = 0;
     
     private $message = null;
@@ -25,12 +23,9 @@ class Runner implements Task
         $this->name = $name;
     }
     
-    public function add(Task $task, callable $callback = null)
+    public function add(Task $task)
     {
         $this->tasks[] = $task;
-        if (isset($callback)) {
-            $this->callbacks[count($this->tasks) - 1] = $callback;
-        }
     }
     
     public function getName()
@@ -70,16 +65,14 @@ class Runner implements Task
         if (!isset($this->tasks[$this->currentTask])) {
             return;
         }
-        for ($i = 0; $i < $this->currentTask; $i++) {
-            if (isset($this->callbacks[$i])) {
-                call_user_func($this->callbacks[$i]);
-            }
-        }
         if ($this->tasks[$this->currentTask]->isDone()) {
             $this->currentTask++;
         } else {
             $this->tasks[$this->currentTask]->run();
             $this->message = $this->tasks[$this->currentTask]->getStatus();
+            if ($this->tasks[$this->currentTask]->isDone()) {
+                $this->currentTask++;
+            }
         }
     }
 

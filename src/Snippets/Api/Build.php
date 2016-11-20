@@ -85,6 +85,8 @@ class Build extends AuthenticatedSnippet
         $state = new JsonStore($this->m->files->get('build/.build.json')->getRealPath());
         $state->touch();
         
+        $this->m->session->close();
+        
         $service = new Service($this->m->logger, $this->request, $state, $serializer);
         $service->run($runner, function () {
             $this->m->files->get('build/.build.json')->delete();

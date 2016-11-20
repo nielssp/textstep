@@ -9,10 +9,7 @@
 </div>
 <div class="frame-content">
 <form id="build" data-token="<?php echo $token; ?>">
-<div class="field">
-<label>Destination</label>
-<input type="text" />
-</div>
+
 <input type="submit" value="Build" data-action="build"<?php $_attr = isset($inProgress);if (isset($_attr) and $_attr !== false) {echo ' disabled' . ($_attr === true ? '' : '="' . $_attr . '"');} ?> />
 <input type="submit" value="Cancel" data-action="cancel"<?php $_attr = !isset($inProgress);if (isset($_attr) and $_attr !== false) {echo ' disabled' . ($_attr === true ? '' : '="' . $_attr . '"');} ?> />
 </form>
@@ -24,6 +21,6 @@
 <div class="label">Ready to build</div><?php endif; ?>
 
 </div>
-<textarea readonly="readonly"></textarea>
+<textarea readonly="readonly" id="status-history"></textarea>
 </div>
 </div>

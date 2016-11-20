@@ -26,6 +26,7 @@ function build()
     actions.disable('build');
     actions.enable('cancel');
     ui.setProgress(progressBar, 0, 'Building...');
+    $('#status-history').val('');
     
     var progress = 0;
     var status = 'Building...';
@@ -38,6 +39,7 @@ function build()
     var updateStatus = function (message, error) {
         status = message;
         ui.setProgress(progressBar, progress, status);
+        $('#status-history').val(status + "\n" + $('#status-history').val());
     };
     
 
