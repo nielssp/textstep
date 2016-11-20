@@ -67,9 +67,8 @@ class Serializer
         if ($object instanceof Serializable) {
             return ['o', $class, $object->serialize($this)];
         }
-        $reflect = new \ReflectionObject($object);
         $properties = [];
-        foreach ($reflect->getProperties() as $property) {
+        foreach ($this->getProperties($object) as $property) {
             if ($property->isPublic()) {
                 $properties[$property->getName()] = $this->serialize($property->getvalue($object));
             } else {
@@ -117,9 +116,8 @@ class Serializer
         } else if ($object instanceof Serializable) {
             $object->unserialize($serialized[2], $this);
         } else {
-            $reflect = new \ReflectionObject($object);
             $properties = $serialized[2];
-            foreach ($reflect->getProperties() as $property) {
+            foreach ($this->getProperties($object) as $property) {
                 if (array_key_exists($property->getName(), $properties)) {
                     if ($property->isPublic()) {
                         $property->setValue($object, $this->unserialize($properties[$property->getName()]));
@@ -132,6 +130,19 @@ class Serializer
             }
         }
         return $object;
+    }
+    
+    private function getProperties($object)
+    {
+        $reflect = new \ReflectionObject($object);
+        $properties = [];
+        while ($reflect) {
+            foreach ($reflect->getProperties() as $property) {
+                $properties[$property->getName()] = $property;
+            }
+            $reflect = $reflect->getParentClass();
+        }
+        return $properties;
     }
     
     public function set($name, $object)
