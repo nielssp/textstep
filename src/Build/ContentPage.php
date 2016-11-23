@@ -61,6 +61,32 @@ class ContentPage extends ContentGroup
         }
         return $pages;
     }
+    
+    public function expPageList($n = 4, $base = 2)
+    {
+        $before = [];
+        $after = [];
+        for ($i = 0; $i < $n; $i++) {
+            $pageBefore = $this->page - pow($base, $i);
+            $pageAfter = $this->page + pow($base, $i);
+            if ($pageBefore > 1) {
+                array_unshift($before, $pageBefore);
+            }
+            if ($pageAfter < $this->pages) {
+                $after[] = $pageAfter;
+            }
+        }
+        if ($this->pages > 0) {
+            array_unshift($before, 1);
+        }
+        if ($this->pages > 2) {
+            $after[] = $this->pages;
+        }
+        if ($this->page > 1 and $this->page < $this->pages) {
+            $before[] = $this->page;
+        }
+        return array_merge($before, $after);
+    }
 
     public function link($page, $base = null)
     {
