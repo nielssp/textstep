@@ -28,7 +28,7 @@ class Setup extends \Blogstep\AuthenticatedSnippet
     {
         $fs = $this->m->files;
         
-        $userGroup = $this->m->users->findGroup('users');
+        $userGroup = $this->m->users->getGroup('users');
         if (!isset($userGroup)) {
             $userGroup = $this->m->users->createGroup('users');
         }

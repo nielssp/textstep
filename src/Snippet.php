@@ -195,7 +195,7 @@ abstract class Snippet
                 return $this->after($this->get());
             }
             if (! $this->hasValidData($this->dataKey)) {
-                return $this->error('Invalid request token.');
+                return $this->error('Invalid request token.', \Jivoo\Http\Message\Status::BAD_REQUEST);
             }
             if (isset($this->dataKey)) {
                 $data = $this->request->data[$this->dataKey];

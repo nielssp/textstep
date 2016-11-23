@@ -48,13 +48,21 @@ class Service
     {
         return time() < $this->end;
     }
+    
+    private function put($line)
+    {
+        echo $line;
+        flush();
+    }
+    
+    private function putLine($line)
+    {
+        $this->put($line . "\n");
+    }
 
     public function run(Task $task, callable $finally = null)
     {
         $state = new \Jivoo\Store\State($this->store, true);
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
         if (isset($state['_serializer'])) {
             $this->serializer->unserializeAll($state->get('_serializer', []));
         }
@@ -67,9 +75,16 @@ class Service
         $this->end = $this->start + $this->max;
         header('Content-Type: text/plain');
         header('Cache-Control: no-cache');
+        @ini_set('zlib.output_compression', 0);
+        @ini_set('implicit_flush', 1);
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        ob_implicit_flush(true);
+        flush();
         if ($task->isDone()) {
-            echo 'status: ' . \Jivoo\I18n\I18n::get('Done!') . "\n";
-            echo "done:\n";
+            $this->putLine('status: ' . \Jivoo\I18n\I18n::get('Done!'));
+            $this->putLine('done:');
             $state->close();
             if (isset($finally)) {
                 call_user_func($finally);
@@ -83,20 +98,20 @@ class Service
                 $this->logger->error(
                     \Jivoo\I18n\I18n::get('Task failed: %1', $e->getMessage()), array('exception' => $e)
                 );
-                echo 'error: ' . $e->getMessage() . "\n";
+                $this->putLine('error: ' . $e->getMessage());
                 break;
             }
             $status = $task->getStatus();
             if (isset($status)) {
-                echo 'status: ' . $status . "\n";
+                $this->putLine('status: ' . $status);
             }
             $progress = $task->getProgress();
             if (isset($progress)) {
-                echo 'progress: ' . intval($progress) . "\n";
+                $this->putLine('progress: ' . intval($progress));
             }
             if ($task->isDone()) {
-                echo 'status: ' . \Jivoo\I18n\I18n::get('Done!') . "\n";
-                echo "done:\n";
+                $this->putLine('status: ' . \Jivoo\I18n\I18n::get('Done!'));
+                $this->putLine('done:');
                 break;
             }
             if (!$this->checkTime()) {
