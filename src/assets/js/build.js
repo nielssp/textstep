@@ -25,6 +25,7 @@ function build()
     doCancel = false;
     actions.disable('build');
     actions.enable('cancel');
+    var start = performance.now();
     ui.setProgress(progressBar, 0, 'Building...');
     $('#status-history').val('');
     
@@ -39,7 +40,9 @@ function build()
     var updateStatus = function (message, error) {
         status = message;
         ui.setProgress(progressBar, progress, status);
-        $('#status-history').val(status + "\n" + $('#status-history').val());
+        var t = (performance.now() - start) / 1000;
+        var line = t.toFixed(3) + ': ' + status;
+        $('#status-history').val(line  + "\n" + $('#status-history').val());
     };
     
 

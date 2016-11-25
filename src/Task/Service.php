@@ -71,7 +71,8 @@ class Service
         }
         $this->serializer->clear();
         $server = $this->request->getServerParams();
-        $this->start = $server['REQUEST_TIME'];
+//        $this->start = $server['REQUEST_TIME'];
+        $this->start = microtime(true);
         $this->end = $this->start + $this->max;
         header('Content-Type: text/plain');
         header('Cache-Control: no-cache');

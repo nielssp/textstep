@@ -21,7 +21,7 @@ class FastBuild extends AuthenticatedSnippet
         $content = $this->m->files->get('content');
         $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
-        
+
         $compiler = new Compiler($destination, $this->m->main->config['user']);
         $compiler->addTask(Task::load($this->m->main->p('src/tasks/copyStructure.php')));
         $compiler->addTask(Task::load($this->m->main->p('src/tasks/templateToPhp.php')));

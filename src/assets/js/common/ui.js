@@ -63,6 +63,7 @@ exports.setProgress = function(el, progress, status) {
 exports.handleLogin = function (done) {
     var path = $('body').data('path').replace(/\/$/, '');
     $('#login').find('input').prop('disabled', false);
+    $('.login-frame').show();
     $('#login').submit(function () {
         var token = $(this).find('[name="request_token"]').val();
         $(this).find('input').prop('disabled', true);
@@ -76,9 +77,12 @@ exports.handleLogin = function (done) {
                 remember: $('#remember_remember').is(':checked') ? { remember: 'remember' } : null
             },
             success: function () {
-                $('#login').off('submit');
-                $('#password').val('');
-                done();
+                $('.login-frame').css({overflow: 'hidden', whiteSpace: 'no-wrap'}).animate({width: 0}, function () {
+                    $(this).hide().css({overflow: '', whiteSpace: '', width: ''});
+                    $('#login').off('submit');
+                    $('#password').val('');
+                    done();
+                });
             },
             error: function (xhr) {
                 $('#login').find('input').prop('disabled', false);

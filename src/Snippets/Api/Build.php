@@ -82,7 +82,7 @@ class Build extends AuthenticatedSnippet
             $compiler->install($target);
         }, 'Installing'));
         
-        $state = new JsonStore($this->m->files->get('build/.build.json')->getRealPath());
+        $state = new \Jivoo\Store\SerializedStore($this->m->files->get('build/.build')->getRealPath());
         $state->touch();
         
         $this->m->session->close();

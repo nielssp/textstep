@@ -43,7 +43,7 @@ class Compiler extends \Blogstep\Task\TaskBase
     public function clean()
     {
         foreach ($this->buildDir as $file) {
-            if ($file->getName() !== '.build.json') {
+            if ($file->getName() !== '.build') {
                 $file->delete();
             }
         }

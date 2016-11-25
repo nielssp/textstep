@@ -39,7 +39,6 @@ $(window).keydown(function (e) {
         key += 'm-';
     }
     key += e.key.toLowerCase();
-    console.log('pressed ' + key);
     if (keyMap.hasOwnProperty(key)) {
         activate(keyMap[key]);
         return false;

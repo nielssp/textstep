@@ -151,6 +151,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
                 if ($store->touch()) {
                     return new \Jivoo\Cache\StorePool($store);
                 }
+                $this->m->logger->warning('Unable to access cache pool "{pool}" in {dir}', ['pool' => $pool, 'dir' => $this->p('system/cache')]);
                 return new \Jivoo\Cache\NullPool();
             });
         }
