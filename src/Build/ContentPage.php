@@ -62,30 +62,47 @@ class ContentPage extends ContentGroup
         return $pages;
     }
     
-    public function expPageList($n = 4, $base = 2)
+    private function expRange($start, $end, $n)
     {
-        $before = [];
-        $after = [];
-        for ($i = 0; $i < $n; $i++) {
-            $pageBefore = $this->page - pow($base, $i);
-            $pageAfter = $this->page + pow($base, $i);
-            if ($pageBefore > 1) {
-                array_unshift($before, $pageBefore);
+        if ($n == 1) {
+            return [$start];
+        }
+        $nums = [];
+        if ($end < $start) {
+            $base = pow($start - $end + 1, 1 / ($n - 1));
+            for ($i = 0; $i < $n; $i++) {
+                $nums[] = max(floor($start + 1 - pow($base, $i)), $end);
             }
-            if ($pageAfter < $this->pages) {
-                $after[] = $pageAfter;
+        } else {
+            $base = pow($end - $start + 1, 1 / ($n - 1));
+            for ($i = 0; $i < $n; $i++) {
+                $nums[] = min(ceil($start - 1 + pow($base, $i)), $end);
             }
         }
-        if ($this->pages > 0) {
-            array_unshift($before, 1);
+        return $nums;
+    }
+    
+    public function listPages($n = 11)
+    {
+        if ($this->pages <= $n) {
+            return range(1, $this->pages);
         }
-        if ($this->pages > 2) {
-            $after[] = $this->pages;
+        if ($this->page == 1) {
+            return $this->expRange(1, $this->pages, $n);
+        } else if ($this->page == $this->pages) {
+            return array_reverse($this->expRange($this->pages, 1, $n));
         }
-        if ($this->page > 1 and $this->page < $this->pages) {
-            $before[] = $this->page;
+        $middle = min(ceil($n / 2) - 1, $this->page - 1);
+        $right = $n - $middle - 1;
+        if ($right > $this->pages - $this->page) {
+            $right = $this->pages - $this->page;
+            $middle = $n - $right - 1;
         }
-        return array_merge($before, $after);
+        return array_merge(
+            $middle > 0 ? array_reverse($this->expRange($this->page - 1, 1, $middle)) : [],
+            [$this->page],
+            $right > 0 ? $this->expRange($this->page + 1, $this->pages, $right) : []
+        );
     }
 
     public function link($page, $base = null)
