@@ -190,7 +190,7 @@ main {
     }
 }
 
-#viewer {
+#viewer, #player {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -199,6 +199,16 @@ main {
     background-color: #000;
     img {
         display: none;
+    }
+}
+
+#player {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    video {
+        max-width: 100%;
     }
 }
 

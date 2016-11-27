@@ -51,6 +51,22 @@ $size22: '.frame-toolbar, .login-frame';
     }
 }
 
+@mixin filetype-generic($name, $class) {
+    .file-#{$name} {
+        &:before {
+            background-image: url(../img/icons/32/generic-#{$class}.png);
+        }
+    }
+    
+    #{$size16} {
+        .file-#{$name} {
+            &:before {
+                background-image: url(../img/icons/16/generic-#{$class}.png);
+            }
+        }
+    }
+}
+
 .file {
     &:before {
         background-image: url(../img/icons/32/file-unknown.png);
@@ -106,8 +122,14 @@ $size22: '.frame-toolbar, .login-frame';
 @include filetype('md');
 @include filetype('html');
 @include filetype('php');
+@include filetype('webm');
 @include filetype('uploading');
 @include filetype('multiple');
+@include filetype-generic('webm', 'video');
+@include filetype-generic('png', 'image');
+@include filetype-generic('jpg', 'image');
+@include filetype-generic('jpeg', 'image');
+@include filetype-generic('ico', 'image');
 
 @include icon('edit-copy');
 @include icon('edit-cut');

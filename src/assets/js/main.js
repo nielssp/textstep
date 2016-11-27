@@ -7,7 +7,10 @@
 
 var $ = require('jquery');
 var ui = require('./common/ui');
+var actions = require('./common/actions');
 window.$ = $;
+
+var PATH = $('body').data('path').replace(/\/$/, '');
 
 $('[data-toggle]').each(function () {
     var $buttons = $(this).find($(this).data('toggle'));
@@ -32,5 +35,13 @@ $('[data-action="toggle-menu"]').click(function (e) {
 $('body').click(function (e) {
     if ($('body').hasClass('show-menu')) {
         $('body').removeClass('show-menu');
+    }
+});
+
+// Default close action
+actions.define('close', function () {
+    var currentFile = $('.frame-content [data-path]');
+    if (currentFile.length > 0) {
+        location.href = PATH + '/files' + currentFile.data('path');
     }
 });

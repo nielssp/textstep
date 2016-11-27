@@ -91,6 +91,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .files-list .file-php:before {
   background-image: url(../img/icons/16/file-php.png); }
 
+.file-webm:before {
+  background-image: url(../img/icons/32/file-webm.png); }
+
+.files-list .file-webm:before {
+  background-image: url(../img/icons/16/file-webm.png); }
+
 .file-uploading:before {
   background-image: url(../img/icons/32/file-uploading.png); }
 
@@ -102,6 +108,36 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 .files-list .file-multiple:before {
   background-image: url(../img/icons/16/file-multiple.png); }
+
+.file-webm:before {
+  background-image: url(../img/icons/32/generic-video.png); }
+
+.files-list .file-webm:before {
+  background-image: url(../img/icons/16/generic-video.png); }
+
+.file-png:before {
+  background-image: url(../img/icons/32/generic-image.png); }
+
+.files-list .file-png:before {
+  background-image: url(../img/icons/16/generic-image.png); }
+
+.file-jpg:before {
+  background-image: url(../img/icons/32/generic-image.png); }
+
+.files-list .file-jpg:before {
+  background-image: url(../img/icons/16/generic-image.png); }
+
+.file-jpeg:before {
+  background-image: url(../img/icons/32/generic-image.png); }
+
+.files-list .file-jpeg:before {
+  background-image: url(../img/icons/16/generic-image.png); }
+
+.file-ico:before {
+  background-image: url(../img/icons/32/generic-image.png); }
+
+.files-list .file-ico:before {
+  background-image: url(../img/icons/16/generic-image.png); }
 
 .icon-edit-copy:before {
   background-image: url(../img/icons/32/edit-copy.png); }

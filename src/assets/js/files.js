@@ -191,6 +191,7 @@ function addFileInfo($column, file)
     }
     var $li = $('<div class="file-info">');
     var $icon;
+    var action = 'Edit';
     switch (file.type.toLowerCase()) {
         case 'jpeg':
         case 'jpg':
@@ -198,7 +199,10 @@ function addFileInfo($column, file)
         case 'ico':
             $icon = $('<img class="file-thumbnail">');
             $icon.attr('src', PATH + '/api/download?path=' + encodeURIComponent(file.path));
+            action = 'View';
             break;
+        case 'webm':
+            action = 'Play';
         default:
             $icon = $('<span class="file">');
             $icon.addClass('file-' + file.type);
@@ -214,7 +218,7 @@ function addFileInfo($column, file)
     $access.text(file.modeString + ' ' + file.owner + ':' + file.group + ' (' + (file.read ? 'r' : '-') + (file.write ? 'w' : '-') + ')');
     $li.append($icon).append($name).append($modified).append($access);
     if (file.read) {
-        var $button = $('<button>Open in editor</button>');
+        var $button = $('<button>' + action + '</button>');
         $button.click(function () {
             open(file.path);
         }).appendTo($li);

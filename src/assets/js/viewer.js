@@ -17,22 +17,27 @@ var PATH = $('body').data('path').replace(/\/$/, '');
 
 var first = true;
 
-var viewer = new Viewer($('#viewer')[0], {
-    inline: true,
-    viewed: function (e) {
-        if (first) {
-            viewer.view($('#viewer').children('.active').index());
-            first = false;
-            e.stopPropagation();
-            return false;
-        }
-        $('#viewer img.active').removeClass('active');
-        var $image = $(e.detail.originalImage);
-        $image.addClass('active');
-        $('#viewer-name').text($image.attr('alt'));
-    }
-});
+$(function () {
 
-actions.define('close', function () {
-    location.href = PATH + '/files' + $('#viewer img.active').data('path');
+    var viewer = new Viewer($('#viewer')[0], {
+        inline: true,
+        viewed: function (e) {
+            console.log('viewed');
+            if (first) {
+                viewer.view($('#viewer').children('.active').index());
+                first = false;
+                e.stopPropagation();
+                return false;
+            }
+            $('#viewer img.active').removeClass('active');
+            var $image = $(e.detail.originalImage);
+            $image.addClass('active');
+            $('#viewer-name').text($image.attr('alt'));
+        }
+    });
+
+    actions.define('close', function () {
+        location.href = PATH + '/files' + $('#viewer img.active').data('path');
+    });
+
 });

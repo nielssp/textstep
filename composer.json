@@ -22,7 +22,7 @@
     "php": ">=5.4.0",
     "composer/semver": "^1.2",
     "jivoo/core": "^1.2",
-    "jivoo/http": "^1.5",
+    "jivoo/http": "^1.5.1",
     "jivoo/view": "dev-master",
     "jivoo/security": "dev-master",
     "mgargano/simplehtmldom": "^1.5",
