@@ -469,6 +469,9 @@ function updateColumn($column, path)
                     if (!data.write) {
                         $column.addClass('readonly');
                     }
+                    if (!files.hasOwnProperty(data.path)) {
+                        createFile(data);
+                    }
                     if (data.type === 'directory' && typeof data.files !== 'undefined') {
                         for (var i = 0; i < data.files.length; i++) {
                             var file = data.files[i];
