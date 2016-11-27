@@ -403,18 +403,17 @@ function updateColumns()
     stackOffset = Math.max(0, stack.length - length);
     $columns.find('a').removeClass('active');
     $currentColumn.children('.filter').remove();
+    $currentColumn = columns.eq(Math.min(length, stack.length) - 1);
     if (stack.length >= previousStackSize) {
         for (var i = 0; i < length; i++) {
             var $column = columns.eq(i);
             if (stackOffset + i < stack.length) {
                 updateColumn($column, stack[stackOffset + i]);
-                $currentColumn = columns.eq(i);
             } else {
                 updateColumn($column, null);
             }
         }
     } else {
-        $currentColumn = columns.eq(Math.min(length, stack.length) - 1);
         for (var i = length - 1; i >= 0; i--) {
             var $column = columns.eq(i);
             if (stackOffset + i < stack.length) {

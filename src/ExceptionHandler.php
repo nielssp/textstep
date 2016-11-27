@@ -110,6 +110,10 @@ class ExceptionHandler
                 $hash = null;
             }
         }
+        if (headers_sent()) {
+            echo 'Uncaught exception: ' . $exception->getMessage();
+            exit;
+        }
         // Clean the view
         while (ob_get_level() > 0) {
             ob_end_clean();

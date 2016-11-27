@@ -89,7 +89,7 @@ class Build extends AuthenticatedSnippet
         
         $service = new Service($this->m->logger, $this->request, $state, $serializer);
         $service->run($runner, function () {
-            $this->m->files->get('build/.build.json')->delete();
+            $this->m->files->get('build/.build')->delete();
         });
     }
     
