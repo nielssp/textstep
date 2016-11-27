@@ -1,6 +1,6 @@
 <div class="frame">
 <?php echo $this->begin('appmenu'); ?><div>
-<header>Viewer</header>
+<header>Player</header>
 <nav>
 <ul>
 <li><a data-action="close">Close</a></li>
