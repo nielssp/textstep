@@ -75,10 +75,11 @@ class View extends \Jivoo\View\View
             $link = $this->currentNode;
         }
         if (!($link instanceof SiteNode)) {
-            $link = $this->siteMap->get($link);
-        }
-        if (!isset($link)) {
-            return '#not-found';
+            $path = $link;
+            $link = $this->siteMap->get($path);
+            if (!isset($link)) {
+                return '#not-found/' . $path;
+            }
         }
         if ($link->getName() == 'index.html') {
             $link = $link->parent;
@@ -94,10 +95,11 @@ class View extends \Jivoo\View\View
             $link = $this->currentNode;
         }
         if (!($link instanceof SiteNode)) {
-            $link = $this->siteMap->get($link);
-        }
-        if (!isset($link)) {
-            return '#not-found';
+            $path = $link;
+            $link = $this->siteMap->get($path);
+            if (!isset($link)) {
+                return '#not-found/' . $path;
+            }
         }
         if ($link->getName() == 'index.html') {
             $link = $link->parent;

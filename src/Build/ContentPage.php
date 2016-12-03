@@ -68,15 +68,26 @@ class ContentPage extends ContentGroup
             return [$start];
         }
         $nums = [];
+        $previous = -1;
         if ($end < $start) {
             $base = pow($start - $end + 1, 1 / ($n - 1));
             for ($i = 0; $i < $n; $i++) {
-                $nums[] = max(floor($start + 1 - pow($base, $i)), $end);
+                $num = max(intval(floor($start + 1 - pow($base, $i))), $end);
+                if ($num == $previous) {
+                    $num -= 1;
+                }
+                $nums[] = $num;
+                $previous = $num;
             }
         } else {
             $base = pow($end - $start + 1, 1 / ($n - 1));
             for ($i = 0; $i < $n; $i++) {
-                $nums[] = min(ceil($start - 1 + pow($base, $i)), $end);
+                $num = min(intval(ceil($start - 1 + pow($base, $i))), $end);
+                if ($num == $previous) {
+                    $num += 1;
+                }
+                $nums[] = $num;
+                $previous = $num;
             }
         }
         return $nums;
@@ -110,7 +121,7 @@ class ContentPage extends ContentGroup
         if (isset($base)) {
             $this->base = $base;
         }
-        if ($page === 1) {
+        if ($page == 1) {
             return $this->base . '/index.html';
         }
         return rtrim($this->base, '/') . '/page' . $page . '/index.html';
