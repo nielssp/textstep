@@ -126,7 +126,10 @@ function initFile($file, file)
         return false;
     });
     $file.on('dragstart', function (e) {
-//        return false;
+        var download = 'application/octet-stream:' + encodeURIComponent(file.name) + ':'
+                + location.origin + PATH + '/api/download?path='
+                + encodeURIComponent(file.path);
+        e.originalEvent.dataTransfer.setData('DownloadURL', download);
     });
     $file.click(function (event) {
         if (event.ctrlKey || touchSelectMode) {
