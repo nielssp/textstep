@@ -47,7 +47,6 @@ function open(path)
 function initColumn($column)
 {
     $column.on('dragenter', function (e) {
-        console.log('dragenter', event.dataTransfer, event.dataTransfer.types);
         if ($column.data('path') === null || event.dataTransfer.types.indexOf('Files') < 0) {
             event.dataTransfer.dropEffect = 'none';
         } else {
@@ -61,7 +60,6 @@ function initColumn($column)
         return false;
     });
     $column.on('dragover', function (e) {
-        console.log('dragover', event.dataTransfer, event.dataTransfer.types, event.dataTransfer.items);
         if ($column.data('path') === null || event.dataTransfer.types.indexOf('Files') < 0) {
             event.dataTransfer.dropEffect = 'none';
         } else {
