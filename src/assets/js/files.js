@@ -46,28 +46,35 @@ function open(path)
 
 function initColumn($column)
 {
-    $column[0].ondragenter = function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        e.dropEffect = "copy";
-        $column.addClass('accept');
+    $column.on('dragenter', function (e) {
+        console.log('dragenter', event.dataTransfer, event.dataTransfer.types);
+        if ($column.data('path') === null || event.dataTransfer.types.indexOf('Files') < 0) {
+            event.dataTransfer.dropEffect = 'none';
+        } else {
+            event.dataTransfer.dropEffect = 'copy';
+            $column.addClass('accept');
+        }
         return false;
-    };
-    $column[0].ondragleave = function (e) {
-        e.stopPropagation();
-        e.preventDefault();
+    });
+    $column.on('dragleave', function (e) {
         $column.removeClass('accept');
         return false;
-    };
-    $column[0].ondragover = function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        e.dropEffect = "copy";
+    });
+    $column.on('dragover', function (e) {
+        console.log('dragover', event.dataTransfer, event.dataTransfer.types, event.dataTransfer.items);
+        if ($column.data('path') === null || event.dataTransfer.types.indexOf('Files') < 0) {
+            event.dataTransfer.dropEffect = 'none';
+        } else {
+            event.dataTransfer.dropEffect = 'copy';
+            $column.addClass('accept');
+        }
         return false;
-    };
-    $column[0].ondrop = function (e) {
-        e.stopPropagation();
-        e.preventDefault();
+    });
+    $column.on('drop', function (e) {
+        if ($column.data('path') === null) {
+            return false;
+        }
+        $column.removeClass('accept');
         var files = event.dataTransfer.files;
         var data = new FormData();
         data.append('request_token', TOKEN);
@@ -90,7 +97,7 @@ function initColumn($column)
             }
         };
         return false;
-    };
+    });
 }
 
 var touchSelectMode = false;
@@ -119,6 +126,9 @@ function initFile($file, file)
         }
         touchSelectMode = true;
         return false;
+    });
+    $file.on('dragstart', function (e) {
+//        return false;
     });
     $file.click(function (event) {
         if (event.ctrlKey || touchSelectMode) {
@@ -170,6 +180,7 @@ function createFile(file)
     if (!file.read) {
         $file.addClass('locked');
     }
+    $file.attr('draggable', true);
     $file.attr('data-path', file.path);
     $file.attr('href', PATH + '/files' + file.path);
     $file.addClass('file-' + file.type);
