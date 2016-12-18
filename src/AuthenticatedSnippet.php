@@ -17,6 +17,8 @@ class AuthenticatedSnippet extends Snippet
             if ($this->request->isAjax()) {
                 return $this->error('Not logged in', \Jivoo\Http\Message\Status::UNAUTHORIZED);
             }
+            $this->m->session['loginReturnPath'] = $this->request->path;
+            $this->m->session['loginReturnQuery'] = $this->request->query;
             return $this->redirect('snippet:Login');
         }
         $this->m->files->setAuthentication($this->m->auth->user);
