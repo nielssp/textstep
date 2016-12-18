@@ -1102,7 +1102,9 @@ main {
     display: block; }
 
   main {
-    margin-left: 210px; } }
+    margin-left: 210px; }
+    main .frame-header a[data-action="toggle-menu"] {
+      display: none; } }
 .shortcuts {
   float: right;
   margin: 10px 10px 0 0;

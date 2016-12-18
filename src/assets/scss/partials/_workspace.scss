@@ -132,6 +132,10 @@ main {
     }
     main {
         margin-left: 210px;
+        
+        .frame-header a[data-action="toggle-menu"] {
+            display: none;
+        }
     }
 }
 
