@@ -5,6 +5,7 @@
 <ul>
 <li><a href="#" data-action="new-folder">New folder</a></li>
 <li><a href="#" data-action="new-file">New file</a></li>
+<li><a href="#" data-action="download">Download</a></li>
 </ul>
 </nav>
 </div><?php echo $this->end(); ?>

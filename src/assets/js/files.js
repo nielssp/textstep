@@ -85,10 +85,21 @@ function initColumn($column)
             });
         }
         var request = new XMLHttpRequest();
+        var handleError = function () {
+            if (typeof request.responseJSON !== 'undefined') {
+                alert(request.responseJSON.message);
+            } else {
+                alert(request.responseText);
+            }
+            ui.shake($('main > .frame'));
+        };
         request.open("POST", PATH + '/api/upload?path=' + $column.data('path'));
         request.send(data);
         request.onreadystatechange = function () {
-            if (this.readyState === 3 || this.readyState === 4) {
+            if (this.readyState === 4) {
+                if (this.status !== 200) {
+                    handleError();
+                }
                 var path = $column.data('path');
                 $column.data('path', null);
                 updateColumn($column, path);
@@ -732,16 +743,27 @@ actions.define('upload', function () {
             });
         }
         var request = new XMLHttpRequest();
-        request.open("POST", PATH + '/api/upload?path=' + $column.data('path'));
-        request.send(data);
+        var handleError = function () {
+            if (typeof request.responseJSON !== 'undefined') {
+                alert(request.responseJSON.message);
+            } else {
+                alert(request.responseText);
+            }
+            ui.shake($('main > .frame'));
+        };
+        request.open("POST", PATH + '/api/upload?path=' + encodeURIComponent($column.data('path')));
         request.onreadystatechange = function () {
-            if (this.readyState === 3 || this.readyState === 4) {
+            if (this.readyState === 4) {
+                if (this.status !== 200) {
+                    handleError();
+                }
                 var path = $column.data('path');
                 $column.data('path', null);
                 updateColumn($column, path);
                 $fileInput.remove();
             }
         };
+        request.send(data);
         return false;
     });
 }, ['dir']);
@@ -791,6 +813,27 @@ actions.define('trash', function () {
                 refresh();
             }
         });
+    }
+}, ['selection']);
+actions.define('download', function () {
+    if (selection.length === 1) {
+        var file = files[selection[0]].data;
+        location.href = PATH + '/api/download/' + encodeURIComponent(file.name)
+                + '?force&path=' + encodeURIComponent(file.path);
+    } else {
+        for (var i = 0; i < selection.length; i++) {
+            var file = files[selection[i]].data;
+            var iframe = $('<iframe>');
+            iframe.hide();
+            iframe.attr('src', PATH + '/api/download/' + encodeURIComponent(file.name)
+                    + '?force&path=' + encodeURIComponent(file.path));
+            iframe.on('load', function () {
+                // TODO: this is never called...
+                console.log('download finished');
+                iframe.remove();
+            });
+            iframe.appendTo($('body'));
+        }
     }
 }, ['selection']);
 actions.define('cut', function () {
@@ -851,6 +894,17 @@ actions.define('paste', function () {
         });
     }
 }, ['dir']);
+actions.define('select-all', function () {
+    $currentColumn.find('.file').each(function () {
+        select($(this).data('path'));
+    });
+}, ['dir']);
+actions.define('remove-selection', function () {
+    if (selection.length === 1 && selection[0] === selectionRoot) {
+        return;
+    }
+    removeSelection();
+}, ['dir']);
 actions.define('focus-prev', function () {
     var $current = $currentColumn.find('.file:focus');
     if ($current.length > 0) {
@@ -894,6 +948,9 @@ actions.bind('C-C', 'copy');
 actions.bind('C-X', 'cut');
 actions.bind('C-V', 'paste');
 actions.bind('Delete', 'trash');
+
+actions.bind('C-A', 'select-all');
+actions.bind('Escape', 'remove-selection');
 
 actions.bind('C-H', 'exit');
 actions.bind('C-K', 'focus-prev');

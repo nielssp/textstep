@@ -24,8 +24,20 @@ class Download extends \Blogstep\AuthenticatedSnippet
         if (!$fs->isReadable()) {
             return $this->error('not authorized', \Jivoo\Http\Message\Status::UNAUTHORIZED);
         }
+        if ($fs->getType() == 'directory') {
+            if (extension_loaded('zip')) {
+                // TODO: create zip file as a stream
+                return $this->error('not implemented');
+            }
+            return $this->error('extension not loaded: zip');
+        }
         $path = $fs->getRealPath();
         $type = $this->m->assets->getMimeType($path);
-        return \Jivoo\Http\Message\Response::file($path, $type);
+        $response = \Jivoo\Http\Message\Response::file($path, $type);
+        if (isset($this->request->query['force'])) {
+//            $type = 'application/octet-stream';
+            $response = $response->withHeader('Content-Disposition', 'attachment');
+        }
+        return $response;
     }
 }

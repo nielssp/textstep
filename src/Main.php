@@ -14,7 +14,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
     /**
      * BlogSTEP version.
      */
-    const VERSION = '0.3.0';
+    const VERSION = '0.4.0';
     
     /**
      * @var Modules
@@ -97,6 +97,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\FastBuild');
         $this->m->router->auto('snippet:Api\GenerateTestContent');
         $this->m->router->auto('snippet:Api\Download');
+        $this->m->router->match('api/download/*', 'snippet:Api\Download');
         $this->m->router->auto('snippet:Api\MakeDir');
         $this->m->router->auto('snippet:Api\MakeFile');
         $this->m->router->auto('snippet:Api\Delete');
