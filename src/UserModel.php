@@ -9,6 +9,9 @@ use Blogstep\Files\File;
 use Jivoo\Assume;
 use Jivoo\Binary;
 use Jivoo\Random;
+use Jivoo\Security\Hash;
+use Jivoo\Store\AccessException;
+use Jivoo\Store\StateMap;
 
 /**
  * Description of UserModel
@@ -23,7 +26,7 @@ class UserModel implements \Jivoo\Security\UserModel
     private $system;
     
     /**
-     * @var \Jivoo\Store\StateMap
+     * @var StateMap
      */
     private $state;
     
@@ -36,7 +39,7 @@ class UserModel implements \Jivoo\Security\UserModel
         $this->fs = $fs;
         $this->systemGroup = new Group('system');
         $this->system = new User('system', null, $fs->get('system'), 'system', []);
-        $this->state = new \Jivoo\Store\StateMap($fs->get('system')->getRealPath());
+        $this->state = new StateMap($fs->get('system')->getRealPath());
     }
     
     public function getUsers()
@@ -164,11 +167,18 @@ class UserModel implements \Jivoo\Security\UserModel
     {
         return $this->getUser($data['username']);
     }
-    
-    public function getPassword($user)
+
+    public function verifyPassword($user, $password)
     {
         Assume::isInstanceOf($user, 'Blogstep\User');
-        return $user->getPassword();
+        if (Hash::verify($password, $user->getPassword())) {
+            if (Hash::needsRehash($user->getPassword())) {
+                $newPassword = Hash::hash($password);
+                // TODO: save new password
+            }
+            return true;
+        }
+        return false;
     }
 
     public function openSession($sessionId)
@@ -188,7 +198,7 @@ class UserModel implements \Jivoo\Security\UserModel
                         unset($sessions[$sessionId]);
                     }
                     $sessions->close();
-                } catch (\Jivoo\Store\AccessException $e) {
+                } catch (AccessException $e) {
                    $user = null;
                 }
             }
