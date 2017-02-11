@@ -67,7 +67,7 @@ aside {
 }
 
 main {
-    margin-right: 48px + 20px;
+    margin-right: /*48px + 10px +*/ 10px;
     display: block;
     min-height: 100%;
     padding: 10px 0 10px 10px;
@@ -140,6 +140,7 @@ main {
 }
 
 .shortcuts {
+    display: none;
     float: right;
     margin: 10px 10px 0 0;
     text-align: center;

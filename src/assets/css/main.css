@@ -1057,7 +1057,7 @@ aside {
             padding-bottom: 6px; } }
 
 main {
-  margin-right: 68px;
+  margin-right: 10px;
   display: block;
   min-height: 100%;
   padding: 10px 0 10px 10px;
@@ -1106,6 +1106,7 @@ main {
     main .frame-header a[data-action="toggle-menu"] {
       display: none; } }
 .shortcuts {
+  display: none;
   float: right;
   margin: 10px 10px 0 0;
   text-align: center; }
