@@ -14,7 +14,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
     /**
      * BlogSTEP version.
      */
-    const VERSION = '0.4.0';
+    const VERSION = '0.5.0';
     
     /**
      * @var Modules
@@ -48,7 +48,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->files = new Files\FileSystem($this->p('user'));
         
-        $this->m->router = new \Jivoo\Http\Router($this->config['user']['router']);
+        $this->m->router = new BlogstepRouter($this->config['user']['router']);
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
         $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
         $this->m->server->add(new \Jivoo\Http\EntityTag);
@@ -84,12 +84,12 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Builder');
         $this->m->router->auto('snippet:Logout');
         $this->m->router->auto('snippet:Terminal');
-        $this->m->router->match('open/**', 'snippet:Open');
-        $this->m->router->match('edit/**', 'snippet:Editor');
-        $this->m->router->match('view/**', 'snippet:Viewer');
-        $this->m->router->match('play/**', 'snippet:Player');
-        $this->m->router->match('code-edit/**', 'snippet:CodeEditor');
-        $this->m->router->match('files/**', 'snippet:Files');
+        $this->m->router->match('open', 'snippet:Open');
+        $this->m->router->match('edit', 'snippet:Editor');
+        $this->m->router->match('view', 'snippet:Viewer');
+        $this->m->router->match('play', 'snippet:Player');
+        $this->m->router->match('code-edit', 'snippet:CodeEditor');
+        $this->m->router->match('files', 'snippet:Files');
         
         $this->m->router->auto('snippet:Api\ListFiles');
         $this->m->router->auto('snippet:Api\Upload');

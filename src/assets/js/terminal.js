@@ -17,7 +17,7 @@ var cmdHistoryPos = -1;
 var readCallback = null;
 
 var user = {};
-var cwd = '/';
+var cwd = $terminal.data('path');
 
 var PATH = $('body').data('path').replace(/\/$/, '');
 var TOKEN = $terminal.data('token');
@@ -28,7 +28,7 @@ var months = [
 ];
 
 actions.define('close', function () {
-    location.href = PATH + '/files' + cwd;
+    location.href = PATH + '/files?path=' + cwd;
 });
 
 function convertPath(path)

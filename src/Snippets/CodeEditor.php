@@ -12,7 +12,7 @@ class CodeEditor extends \Blogstep\AuthenticatedSnippet
 {
     public function get()
     {
-        $path = implode('/', $this->routeParameters);
+        $path = $this->query('path', '/');
         $this->viewData['fs'] = $this->m->files->get($path);
         $this->viewData['content'] = $this->viewData['fs']->getContents();
         return $this->render();

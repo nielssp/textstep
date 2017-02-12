@@ -25,7 +25,7 @@ $(document).ajaxError(ui.handleError);
 actions.define('new', newFile);
 actions.define('save', saveFile);
 actions.define('close', function () {
-    location.href = PATH + '/files' + path;
+    location.href = PATH + '/files?path=' + path;
 });
 
 var SimpleMDE = require('simplemde');

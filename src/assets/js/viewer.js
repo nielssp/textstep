@@ -37,7 +37,7 @@ $(function () {
     });
 
     actions.define('close', function () {
-        location.href = PATH + '/files' + $('#viewer img.active').data('path');
+        location.href = PATH + '/files?path=' + $('#viewer img.active').data('path');
     });
 
 });

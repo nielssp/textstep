@@ -12,7 +12,7 @@ class Player extends \Blogstep\AuthenticatedSnippet
 {
     public function get()
     {
-        $path = implode('/', $this->routeParameters);
+        $path = $this->query('path', '/');
         $this->viewData['video'] = $this->m->files->get($path);
         return $this->render();
     }

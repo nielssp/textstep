@@ -12,7 +12,7 @@ class Viewer extends \Blogstep\AuthenticatedSnippet
 {
     public function get()
     {
-        $path = implode('/', $this->routeParameters);
+        $path = $this->query('path', '/');
         $dir = $this->m->files->get($path);
         $selection = null;
         if ($dir->getType() !== 'directory') {

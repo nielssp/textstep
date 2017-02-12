@@ -19,6 +19,6 @@
 </div>
 </div>
 <div class="frame-content frame-content-flex">
-<textarea id="terminal" class="stretch" data-token="<?php echo $token; ?>"></textarea>
+<textarea id="terminal" class="stretch" data-token="<?php echo $token; ?>" data-path="<?php echo $fs->getPath(); ?>"></textarea>
 </div>
 </div>

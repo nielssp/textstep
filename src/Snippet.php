@@ -166,6 +166,14 @@ abstract class Snippet
     {
         return $this->get();
     }
+    
+    protected function query($param, $default = null)
+    {
+        if (isset($this->request->query[$param]) and is_string($this->request->query[$param])) {
+            return $this->request->query[$param];
+        }
+        return $default;
+    }
 
     /**
      * {@inheritdoc}

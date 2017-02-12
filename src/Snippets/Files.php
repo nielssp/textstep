@@ -13,7 +13,7 @@ class Files extends \Blogstep\AuthenticatedSnippet
     
     public function get()
     {
-        $path = implode('/', $this->routeParameters);
+        $path = $this->query('path', '/');
         $fs = $this->m->files->get($path);
         if (!$fs->isReadable()) {
             while (true) {

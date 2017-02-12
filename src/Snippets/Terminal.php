@@ -12,6 +12,8 @@ class Terminal extends \Blogstep\AuthenticatedSnippet
 {
     public function get()
     {
+        $path = $this->query('path', '/');
+        $this->viewData['fs'] = $this->m->files->get($path);
         return $this->render();
     }
 }

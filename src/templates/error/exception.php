@@ -17,9 +17,6 @@
 </header>
 
 <div id="main">
-<div id="sad">
-:-(
-</div>
 <h1><?php echo $title; ?></h1>
 
 <?php

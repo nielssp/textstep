@@ -41,7 +41,7 @@ $(document).ajaxError(ui.handleError);
 
 function open(path)
 {
-    location.href = PATH + '/open' + path;
+    location.href = PATH + '/open?path=' + path;
 }
 
 function initColumn($column)
@@ -194,7 +194,7 @@ function createFile(file)
     }
     $file.attr('draggable', true);
     $file.attr('data-path', file.path);
-    $file.attr('href', PATH + '/files' + file.path);
+    $file.attr('href', PATH + '/files?path=' + file.path);
     $file.addClass('file-' + file.type);
     initFile($file, file);
     return $file;
@@ -277,7 +277,7 @@ function goUp()
     }
     selectionRoot = stack[stack.length - 1];
     updateColumns();
-    history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
+    history.pushState({cwd: cwd}, document.title, PATH + '/files?path=' + cwd);
 }
 
 function refresh()
@@ -292,7 +292,7 @@ function enter(path)
     if (files.hasOwnProperty(path)) {
         files[path].link.addClass('active');
     }
-    history.pushState({cwd: cwd}, document.title, PATH + '/files' + cwd);
+    history.pushState({cwd: cwd}, document.title, PATH + '/files?path=' + cwd);
 }
 
 function removeSelection()
@@ -767,6 +767,9 @@ actions.define('upload', function () {
         return false;
     });
 }, ['dir']);
+actions.define('terminal', function () {
+    location.href = PATH + '/terminal?path=' + cwd;
+}, ['selection-single']);
 actions.define('rename', function () {
     if (stack.length <= 1) {
         return;

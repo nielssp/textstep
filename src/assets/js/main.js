@@ -42,6 +42,6 @@ $('body').click(function (e) {
 actions.define('close', function () {
     var currentFile = $('.frame-content [data-path]');
     if (currentFile.length > 0) {
-        location.href = PATH + '/files' + currentFile.data('path');
+        location.href = PATH + '/files?path=' + currentFile.data('path');
     }
 });

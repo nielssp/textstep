@@ -334,7 +334,7 @@ class File implements \IteratorAggregate, HasRoute
     {
         return [
             'snippet' => 'Open',
-            'parameters' => $this->path
+            'query' => ['path' => $this->getPath()]
         ];
     }
     
@@ -342,7 +342,7 @@ class File implements \IteratorAggregate, HasRoute
     {
         return [
             'snippet' => 'Files',
-            'parameters' => $this->path
+            'query' => ['path' => $this->getPath()]
         ];
     }
     
