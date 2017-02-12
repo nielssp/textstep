@@ -14,7 +14,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
     /**
      * BlogSTEP version.
      */
-    const VERSION = '0.5.1';
+    const VERSION = '0.5.2';
     
     /**
      * @var Modules

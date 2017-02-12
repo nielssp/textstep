@@ -121,16 +121,16 @@ var commands = {
         });
     },
     exit: function (args) {
-        location.href = PATH + '/files' + convertPath(args);
+        location.href = PATH + '/files?path=' + convertPath(args);
     },
     open: function (args) {
-        location.href = PATH + '/open' + convertPath(args);
+        location.href = PATH + '/open?path=' + convertPath(args);
     },
     edit: function (args) {
-        location.href = PATH + '/edit' + convertPath(args);
+        location.href = PATH + '/edit?path=' + convertPath(args);
     },
     cedit: function (args) {
-        location.href = PATH + '/code-edit' + convertPath(args);
+        location.href = PATH + '/code-edit?path=' + convertPath(args);
     }
 };
 
