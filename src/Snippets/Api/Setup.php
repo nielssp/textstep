@@ -11,15 +11,15 @@ namespace Blogstep\Snippets\Api;
 class Setup extends \Blogstep\AuthenticatedSnippet
 {
     
-    private function createOwnedDir(\Blogstep\Files\File $dir, \Blogstep\User $user, \Blogstep\Group $group, $mode, $recursive = true)
+    private function createOwnedDir(\Blogstep\Files\File $dir, \Blogstep\User $user, \Blogstep\Group $group, $mode)
     {
         try {
             if (!$dir->exists()) {
                 $dir->makeDirectory();
             }
-            $dir->set('owner', $user->getName(), $recursive);
-            $dir->set('group', $group->getName(), $recursive);
-            $dir->setModeString($mode, $recursive);
+            $dir->set('owner', $user->getName());
+            $dir->set('group', $group->getName());
+            $dir->setModeString($mode);
         } catch (\Blogstep\Files\FileException $e) {
         }
     }
@@ -35,7 +35,7 @@ class Setup extends \Blogstep\AuthenticatedSnippet
         $systemUser = $this->m->users->getUser('system');
         $systemGroup = $this->m->users->getGroup('system');
         $user = $this->m->auth->user;
-        $this->createOwnedDir($fs, $user, $userGroup, 'rwr-r-', false);
+        $this->createOwnedDir($fs, $user, $userGroup, 'rwr-r-');
         $this->createOwnedDir($fs->get('build'), $user, $userGroup, 'rwrwr-');
         $this->createOwnedDir($fs->get('content'), $user, $userGroup, 'rwrwr-');
         $this->createOwnedDir($fs->get('site'), $user, $userGroup, 'rwrwr-');

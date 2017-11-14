@@ -116,95 +116,31 @@ class File implements \IteratorAggregate, HasRoute
         return (int) filectime($this->getRealPath());
     }
     
-    private function getMetadataPath()
-    {
-        return $this->getRealPath() . '/.metadata.json';
-    }
-    
-    /**
-     * 
-     * @return Config
-     */
-    public function getMetadata()
-    {
-        if (! isset($this->metadata)) {
-            if ($this->isDirectory()) {
-                $store = new JsonStore($this->getMetadataPath());
-                if ($store->touch()) {
-                    $this->metadata = new Config($store);
-                } else {
-                    $this->metadata = new Config();
-                    $this->metadata['mode'] = 0x00;
-                    if (is_readable($this->getRealPath())) {
-                        $this->metadata['mode'] = 0x2A;
-                    }
-                }
-            } elseif (isset($this->parent)) {
-                return $this->parent->getMetadata();
-            } else {
-                return new Config();
-            }
-        }
-        return $this->metadata;
-    }
-    
     private function isSystem()
     {
         return ! isset($this->system->user) or $this->system->user->getName() === 'system' or
             $this->system->user->isMemberOf('system');
     }
     
-    public function setMultiple($values, $recursive = false)
+    public function set($key, $value)
     {
-        if (!$this->isDirectory()) {
-            return false;
-        }
-        if ($recursive) {
-            foreach ($this as $file) {
-                try {
-                    $file->setMultiple($values, $recursive);
-                } catch (UnauthorizedException $e) {
-                }
-            }
-        }
         $this->assumeWritable();
-        $metadata = $this->getMetadata();
-        $metadata->set($values);
-        return $metadata->save();
-    }
-    
-    public function set($name, $value, $recursive = false)
-    {
-        if (!$this->isDirectory()) {
-            return false;
-        }
-        if ($recursive) {
-            foreach ($this as $file) {
-                try {
-                    $file->set($name, $value, $recursive);
-                } catch (UnauthorizedException $e) {
-                }
-            }
-        }
-        $this->assumeWritable();
-        $metadata = $this->getMetadata();
-        $metadata->set($name, $value);
-        return $metadata->save();
+        $this->system->acl->set($this->path, $key, $value);
     }
     
     public function getOwner()
     {
-        return $this->getMetadata()->get('owner', 'system');
+        return $this->system->acl->getOwner($this->path);
     }
     
     public function getGroup()
     {
-        return $this->getMetadata()->get('group', 'system');
+        return $this->system->acl->getGroup($this->path);
     }
     
     public function getMode()
     {
-        return $this->getMetadata()->get('mode', 0x3A);
+        return $this->system->acl->getMode($this->path);
     }
     
     public function getModeString()
@@ -219,7 +155,7 @@ class File implements \IteratorAggregate, HasRoute
         return $str;
     }
     
-    public function setModeString($str, $recursive = false)
+    public function setModeString($str)
     {
         $mode = 0;
         Assume::that(strlen($str) === 6);
@@ -228,7 +164,7 @@ class File implements \IteratorAggregate, HasRoute
                 $mode |= 0x20 >> $i;
             }
         }
-        return $this->set('mode', $mode, $recursive);
+        return $this->set('mode', $mode);
     }
     
     public function getUserMode()
@@ -388,16 +324,6 @@ class File implements \IteratorAggregate, HasRoute
                 );
             }
             $destination->makeDirectory();
-            $meta1 = $this->getMetadata();
-            $meta2 = $destination->getMetadata();
-            $meta2->override = $meta1;
-            if (isset($this->system->user)) {
-                $meta2['owner'] = $this->system->user->getName();
-            }
-            $parent = $destination->getParent();
-            $meta2['group'] = $parent->getGroup();
-            $meta2['mode'] = $parent->getMode();
-            $meta2->save();
             foreach ($this as $file) {
                 $file->copy($destination->get($file->getName()));
             }
@@ -437,14 +363,7 @@ class File implements \IteratorAggregate, HasRoute
             foreach ($this as $file) {
                 $file->move($destination->get($file->getName()));
             }
-            $meta1 = $this->getMetadata();
-            $meta2 = $destination->getMetadata();
-            $meta2->override = $meta1;
-            $meta2->save();
             $this->invalidate();
-            if (file_exists($this->getMetadataPath())) {
-                unlink($this->getMetadataPath());
-            }
             return $this->delete();
         } elseif (rename($this->getRealPath(), $destination->getRealPath())) {
             $this->invalidate();
@@ -486,18 +405,7 @@ class File implements \IteratorAggregate, HasRoute
         $this->assumeWritable();
         if (mkdir($this->getRealPath())) {
             $this->type = 'directory';
-            $metadata = $this->getMetadata();
-            if (isset($this->system->user)) {
-                $metadata['owner'] = $this->system->user->getName();
-            }
-            $parent = $this->getParent();
-            $metadata['group'] = $parent->getGroup();
-            $metadata['mode'] = $parent->getMode();
-            if ($metadata->save()) {
-                return true;
-            }
-            $this->type = 'unknown';
-            rmdir($this->getRealPath());
+            return true;
         }
         return false;
     }
@@ -583,9 +491,6 @@ class File implements \IteratorAggregate, HasRoute
         }
         $this->assumeWritable();
         if ($this->isDirectory()) {
-            if (file_exists($this->getMetadataPath())) {
-                unlink($this->getMetadataPath());
-            }
             if (!rmdir($this->getRealPath())) {
                 if (!$this->exists()) {
                     throw new FileException(
@@ -622,6 +527,7 @@ class File implements \IteratorAggregate, HasRoute
     
     protected function invalidate()
     {
+        $this->system->acl->remove($this->path);
         $this->valid = false;
         $parent = $this->getParent();
         $name = $this->getName();

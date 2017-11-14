@@ -25,6 +25,11 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
      */
     protected $logger;
     
+    /**
+     * @var Acl
+     */
+    protected $acl;
+    
     public function __construct($rootPath, \Blogstep\User $user = null)
     {
         parent::__construct($this, [], 'directory');
@@ -32,6 +37,7 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
         $this->root = rtrim($rootPath, '/');
         $this->user = $user;
         $this->logger = new \Psr\Log\NullLogger();
+        $this->acl = new Acl($this->get('system/acl.php')->getRealPath());
     }
     
     public function setAuthentication(\Blogstep\User $user)
