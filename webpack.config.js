@@ -10,7 +10,8 @@ module.exports = {
       files: "./files",
       terminal: "./terminal",
       build: "./build",
-      login: "./login"
+      login: "./login",
+      workspace: "./workspace"
     },
     devtool: 'source-map',
     output: {

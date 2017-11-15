@@ -1,22 +1,11 @@
 <div class="frame" j:import="css/files.css;dist/files.js">
 
-    <div j:assign="appmenu">
-        <header>Files</header>
-        <nav>
-            <ul>
-                <li><a href="#" data-action="new-folder">New folder</a></li>
-                <li><a href="#" data-action="new-file">New file</a></li>
-                <li><a href="#" data-action="download">Download</a></li>
-            </ul>
-        </nav>
-    </div>
-
     <div class="frame-header">
         <div class="frame-header-actions">
             <a href="" data-action="toggle-menu"></a>
         </div>
         <div class="frame-header-title">
-            <span class="header-path" j:text="{$fs->getPath()}">path goes here</span>
+            <span class="header-path">path goes here</span>
             &ndash; Files
         </div>
     </div>
@@ -68,9 +57,9 @@
 
     <div class="frame-content frame-content-flex">
         <div class="files-columns" data-token="{$token}">
-            <div class="files-panel" data-path="{$fs->getPath()}">
+            <div class="files-panel" data-path="/">
                 <div class="files-list">
-                    <a j:foreach="{$fs as $file}" j:href="{$file}" j:text="{$file->getName()}" data-path="{$file->getPath()}" class="{'file file-' . $file->getType()}">File name goes here</a>
+
                 </div>
             </div>
         </div>

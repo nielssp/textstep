@@ -1,0 +1,1 @@
+<?php $this->import('dist/workspace.js'); ?>

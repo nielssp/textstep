@@ -1,20 +1,10 @@
 <?php $this->import('css/files.css;dist/files.js'); ?><div class="frame">
-<?php echo $this->begin('appmenu'); ?><div>
-<header>Files</header>
-<nav>
-<ul>
-<li><a href="#" data-action="new-folder">New folder</a></li>
-<li><a href="#" data-action="new-file">New file</a></li>
-<li><a href="#" data-action="download">Download</a></li>
-</ul>
-</nav>
-</div><?php echo $this->end(); ?>
 <div class="frame-header">
 <div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
 </div>
 <div class="frame-header-title">
-<span class="header-path"><?php echo \Jivoo\View\Html::h($fs->getPath()); ?></span>
+<span class="header-path">path goes here</span>
             &ndash; Files
 </div>
 </div>
@@ -60,11 +50,8 @@
 </div>
 <div class="frame-content frame-content-flex">
 <div class="files-columns" data-token="<?php echo $token; ?>">
-<div class="files-panel" data-path="<?php echo $fs->getPath(); ?>">
+<div class="files-panel" data-path="/">
 <div class="files-list">
-<?php foreach ($fs as $file): ?>
-<a data-path="<?php echo $file->getPath(); ?>" class="<?php echo 'file file-' . $file->getType(); ?>" href="<?php echo $this->link($file); ?>"><?php echo \Jivoo\View\Html::h($file->getName()); ?></a><?php endforeach; ?>
-
 </div>
 </div>
 </div>

@@ -80,6 +80,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->root('snippet:Login');
         $this->m->router->error('snippet:NotFound');
         $this->m->router->auto('snippet:Demo');
+        $this->m->router->auto('snippet:Workspace');
         $this->m->router->auto('snippet:ControlPanel');
         $this->m->router->auto('snippet:Builder');
         $this->m->router->auto('snippet:Logout');
@@ -98,6 +99,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\GenerateTestContent');
         $this->m->router->auto('snippet:Api\Download');
         $this->m->router->match('api/download/*', 'snippet:Api\Download');
+        $this->m->router->auto('snippet:Api\Load');
         $this->m->router->auto('snippet:Api\MakeDir');
         $this->m->router->auto('snippet:Api\MakeFile');
         $this->m->router->auto('snippet:Api\Delete');

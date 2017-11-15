@@ -7,7 +7,7 @@
 <?php echo $this->block('meta'); ?>
 <?php echo $this->resourceBlock("style"); ?>
 </head>
-<body data-path="<?php echo $this->link(''); ?>">
+<body data-path="<?php echo $this->link(''); ?>" data-token="<?php echo $token; ?>">
 <aside>
 <?php echo $this->block('appmenu'); ?>
 <header>
