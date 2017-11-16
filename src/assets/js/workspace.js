@@ -17,7 +17,6 @@ var TOKEN = $('body').data('token');
 window.BLOGSTEP = {};
 
 BLOGSTEP.PATH = $('body').data('path').replace(/\/$/, '');
-BLOGSTEP.TOKEN = $('body').data('token');
 BLOGSTEP.register = function (application) {
     
 };

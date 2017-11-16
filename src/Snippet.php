@@ -193,9 +193,11 @@ abstract class Snippet
                 $this->parameterValues[$name] = null;
             }
         }
-        if (!isset($this->m->cookies['Csrf-token'])) {
-            $this->m->cookies['Csrf-token'] = \Jivoo\Http\Token::generate();
-            $this->m->cookies['Csrf-token']->setHttpOnly(false);
+        $token = $this->m->token->__toString();
+        $this->viewData['token'] = $token;
+        if (!isset($this->m->cookies['csrf_token']) or $this->m->cookies['csrf_token']->get() !== $token) {
+            $this->m->cookies['csrf_token'] = $token;
+            $this->m->cookies['csrf_token']->setHttpOnly(false);
         }
         try {
             $before = $this->before();
@@ -266,14 +268,11 @@ abstract class Snippet
         if (! in_array($this->request->getMethod(), ['POST', 'PATCH', 'PUT', 'DELETE'])) {
             return false;
         }
-        if (!isset($this->m->cookies['Csrf-token'])) {
-            return false;
-        }
         if (!$this->request->hasHeader('X-Csrf-Token')) {
             return false;
         }
         $token = $this->request->getHeaderLine('X-Csrf-Token');
-        if ($this->m->cookies['Csrf-token']->get() !== $token) {
+        if ($this->m->token->__toString() !== $token) {
             return false;
         }
         if (!isset($key)) {

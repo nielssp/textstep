@@ -9,7 +9,7 @@ var $ = require('jquery');
 var Cookies = require('js-cookie');
 
 $.ajaxSetup({
-    headers: { 'X-Csrf-Token': Cookies.get('Csrf-token') }
+    headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
 });
 
 exports.shake = function (el, amount) {
@@ -102,7 +102,7 @@ exports.handleLogin = function (done) {
 };
 
 exports.handleError = function (event, xhr, settings, thrownError) {
-    var newToken = Cookies.get('Csrf-token');
+    var newToken = Cookies.get('csrf_token');
     if (settings.headers['X-Csrf-Token'] !== newToken) {
         $.ajaxSetup({
             headers: { 'X-Csrf-Token': newToken }
