@@ -18,8 +18,6 @@ var PATH = $('body').data('path').replace(/\/$/, '');
 
 var $columns = $('.files-columns');
 
-var TOKEN = $columns.data('token');
-
 var $shelf = $('.files-shelf > .files-grid');
 
 var $currentColumn = $columns.children().first();
@@ -75,7 +73,6 @@ function initColumn($column)
         $column.removeClass('accept');
         var files = event.dataTransfer.files;
         var data = new FormData();
-        data.append('request_token', TOKEN);
         for (var i = 0; i < files.length; i++) {
             data.append('file' + i, files[i]);
             addFile($column, {
@@ -693,7 +690,7 @@ actions.define('new-folder', function () {
         $.ajax({
             url: PATH + '/api/make-dir',
             method: 'post',
-            data: {request_token: TOKEN, path: path},
+            data: {path: path},
             success: function (data) {
                 addFile($currentColumn, data);
                 enter(path);
@@ -717,7 +714,7 @@ actions.define('new-file', function () {
         $.ajax({
             url: PATH + '/api/make-file',
             method: 'post',
-            data: {request_token: TOKEN, path: path},
+            data: {path: path},
             success: function (data) {
                 addFile($currentColumn, data);
                 enter(path);
@@ -733,7 +730,6 @@ actions.define('upload', function () {
     $fileInput.change(function () {
         var files = $fileInput[0].files;
         var data = new FormData();
-        data.append('request_token', TOKEN);
         for (var i = 0; i < files.length; i++) {
             data.append('file' + i, files[i]);
             addFile($column, {
@@ -788,7 +784,7 @@ actions.define('rename', function () {
         $.ajax({
             url: PATH + '/api/move',
             method: 'post',
-            data: {request_token: TOKEN, path: path, destination: destination},
+            data: {path: path, destination: destination},
             success: function (data) {
                 enter(destination);
                 refresh();
@@ -798,7 +794,7 @@ actions.define('rename', function () {
 }, ['selection-single']);
 actions.define('trash', function () {
     var confirmation;
-    var data = {request_token: TOKEN};
+    var data = {};
     if (selection.length === 1) {
         confirmation = confirm('Permanently delete file: ' + selection[0]);
         data.path = selection[0];
@@ -867,7 +863,7 @@ actions.define('paste', function () {
     if ($shelf.children().length > 0) {
         var $pastee = $shelf.children().last();
         var duplicate = $pastee.hasClass('duplicate');
-        var data = {request_token: TOKEN};
+        var data = {};
         var fileData = [];
         if (typeof $pastee.data('paths') !== 'undefined') {
             data.paths = {};

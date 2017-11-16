@@ -14,9 +14,11 @@ var paths = require('./common/paths');
 var PATH = $('body').data('path').replace(/\/$/, '');
 var TOKEN = $('body').data('token');
 
-var blogstep = window.BLOGSTEP = {};
+window.BLOGSTEP = {};
 
-blogstep.register = function (application) {
+BLOGSTEP.PATH = $('body').data('path').replace(/\/$/, '');
+BLOGSTEP.TOKEN = $('body').data('token');
+BLOGSTEP.register = function (application) {
     
 };
 

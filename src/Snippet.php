@@ -193,7 +193,10 @@ abstract class Snippet
                 $this->parameterValues[$name] = null;
             }
         }
-        $this->viewData['token'] = $this->m->token;
+        if (!isset($this->m->cookies['Csrf-token'])) {
+            $this->m->cookies['Csrf-token'] = \Jivoo\Http\Token::generate();
+            $this->m->cookies['Csrf-token']->setHttpOnly(false);
+        }
         try {
             $before = $this->before();
             if (isset($before)) {
@@ -260,7 +263,24 @@ abstract class Snippet
     
     public function hasValidData($key = null)
     {
-        return $this->m->token->hasValidData($this->request, $key);
+        if (! in_array($this->request->getMethod(), ['POST', 'PATCH', 'PUT', 'DELETE'])) {
+            return false;
+        }
+        if (!isset($this->m->cookies['Csrf-token'])) {
+            return false;
+        }
+        if (!$this->request->hasHeader('X-Csrf-Token')) {
+            return false;
+        }
+        $token = $this->request->getHeaderLine('X-Csrf-Token');
+        if ($this->m->cookies['Csrf-token']->get() !== $token) {
+            return false;
+        }
+        if (!isset($key)) {
+            return true;
+        }
+        $data = $this->request->getParsedBody();
+        return isset($data[$key]);
     }
 
     /**

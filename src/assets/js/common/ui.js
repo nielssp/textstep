@@ -6,6 +6,11 @@
  */
 
 var $ = require('jquery');
+var Cookies = require('js-cookie');
+
+$.ajaxSetup({
+    headers: { 'X-Csrf-Token': Cookies.get('Csrf-token') }
+});
 
 exports.shake = function (el, amount) {
     amount = typeof amount === "undefined" ? 10 : amount;
@@ -97,6 +102,15 @@ exports.handleLogin = function (done) {
 };
 
 exports.handleError = function (event, xhr, settings, thrownError) {
+    var newToken = Cookies.get('Csrf-token');
+    if (settings.headers['X-Csrf-Token'] !== newToken) {
+        $.ajaxSetup({
+            headers: { 'X-Csrf-Token': newToken }
+        });
+        settings.headers['X-Csrf-Token'] = newToken;
+        $.ajax(settings);
+        return;
+    }
     if (xhr.status === 401) {
         $('#login-overlay').show();
         $('#password').focus();
