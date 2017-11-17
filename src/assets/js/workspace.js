@@ -11,21 +11,80 @@ var actions = require('./common/actions');
 var ui = require('./common/ui');
 var paths = require('./common/paths');
 
-var PATH = $('body').data('path').replace(/\/$/, '');
-var TOKEN = $('body').data('token');
+$(document).ajaxError(ui.handleError);
 
 window.BLOGSTEP = {};
 
+var apps = {};
+
+function App(name) {
+    this.name = name;
+    this.state = 'loading';
+    this.frame = null;
+    this.onInit = null;
+    this.onSuspend = null;
+    this.onResume = null;
+    this.onClose = null;
+}
+
+App.prototype.init = function () {
+    if (this.state !== 'loaded') {
+        console.error('init: unexpected state', this.state, 'app', this.name);
+        return;
+    }
+    this.state = 'initializing';
+    if (this.onInit !== null) {
+        this.onInit(this);
+    }
+    this.state = 'running';
+};
+
+App.prototype.suspend = function () {
+    if (this.state !== 'running') {
+        console.error('suspend: unexpected state', this.state, 'app', this.name);
+        return;
+    }
+    this.state = 'suspending';
+    if (this.onSuspend !== null) {
+        this.onSuspend(this);
+    }
+    if (this.state === 'suspending') {
+        this.frame.hide();
+        this.state = 'suspended';
+    }
+};
+
+App.prototype.resume = function () {
+    if (this.state !== 'suspended') {
+        console.error('resume: unexpected state', this.state, 'app', this.name);
+        return;
+    }
+    this.state = 'resuming';
+    if (this.onResume !== null) {
+        this.onResume(this);
+    }
+    if (this.state === 'resuming') {
+        this.frame.show();
+        this.state = 'running';
+    }
+};
+
 BLOGSTEP.PATH = $('body').data('path').replace(/\/$/, '');
-BLOGSTEP.register = function (application) {
+
+BLOGSTEP.init = function (name, onInit) {
+    apps[name].onInit = onInit;
+    apps[name].init();
+};
+
+BLOGSTEP.run = function (name) {
     
 };
 
-function load(application) {
-    
+function load(name) {
+    apps[name] = new App(name);
     $.ajax({
-        url: PATH + '/api/load',
-        data: { name: application },
+        url: BLOGSTEP.PATH + '/api/load',
+        data: { name: name },
         method: 'get',
         dataType: 'html',
         success: function (data) {
@@ -33,13 +92,13 @@ function load(application) {
             $doc.html(data);
             var $styles = $doc.find('link[rel="stylesheet"]');
             var $scripts = $doc.find('script[src]');
-            var $main = $doc.find('.frame');
-            console.log($scripts);
+            apps[name].frame = $doc.find('.frame');
+            apps[name].state = 'loaded';
             $('head').append($styles);
-            $('main').append($main);
+            $('main').append(apps[name].frame);
             $('body').append($scripts);
         }
     });
 }
 
-load('files');
+load('test');
