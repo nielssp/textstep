@@ -44,6 +44,7 @@ Menu.prototype.addItem = function (label, action) {
 
 function App(name) {
     this.name = name;
+    this.title = '';
     this.state = 'loading';
     this.deferred = null;
     this.args = null;
@@ -184,6 +185,10 @@ App.prototype.disableAction = function (name) {
     } else {
 	name.forEach(this.disableAction, this);
     }
+};
+
+App.prototype.setTitle = function (title) {
+    this.title = title;
 };
 
 App.prototype.setArgs = function (args) {

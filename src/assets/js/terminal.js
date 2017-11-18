@@ -102,6 +102,11 @@ var commands = {
     edit: function (args) {
 	BLOGSTEP.run('code-editor', {path: convertPath(args)});
 	prompt();
+    },
+    run: function (args) {
+        args = args.split(' ');
+	BLOGSTEP.run(args[0], args.length > 1 ? { path: convertPath(args[1]) } : {});
+	prompt();
     }
 };
 

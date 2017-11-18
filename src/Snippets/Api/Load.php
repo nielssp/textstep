@@ -18,15 +18,16 @@ class Load extends \Blogstep\AuthenticatedSnippet
         }
         switch ($this->request->query['name']) {
             case 'files':
-                return $this->render('app/files.html');
             case 'editor':
-                return $this->render('app/editor.html');
             case 'code-editor':
-                return $this->render('app/code-editor.html');
+            case 'builder':
+            case 'editor':
+            case 'viewer':
+            case 'player':
+            case 'control-panel':
             case 'test':
-                return $this->render('app/test.html');
             case 'terminal':
-                return $this->render('app/terminal.html');
+                return $this->render('app/' . $this->request->query['name'] . '.html');
             default:
                 return $this->error('program not found', \Jivoo\Http\Message\Status::NOT_FOUND);
         }
