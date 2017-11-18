@@ -68,32 +68,30 @@ exports.setProgress = function(el, progress, status) {
 exports.handleLogin = function (done) {
     var path = $('body').data('path').replace(/\/$/, '');
     $('#login').find('input').prop('disabled', false);
-    $('.login-frame').show();
+    $('#login-frame').show();
     $('#login').submit(function () {
-        var token = $(this).find('[name="request_token"]').val();
         $(this).find('input').prop('disabled', true);
         $.ajax({
             url: path,
             method: 'post',
             data: {
-                request_token: token,
-                username: $('#username').val(),
-                password: $('#password').val(),
-                remember: $('#remember_remember').is(':checked') ? { remember: 'remember' } : null
+                username: $('#login-username').val(),
+                password: $('#login-password').val(),
+                remember: $('#login-remember').is(':checked') ? { remember: 'remember' } : null
             },
             success: function () {
-                $('.login-frame').css({overflow: 'hidden', whiteSpace: 'no-wrap'}).animate({width: 0}, function () {
+                $('#login-frame').css({overflow: 'hidden', whiteSpace: 'no-wrap'}).animate({width: 0}, function () {
                     $(this).hide().css({overflow: '', whiteSpace: '', width: ''});
                     $('#login').off('submit');
-                    $('#password').val('');
+                    $('#login-password').val('');
                     done();
                 });
             },
             error: function (xhr) {
                 $('#login').find('input').prop('disabled', false);
-                exports.shake($('.login-frame'));
-                $('#username').select();
-                $('#password').val('');
+                exports.shake($('#login-frame'));
+                $('#login-username').select();
+                $('#login-password').val('');
             },
             global: false
         });
@@ -113,7 +111,11 @@ exports.handleError = function (event, xhr, settings, thrownError) {
     }
     if (xhr.status === 401) {
         $('#login-overlay').show();
-        $('#password').focus();
+	if ($('#login-username').val() === '') {
+	    $('#login-username').focus();
+	} else {
+	    $('#login-password').focus();
+	}
         exports.handleLogin(function () {
             $('#login-overlay').hide();
             $.ajax(settings);

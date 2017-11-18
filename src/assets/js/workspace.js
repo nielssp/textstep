@@ -80,13 +80,16 @@ BLOGSTEP.run = function (name) {
     
 };
 
+BLOGSTEP.server = {};
+BLOGSTEP.server.get = function (action, data, handle) {
+};
+
 function load(name) {
     apps[name] = new App(name);
     $.ajax({
         url: BLOGSTEP.PATH + '/api/load',
         data: { name: name },
         method: 'get',
-        dataType: 'html',
         success: function (data) {
             var $doc = $('<div></div>');
             $doc.html(data);
@@ -101,4 +104,16 @@ function load(name) {
     });
 }
 
-load('test');
+$(document).ready(function () {
+    $.ajax({
+	url: BLOGSTEP.PATH + '/api/who-am-i',
+	method: 'get',
+	success: function (data) {
+	    $('#workspace-menu').show();
+	    $('#workspace-menu .username').text(data.username);
+	    $('#login-username').val(data.username);
+	    $('#login-overlay').addClass('login-overlay-dark');
+	    load('test');
+	}
+    });
+});

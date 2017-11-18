@@ -29,7 +29,7 @@
 </ul>
 </nav>
 </aside>
-<div class="shortcuts">
+<div id="dock">
 <div class="shortcut">
 <img src="<?php echo $this->link('asset:img/icons/32/desktop.png'); ?>" />
 <label>Desktop</label>

@@ -869,13 +869,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       display: flex;
       flex-direction: column; }
 
-.login-frame {
+#login-frame {
   margin: 14% auto 0 auto;
   width: 200px;
   text-align: right; }
-  .login-frame .field {
+  #login-frame .field {
     text-align: left; }
-  .login-frame .remember {
+  #login-frame .remember {
     float: left;
     width: auto;
     font-size: 0.95em;
@@ -958,10 +958,10 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 aside {
+  display: none;
   float: left;
   width: 220px;
   padding: 10px 0 0 10px;
-  display: none;
   overflow-y: auto; }
   aside header {
     background-color: #000;
@@ -1058,7 +1058,6 @@ aside {
 
 main {
   margin-right: 10px;
-  display: block;
   min-height: 100%;
   padding: 10px 0 10px 10px;
   display: flex;
@@ -1105,12 +1104,12 @@ main {
     margin-left: 210px; }
     main .frame-header a[data-action="toggle-menu"] {
       display: none; } }
-.shortcuts {
+#dock {
   display: none;
   float: right;
-  margin: 10px 10px 0 0;
+  margin: 10px 10px 0 10px;
   text-align: center; }
-  .shortcuts .shortcut {
+  #dock .shortcut {
     position: relative;
     height: 64px;
     /*margin-bottom: 16px;*/
@@ -1134,7 +1133,7 @@ main {
     /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aaaabb', endColorstr='#555566',GradientType=1 );
     /* IE6-9 fallback on horizontal gradient */ }
-    .shortcuts .shortcut label {
+    #dock .shortcut label {
       position: absolute;
       bottom: 1px;
       right: 1px;
@@ -1142,16 +1141,16 @@ main {
       font-size: 0.6em;
       cursor: pointer;
       opacity: 0.8; }
-    .shortcuts .shortcut:hover label {
+    #dock .shortcut:hover label {
       /*text-decoration: underline;*/ }
-    .shortcuts .shortcut:active {
+    #dock .shortcut:active {
       border: 2px solid #000;
       border-right: 1px solid #fff;
       border-bottom: 1px solid #fff;
       box-shadow: inset 1px 1px 0px #9A9286;
       padding-top: 7px;
       padding-left: 7px; }
-      .shortcuts .shortcut:active label {
+      #dock .shortcut:active label {
         bottom: 0;
         right: 0; }
 
@@ -1173,6 +1172,9 @@ main {
   #player video {
     max-width: 100%; }
 
+#workspace-menu {
+  display: none; }
+
 #login-overlay {
   display: none;
   position: absolute;
@@ -1180,10 +1182,11 @@ main {
   left: 0px;
   right: 0px;
   bottom: 0px;
-  z-index: 1000;
-  background-color: rgba(0, 0, 0, 0.7); }
-  #login-overlay > .login-frame {
-    box-shadow: 0 0 5px #000000; }
+  z-index: 1000; }
+  #login-overlay.login-overlay-dark {
+    background-color: rgba(0, 0, 0, 0.7); }
+    #login-overlay.login-overlay-dark > #login-frame {
+      box-shadow: 0 0 5px #000000; }
 
 /*
 BlogSTEP 

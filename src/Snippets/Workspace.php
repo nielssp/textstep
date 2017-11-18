@@ -8,7 +8,7 @@ namespace Blogstep\Snippets;
 /**
  * Workspace test.
  */
-class Workspace extends \Blogstep\AuthenticatedSnippet
+class Workspace extends \Blogstep\Snippet
 {
     
     public function get()
