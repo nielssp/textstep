@@ -17,49 +17,57 @@ require('codemirror/mode/sass/sass');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/htmlmixed/htmlmixed');
 
-var PATH = $('body').data('path').replace(/\/$/, '');
-var TOKEN = $('#editor').data('token');
+var path = null;
+var textarea = null;
+var codemirror = null;
 
-var path = $('#editor').data('path');
+function open(app, args) {
+    path = args.path;
+    app.frame.find('.header-path').text(path);
+    textarea = app.frame.find('textarea');
+    textarea.val('').focus();
+    
+    var mode = path.replace(/^.*\.([^.]+)$/, '$1');
+    switch (mode) {
+	case 'scss':
+	    mode = 'sass';
+	    break;
+	case 'html':
+	case 'htm':
+	    mode = 'php';
+	    break;
+	case 'json':
+	case 'js':
+	    mode = 'javascript';
+	    break;
+    }
+    codemirror = CodeMirror.fromTextArea(textarea[0], {
+	lineNumbers: true,
+	mode: mode
+    });
 
-$(document).ajaxError(ui.handleError);
-
-actions.define('new', newFile);
-actions.define('save', saveFile);
-actions.define('close', function () {
-    location.href = PATH + '/files?path=' + path;
-});
-
-var mode = path.replace(/^.*\.([^.]+)$/, '$1');
-switch (mode) {
-    case 'scss':
-        mode = 'sass';
-        break;
-    case 'html':
-    case 'htm':
-        mode = 'php';
-        break;
-    case 'json':
-    case 'js':
-        mode = 'javascript';
-        break;
+    codemirror.on('change', function () {
+	app.frame.find('.header-path').text(path + ' (*)');
+    });
+    
+    BLOGSTEP.get('download', { path: path }).done(function (data) {
+	codemirror.setValue(data);
+	codemirror.clearHistory();
+	app.frame.find('.header-path').text(path);
+    });
 }
-var codemirror = CodeMirror.fromTextArea($('#editor')[0], {
-    lineNumbers: true,
-    mode: mode
-});
 
+function close() {
+    codemirror.toTextArea();
+    codemirror = null;
+}
 
 function saveFile()
 {
+    var app = this;
     codemirror.save();
-    $.ajax({
-        url: PATH + '/api/edit',
-        method: 'post',
-        data: {request_token: TOKEN, path: path, data: $('#editor').val()},
-        success: function (data) {
-            alert('Saved!');
-        }
+    BLOGSTEP.post('edit', { path: path, data: textarea.val() }).done(function () {
+	app.frame.find('.header-path').text(path);
     });
 }
 
@@ -73,12 +81,18 @@ function resizeView()
     codemirror.refresh();
 }
 
-$(document).keydown(function (e) {
-    if (e.key === 's' && e.ctrlKey) {
-        saveFile();
-        return false;
-    }
+BLOGSTEP.init('code-editor', function (app) {
+    app.defineAction('save', saveFile);
+    app.defineAction('new', newFile);
+    
+    app.bindKey('c-s', 'save');
+    
+    var menu = app.addMenu('Editor');
+    menu.addItem('New', 'new');
+    menu.addItem('Save', 'save');
+    menu.addItem('Close', 'close');
+    
+    app.onOpen = open;
+    app.onClose = close;
+    app.onResize = resizeView;
 });
-
-resizeView();
-$(window).resize(resizeView);

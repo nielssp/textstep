@@ -26,6 +26,9 @@ BLOGSTEP.init('test', function (app) {
     menu.addItem('Open terminal', function () {
 	BLOGSTEP.run('terminal');
     });
+    menu.addItem('Open file', function () {
+	BLOGSTEP.run('editor', { path: '/content/pages/things.md' });
+    });
     menu.addItem('Who am I', function () {
 	BLOGSTEP.get('who-am-i').done(function (data) {
 	    alert('you are ' + data.username);

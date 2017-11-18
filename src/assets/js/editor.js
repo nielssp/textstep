@@ -6,7 +6,6 @@
  */
 
 var $ = require('jquery');
-var actions = require('./common/actions');
 var paths = require('./common/paths');
 var ui = require('./common/ui');
 
@@ -14,75 +13,86 @@ require('highlightjs/styles/solarized_dark.css');
 window.hljs = require('highlightjs/highlight.pack.js');
 require('simplemde/dist/simplemde.min.css');
 
-var PATH = $('body').data('path').replace(/\/$/, '');
-var TOKEN = $('#editor').data('token');
-
-var path = $('#editor').data('path');
-var cwd = paths.convert('..', path);
-
-$(document).ajaxError(ui.handleError);
-
-actions.define('new', newFile);
-actions.define('save', saveFile);
-actions.define('close', function () {
-    location.href = PATH + '/files?path=' + path;
-});
+var path = null;
 
 var SimpleMDE = require('simplemde');
 
-var simplemde = new SimpleMDE({
-    autofocus: true,
-    renderingConfig: {
-        codeSyntaxHighlighting: true
-    },
-    previewRender: function (text) {
-        var html = SimpleMDE.prototype.markdown(text);
-        return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
-            return 'src="' + PATH + '/api/download?path=' + encodeURIComponent(paths.convert(url, cwd)) + '"';
-        });
-    },
-    toolbar: [
-        {
-            name: "custom",
-            action: function (editor) {
-                saveFile();
-            },
-            className: "fa fa-save",
-            title: "Save"
-        },
-        "|",
-        "bold",
-        "italic",
-        "heading",
-        "|",
-        "quote",
-        "code",
-        "unordered-list",
-        "ordered-list",
-        "|",
-        "link",
-        "image",
-        "table",
-        "|",
-        "preview",
-        "side-by-side",
-        "fullscreen",
-        "|",
-        "guide"
-    ]
-});
+var simplemde = null;
+
+function open(app, args) {
+    path = args.path;
+    app.frame.find('.header-path').text(path);
+    
+    app.frame.find('textarea').val('');
+    
+    simplemde = new SimpleMDE({
+	autofocus: true,
+	element: app.frame.find('textarea')[0],
+	renderingConfig: {
+	    codeSyntaxHighlighting: true
+	},
+	previewRender: function (text) {
+	    var html = SimpleMDE.prototype.markdown(text);
+	    return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
+		return 'src="' + BLOGSTEP.PATH + '/api/download?path=' + encodeURIComponent(paths.convert(url, cwd)) + '"';
+	    });
+	},
+	toolbar: [
+	    {
+		name: "custom",
+		action: function (editor) {
+		    saveFile();
+		},
+		className: "fa fa-save",
+		title: "Save"
+	    },
+	    "|",
+	    "bold",
+	    "italic",
+	    "heading",
+	    "|",
+	    "quote",
+	    "code",
+	    "unordered-list",
+	    "ordered-list",
+	    "|",
+	    "link",
+	    "image",
+	    "table",
+	    "|",
+	    "preview",
+	    "side-by-side",
+	    "fullscreen",
+	    "|",
+	    "guide"
+	]
+    });
+    
+    simplemde.codemirror.on('change', function () {
+	app.frame.find('.header-path').text(path + ' (*)');
+    });
+    
+    BLOGSTEP.get('download', { path: path }).done(function (data) {
+	simplemde.value(data);
+	simplemde.codemirror.clearHistory();
+	app.frame.find('.header-path').text(path);
+    });
+}
+
+function close() {
+    simplemde.toTextArea();
+    simplemde = null;
+}
 
 function saveFile()
 {
-    $.ajax({
-        url: PATH + '/api/edit',
-        method: 'post',
-        data: {request_token: TOKEN, path: path, data: simplemde.value()},
-        success: function (data) {
-            alert('Saved!');
-            simplemde.clearAutosavedValue();
-        }
-    });
+    var app = this;
+    if (simplemde !== null) {
+	BLOGSTEP.post('edit', { path: path, data: simplemde.value() }).done(function () {
+	    app.frame.find('.header-path').text(path);
+	    simplemde.clearAutosavedValue();
+	});
+    }
 }
 
 function newFile()
@@ -95,12 +105,18 @@ function resizeView()
     simplemde.codemirror.refresh();
 }
 
-$(document).keydown(function (e) {
-    if (e.key === 's' && e.ctrlKey) {
-        saveFile();
-        return false;
-    }
+BLOGSTEP.init('editor', function (app) {
+    app.defineAction('save', saveFile);
+    app.defineAction('new', newFile);
+    
+    app.bindKey('c-s', 'save');
+    
+    var menu = app.addMenu('Editor');
+    menu.addItem('New', 'new');
+    menu.addItem('Save', 'save');
+    menu.addItem('Close', 'close');
+    
+    app.onOpen = open;
+    app.onClose = close;
+    app.onResize = resizeView;
 });
-
-resizeView();
-$(window).resize(resizeView);

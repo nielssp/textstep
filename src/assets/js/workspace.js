@@ -191,6 +191,7 @@ App.prototype.init = function () {
     }
     this.state = 'initializing';
     this.defineAction('close', this.close);
+    this.bindKey('c-s-c', 'close');
     if (this.onInit !== null) {
 	this.onInit(this);
     }
@@ -206,12 +207,12 @@ App.prototype.open = function (args) {
 	return;
     }
     this.state = 'opening';
-    if (this.onOpen !== null) {
-	this.onOpen(this, args || {});
-    }
     this.frame.show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
+    }
+    if (this.onOpen !== null) {
+	this.onOpen(this, args || {});
     }
     this.state = 'running';
 };
@@ -238,6 +239,24 @@ App.prototype.close = function () {
     this.state = 'initialized';
 };
 
+App.prototype.reopen = function (args) {
+    if (this.state !== 'running') {
+	console.error('reopen: unexpected state', this.state, 'app', this.name);
+	return;
+    }
+    this.state = 'closing';
+    if (this.onClose !== null) {
+	this.onClose(this);
+    }
+    this.frame.hide();
+    for (var i = 0; i < this.menus.length; i++) {
+	this.menus[i].frame.hide();
+    }
+    this.state = 'initialized';
+    this.open(args);
+    this.state = 'running';
+};
+
 App.prototype.suspend = function () {
     if (this.state !== 'running') {
 	console.error('suspend: unexpected state', this.state, 'app', this.name);
@@ -262,16 +281,14 @@ App.prototype.resume = function () {
 	return;
     }
     this.state = 'resuming';
+    this.frame.show();
+    for (var i = 0; i < this.menus.length; i++) {
+	this.menus[i].frame.show();
+    }
     if (this.onResume !== null) {
 	this.onResume(this);
     }
-    if (this.state === 'resuming') {
-	this.frame.show();
-	for (var i = 0; i < this.menus.length; i++) {
-	    this.menus[i].frame.show();
-	}
-	this.state = 'running';
-    }
+    this.state = 'running';
 };
 
 BLOGSTEP.PATH = $('body').data('path').replace(/\/$/, '');
@@ -286,15 +303,36 @@ BLOGSTEP.init = function (name, onInit) {
 };
 
 BLOGSTEP.run = function (name, args) {
-    if (running !== null) {
-	running.suspend();
-	tasks.push(running);
-	running = null;
+    if (apps.hasOwnProperty(name)) {
+	if (apps[name].state === 'running') {
+	    apps[name].reopen(args);
+	} else {
+	    if (running !== null) {
+		running.suspend();
+		tasks.push(running);
+	    }
+	    running = apps[name];
+	    if (apps[name].state === 'suspended') {
+		var index = tasks.indexOf(apps[name]);
+		if (index >= 0) {
+		    tasks.splice(index, 1);
+		}
+		apps[name].resume();
+	    } else {
+		apps[name].open(args);
+	    }
+	}
+    } else {
+	if (running !== null) {
+	    running.suspend();
+	    tasks.push(running);
+	    running = null;
+	}
+	load(name).done(function (app) {
+	    running = app;
+	    app.open(args);
+	});
     }
-    load(name).done(function (app) {
-	running = app;
-	app.open(args);
-    });
 };
 
 BLOGSTEP.server = {};

@@ -21,6 +21,8 @@ class Load extends \Blogstep\AuthenticatedSnippet
                 return $this->render('app/files.html');
             case 'editor':
                 return $this->render('app/editor.html');
+            case 'code-editor':
+                return $this->render('app/code-editor.html');
             case 'test':
                 return $this->render('app/test.html');
             case 'terminal':

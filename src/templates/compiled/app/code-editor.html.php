@@ -1,11 +1,11 @@
-<?php $this->import('css/editor.css;dist/editor.js'); ?><div class="frame">
+<?php $this->import('css/code-editor.css;dist/code-editor.js'); ?><div class="frame">
 <div class="frame-header">
 <div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
 </div>
 <div class="frame-header-title">
 <span class="header-path">?</span>
-            &ndash; Editor
+            &ndash; Code Editor
 </div>
 <div class="frame-header-actions">
 <a href="" data-action="close"></a>

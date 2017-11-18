@@ -33,6 +33,11 @@ function open(app, args)
     });
 }
 
+function resume(app)
+{
+    $terminal.focus();
+}
+
 function convertPath(path)
 {
     path = path.trim();
@@ -124,6 +129,10 @@ var commands = {
     },
     exit: function (args) {
 	self.close();
+    },
+    edit: function (args) {
+	BLOGSTEP.run('code-editor', {path: convertPath(args)});
+	prompt();
     }
 };
 
@@ -192,7 +201,12 @@ function prompt()
 }
 
 BLOGSTEP.init('terminal', function (app) {
+    var menu = app.addMenu('Terminal');
+    menu.addItem('Close', 'close');
+    
     app.onOpen = open;
+    
+    app.onResume = resume;
     
     $terminal = app.frame.find('textarea');
     
