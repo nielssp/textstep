@@ -7,10 +7,7 @@
 
 var $ = require('jquery');
 var ui = require('./common/ui');
-var actions = require('./common/actions');
 window.$ = $;
-
-var PATH = $('body').data('path').replace(/\/$/, '');
 
 $('[data-toggle]').each(function () {
     var $buttons = $(this).find($(this).data('toggle'));
@@ -27,21 +24,12 @@ $('[data-choice]').each(function () {
     });
 });
 
-$('[data-action="toggle-menu"]').click(function (e) {
-    e.preventDefault();
+$('body').on('click', '[data-action="toggle-menu"]', function (e) {
     $('body').toggleClass('show-menu');
-    e.stopPropagation();
+    return false;
 });
 $('body').click(function (e) {
     if ($('body').hasClass('show-menu')) {
         $('body').removeClass('show-menu');
-    }
-});
-
-// Default close action
-actions.define('close', function () {
-    var currentFile = $('.frame-content [data-path]');
-    if (currentFile.length > 0) {
-        location.href = PATH + '/files?path=' + currentFile.data('path');
     }
 });
