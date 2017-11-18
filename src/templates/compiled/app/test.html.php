@@ -10,5 +10,6 @@
 </div>
 <div class="frame-content">
 <p>Hello, World!</p>
+<button data-action="test">Test</button>
 </div>
 </div>

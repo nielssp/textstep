@@ -7,65 +7,218 @@
 
 
 var $ = require('jquery');
-var actions = require('./common/actions');
+var Cookies = require('js-cookie');
 var ui = require('./common/ui');
 var paths = require('./common/paths');
-
-$(document).ajaxError(ui.handleError);
 
 window.BLOGSTEP = {};
 
 var apps = {};
 
+function Menu(app, title) {
+    this.app = app;
+    this.title = title;
+    this.frame = $('<div><header></header><nav><ul></ul></div>');
+    this.header = this.frame.find('header');
+    this.itemList = this.frame.find('ul');
+    this.header.text(title);
+}
+
+Menu.prototype.addItem = function (label, action) {
+    var button = $('<button/>');
+    button.text(label);
+    if (typeof action === 'string') {
+	button.attr('data-action', action);
+    }
+    var app = this.app;
+    button.click(function () {
+	app.activate(action);
+    });
+    var item = $('<li>');
+    item.append(button);
+    this.itemList.append(item);
+};
+
 function App(name) {
     this.name = name;
     this.state = 'loading';
     this.frame = null;
+    this.actions = {};
+    this.actionGroups = {};
+    this.keyMap = {};
+    this.menus = [];
     this.onInit = null;
     this.onSuspend = null;
     this.onResume = null;
+    this.onOpen = null;
+    this.onFocus = null;
+    this.onKeydown = null;
+    this.onUnfocus = null;
     this.onClose = null;
+    this.onResize = null;
 }
+
+App.prototype.addMenu = function (title) {
+    var menu = new Menu(this, title);
+    this.menus.push(menu);
+    return menu;
+};
 
 App.prototype.init = function () {
     if (this.state !== 'loaded') {
-        console.error('init: unexpected state', this.state, 'app', this.name);
-        return;
+	console.error('init: unexpected state', this.state, 'app', this.name);
+	return;
     }
     this.state = 'initializing';
     if (this.onInit !== null) {
-        this.onInit(this);
+	this.onInit(this);
+    }
+    for (var i = 0; i < this.menus.length; i++) {
+	$('#menu').prepend(this.menus[i].frame);
     }
     this.state = 'running';
 };
 
+App.prototype.keydown = function (e) {
+    if (e.defaultPrevented) {
+	return;
+    }
+    var key = '';
+    if (e.ctrlKey) {
+	key += 'c-';
+    }
+    if (e.altKey) {
+	key += 'a-';
+    }
+    if (e.shiftKey) {
+	key += 's-';
+    }
+    if (e.metaKey) {
+	key += 'm-';
+    }
+    key += e.key.toLowerCase();
+    if (this.keyMap.hasOwnProperty(key)) {
+	e.preventDefault();
+	this.activate(this.keyMap[key]);
+	return false;
+    }
+};
+
+App.prototype.bindKey = function (key, action) {
+    var parts = key.toLowerCase().split(/-|\+/);
+    var e = {ctrlKey: '', altKey: '', shiftKey: ''};
+    var key = parts[parts.length - 1];
+    for (var i = 0; i < parts.length - 1; i++) {
+	switch (parts[i]) {
+	    case 'c':
+		e.ctrlKey = 'c-';
+		break;
+	    case 'a':
+		e.altKey = 'a-';
+		break;
+	    case 's':
+		e.shiftKey = 's-';
+		break;
+	}
+    }
+    key = e.ctrlKey + e.altKey + e.shiftKey + key;
+    this.keyMap[key] = action;
+};
+
+App.prototype.defineAction = function (name, callback, groups) {
+    this.actions[name] = callback;
+    this.frame.find('[data-action="' + name + '"]').click(function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+	callback();
+	return false;
+    });
+    if (typeof groups !== 'undefined') {
+	groups.forEach(function (group) {
+	    if (!this.actionGroups.hasOwnProperty(group)) {
+		this.actionGroups[group] = [];
+	    }
+	    this.actionGroups[group].push(name);
+	});
+    }
+};
+
+App.prototype.activate = function (name) {
+    if (typeof name === 'string') {
+	this.actions[name]();
+    } else {
+	name();
+    }
+};
+
+App.prototype.enableGroup = function (group) {
+    if (this.actionGroups.hasOwnProperty(group)) {
+	this.actionGroups[group].forEach(function (name) {
+	    this.enableAction(name);
+	});
+    }
+};
+
+App.prototype.disableGroup = function (group) {
+    if (this.actionGroups.hasOwnProperty(group)) {
+	this.actionGroups[group].forEach(function (name) {
+	    this.disableAction(name);
+	});
+    }
+};
+
+App.prototype.enableAction = function (name) {
+    if (typeof name === 'string') {
+	this.frame.find('[data-action="' + name + '"]').attr('disabled', false);
+	this.menus.forEach(function (menu) {
+	    menu.frame.find('[data-action="' + name + '"]').attr('disabled', false);
+	});
+    } else {
+	name.forEach(this.enableAction, this);
+    }
+};
+
+App.prototype.disableAction = function (name) {
+    if (typeof name === 'string') {
+	this.frame.find('[data-action="' + name + '"]').attr('disabled', true);
+	this.menus.forEach(function (menu) {
+	    menu.frame.find('[data-action="' + name + '"]').attr('disabled', true);
+	});
+    } else {
+	name.forEach(this.disableAction, this);
+    }
+};
+
+App.prototype.open = function () {
+};
+
 App.prototype.suspend = function () {
     if (this.state !== 'running') {
-        console.error('suspend: unexpected state', this.state, 'app', this.name);
-        return;
+	console.error('suspend: unexpected state', this.state, 'app', this.name);
+	return;
     }
     this.state = 'suspending';
     if (this.onSuspend !== null) {
-        this.onSuspend(this);
+	this.onSuspend(this);
     }
     if (this.state === 'suspending') {
-        this.frame.hide();
-        this.state = 'suspended';
+	this.frame.hide();
+	this.state = 'suspended';
     }
 };
 
 App.prototype.resume = function () {
     if (this.state !== 'suspended') {
-        console.error('resume: unexpected state', this.state, 'app', this.name);
-        return;
+	console.error('resume: unexpected state', this.state, 'app', this.name);
+	return;
     }
     this.state = 'resuming';
     if (this.onResume !== null) {
-        this.onResume(this);
+	this.onResume(this);
     }
     if (this.state === 'resuming') {
-        this.frame.show();
-        this.state = 'running';
+	this.frame.show();
+	this.state = 'running';
     }
 };
 
@@ -76,44 +229,149 @@ BLOGSTEP.init = function (name, onInit) {
     apps[name].init();
 };
 
-BLOGSTEP.run = function (name) {
-    
+BLOGSTEP.run = function (name, args) {
+    load(name);
 };
 
 BLOGSTEP.server = {};
-BLOGSTEP.server.get = function (action, data, handle) {
+
+BLOGSTEP.ajax = function (url, method, data, responseType) {
+    var dfr = $.Deferred();
+    
+    var settings = {
+	url: url,
+	method: method,
+	data: data,
+	dataType: responseType,
+	headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
+    };
+    
+    var xhr = $.ajax(settings);
+    xhr.done(dfr.resolve);
+    xhr.fail(function (jqXhr, textStatus, errorThrown) {
+	console.log(jqXhr, textStatus, errorThrown);
+	var newToken = Cookies.get('csrf_token');
+	if (settings.headers['X-Csrf-Token'] !== newToken) {
+	    settings.headers['X-Csrf-Token'] = newToken;
+	    if (xhr.status === 400) {
+		$.ajax(settings).then(dfr.resolve, dfr.reject);
+		return;
+	    }
+	}
+	if (xhr.status === 401) {
+	    $('#login-overlay').show();
+	    if ($('#login-username').val() === '') {
+		$('#login-username').focus();
+	    } else {
+		$('#login-password').focus();
+	    }
+	    handleLogin(function () {
+		$('#login-overlay').hide();
+		$.ajax(settings).then(dfr.resolve, dfr.reject);
+	    });
+	    return;
+	} else if (typeof xhr.responseJSON !== 'undefined') {
+	    alert(xhr.responseJSON.message);
+	} else if (xhr.responseText !== '') {
+	    alert(xhr.responseText);
+	} else {
+	    alert('Internal error');
+	    console.error(errorThrown);
+	}
+	ui.shake($('main > .frame'));
+	
+	var args = Array.prototype.slice.call(arguments);
+	dfr.rejectWith(xhr, args);
+    });
+    
+    return dfr.promise();
+};
+
+BLOGSTEP.get = function (action, data, responseType) {
+    return BLOGSTEP.ajax(BLOGSTEP.PATH + '/api/' + action, 'get', data, responseType);
+};
+BLOGSTEP.post = function (action, data, responseType) {
+    return BLOGSTEP.ajax(BLOGSTEP.PATH + '/api/' + action, 'post', data, responseType);
 };
 
 function load(name) {
     apps[name] = new App(name);
-    $.ajax({
-        url: BLOGSTEP.PATH + '/api/load',
-        data: { name: name },
-        method: 'get',
-        success: function (data) {
-            var $doc = $('<div></div>');
-            $doc.html(data);
-            var $styles = $doc.find('link[rel="stylesheet"]');
-            var $scripts = $doc.find('script[src]');
-            apps[name].frame = $doc.find('.frame');
-            apps[name].state = 'loaded';
-            $('head').append($styles);
-            $('main').append(apps[name].frame);
-            $('body').append($scripts);
-        }
+    BLOGSTEP.get('load', { name: name }, 'html').done(function (data) {
+	var $doc = $('<div></div>');
+	$doc.html(data);
+	var $styles = $doc.find('link[rel="stylesheet"]');
+	var $scripts = $doc.find('script[src]');
+	apps[name].frame = $doc.find('.frame');
+	apps[name].state = 'loaded';
+	$('head').append($styles);
+	$('main').append(apps[name].frame);
+	$scripts.each(function () {
+	    $.getScript($(this).attr('src'));
+	});
     });
 }
 
-$(document).ready(function () {
-    $.ajax({
-	url: BLOGSTEP.PATH + '/api/who-am-i',
-	method: 'get',
-	success: function (data) {
-	    $('#workspace-menu').show();
-	    $('#workspace-menu .username').text(data.username);
-	    $('#login-username').val(data.username);
-	    $('#login-overlay').addClass('login-overlay-dark');
-	    load('test');
-	}
+function handleLogin(done) {
+    $('#login').find('input').prop('disabled', false);
+    $('#login-frame').show();
+    $('#login').submit(function () {
+        $(this).find('input').prop('disabled', true);
+	BLOGSTEP.post('login', {
+	    username: $('#login-username').val(),
+	    password: $('#login-password').val(),
+	    remember: $('#login-remember').is(':checked') ? { remember: 'remember' } : null
+	}).done(function () {
+	    $('#login-frame').css({overflow: 'hidden', whiteSpace: 'no-wrap'}).animate({width: 0}, function () {
+		$(this).hide().css({overflow: '', whiteSpace: '', width: ''});
+		$('#login').off('submit');
+		$('#login-password').val('');
+		done();
+	    });
+	}).fail(function () {
+	    $('#login').find('input').prop('disabled', false);
+	    ui.shake($('#login-frame'));
+	    $('#login-username').select();
+	    $('#login-password').val('');
+	});
+        return false;
     });
+};
+
+$.ajaxSetup({
+    headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
+});
+
+$(document).ready(function () {
+    BLOGSTEP.get('who-am-i').done(function (data) {
+	$('#workspace-menu').show();
+	$('#workspace-menu .username').text(data.username);
+	
+	$('#workspace-menu [data-action="logout"]').click(function () {
+	    BLOGSTEP.post('logout').done(function () {
+		location.reload();
+	    });
+	});
+
+	$('#login-username').val(data.username);
+	$('#login-overlay').addClass('login-overlay-dark');
+	load('test');
+    });
+});
+
+$(window).resize(function () {
+    for (var name in apps) {
+	if (apps.hasOwnProperty(name) && apps[name].state === 'running') {
+	    if (apps[name].onResize !== null) {
+		apps[name].onResize();
+	    }
+	}
+    }
+});
+
+$(window).keydown(function (e) {
+    for (var name in apps) {
+	if (apps.hasOwnProperty(name) && apps[name].state === 'running') {
+	    apps[name].keydown(e);
+	}
+    }
 });

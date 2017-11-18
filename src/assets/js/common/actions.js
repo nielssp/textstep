@@ -23,45 +23,45 @@ var keyMap = {};
 
 $(window).keydown(function (e) {
     if (e.defaultPrevented) {
-        return;
+	return;
     }
     var key = '';
     if (e.ctrlKey) {
-        key += 'c-';
+	key += 'c-';
     }
     if (e.altKey) {
-        key += 'a-';
+	key += 'a-';
     }
     if (e.shiftKey) {
-        key += 's-';
+	key += 's-';
     }
     if (e.metaKey) {
-        key += 'm-';
+	key += 'm-';
     }
     key += e.key.toLowerCase();
     if (keyMap.hasOwnProperty(key)) {
-        activate(keyMap[key]);
-        return false;
+	activate(keyMap[key]);
+	return false;
     }
 });
 
 function bind(key, action)
 {
     var parts = key.toLowerCase().split(/-|\+/);
-    var e = { ctrlKey: '', altKey: '', shiftKey: '' };
+    var e = {ctrlKey: '', altKey: '', shiftKey: ''};
     var key = parts[parts.length - 1];
     for (var i = 0; i < parts.length - 1; i++) {
-        switch (parts[i]) {
-            case 'c':
-                e.ctrlKey = 'c-';
-                break;
-            case 'a':
-                e.altKey = 'a-';
-                break;
-            case 's':
-                e.shiftKey = 's-';
-                break;
-        }
+	switch (parts[i]) {
+	    case 'c':
+		e.ctrlKey = 'c-';
+		break;
+	    case 'a':
+		e.altKey = 'a-';
+		break;
+	    case 's':
+		e.shiftKey = 's-';
+		break;
+	}
     }
     key = e.ctrlKey + e.altKey + e.shiftKey + key;
     keyMap[key] = action;
@@ -71,18 +71,18 @@ function defineAction(name, callback, groups)
 {
     actions[name] = callback;
     $('[data-action="' + name + '"]').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        callback();
-        return false;
+	e.preventDefault();
+	e.stopPropagation();
+	callback();
+	return false;
     });
     if (typeof groups !== 'undefined') {
-        groups.forEach(function (group) {
-            if (!actionGroups.hasOwnProperty(group)) {
-                actionGroups[group] = [];
-            }
-            actionGroups[group].push(name);
-        });
+	groups.forEach(function (group) {
+	    if (!actionGroups.hasOwnProperty(group)) {
+		actionGroups[group] = [];
+	    }
+	    actionGroups[group].push(name);
+	});
     }
 }
 
@@ -94,35 +94,35 @@ function activate(name)
 function enableGroup(group)
 {
     if (actionGroups.hasOwnProperty(group)) {
-        actionGroups[group].forEach(function (name) {
-            enable(name);
-        });
+	actionGroups[group].forEach(function (name) {
+	    enable(name);
+	});
     }
 }
 
 function disableGroup(group)
 {
     if (actionGroups.hasOwnProperty(group)) {
-        actionGroups[group].forEach(function (name) {
-            disable(name);
-        });
+	actionGroups[group].forEach(function (name) {
+	    disable(name);
+	});
     }
 }
 
 function enable(name)
 {
     if (typeof name === 'string') {
-        $('[data-action="' + name + '"]').attr('disabled', false);
+	$('[data-action="' + name + '"]').attr('disabled', false);
     } else {
-        name.forEach(enable);
+	name.forEach(enable);
     }
 }
 
 function disable(name)
 {
     if (typeof name === 'string') {
-        $('[data-action="' + name + '"]').attr('disabled', true);
+	$('[data-action="' + name + '"]').attr('disabled', true);
     } else {
-        name.forEach(disable);
+	name.forEach(disable);
     }
 }

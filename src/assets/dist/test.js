@@ -1,2 +1,2 @@
-webpackJsonp([9],{58:function(t,e,n){n(0);BLOGSTEP.init("test",function(t){t.frame.find(".header-path").text("loaded")})}},[58]);
+webpackJsonp([9],{58:function(e,t,n){n(0);BLOGSTEP.init("test",function(e){e.frame.find(".header-path").text("loaded"),e.defineAction("test",function(){e.frame.find(".header-path").text("activated"),e.disableAction("test"),setTimeout(function(){e.enableAction("test")},5e3)}),e.bindKey("c-a","test");var t=e.addMenu("Test menu");t.addItem("Test","test"),t.addItem("Who am i",function(){BLOGSTEP.get("who-am-i").done(function(e){alert(e.username)})}),e.onResize=function(){e.frame.find(".header-path").text("resized")}})}},[58]);
 //# sourceMappingURL=test.js.map
