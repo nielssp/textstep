@@ -77,20 +77,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->addScheme(new \Jivoo\Http\Route\PathScheme());
         
         $this->m->router->match('assets/**', 'asset:');
-        $this->m->router->root('snippet:Login');
+        $this->m->router->root('snippet:Workspace');
         $this->m->router->error('snippet:NotFound');
-        $this->m->router->auto('snippet:Demo');
-        $this->m->router->auto('snippet:Workspace');
-        $this->m->router->auto('snippet:ControlPanel');
-        $this->m->router->auto('snippet:Builder');
-        $this->m->router->auto('snippet:Logout');
-        $this->m->router->auto('snippet:Terminal');
-        $this->m->router->match('open', 'snippet:Open');
-        $this->m->router->match('edit', 'snippet:Editor');
-        $this->m->router->match('view', 'snippet:Viewer');
-        $this->m->router->match('play', 'snippet:Player');
-        $this->m->router->match('code-edit', 'snippet:CodeEditor');
-        $this->m->router->match('files', 'snippet:Files');
+        $this->m->router->match('app/**', 'snippet:Workspace');
         
         $this->m->router->auto('snippet:Api\Login');
         $this->m->router->auto('snippet:Api\Logout');

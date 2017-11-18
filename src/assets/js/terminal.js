@@ -24,42 +24,6 @@ var months = [
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-function open(app, args)
-{
-    self = app;
-    buffer = '';
-    exec('who-am-i', {}, function (data) {
-	user = data;
-    });
-}
-
-function resume(app)
-{
-    $terminal.focus();
-}
-
-function convertPath(path)
-{
-    path = path.trim();
-    if (path.startsWith('~')) {
-        path = user.home + path.substr(1);
-    } else if (!path.startsWith('/')) {
-        path = cwd + '/' + path;
-    }
-    var names = path.split('/');
-    var stack = [];
-    for (var i = 0; i < names.length; i++) {
-        if (names[i] === '..') {
-            if (stack.length >= 1) {
-                stack.pop();
-            }
-        } else if (names[i] !== '' && names[i] !== '.') {
-            stack.push(names[i]);
-        }
-    }
-    return '/' + stack.join('/');
-}
-
 var commands = {
     clear: function (args) {
         buffer = '';
@@ -71,6 +35,7 @@ var commands = {
         exec('list-files?path=' + nwd, {}, function (data) {
             if (data.type === 'directory') {
                 cwd = nwd;
+		self.setArgs({ path: cwd });
             } else {
                 writeLine('not a directory');
             }
@@ -130,11 +95,54 @@ var commands = {
     exit: function (args) {
 	self.close();
     },
+    open: function (args) {
+	BLOGSTEP.open(convertPath(args));
+	prompt();
+    },
     edit: function (args) {
 	BLOGSTEP.run('code-editor', {path: convertPath(args)});
 	prompt();
     }
 };
+
+function open(app, args)
+{
+    self = app;
+    buffer = '';
+    exec('who-am-i', {}, function (data) {
+	user = data;
+	if (typeof args.path === 'string') {
+	    cwd = args.path;
+	}
+    });
+}
+
+function resume(app)
+{
+    $terminal.focus();
+}
+
+function convertPath(path)
+{
+    path = path.trim();
+    if (path.startsWith('~')) {
+        path = user.home + path.substr(1);
+    } else if (!path.startsWith('/')) {
+        path = cwd + '/' + path;
+    }
+    var names = path.split('/');
+    var stack = [];
+    for (var i = 0; i < names.length; i++) {
+        if (names[i] === '..') {
+            if (stack.length >= 1) {
+                stack.pop();
+            }
+        } else if (names[i] !== '' && names[i] !== '.') {
+            stack.push(names[i]);
+        }
+    }
+    return '/' + stack.join('/');
+}
 
 function flush()
 {

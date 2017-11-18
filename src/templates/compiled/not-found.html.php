@@ -8,7 +8,7 @@
 <?php echo $this->resourceBlock("style"); ?>
 </head>
 <body>
-<div class="frame login-frame">
+<div class="frame" id="login-frame">
 <div class="frame-header">Not found</div>
 <div class="frame-content">
                 The requested file does not exist.

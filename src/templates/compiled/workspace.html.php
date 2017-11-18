@@ -7,7 +7,7 @@
 <?php echo $this->block('meta'); ?>
 <?php echo $this->resourceBlock("style"); ?>
 </head>
-<body data-path="<?php echo $this->link(''); ?>">
+<body data-path="<?php echo $this->link(''); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">
 <aside id="menu">
 <div id="workspace-menu">
 <header>

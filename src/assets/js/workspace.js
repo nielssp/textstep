@@ -46,6 +46,7 @@ function App(name) {
     this.name = name;
     this.state = 'loading';
     this.deferred = null;
+    this.args = null;
     this.frame = null;
     this.actions = {};
     this.actionGroups = {};
@@ -55,6 +56,7 @@ function App(name) {
     this.onSuspend = null;
     this.onResume = null;
     this.onOpen = null;
+    this.onReopen = null;
     this.onFocus = null;
     this.onKeydown = null;
     this.onUnfocus = null;
@@ -184,6 +186,15 @@ App.prototype.disableAction = function (name) {
     }
 };
 
+App.prototype.setArgs = function (args) {
+    this.args = args;
+    var path = BLOGSTEP.PATH + '/app/' + this.name;
+    if (!$.isEmptyObject(args)) {
+	path += '?' + $.param(args);
+    }
+    history.pushState({ app: this.name, args: args }, document.title, path);
+};
+
 App.prototype.init = function () {
     if (this.state !== 'loaded') {
 	console.error('init: unexpected state', this.state, 'app', this.name);
@@ -214,6 +225,7 @@ App.prototype.open = function (args) {
     if (this.onOpen !== null) {
 	this.onOpen(this, args || {});
     }
+    this.setArgs(args);
     this.state = 'running';
 };
 
@@ -244,17 +256,16 @@ App.prototype.reopen = function (args) {
 	console.error('reopen: unexpected state', this.state, 'app', this.name);
 	return;
     }
-    this.state = 'closing';
-    if (this.onClose !== null) {
-	this.onClose(this);
+    this.state = 'suspending';
+    if (this.onSuspend !== null) {
+	this.onSuspend(this);
     }
     this.frame.hide();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.hide();
     }
-    this.state = 'initialized';
-    this.open(args);
-    this.state = 'running';
+    this.state = 'suspended';
+    this.resume(args);
 };
 
 App.prototype.suspend = function () {
@@ -288,6 +299,7 @@ App.prototype.resume = function () {
     if (this.onResume !== null) {
 	this.onResume(this);
     }
+    this.setArgs(this.args);
     this.state = 'running';
 };
 
@@ -303,6 +315,8 @@ BLOGSTEP.init = function (name, onInit) {
 };
 
 BLOGSTEP.run = function (name, args) {
+    var dfr = $.Deferred();
+    args = args || {};
     if (apps.hasOwnProperty(name)) {
 	if (apps[name].state === 'running') {
 	    apps[name].reopen(args);
@@ -318,10 +332,12 @@ BLOGSTEP.run = function (name, args) {
 		    tasks.splice(index, 1);
 		}
 		apps[name].resume();
+		apps[name].reopen(args);
 	    } else {
 		apps[name].open(args);
 	    }
 	}
+	dfr.resolve(apps[name]);
     } else {
 	if (running !== null) {
 	    running.suspend();
@@ -331,11 +347,27 @@ BLOGSTEP.run = function (name, args) {
 	load(name).done(function (app) {
 	    running = app;
 	    app.open(args);
+	    dfr.resolve(app);
 	});
     }
+    return dfr.promise();
 };
 
-BLOGSTEP.server = {};
+BLOGSTEP.open = function (path) {
+    var fileName = paths.fileName(path);
+    if (fileName.match(/\.md/i)) {
+	BLOGSTEP.run('editor', { path: path });
+    } else if (fileName.match(/\.webm/i)) {
+	BLOGSTEP.run('player', { path: path });
+    } else if (fileName.match(/\.(?:jpe?g|png|gif|ico)/i)) {
+	BLOGSTEP.run('viewer', { path: path });
+    } else if (fileName.match(/\.(?:php|log|json|html|css|js|sass|scss)/i)) {
+	BLOGSTEP.run('code-editor', { path: path });
+    } else {
+	// TODO: lookup type
+	BLOGSTEP.run('files', { path: path });
+    }
+};
 
 BLOGSTEP.ajax = function (url, method, data, responseType) {
     var dfr = $.Deferred();
@@ -488,7 +520,14 @@ $(document).ready(function () {
 	$('#login-username').val(data.username);
 	$('#login-overlay').addClass('login-overlay-dark');
 	
-	BLOGSTEP.run('test', 'fuck');
+	BLOGSTEP.run('test').done(function() {	
+	    var run = $('body').data('run');
+	    if (run !== '') {
+		var args = $('body').data('args');
+		console.log(args);
+		BLOGSTEP.run(run, args);
+	    }
+	});
     });
 });
 
@@ -509,3 +548,9 @@ $(window).keydown(function (e) {
 	}
     }
 });
+
+window.onpopstate = function (event) {
+    if (event.state !== null) {
+	BLOGSTEP.run(event.state.app, event.state.args);
+    }
+};
