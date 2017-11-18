@@ -20,6 +20,7 @@
 <li><button data-action="build">Builder</button></li>
 <li><button data-action="terminal">Terminal</button></li>
 <li><button data-action="control-panel">Control panel</button></li>
+<li><button data-action="switch-user">Switch user</button></li>
 <li><button data-action="logout">Log out</button></li>
 </ul>
 </nav>

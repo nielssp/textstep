@@ -15,6 +15,9 @@ window.BLOGSTEP = {};
 
 var apps = {};
 
+var tasks = [];
+var running = null;
+
 function Menu(app, title) {
     this.app = app;
     this.title = title;
@@ -42,6 +45,7 @@ Menu.prototype.addItem = function (label, action) {
 function App(name) {
     this.name = name;
     this.state = 'loading';
+    this.deferred = null;
     this.frame = null;
     this.actions = {};
     this.actionGroups = {};
@@ -64,24 +68,14 @@ App.prototype.addMenu = function (title) {
     return menu;
 };
 
-App.prototype.init = function () {
-    if (this.state !== 'loaded') {
-	console.error('init: unexpected state', this.state, 'app', this.name);
-	return;
-    }
-    this.state = 'initializing';
-    if (this.onInit !== null) {
-	this.onInit(this);
-    }
-    for (var i = 0; i < this.menus.length; i++) {
-	$('#menu').prepend(this.menus[i].frame);
-    }
-    this.state = 'running';
-};
-
 App.prototype.keydown = function (e) {
     if (e.defaultPrevented) {
 	return;
+    }
+    if (this.onKeydown !== null) {
+	if (!this.onKeydown(e)) {
+	    return false;
+	}
     }
     var key = '';
     if (e.ctrlKey) {
@@ -126,11 +120,12 @@ App.prototype.bindKey = function (key, action) {
 };
 
 App.prototype.defineAction = function (name, callback, groups) {
+    var app = this;
     this.actions[name] = callback;
     this.frame.find('[data-action="' + name + '"]').click(function (e) {
 	e.preventDefault();
 	e.stopPropagation();
-	callback();
+	app.activate(name);
 	return false;
     });
     if (typeof groups !== 'undefined') {
@@ -145,9 +140,9 @@ App.prototype.defineAction = function (name, callback, groups) {
 
 App.prototype.activate = function (name) {
     if (typeof name === 'string') {
-	this.actions[name]();
+	this.actions[name].apply(this);
     } else {
-	name();
+	name.apply(this);
     }
 };
 
@@ -173,7 +168,7 @@ App.prototype.enableAction = function (name) {
 	this.menus.forEach(function (menu) {
 	    menu.frame.find('[data-action="' + name + '"]').attr('disabled', false);
 	});
-    } else {
+    } else {this, 
 	name.forEach(this.enableAction, this);
     }
 };
@@ -189,7 +184,58 @@ App.prototype.disableAction = function (name) {
     }
 };
 
-App.prototype.open = function () {
+App.prototype.init = function () {
+    if (this.state !== 'loaded') {
+	console.error('init: unexpected state', this.state, 'app', this.name);
+	return;
+    }
+    this.state = 'initializing';
+    this.defineAction('close', this.close);
+    if (this.onInit !== null) {
+	this.onInit(this);
+    }
+    for (var i = 0; i < this.menus.length; i++) {
+	$('#menu').prepend(this.menus[i].frame);
+    }
+    this.state = 'initialized';
+};
+
+App.prototype.open = function (args) {
+    if (this.state !== 'initialized') {
+	console.error('open: unexpected state', this.state, 'app', this.name);
+	return;
+    }
+    this.state = 'opening';
+    if (this.onOpen !== null) {
+	this.onOpen(this, args || {});
+    }
+    this.frame.show();
+    for (var i = 0; i < this.menus.length; i++) {
+	this.menus[i].frame.show();
+    }
+    this.state = 'running';
+};
+
+App.prototype.close = function () {
+    if (this.state !== 'running') {
+	console.error('close: unexpected state', this.state, 'app', this.name);
+	return;
+    }
+    this.state = 'closing';
+    if (this.onClose !== null) {
+	this.onClose(this);
+    }
+    this.frame.hide();
+    for (var i = 0; i < this.menus.length; i++) {
+	this.menus[i].frame.hide();
+    }
+    if (running === this) {
+	if (tasks.length > 0) {
+	    running = tasks.pop();
+	    running.resume();
+	}
+    }
+    this.state = 'initialized';
 };
 
 App.prototype.suspend = function () {
@@ -203,6 +249,9 @@ App.prototype.suspend = function () {
     }
     if (this.state === 'suspending') {
 	this.frame.hide();
+	for (var i = 0; i < this.menus.length; i++) {
+	    this.menus[i].frame.hide();
+	}
 	this.state = 'suspended';
     }
 };
@@ -218,6 +267,9 @@ App.prototype.resume = function () {
     }
     if (this.state === 'resuming') {
 	this.frame.show();
+	for (var i = 0; i < this.menus.length; i++) {
+	    this.menus[i].frame.show();
+	}
 	this.state = 'running';
     }
 };
@@ -227,10 +279,22 @@ BLOGSTEP.PATH = $('body').data('path').replace(/\/$/, '');
 BLOGSTEP.init = function (name, onInit) {
     apps[name].onInit = onInit;
     apps[name].init();
+    if (apps[name].deferred !== null) {
+	apps[name].deferred.resolve(apps[name]);
+	apps[name].deferred = null;
+    }
 };
 
 BLOGSTEP.run = function (name, args) {
-    load(name);
+    if (running !== null) {
+	running.suspend();
+	tasks.push(running);
+	running = null;
+    }
+    load(name).done(function (app) {
+	running = app;
+	app.open(args);
+    });
 };
 
 BLOGSTEP.server = {};
@@ -272,11 +336,6 @@ BLOGSTEP.ajax = function (url, method, data, responseType) {
 	    return;
 	} else if (typeof xhr.responseJSON !== 'undefined') {
 	    alert(xhr.responseJSON.message);
-	} else if (xhr.responseText !== '') {
-	    alert(xhr.responseText);
-	} else {
-	    alert('Internal error');
-	    console.error(errorThrown);
 	}
 	ui.shake($('main > .frame'));
 	
@@ -295,20 +354,31 @@ BLOGSTEP.post = function (action, data, responseType) {
 };
 
 function load(name) {
-    apps[name] = new App(name);
-    BLOGSTEP.get('load', { name: name }, 'html').done(function (data) {
-	var $doc = $('<div></div>');
-	$doc.html(data);
-	var $styles = $doc.find('link[rel="stylesheet"]');
-	var $scripts = $doc.find('script[src]');
-	apps[name].frame = $doc.find('.frame');
-	apps[name].state = 'loaded';
-	$('head').append($styles);
-	$('main').append(apps[name].frame);
-	$scripts.each(function () {
-	    $.getScript($(this).attr('src'));
-	});
-    });
+    var dfr = $.Deferred();
+    if (apps.hasOwnProperty(name)) {
+	if (apps[name].deferred === null) {
+	    dfr.resolve(apps[name]);
+	} else {
+	    apps[name].deferred.then(dfr.resolve, dfr.reject);
+	}
+    } else {
+	apps[name] = new App(name);
+	apps[name].deferred = dfr;
+	BLOGSTEP.get('load', { name: name }, 'html').done(function (data) {
+	    var $doc = $('<div></div>');
+	    $doc.html(data);
+	    var $styles = $doc.find('link[rel="stylesheet"]');
+	    var $scripts = $doc.find('script[src]');
+	    apps[name].frame = $doc.find('.frame');
+	    apps[name].state = 'loaded';
+	    $('head').append($styles);
+	    $('main').append(apps[name].frame);
+	    $scripts.each(function () {
+		$.getScript($(this).attr('src')).fail(dfr.reject);
+	    });
+	}).fail(dfr.reject);
+    }
+    return dfr.promise();
 }
 
 function handleLogin(done) {
@@ -316,11 +386,14 @@ function handleLogin(done) {
     $('#login-frame').show();
     $('#login').submit(function () {
         $(this).find('input').prop('disabled', true);
-	BLOGSTEP.post('login', {
+	var data = {
 	    username: $('#login-username').val(),
 	    password: $('#login-password').val(),
 	    remember: $('#login-remember').is(':checked') ? { remember: 'remember' } : null
-	}).done(function () {
+	};
+	BLOGSTEP.post('login', data).done(function () {
+	    $('#login').find('input').prop('disabled', false);
+	    $('#workspace-menu .username').text(data.username);
 	    $('#login-frame').css({overflow: 'hidden', whiteSpace: 'no-wrap'}).animate({width: 0}, function () {
 		$(this).hide().css({overflow: '', whiteSpace: '', width: ''});
 		$('#login').off('submit');
@@ -346,6 +419,28 @@ $(document).ready(function () {
 	$('#workspace-menu').show();
 	$('#workspace-menu .username').text(data.username);
 	
+	$('#workspace-menu [data-action="file-system"]').click(function () {
+	    BLOGSTEP.run('files');
+	});
+	$('#workspace-menu [data-action="builder"]').click(function () {
+	    BLOGSTEP.run('builder');
+	});
+	$('#workspace-menu [data-action="terminal"]').click(function () {
+	    BLOGSTEP.run('terminal');
+	});
+	$('#workspace-menu [data-action="control-panel"]').click(function () {
+	    BLOGSTEP.run('control-panel');
+	});
+	$('#workspace-menu [data-action="switch-user"]').click(function () {
+	    BLOGSTEP.post('logout').done(function () {
+		$('#login-overlay').show();
+		$('#login-frame').show();
+		$('#login-username').select().focus();
+		handleLogin(function () {
+		    $('#login-overlay').hide();
+		});
+	    });
+	});
 	$('#workspace-menu [data-action="logout"]').click(function () {
 	    BLOGSTEP.post('logout').done(function () {
 		location.reload();
@@ -354,7 +449,8 @@ $(document).ready(function () {
 
 	$('#login-username').val(data.username);
 	$('#login-overlay').addClass('login-overlay-dark');
-	load('test');
+	
+	BLOGSTEP.run('test', 'fuck');
     });
 });
 

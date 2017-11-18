@@ -6,30 +6,32 @@
  */
 
 var $ = require('jquery');
-var actions = require('./common/actions');
 var ui = require('./common/ui');
 
-var $terminal = $('#terminal');
+var self;
+var $terminal;
 
+var cwd = '/';
 var buffer = '';
 var cmdHistory = [];
 var cmdHistoryPos = -1;
 var readCallback = null;
 
 var user = {};
-var cwd = $terminal.data('path');
-
-var PATH = $('body').data('path').replace(/\/$/, '');
-var TOKEN = $terminal.data('token');
 
 var months = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
-actions.define('close', function () {
-    location.href = PATH + '/files?path=' + cwd;
-});
+function open(app, args)
+{
+    self = app;
+    buffer = '';
+    exec('who-am-i', {}, function (data) {
+	user = data;
+    });
+}
 
 function convertPath(path)
 {
@@ -121,16 +123,7 @@ var commands = {
         });
     },
     exit: function (args) {
-        location.href = PATH + '/files?path=' + convertPath(args);
-    },
-    open: function (args) {
-        location.href = PATH + '/open?path=' + convertPath(args);
-    },
-    edit: function (args) {
-        location.href = PATH + '/edit?path=' + convertPath(args);
-    },
-    cedit: function (args) {
-        location.href = PATH + '/code-edit?path=' + convertPath(args);
+	self.close();
     }
 };
 
@@ -138,7 +131,6 @@ function flush()
 {
     $terminal.val(buffer);
     $terminal[0].scrollTop = $terminal[0].scrollHeight;
-//    $terminal.scrollTop($terminal.innerHeight());
 }
 
 function write(content)
@@ -160,24 +152,15 @@ function readLine(callback)
 
 function exec(command, data, success)
 {
-    data['request_token'] = TOKEN;
-    $.ajax({
-        url: PATH + '/api/' + command,
-        method: 'post',
-        data: data,
-        success: success,
-        error: function (xhr) {
-            ui.shake($('.frame'));
-            if (xhr.status === 404) {
-                writeLine(xhr.status + ' ' + command + ': command not found');
-            } else if (typeof xhr.responseJSON !== 'undefined') {
-                writeLine(xhr.status + '(' + xhr.responseJSON.code + ') ' + xhr.responseJSON.message);
-            } else {
-                writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
-            }
-        },
-        complete: prompt
-    });
+    BLOGSTEP.post(command, data).done(success).fail(function (xhr) {
+	if (xhr.status === 404) {
+	    writeLine(xhr.status + ' ' + command + ': command not found');
+	} else if (typeof xhr.responseJSON !== 'undefined') {
+	    writeLine(xhr.status + '(' + xhr.responseJSON.code + ') ' + xhr.responseJSON.message);
+	} else {
+	    writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
+	}
+    }).always(prompt);
 }
 
 function prompt()
@@ -208,70 +191,70 @@ function prompt()
     });
 }
 
-$terminal.attr('readonly', true);
-$terminal.keydown(function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        if (readCallback !== null) {
-            $terminal.attr('readonly', true).blur();
-            var line = $terminal.val().substr(buffer.length);
-            cmdHistory.push(line);
-            buffer += line + '\n';
-            flush();
-            var callback = readCallback;
-            readCallback = null;
-            callback(line);
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    } else if (e.key == 'ArrowUp') {
-        if (readCallback !== null) {
-            if (cmdHistory.length > 0) {
-                if (cmdHistoryPos < 0) {
-                    cmdHistoryPos = cmdHistory.length - 1;
-                } else if (cmdHistoryPos > 0) {
-                    cmdHistoryPos--;
-                }
-                $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
-            }
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    } else if (e.key == 'ArrowDown') {
-        if (readCallback !== null) {
-            if (cmdHistory.length > 0 && cmdHistoryPos >= 0) {
-                if (cmdHistoryPos < cmdHistory.length - 1) {
-                    cmdHistoryPos++;
-                    $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
-                } else {
-                    cmdHistoryPos = -1;
-                    $terminal.val(buffer);
-                }
-            }
-        }
-        e.preventDefault();
-        e.stopPropagation();
-    } else if (e.key == 'ArrowLeft' || e.key == 'Backspace') {
-        var start = $terminal[0].selectionStart;
-        var end = $terminal[0].selectionEnd;
-        if (start === end) {
-            if (start <= buffer.length) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        }
-    }
-});
+BLOGSTEP.init('terminal', function (app) {
+    app.onOpen = open;
+    
+    $terminal = app.frame.find('textarea');
+    
+    $terminal.attr('readonly', true);
 
-$terminal.click(function () {
-    var start = $terminal[0].selectionStart;
-    var end = $terminal[0].selectionEnd;
-    if (start === end) {
-        if (start < buffer.length) {
-            $terminal[0].selectionStart = $terminal.val().length;
-        }
-    }
-});
+    $terminal.click(function () {
+	var start = $terminal[0].selectionStart;
+	var end = $terminal[0].selectionEnd;
+	if (start === end) {
+	    if (start < buffer.length) {
+		$terminal[0].selectionStart = $terminal.val().length;
+	    }
+	}
+    });
+    $terminal.keydown(function (e) {
+	if (e.key === 'Enter' && !e.shiftKey) {
+	    if (readCallback !== null) {
+		$terminal.attr('readonly', true).blur();
+		var line = $terminal.val().substr(buffer.length);
+		cmdHistory.push(line);
+		buffer += line + '\n';
+		flush();
+		var callback = readCallback;
+		readCallback = null;
+		callback(line);
+	    }
+	    return false;
+	} else if (e.key === 'ArrowUp') {
+	    if (readCallback !== null) {
+		if (cmdHistory.length > 0) {
+		    if (cmdHistoryPos < 0) {
+			cmdHistoryPos = cmdHistory.length - 1;
+		    } else if (cmdHistoryPos > 0) {
+			cmdHistoryPos--;
+		    }
+		    $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
+		}
+	    }
+	    return false;
+	} else if (e.key === 'ArrowDown') {
+	    if (readCallback !== null) {
+		if (cmdHistory.length > 0 && cmdHistoryPos >= 0) {
+		    if (cmdHistoryPos < cmdHistory.length - 1) {
+			cmdHistoryPos++;
+			$terminal.val(buffer + cmdHistory[cmdHistoryPos]);
+		    } else {
+			cmdHistoryPos = -1;
+			$terminal.val(buffer);
+		    }
+		}
+	    }
+	    return false;
+	} else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+	    var start = $terminal[0].selectionStart;
+	    var end = $terminal[0].selectionEnd;
+	    if (start === end) {
+		if (start <= buffer.length) {
+		    return false;
+		}
+	    }
+	}
+	return true;
+    });
 
-exec('who-am-i', {}, function (data) {
-    user = data;
 });

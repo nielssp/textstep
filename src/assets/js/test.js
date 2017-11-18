@@ -23,11 +23,22 @@ BLOGSTEP.init('test', function (app) {
     
     var menu = app.addMenu('Test menu');
     menu.addItem('Test', 'test');
-    menu.addItem('Who am i', function () {
+    menu.addItem('Open terminal', function () {
+	BLOGSTEP.run('terminal');
+    });
+    menu.addItem('Who am I', function () {
 	BLOGSTEP.get('who-am-i').done(function (data) {
-	    alert(data.username);
+	    alert('you are ' + data.username);
 	});
     });
+    
+    app.onOpen = function (app, args) {
+	app.frame.find('.header-path').text('opened');
+    };
+    
+    app.onResume = function (app, args) {
+	app.frame.find('.header-path').text('resumed');
+    };
     
     app.onResize = function () {
 	app.frame.find('.header-path').text('resized');

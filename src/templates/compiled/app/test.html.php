@@ -1,4 +1,4 @@
-<?php $this->import('css/test.css;dist/test.js'); ?><div class="frame">
+<?php $this->import('dist/test.js'); ?><div class="frame">
 <div class="frame-header">
 <div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>

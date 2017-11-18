@@ -23,6 +23,8 @@ class Load extends \Blogstep\AuthenticatedSnippet
                 return $this->render('app/editor.html');
             case 'test':
                 return $this->render('app/test.html');
+            case 'terminal':
+                return $this->render('app/terminal.html');
             default:
                 return $this->error('program not found', \Jivoo\Http\Message\Status::NOT_FOUND);
         }
