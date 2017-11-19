@@ -22,7 +22,7 @@ class Download extends \Blogstep\AuthenticatedSnippet
             return $this->error('file not found', \Jivoo\Http\Message\Status::NOT_FOUND);
         }
         if (!$fs->isReadable()) {
-            return $this->error('not authorized', \Jivoo\Http\Message\Status::UNAUTHORIZED);
+            return $this->error('not authorized', \Jivoo\Http\Message\Status::FORBIDDEN);
         }
         if ($fs->getType() == 'directory') {
             if (extension_loaded('zip')) {

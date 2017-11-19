@@ -19,7 +19,7 @@ class Upload extends \Blogstep\AuthenticatedSnippet
         }
         $fs = $this->m->files->get($path);
         if (!$fs->isWritable()) {
-            return $this->error('not authorized', \Jivoo\Http\Message\Status::UNAUTHORIZED);
+            return $this->error('not authorized', \Jivoo\Http\Message\Status::FORBIDDEN);
         }
         $files = $this->request->getUploadedFiles();
         foreach ($files as $file) {

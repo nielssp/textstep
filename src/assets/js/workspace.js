@@ -17,6 +17,7 @@ var apps = {};
 
 var tasks = [];
 var running = null;
+var skipHistory = false;
 
 function Menu(app, title) {
     this.app = app;
@@ -193,11 +194,13 @@ App.prototype.setTitle = function (title) {
 
 App.prototype.setArgs = function (args) {
     this.args = args;
-    var path = BLOGSTEP.PATH + '/app/' + this.name;
-    if (!$.isEmptyObject(args)) {
-	path += '?' + $.param(args);
+    if (!skipHistory) {
+	var path = BLOGSTEP.PATH + '/app/' + this.name;
+	if (!$.isEmptyObject(args)) {
+	    path += '?' + $.param(args);
+	}
+	history.pushState({ app: this.name, args: args }, document.title, path);
     }
-    history.pushState({ app: this.name, args: args }, document.title, path);
 };
 
 App.prototype.init = function () {
@@ -261,16 +264,16 @@ App.prototype.reopen = function (args) {
 	console.error('reopen: unexpected state', this.state, 'app', this.name);
 	return;
     }
-    this.state = 'suspending';
-    if (this.onSuspend !== null) {
-	this.onSuspend(this);
+    if (this.onReopen !== null) {
+	this.onReopen(args);
+    } else {
+	this.state = 'closing';
+	if (this.onClose !== null) {
+	    this.onClose(this);
+	}
+	this.state = 'initialized';
+	this.open(args);
     }
-    this.frame.hide();
-    for (var i = 0; i < this.menus.length; i++) {
-	this.menus[i].frame.hide();
-    }
-    this.state = 'suspended';
-    this.resume(args);
 };
 
 App.prototype.suspend = function () {
@@ -556,6 +559,8 @@ $(window).keydown(function (e) {
 
 window.onpopstate = function (event) {
     if (event.state !== null) {
+	skipHistory = true;
 	BLOGSTEP.run(event.state.app, event.state.args);
+	skipHistory = false;
     }
 };
