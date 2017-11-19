@@ -4,8 +4,7 @@
 <a href="" data-action="toggle-menu"></a>
 </div>
 <div class="frame-header-title">
-<span class="header-path">path goes here</span>
-            &ndash; Test.app
+            Test
 </div>
 </div>
 <div class="frame-content">

@@ -593,7 +593,7 @@ function keydown(e) {
     if ($('input:focus').length > 0) {
         return true;
     }
-    if (e.ctrlKey || e.shiftKey || e.altKey || e.metaKey) {
+    if (e.ctrlKey || e.altKey || e.metaKey) {
         return true;
     }
     var $filter = $currentColumn.children('.filter');
@@ -601,6 +601,7 @@ function keydown(e) {
         return true;
     }
     if ($filter.length === 0) {
+	e.preventDefault();
         $('<input type="text" class="filter">')
                 .val(e.key)
                 .appendTo($currentColumn)
