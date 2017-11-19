@@ -4,8 +4,7 @@
 <a href="" data-action="toggle-menu"></a>
 </div>
 <div class="frame-header-title">
-<span class="header-path">?</span>
-            &ndash; Files
+            Files
 </div>
 </div>
 <div class="frame-toolbar">

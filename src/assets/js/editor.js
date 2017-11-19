@@ -21,7 +21,7 @@ var simplemde = null;
 
 function open(app, args) {
     path = args.path;
-    app.frame.find('.header-path').text(path);
+    app.setTitle(path + ' – Editor');
     
     app.frame.find('textarea').val('');
     
@@ -69,13 +69,13 @@ function open(app, args) {
     });
     
     simplemde.codemirror.on('change', function () {
-	app.frame.find('.header-path').text(path + ' (*)');
+	app.setTitle(path + ' (*) – Editor');
     });
     
     BLOGSTEP.get('download', { path: path }).done(function (data) {
 	simplemde.value(data);
 	simplemde.codemirror.clearHistory();
-	app.frame.find('.header-path').text(path);
+	app.setTitle(path + ' – Editor');
     });
 }
 
@@ -89,7 +89,7 @@ function saveFile()
     var app = this;
     if (simplemde !== null) {
 	BLOGSTEP.post('edit', { path: path, data: simplemde.value() }).done(function () {
-	    app.frame.find('.header-path').text(path);
+	    app.setTitle(path + ' – Editor');
 	    simplemde.clearAutosavedValue();
 	});
     }

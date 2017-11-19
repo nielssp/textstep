@@ -18,6 +18,7 @@ var apps = {};
 var tasks = [];
 var running = null;
 var skipHistory = false;
+var previousTitle = null;
 
 function Menu(app, title) {
     this.app = app;
@@ -186,6 +187,8 @@ App.prototype.disableAction = function (name) {
 
 App.prototype.setTitle = function (title) {
     this.title = title;
+    this.frame.find('.frame-header-title').text(this.title);
+    document.title = this.title;
 };
 
 App.prototype.setArgs = function (args) {
@@ -195,7 +198,12 @@ App.prototype.setArgs = function (args) {
 	if (!$.isEmptyObject(args)) {
 	    path += '?' + $.param(args);
 	}
-	history.pushState({app: this.name, args: args}, document.title, path);
+	if (previousTitle !== null) {
+	    document.title = previousTitle;
+	}
+	history.pushState({app: this.name, args: args}, previousTitle, path);
+	document.title = this.title;
+	previousTitle = this.title;
     }
 };
 
@@ -222,6 +230,7 @@ App.prototype.open = function (args) {
 	return;
     }
     this.state = 'opening';
+    this.setTitle(this.title);
     this.frame.show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
@@ -296,6 +305,7 @@ App.prototype.resume = function () {
 	return;
     }
     this.state = 'resuming';
+    this.setTitle(this.title);
     this.frame.show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
@@ -457,6 +467,7 @@ function load(name) {
 	    var $styles = $doc.find('link[rel="stylesheet"]');
 	    var $scripts = $doc.find('script[src]');
 	    apps[name].frame = $doc.find('.frame');
+	    apps[name].title = apps[name].frame.find('.frame-header-title').text();
 	    apps[name].state = 'loaded';
 	    $('head').append($styles);
 	    $('main').append(apps[name].frame);

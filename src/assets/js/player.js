@@ -7,6 +7,7 @@
 
 
 var $ = require('jquery');
+var paths = require('./common/paths');
 
 BLOGSTEP.init('player', function (app) {
     var $videoContainer = app.frame.find('#player');
@@ -17,7 +18,7 @@ BLOGSTEP.init('player', function (app) {
     menu.addItem('Close', 'close');    
 
     app.onOpen = function (app, args) {
-	app.frame.find('.header-path').text(args.path);
+	app.setTitle(args.path + ' – Player');
 	
 	$video = $("<video autoplay controls loop/>");
 	$video.attr('src', BLOGSTEP.PATH + '/api/download?path=' + args.path);

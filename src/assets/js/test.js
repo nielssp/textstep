@@ -34,6 +34,11 @@ BLOGSTEP.init('test', function (app) {
 	    alert('you are ' + data.username);
 	});
     });
+    menu.addItem('File selection', function () {
+	BLOGSTEP.selectFile().done(function (data) {
+	    alert('you selected ' + data.path);
+	});
+    });
     
     app.onOpen = function (app, args) {
 	app.frame.find('.header-path').text('opened');

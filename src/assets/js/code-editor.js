@@ -23,7 +23,7 @@ var codemirror = null;
 
 function open(app, args) {
     path = args.path;
-    app.frame.find('.header-path').text(path);
+    app.setTitle(path + ' – Code editor');
     textarea = app.frame.find('textarea');
     textarea.val('').focus();
     
@@ -47,13 +47,13 @@ function open(app, args) {
     });
 
     codemirror.on('change', function () {
-	app.frame.find('.header-path').text(path + ' (*)');
+	app.setTitle(path + ' (*) – Code editor');
     });
     
     BLOGSTEP.get('download', { path: path }).done(function (data) {
 	codemirror.setValue(data);
 	codemirror.clearHistory();
-	app.frame.find('.header-path').text(path);
+	app.setTitle(path + ' – Code editor');
     });
 }
 
@@ -67,7 +67,7 @@ function saveFile()
     var app = this;
     codemirror.save();
     BLOGSTEP.post('edit', { path: path, data: textarea.val() }).done(function () {
-	app.frame.find('.header-path').text(path);
+	app.setTitle(path + ' – Code editor');
     });
 }
 

@@ -279,6 +279,9 @@ function refresh() {
 }
 
 function enter(path) {
+    if (path === cwd) {
+	return;
+    }
     cd(path);
     if (files.hasOwnProperty(path)) {
         files[path].link.addClass('active');
@@ -437,8 +440,7 @@ function updateColumns() {
         }
     }
     previousStackSize = stack.length;
-    $('.header-path').text(cwd);
-    document.title = cwd + ' – Files';
+    self.setTitle(cwd + ' – Files');
 }
 
 function updateColumn($column, path) {

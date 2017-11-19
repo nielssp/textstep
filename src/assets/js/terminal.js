@@ -35,6 +35,7 @@ var commands = {
         exec('list-files?path=' + nwd, {}, function (data) {
             if (data.type === 'directory') {
                 cwd = nwd;
+		self.setTitle(cwd + ' – Terminal');
 		self.setArgs({ path: cwd });
             } else {
                 writeLine('not a directory');
