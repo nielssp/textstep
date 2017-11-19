@@ -13,7 +13,11 @@ require('highlightjs/styles/solarized_dark.css');
 window.hljs = require('highlightjs/highlight.pack.js');
 require('simplemde/dist/simplemde.min.css');
 
+var self = null;
+
 var path = null;
+
+var cwd = null;
 
 var SimpleMDE = require('simplemde');
 
@@ -21,6 +25,7 @@ var simplemde = null;
 
 function open(app, args) {
     path = args.path;
+    cwd = paths.dirName(path);
     app.setTitle(path + ' – Editor');
     
     app.frame.find('textarea').val('');
@@ -86,10 +91,9 @@ function close() {
 
 function saveFile()
 {
-    var app = this;
     if (simplemde !== null) {
 	BLOGSTEP.post('edit', { path: path, data: simplemde.value() }).done(function () {
-	    app.setTitle(path + ' – Editor');
+	    self.setTitle(path + ' – Editor');
 	    simplemde.clearAutosavedValue();
 	});
     }
@@ -106,6 +110,8 @@ function resizeView()
 }
 
 BLOGSTEP.init('editor', function (app) {
+    self = app;
+
     app.defineAction('save', saveFile);
     app.defineAction('new', newFile);
     
