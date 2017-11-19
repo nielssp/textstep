@@ -1,4 +1,4 @@
-<div class="frame">
+<section class="frame">
 <div class="frame-header">
 <span class="actions-left">
 <a href="" data-action="toggle-menu"></a>
@@ -879,4 +879,4 @@ int main() {
 </div>
 </div>
 </div>
-</section></div>
+</section>

@@ -196,7 +196,7 @@ App.prototype.setArgs = function (args) {
     if (!skipHistory) {
 	var path = BLOGSTEP.PATH + '/app/' + this.name;
 	if (!$.isEmptyObject(args)) {
-	    path += '?' + $.param(args);
+	    path += '?' + $.param(args).replace(/%2F/gi, '/');
 	}
 	if (previousTitle !== null) {
 	    document.title = previousTitle;
