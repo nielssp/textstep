@@ -36,6 +36,7 @@ var selectionRoot = '/';
 var stackOffset = 0;
 
 function open(app, args) {
+    console.log('open', args.path);
     cwd = args.path || '/';
     $columns.empty();
     createColumns();
@@ -43,10 +44,11 @@ function open(app, args) {
 }
 
 function close(app) {
-
+    console.log('close');
 }
 
 function reopen(app, args) {
+    console.log('reopen', args.path);
     enter(args.path || '/');
 }
 
@@ -249,15 +251,6 @@ function addFileInfo($column, file) {
     }
     $column.children('.files-list').replaceWith($li);
 }
-
-var originalCwd = cwd;
-window.onpopstate = function (event) {
-    if (event.state !== null) {
-        cd(event.state.cwd);
-    } else if (originalCwd !== cwd) {
-        cd(originalCwd);
-    }
-};
 
 function goUp() {
     if (stack.length <= 1) {
