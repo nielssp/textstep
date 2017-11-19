@@ -138,7 +138,7 @@ App.prototype.defineAction = function (name, callback, groups) {
 		this.actionGroups[group] = [];
 	    }
 	    this.actionGroups[group].push(name);
-	});
+	}, this);
     }
 };
 
@@ -152,17 +152,13 @@ App.prototype.activate = function (name) {
 
 App.prototype.enableGroup = function (group) {
     if (this.actionGroups.hasOwnProperty(group)) {
-	this.actionGroups[group].forEach(function (name) {
-	    this.enableAction(name);
-	});
+	this.actionGroups[group].forEach(this.enableAction, this);
     }
 };
 
 App.prototype.disableGroup = function (group) {
     if (this.actionGroups.hasOwnProperty(group)) {
-	this.actionGroups[group].forEach(function (name) {
-	    this.disableAction(name);
-	});
+	this.actionGroups[group].forEach(this.disableAction, this);
     }
 };
 
@@ -172,7 +168,7 @@ App.prototype.enableAction = function (name) {
 	this.menus.forEach(function (menu) {
 	    menu.frame.find('[data-action="' + name + '"]').attr('disabled', false);
 	});
-    } else {this, 
+    } else {
 	name.forEach(this.enableAction, this);
     }
 };
@@ -199,7 +195,7 @@ App.prototype.setArgs = function (args) {
 	if (!$.isEmptyObject(args)) {
 	    path += '?' + $.param(args);
 	}
-	history.pushState({ app: this.name, args: args }, document.title, path);
+	history.pushState({app: this.name, args: args}, document.title, path);
     }
 };
 
@@ -265,7 +261,7 @@ App.prototype.reopen = function (args) {
 	return;
     }
     if (this.onReopen !== null) {
-	this.onReopen(args);
+	this.onReopen(this, args || {});
     } else {
 	this.state = 'closing';
 	if (this.onClose !== null) {
@@ -364,35 +360,48 @@ BLOGSTEP.run = function (name, args) {
 BLOGSTEP.open = function (path) {
     var fileName = paths.fileName(path);
     if (fileName.match(/\.md/i)) {
-	BLOGSTEP.run('editor', { path: path });
+	BLOGSTEP.run('editor', {path: path});
     } else if (fileName.match(/\.webm/i)) {
-	BLOGSTEP.run('player', { path: path });
+	BLOGSTEP.run('player', {path: path});
     } else if (fileName.match(/\.(?:jpe?g|png|gif|ico)/i)) {
-	BLOGSTEP.run('viewer', { path: path });
+	BLOGSTEP.run('viewer', {path: path});
     } else if (fileName.match(/\.(?:php|log|json|html|css|js|sass|scss)/i)) {
-	BLOGSTEP.run('code-editor', { path: path });
+	BLOGSTEP.run('code-editor', {path: path});
     } else {
-	// TODO: lookup type
-	BLOGSTEP.run('files', { path: path });
+	BLOGSTEP.get('list-files', { path: path }).done(function (data) {
+	    if (data.type === 'directory') {
+		BLOGSTEP.run('files', {path: path});
+	    } else {
+		BLOGSTEP.run('code-editor', {path: path});
+	    }
+	});
     }
+};
+
+BLOGSTEP.getToken = function () {
+    return Cookies.get('csrf_token');
+};
+
+BLOGSTEP.addToken = function (xhr) {
+    xhr.setRequestHeader('X-Csrf-Token', BLOGSTEP.getToken());
 };
 
 BLOGSTEP.ajax = function (url, method, data, responseType) {
     var dfr = $.Deferred();
-    
+
     var settings = {
 	url: url,
 	method: method,
 	data: data,
 	dataType: responseType,
-	headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
+	headers: {'X-Csrf-Token': BLOGSTEP.getToken()}
     };
-    
+
     var xhr = $.ajax(settings);
     xhr.done(dfr.resolve);
     xhr.fail(function (jqXhr, textStatus, errorThrown) {
 	console.log(jqXhr, textStatus, errorThrown);
-	var newToken = Cookies.get('csrf_token');
+	var newToken = BLOGSTEP.getToken();
 	if (settings.headers['X-Csrf-Token'] !== newToken) {
 	    settings.headers['X-Csrf-Token'] = newToken;
 	    if (xhr.status === 400) {
@@ -416,11 +425,11 @@ BLOGSTEP.ajax = function (url, method, data, responseType) {
 	    alert(xhr.responseJSON.message);
 	}
 	ui.shake($('main > .frame'));
-	
+
 	var args = Array.prototype.slice.call(arguments);
 	dfr.rejectWith(xhr, args);
     });
-    
+
     return dfr.promise();
 };
 
@@ -442,7 +451,7 @@ function load(name) {
     } else {
 	apps[name] = new App(name);
 	apps[name].deferred = dfr;
-	BLOGSTEP.get('load', { name: name }, 'html').done(function (data) {
+	BLOGSTEP.get('load', {name: name}, 'html').done(function (data) {
 	    var $doc = $('<div></div>');
 	    $doc.html(data);
 	    var $styles = $doc.find('link[rel="stylesheet"]');
@@ -463,11 +472,11 @@ function handleLogin(done) {
     $('#login').find('input').prop('disabled', false);
     $('#login-frame').show();
     $('#login').submit(function () {
-        $(this).find('input').prop('disabled', true);
+	$(this).find('input').prop('disabled', true);
 	var data = {
 	    username: $('#login-username').val(),
 	    password: $('#login-password').val(),
-	    remember: $('#login-remember').is(':checked') ? { remember: 'remember' } : null
+	    remember: $('#login-remember').is(':checked') ? {remember: 'remember'} : null
 	};
 	BLOGSTEP.post('login', data).done(function () {
 	    $('#login').find('input').prop('disabled', false);
@@ -484,19 +493,20 @@ function handleLogin(done) {
 	    $('#login-username').select();
 	    $('#login-password').val('');
 	});
-        return false;
+	return false;
     });
-};
+}
+;
 
 $.ajaxSetup({
-    headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
+    headers: {'X-Csrf-Token': BLOGSTEP.getToken()}
 });
 
 $(document).ready(function () {
     BLOGSTEP.get('who-am-i').done(function (data) {
 	$('#workspace-menu').show();
 	$('#workspace-menu .username').text(data.username);
-	
+
 	$('#workspace-menu [data-action="file-system"]').click(function () {
 	    BLOGSTEP.run('files');
 	});
@@ -527,8 +537,8 @@ $(document).ready(function () {
 
 	$('#login-username').val(data.username);
 	$('#login-overlay').addClass('login-overlay-dark');
-	
-	BLOGSTEP.run('test').done(function() {	
+
+	BLOGSTEP.run('files', { path: '/' }).done(function () {
 	    var run = $('body').data('run');
 	    if (run !== '') {
 		var args = $('body').data('args');

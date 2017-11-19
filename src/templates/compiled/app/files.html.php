@@ -4,7 +4,7 @@
 <a href="" data-action="toggle-menu"></a>
 </div>
 <div class="frame-header-title">
-<span class="header-path">path goes here</span>
+<span class="header-path">?</span>
             &ndash; Files
 </div>
 </div>
@@ -49,11 +49,7 @@
 </div>
 </div>
 <div class="frame-content frame-content-flex">
-<div class="files-columns" data-token="<?php echo $token; ?>">
-<div class="files-panel" data-path="/">
-<div class="files-list">
-</div>
-</div>
+<div class="files-columns">
 </div>
 <div class="files-shelf">
 <div class="files-grid">

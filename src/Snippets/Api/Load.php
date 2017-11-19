@@ -25,6 +25,7 @@ class Load extends \Blogstep\AuthenticatedSnippet
             case 'viewer':
             case 'player':
             case 'control-panel':
+            case 'demo':
             case 'test':
             case 'terminal':
                 return $this->render('app/' . $this->request->query['name'] . '.html');

@@ -1,0 +1,2 @@
+webpackJsonp([10],{58:function(n,a,e){var o=e(0);BLOGSTEP.init("player",function(n){var a=n.frame.find("#player"),e=null,p=!1;n.addMenu("Player").addItem("Close","close"),n.onOpen=function(n,p){n.frame.find(".header-path").text(p.path),e=o("<video autoplay controls loop/>"),e.attr("src",BLOGSTEP.PATH+"/api/download?path="+p.path),a.append(e)},n.onSuspend=function(n){p=e[0].paused,e[0].pause()},n.onResume=function(n){p||e[0].play()},n.onClose=function(n){e.remove()}})}},[58]);
+//# sourceMappingURL=player.js.map

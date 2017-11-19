@@ -7,6 +7,9 @@
         <div class="frame-header-title">
             Builder
         </div>
+        <div class="frame-header-actions">
+            <a href="" data-action="close"></a>
+        </div>
     </div>
 
     <div class="frame-content">
@@ -15,17 +18,16 @@
                 <label>Destination</label>
                 <input type="text" />
             </div>-->
-        <input type="submit" value="Build" data-action="build" disabled="{isset($inProgress)}?" />
-        <input type="submit" value="Cancel" data-action="cancel" disabled="{!isset($inProgress)}?"  />
+        <input type="submit" value="Build" data-action="build"/>
+        <input type="submit" value="Cancel" data-action="cancel" disabled/>
         </form>
         
         
-        <div class="progress primary active" data-progress="0" id="build-progress">
+        <div class="progress primary active build-progress" data-progress="0">
             <div class="progress-bar" style="width:0%;">0%</div>
-            <div class="label" j:if="{isset($inProgress)}">Build in progress</div>
-            <div class="label" j:else>Ready to build</div>
+            <div class="label">Ready to build</div>
         </div>
         
-        <textarea readonly="readonly" id="status-history"></textarea>
+        <textarea readonly="readonly" class="build-status-history"></textarea>
     </div>
 </div>
