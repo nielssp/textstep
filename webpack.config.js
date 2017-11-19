@@ -3,7 +3,6 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 module.exports = {
     context: __dirname + "/src/assets/js",
     entry: {
-      main: "./main",
       editor: "./editor",
       viewer: "./viewer",
       player: "./player",
@@ -12,7 +11,6 @@ module.exports = {
       files: "./files",
       terminal: "./terminal",
       build: "./build",
-      login: "./login",
       test: "./test",
       workspace: "./workspace"
     },

@@ -6,7 +6,6 @@
  */
 
 var $ = require('jquery');
-var actions = require('./common/actions');
 var paths = require('./common/paths');
 var ui = require('./common/ui');
 

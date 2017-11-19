@@ -560,6 +560,31 @@ $(document).ready(function () {
     });
 });
 
+$(document).on('click', '[data-action="toggle-menu"]', function (e) {
+    $('body').toggleClass('show-menu');
+    return false;
+});
+
+$('body').click(function (e) {
+    if ($('body').hasClass('show-menu')) {
+        $('body').removeClass('show-menu');
+    }
+});
+
+$(document).on('click', '[data-toggle] > *', function (e) {
+   if ($(this).is($(this).parent().data('toggle'))) {
+       $(this).toggleClass('active');
+   } 
+});
+
+$(document).on('click', '[data-choice] > *', function (e) {
+    var selector = $(this).parent().data('choice');
+    if ($(this).is(selector)) {
+       $(this).parent().children(selector).removeCLass('active');
+       $(this).addClass('active');
+   } 
+});
+
 $(window).resize(function () {
     for (var name in apps) {
 	if (apps.hasOwnProperty(name) && apps[name].state === 'running') {

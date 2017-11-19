@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <?php $this->disableLayout(); ?><html>
-<head><?php $this->import('css/main.css;dist/init.js;dist/main.js;css/icons.css;dist/workspace.js'); ?>
+<head><?php $this->import('css/main.css;dist/init.js;css/icons.css;dist/workspace.js'); ?>
 <meta charset="UTF-8" />
 <title>BLOGSTEP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
