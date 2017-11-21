@@ -7,7 +7,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 @import "partials/base";
 
-$size32: '.shortcuts, .files-grid';
+$size32: '.shortcuts, .files-grid, .frame-iconbar';
 $size16: '.files-list';
 $size22: '.frame-toolbar, .login-frame';
 
@@ -109,6 +109,15 @@ $size22: '.frame-toolbar, .login-frame';
     @include icon-size(32px);
 }
 
+.frame-iconbar {
+    button {
+        @include button-size(32px);
+    }
+    .icon {
+        @include icon-size(32px);
+    }
+}
+
 #{$size22} {
     button {
         @include button-size(22px);
@@ -147,3 +156,8 @@ $size22: '.frame-toolbar, .login-frame';
 @include icon('go-home');
 @include icon('reload');
 @include icon('unlock');
+@include icon('appearance');
+@include icon('editor');
+@include icon('site');
+@include icon('system');
+@include icon('users');

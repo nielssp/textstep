@@ -21,3 +21,20 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         }
     }
 }
+
+.frame-iconbar {
+    &-separator {
+       display: inline-block;
+       width: 10px;
+        @media screen and (max-width: $xs - 1) {
+            display: none;
+        }
+    }
+    @media screen and (max-width: $xs - 1) {
+        overflow-y: auto;
+        white-space: nowrap;
+        button[disabled] {
+            display: none;
+        }
+    }
+}

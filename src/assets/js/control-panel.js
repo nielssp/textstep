@@ -10,5 +10,12 @@ var $ = require('jquery');
 
 BLOGSTEP.init('control-panel', function (app) {
     var menu = app.addMenu('Control panel');
-    menu.addItem('Close', 'close');    
+    menu.addItem('Site', 'site');
+    menu.addItem('Users and groups', 'users');
+    menu.addItem('Appearance', 'appearance');
+    menu.addItem('System', 'system');
+    menu.addItem('Close', 'close');
+    
+    app.frame.find('.frame-content').hide();
+    app.frame.find('.control-panel-site').show();
 });

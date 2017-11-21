@@ -1,2 +1,2 @@
-webpackJsonp([9],{52:function(n,o,e){e(0);BLOGSTEP.init("control-panel",function(n){n.addMenu("Control panel").addItem("Close","close")})}},[52]);
+webpackJsonp([9],{52:function(e,a,n){n(0);BLOGSTEP.init("control-panel",function(e){var a=e.addMenu("Control panel");a.addItem("Site","site"),a.addItem("Users and groups","users"),a.addItem("Appearance","appearance"),a.addItem("System","system"),a.addItem("Close","close"),e.frame.find(".frame-content").hide(),e.frame.find(".control-panel-site").show()})}},[52]);
 //# sourceMappingURL=control-panel.js.map

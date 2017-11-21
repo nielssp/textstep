@@ -18,6 +18,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             border-top: none;
         }
     }
+    &-iconbar {
+        @include frame-toolbar;
+        & ~ .frame-content {
+            padding-top: 0;
+            border-top: none;
+        }
+    }
     &-content {
         @include frame-content;
         
@@ -25,6 +32,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             display: flex;
             flex-direction: column;
         }
+    }
+    hr {
+	border-top: 1px solid #555;
+	border-bottom: 1px solid #fff;
     }
 }
 

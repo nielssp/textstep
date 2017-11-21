@@ -850,6 +850,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .frame-toolbar ~ .frame-content {
       padding-top: 0;
       border-top: none; }
+  .frame-iconbar {
+    background-color: #AEAAAE;
+    border-top: 1px solid #000;
+    color: #000;
+    padding: 6px;
+    flex-grow: 0; }
+    .frame-iconbar ~ .frame-content {
+      padding-top: 0;
+      border-top: none; }
   .frame-content {
     background-color: #AEAAAE;
     border-top: 1px solid #000;
@@ -867,6 +876,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .frame-content-flex {
       display: flex;
       flex-direction: column; }
+  .frame hr {
+    border-top: 1px solid #555;
+    border-bottom: 1px solid #fff; }
 
 #login-frame {
   margin: 14% auto 0 auto;
