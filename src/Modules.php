@@ -24,6 +24,7 @@ namespace Blogstep;
  * @property \Jivoo\Http\Cookie\CookiePool $cookies
  * @property \Jivoo\Security\Auth $auth
  * @property UserModel $users
+ * @property SystemAcl $acl
  */
 class Modules extends \Jivoo\Modules
 {
@@ -44,5 +45,6 @@ class Modules extends \Jivoo\Modules
         'cookies' => 'Jivoo\Http\Cookie\CookiePool',
         'auth' => 'Jivoo\Security\Auth',
         'users' => 'Blogstep\UserModel',
+        'acl' => 'Blogstep\SystemAcl',
     ];
 }

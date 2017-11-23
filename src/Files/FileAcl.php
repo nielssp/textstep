@@ -8,7 +8,7 @@ namespace Blogstep\Files;
 /**
  * Access control list for a file system.
  */
-class Acl
+class FileAcl
 {
     private $file;
     private $store;
