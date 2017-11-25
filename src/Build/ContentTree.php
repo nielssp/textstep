@@ -32,7 +32,6 @@ class ContentTree implements IteratorAggregate, Selectable
         $this->dir = $dir;
         $this->buildDir = $buildDir;
         $this->handler = $handler;
-        $this->recursive = $dir->get('.recursive')->exists();
     }
     
     public function getHandler()
@@ -52,9 +51,11 @@ class ContentTree implements IteratorAggregate, Selectable
         return $this->namespaces[$namespace];
     }
     
-    public function setRecursive($recursive = true)
+    public function recursive($recursive = true)
     {
-        $this->recursive = $recursive;
+        $copy = clone $this;
+        $copy->recursive = $recursive;
+        return $copy;
     }
     
     protected function select()
