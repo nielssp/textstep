@@ -18,8 +18,8 @@ var doCancel = false;
 
 function build() {
     doCancel = false;
-    actions.disable('build');
-    actions.enable('cancel');
+    self.disableAction('build');
+    self.enableAction('cancel');
     var start = performance.now();
     ui.setProgress(progressBar, 0, 'Building...');
     $statusHistory.val('');
@@ -78,8 +78,8 @@ function build() {
 			case 'done':
 			    updateProgress(100);
 			    done = true;
-			    actions.enable('build');
-			    actions.disable('cancel');
+			    self.enableAction('build');
+			    self.disableAction('cancel');
 			    return;
 			case 'error':
 			    done = true;
