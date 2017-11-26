@@ -231,7 +231,7 @@ App.prototype.open = function (args) {
     }
     this.state = 'opening';
     this.setTitle(this.title);
-    this.frame.show();
+    this.frame.addClass('active').show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
     }
@@ -251,7 +251,7 @@ App.prototype.close = function () {
     if (this.onClose !== null) {
 	this.onClose(this);
     }
-    this.frame.hide();
+    this.frame.removeClass('active').hide();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.hide();
     }
@@ -291,7 +291,7 @@ App.prototype.suspend = function () {
 	this.onSuspend(this);
     }
     if (this.state === 'suspending') {
-	this.frame.hide();
+	this.frame.removeClass('active').hide();
 	for (var i = 0; i < this.menus.length; i++) {
 	    this.menus[i].frame.hide();
 	}
@@ -306,7 +306,7 @@ App.prototype.resume = function () {
     }
     this.state = 'resuming';
     this.setTitle(this.title);
-    this.frame.show();
+    this.frame.addClass('active').show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
     }
@@ -434,7 +434,7 @@ BLOGSTEP.ajax = function (url, method, data, responseType) {
 	} else if (typeof xhr.responseJSON !== 'undefined') {
 	    alert(xhr.responseJSON.message);
 	}
-	ui.shake($('main > .frame'));
+	ui.shake($('main > .frame.active'));
 
 	var args = Array.prototype.slice.call(arguments);
 	dfr.rejectWith(xhr, args);
@@ -580,7 +580,7 @@ $(document).on('click', '[data-toggle] > *', function (e) {
 $(document).on('click', '[data-choice] > *', function (e) {
     var selector = $(this).parent().data('choice');
     if ($(this).is(selector)) {
-       $(this).parent().children(selector).removeCLass('active');
+       $(this).parent().children(selector).removeClass('active');
        $(this).addClass('active');
    } 
 });

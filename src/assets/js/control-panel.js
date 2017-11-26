@@ -12,7 +12,7 @@ BLOGSTEP.init('control-panel', function (app) {
     var menu = app.addMenu('Control panel');
     menu.addItem('Site', 'site');
     menu.addItem('Users and groups', 'users');
-    menu.addItem('Appearance', 'appearance');
+    menu.addItem('Personalization', 'personalization');
     menu.addItem('System', 'system');
     menu.addItem('Close', 'close');
     

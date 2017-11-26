@@ -126,6 +126,6 @@ exports.handleError = function (event, xhr, settings, thrownError) {
     } else {
         alert(xhr.responseText);
     }
-    exports.shake($('main > .frame'));
+    exports.shake($('main > .frame.active'));
     console.log(event, xhr, settings, thrownError);
 };

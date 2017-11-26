@@ -18,7 +18,7 @@
 <button data-action="users" title="Users and groups">
 <span class="icon icon-users"></span>
 </button>
-<button data-action="appearance" title="Appearance">
+<button data-action="personalization" title="Personalization">
 <span class="icon icon-appearance"></span>
 </button>
 <button data-action="system" title="System">
@@ -51,6 +51,9 @@
 <option>UTC</option>
 </select>
 </div>
+</fieldset>
+<fieldset>
+<legend>Deployment</legend>
 <div class="field">
 <label>Target directory</label>
 <input type="text" />
