@@ -330,6 +330,9 @@ App.prototype.resume = function () {
 	this.onResume(this);
     }
     this.setArgs(this.args);
+    if (this.onResize !== null) {
+	this.onResize();
+    }
     this.state = 'running';
 };
 

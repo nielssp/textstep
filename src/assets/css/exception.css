@@ -40,7 +40,7 @@ html {
   height: 100%; }
 
 body {
-  overflow-y: scroll;
+  overflow-y: hidden;
   background-color: #515171;
   font-family: "Open Sans", sans-serif;
   color: #000000;

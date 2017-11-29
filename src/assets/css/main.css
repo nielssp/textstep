@@ -41,7 +41,7 @@ html {
   height: 100%; }
 
 body {
-  overflow-y: scroll;
+  overflow-y: hidden;
   background-color: #515171;
   font-family: "Open Sans", sans-serif;
   color: #000000;
@@ -987,7 +987,8 @@ aside {
   float: left;
   width: 220px;
   padding: 10px 0 0 10px;
-  overflow-y: auto; }
+  overflow-y: auto;
+  max-height: 100%; }
   aside header,
   aside .tool-frame > .tool-frame-header {
     background-color: #000;
