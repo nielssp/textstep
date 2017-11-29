@@ -12,7 +12,8 @@ aside {
     padding: 10px 0 0 10px;
     overflow-y: auto;
 
-    header {
+    header,
+    .tool-frame > .tool-frame-header {
         background-color: #000;
         color: #fff;
         text-align: left;
@@ -31,6 +32,20 @@ aside {
         .version {
             float: right;
             color: #555;
+        }
+    }
+    
+    .tool-frame {
+        margin-bottom: 16px;
+        & > .tool-frame-content {
+            background-color: $frameBg;
+            border-left: 1px solid #fff;
+            border-right: 1.5px solid #403E3B;
+            border-bottom: 1.5px solid #403E3B;
+            min-height: 160px;
+            display: flex;
+            position: relative;
+            align-items: stretch;
         }
     }
 

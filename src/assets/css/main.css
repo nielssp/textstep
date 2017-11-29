@@ -988,7 +988,8 @@ aside {
   width: 220px;
   padding: 10px 0 0 10px;
   overflow-y: auto; }
-  aside header {
+  aside header,
+  aside .tool-frame > .tool-frame-header {
     background-color: #000;
     color: #fff;
     text-align: left;
@@ -1000,12 +1001,25 @@ aside {
     border-bottom: 1.5px solid #403E3B;
     box-shadow: inset -1px -1px 0px #9A9286; }
     @media screen and (max-width: 767px) {
-      aside header {
+      aside header,
+      aside .tool-frame > .tool-frame-header {
         padding-top: 6px;
         padding-bottom: 6px; } }
-    aside header .version {
+    aside header .version,
+    aside .tool-frame > .tool-frame-header .version {
       float: right;
       color: #555; }
+  aside .tool-frame {
+    margin-bottom: 16px; }
+    aside .tool-frame > .tool-frame-content {
+      background-color: #AEAAAE;
+      border-left: 1px solid #fff;
+      border-right: 1.5px solid #403E3B;
+      border-bottom: 1.5px solid #403E3B;
+      min-height: 160px;
+      display: flex;
+      position: relative;
+      align-items: stretch; }
   aside nav ul {
     margin-left: 0;
     margin-bottom: 16px; }

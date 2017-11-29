@@ -55,6 +55,7 @@ function App(name) {
     this.actionGroups = {};
     this.keyMap = {};
     this.menus = [];
+    this.toolFrames = [];
     this.onInit = null;
     this.onSuspend = null;
     this.onResume = null;
@@ -218,6 +219,9 @@ App.prototype.init = function () {
     if (this.onInit !== null) {
 	this.onInit(this);
     }
+    for (var i = 0; i < this.toolFrames.length; i++) {
+	$('#menu').prepend(this.toolFrames[i]);
+    }
     for (var i = 0; i < this.menus.length; i++) {
 	$('#menu').prepend(this.menus[i].frame);
     }
@@ -234,6 +238,9 @@ App.prototype.open = function (args) {
     this.frame.addClass('active').show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
+    }
+    for (var i = 0; i < this.toolFrames.length; i++) {
+	this.toolFrames[i].show();
     }
     if (this.onOpen !== null) {
 	this.onOpen(this, args || {});
@@ -252,6 +259,9 @@ App.prototype.close = function () {
 	this.onClose(this);
     }
     this.frame.removeClass('active').hide();
+    for (var i = 0; i < this.toolFrames.length; i++) {
+	this.toolFrames[i].hide();
+    }
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.hide();
     }
@@ -291,6 +301,9 @@ App.prototype.suspend = function () {
 	this.onSuspend(this);
     }
     if (this.state === 'suspending') {
+	for (var i = 0; i < this.toolFrames.length; i++) {
+	    this.toolFrames[i].hide();
+	}
 	this.frame.removeClass('active').hide();
 	for (var i = 0; i < this.menus.length; i++) {
 	    this.menus[i].frame.hide();
@@ -309,6 +322,9 @@ App.prototype.resume = function () {
     this.frame.addClass('active').show();
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
+    }
+    for (var i = 0; i < this.toolFrames.length; i++) {
+	this.toolFrames[i].show();
     }
     if (this.onResume !== null) {
 	this.onResume(this);
@@ -464,11 +480,14 @@ function load(name) {
 	BLOGSTEP.get('load', {name: name}, 'html').done(function (data) {
 	    var $doc = $('<div></div>');
 	    $doc.html(data);
-	    var $styles = $doc.find('link[rel="stylesheet"]');
-	    var $scripts = $doc.find('script[src]');
-	    apps[name].frame = $doc.find('.frame');
+	    var $styles = $doc.children('link[rel="stylesheet"]');
+	    var $scripts = $doc.children('script[src]');
+	    apps[name].frame = $doc.children('.frame');
 	    apps[name].title = apps[name].frame.find('.frame-header-title').text();
 	    apps[name].state = 'loaded';
+	    $doc.children('.tool-frame').each(function () {
+		apps[name].toolFrames.push($(this));
+	    });
 	    $('head').append($styles);
 	    $('main').append(apps[name].frame);
 	    $scripts.each(function () {

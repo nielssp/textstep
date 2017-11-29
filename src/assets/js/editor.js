@@ -15,6 +15,10 @@ require('simplemde/dist/simplemde.min.css');
 
 var self = null;
 
+var buffers = {};
+
+var bufferPanel = null;
+
 var path = null;
 
 var cwd = null;
@@ -23,11 +27,35 @@ var SimpleMDE = require('simplemde');
 
 var simplemde = null;
 
+function addBuffer(path) {
+    var item = $('<a class="file">');
+    item.text(paths.fileName(path));
+    item.click(function () {
+	reopen(self, { path: path });
+    });
+    bufferPanel.append(item);
+    buffers[path] = {
+	item: item,
+	data: ''
+    };
+}
+
+function openBuffer(path) {
+    if (buffers.hasOwnProperty(path)) {
+	bufferPanel.children().removeClass('active');
+	buffers[path].item.addClass('active');
+	return true;
+    }
+    return false;
+}
+
 function open(app, args) {
     path = args.path;
     cwd = paths.dirName(path);
     app.setTitle(path + ' – Editor');
     
+    addBuffer(path);
+    openBuffer(path);
     app.frame.find('textarea').val('');
     
     simplemde = new SimpleMDE({
@@ -84,9 +112,29 @@ function open(app, args) {
     });
 }
 
+function reopen(app, args) {
+    path = args.path;
+    cwd = paths.dirName(path);
+    app.setTitle(path + ' – Editor');
+    
+    if (!openBuffer(path)) {
+	addBuffer(path);
+	openBuffer(path);
+    }
+    app.frame.find('textarea').val('');
+    
+    BLOGSTEP.get('download', { path: path }).done(function (data) {
+	simplemde.value(data);
+	simplemde.codemirror.clearHistory();
+	app.setTitle(path + ' – Editor');
+    });
+}
+
 function close() {
     simplemde.toTextArea();
     simplemde = null;
+    buffers = [];
+    bufferPanel.empty();
 }
 
 function saveFile()
@@ -122,7 +170,10 @@ BLOGSTEP.init('editor', function (app) {
     menu.addItem('Save', 'save');
     menu.addItem('Close', 'close');
     
+    bufferPanel = app.toolFrames[0].find('.files-list');
+    
     app.onOpen = open;
+    app.onReopen = reopen;
     app.onClose = close;
     app.onResize = resizeView;
 });
