@@ -170,7 +170,7 @@ BLOGSTEP.init('editor', function (app) {
     menu.addItem('Save', 'save');
     menu.addItem('Close', 'close');
     
-    bufferPanel = app.toolFrames[0].find('.files-list');
+    bufferPanel = app.toolFrames.buffers.find('.files-list');
     
     app.onOpen = open;
     app.onReopen = reopen;

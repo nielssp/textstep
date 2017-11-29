@@ -55,7 +55,7 @@ function App(name) {
     this.actionGroups = {};
     this.keyMap = {};
     this.menus = [];
-    this.toolFrames = [];
+    this.toolFrames = {};
     this.onInit = null;
     this.onSuspend = null;
     this.onResume = null;
@@ -219,8 +219,10 @@ App.prototype.init = function () {
     if (this.onInit !== null) {
 	this.onInit(this);
     }
-    for (var i = 0; i < this.toolFrames.length; i++) {
-	$('#menu').prepend(this.toolFrames[i]);
+    for (var name in this.toolFrames) {
+	if (this.toolFrames.hasOwnProperty(name)) {
+	    $('#menu').prepend(this.toolFrames[name]);
+	}
     }
     for (var i = 0; i < this.menus.length; i++) {
 	$('#menu').prepend(this.menus[i].frame);
@@ -239,8 +241,10 @@ App.prototype.open = function (args) {
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
     }
-    for (var i = 0; i < this.toolFrames.length; i++) {
-	this.toolFrames[i].show();
+    for (var name in this.toolFrames) {
+	if (this.toolFrames.hasOwnProperty(name)) {
+	    this.toolFrames[name].show();
+	}
     }
     if (this.onOpen !== null) {
 	this.onOpen(this, args || {});
@@ -259,11 +263,13 @@ App.prototype.close = function () {
 	this.onClose(this);
     }
     this.frame.removeClass('active').hide();
-    for (var i = 0; i < this.toolFrames.length; i++) {
-	this.toolFrames[i].hide();
-    }
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.hide();
+    }
+    for (var name in this.toolFrames) {
+	if (this.toolFrames.hasOwnProperty(name)) {
+	    this.toolFrames[name].hide();
+	}
     }
     if (running === this) {
 	if (tasks.length > 0) {
@@ -301,12 +307,14 @@ App.prototype.suspend = function () {
 	this.onSuspend(this);
     }
     if (this.state === 'suspending') {
-	for (var i = 0; i < this.toolFrames.length; i++) {
-	    this.toolFrames[i].hide();
-	}
 	this.frame.removeClass('active').hide();
 	for (var i = 0; i < this.menus.length; i++) {
 	    this.menus[i].frame.hide();
+	}
+	for (var name in this.toolFrames) {
+	    if (this.toolFrames.hasOwnProperty(name)) {
+		this.toolFrames[name].hide();
+	    }
 	}
 	this.state = 'suspended';
     }
@@ -323,8 +331,10 @@ App.prototype.resume = function () {
     for (var i = 0; i < this.menus.length; i++) {
 	this.menus[i].frame.show();
     }
-    for (var i = 0; i < this.toolFrames.length; i++) {
-	this.toolFrames[i].show();
+    for (var name in this.toolFrames) {
+	if (this.toolFrames.hasOwnProperty(name)) {
+	    this.toolFrames[name].show();
+	}
     }
     if (this.onResume !== null) {
 	this.onResume(this);
@@ -345,6 +355,27 @@ BLOGSTEP.init = function (name, onInit) {
 	apps[name].deferred.resolve(apps[name]);
 	apps[name].deferred = null;
     }
+};
+
+BLOGSTEP.restore = function (name) {
+    if (apps.hasOwnProperty(name)) {
+	if (apps[name].state === 'suspended') {
+	    if (running !== null) {
+		running.suspend();
+		tasks.push(running);
+	    }
+	    running = apps[name];
+	    var index = tasks.indexOf(apps[name]);
+	    if (index >= 0) {
+		tasks.splice(index, 1);
+	    }
+	    apps[name].resume();
+	    return true;
+	} else if (apps[name].state === 'running') {
+	    return true;
+	}
+    }
+    return false;
 };
 
 BLOGSTEP.run = function (name, args) {
@@ -489,7 +520,7 @@ function load(name) {
 	    apps[name].title = apps[name].frame.find('.frame-header-title').text();
 	    apps[name].state = 'loaded';
 	    $doc.children('.tool-frame').each(function () {
-		apps[name].toolFrames.push($(this));
+		apps[name].toolFrames[$(this).data('name')] = $(this);
 	    });
 	    $('head').append($styles);
 	    $('main').append(apps[name].frame);
@@ -541,7 +572,9 @@ $(document).ready(function () {
 	$('#workspace-menu .username').text(data.username);
 
 	$('#workspace-menu [data-action="file-system"]').click(function () {
-	    BLOGSTEP.run('files');
+	    if (!BLOGSTEP.restore('files')) {
+		BLOGSTEP.run('files');
+	    }
 	});
 	$('#workspace-menu [data-action="builder"]').click(function () {
 	    BLOGSTEP.run('builder');
