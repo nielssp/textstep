@@ -30,7 +30,7 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 @import url("http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600");
-@import url("http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600");
+@import url("//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600");
 * {
   padding: 0;
   margin: 0;
