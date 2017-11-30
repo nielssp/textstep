@@ -64,6 +64,7 @@ function openBuffer(path) {
         current = buffers[path];
         current.item.addClass('active');
         if (current.data !== null) {
+            self.setArgs({ path: path });
             var data = current.data;
             current.data = null;
             simplemde.value(data);
