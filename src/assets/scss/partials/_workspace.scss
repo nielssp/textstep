@@ -75,6 +75,10 @@ aside {
                     @media screen and (max-width: $sm - 1) {
                         padding-top: 6px;
                         padding-bottom: 6px;
+                        &:active {
+                            padding-top: 7px;
+                            padding-bottom: 5px;
+                        }
                     }
                 }
             }

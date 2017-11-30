@@ -1094,7 +1094,10 @@ aside {
         @media screen and (max-width: 767px) {
           aside nav ul li .button, aside nav ul li button, aside nav ul li input[type=button], aside nav ul li input[type=reset], aside nav ul li input[type=submit] {
             padding-top: 6px;
-            padding-bottom: 6px; } }
+            padding-bottom: 6px; }
+            aside nav ul li .button:active, aside nav ul li button:active, aside nav ul li input[type=button]:active, aside nav ul li input[type=reset]:active, aside nav ul li input[type=submit]:active {
+              padding-top: 7px;
+              padding-bottom: 5px; } }
 
 main {
   margin-right: 10px;
