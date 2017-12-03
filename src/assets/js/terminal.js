@@ -108,6 +108,13 @@ var commands = {
         args = args.split(' ');
 	BLOGSTEP.run(args[0], args.length > 1 ? { path: convertPath(args[1]) } : {});
 	prompt();
+    },
+    ps: function (args) {
+        var tasks = BLOGSTEP.getTasks();
+        for (var i = 0; i < tasks.length; i++) {
+            writeLine(tasks[i].name + ' (' + tasks[i].state + ')');
+        }
+        prompt();
     }
 };
 

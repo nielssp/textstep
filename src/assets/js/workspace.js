@@ -384,6 +384,10 @@ BLOGSTEP.restore = function (name) {
     return false;
 };
 
+BLOGSTEP.getTasks = function () {
+    return Object.values(apps);
+};
+
 BLOGSTEP.run = function (name, args) {
     var dfr = $.Deferred();
     args = args || {};
