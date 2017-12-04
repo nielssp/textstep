@@ -51,6 +51,7 @@ function App(name) {
     this.deferred = null;
     this.args = null;
     this.frame = null;
+    this.dockFrame = null;
     this.actions = {};
     this.actionGroups = {};
     this.keyMap = {};
@@ -250,6 +251,9 @@ App.prototype.open = function (args) {
     if (this.onOpen !== null) {
         this.onOpen(this, args || {});
     }
+    if (this.dockFrame !== null) {
+        $('#dock').append(this.dockFrame);
+    }
     this.setArgs(args);
     this.state = 'running';
 };
@@ -281,6 +285,9 @@ App.prototype.close = function () {
             running = tasks.pop();
             running.resume();
         }
+    }
+    if (this.dockFrame !== null) {
+        this.dockFrame.detach();
     }
     this.state = 'initialized';
     return true;
@@ -532,6 +539,21 @@ function load(name) {
             $doc.children('.tool-frame').each(function () {
                 apps[name].toolFrames[$(this).data('name')] = $(this);
             });
+            var $dockFrame = $doc.children('.dock-frame').first();
+            if ($dockFrame.length === 0) {
+                $dockFrame = $('<div class="dock-frame">');
+                $('<img>')
+                        .attr('src', BLOGSTEP.PATH + '/assets/img/icons/32/app.png')
+                        .attr('alt', name)
+                        .appendTo($dockFrame);
+                $('<label>')
+                        .text(name)
+                        .appendTo($dockFrame);
+            }
+            $dockFrame.click(function () {
+                BLOGSTEP.restore(name);
+            });
+            apps[name].dockFrame = $dockFrame;
             $('head').append($styles);
             $('main').append(apps[name].frame);
             $scripts.each(function () {

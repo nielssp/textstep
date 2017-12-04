@@ -56,3 +56,6 @@
 </div>
 </div>
 </div>
+<div class="dock-frame">
+<img src="<?php echo $this->link('asset:img/icons/32/files.png'); ?>" />
+</div>

@@ -27,14 +27,6 @@
 </div>
 </aside>
 <div id="dock">
-<div class="shortcut">
-<img src="<?php echo $this->link('asset:img/icons/32/desktop.png'); ?>" />
-<label>Desktop</label>
-</div>
-<div class="shortcut">
-<img src="<?php echo $this->link('asset:img/icons/32/trash.png'); ?>" />
-<label>Trash</label>
-</div>
 </div>
 <main>
 </main>
@@ -46,11 +38,11 @@
 <div class="frame-content">
 <form method="post" id="login">
 <div class="field">
-<label for="username">Username</label>
+<label for="login-username">Username</label>
 <input type="text" name="username" id="login-username" />
 </div>
 <div class="field">
-<label for="password">Password</label>
+<label for="login-password">Password</label>
 <input type="password" name="password" id="login-password" />
 </div>
 <div class="field remember">

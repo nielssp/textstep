@@ -111,59 +111,14 @@ main {
     }
 }
 
-@media screen and  (max-width: $sm - 1) {
-    body.show-menu {
-        &:before {
-            content: '';
-            display: block;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #000;
-            z-index: 999;
-            opacity: 0.5;
-        }
-        aside {
-            background-color: $wsBg;
-            box-shadow: 1px 0 5px #000000;
-            display: block;
-            position: fixed;
-            top: 0px;
-            left: 0px;
-            bottom: 0px;
-            padding: 10px 5px 10px 10px;
-            z-index: 1000;
-        }
-        main {
-            opacity: 0.5;
-        }
-        .shortcuts {
-            opacity: 0.5;
-        }
-    }
-}
-
-@media screen and  (min-width: $sm) {
-    aside {
-        display: block;
-    }
-    main {
-        margin-left: 210px;
-        
-        .frame-header a[data-action="toggle-menu"] {
-            display: none;
-        }
-    }
-}
-
 #dock {
     display: none;
     float: right;
     margin: 10px 10px 0 10px;
     text-align: center;
-    .shortcut {
+    overflow-y: auto;
+    max-height: 100%;
+    .dock-frame {
         position: relative;
         height: 64px;
         /*margin-bottom: 16px;*/
@@ -211,6 +166,61 @@ main {
                 right: 0;
             }
         }
+    }
+}
+
+@media screen and  (max-width: $sm - 1) {
+    body.show-menu {
+        &:before {
+            content: '';
+            display: block;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #000;
+            z-index: 999;
+            opacity: 0.5;
+        }
+        aside {
+            background-color: $wsBg;
+            box-shadow: 1px 0 5px #000000;
+            display: block;
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            padding: 10px 5px 10px 10px;
+            z-index: 1000;
+        }
+        main {
+            opacity: 0.5;
+        }
+        #dock {
+            display: block;
+            position: fixed;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            z-index: 1000;
+        }
+    }
+}
+
+@media screen and  (min-width: $sm) {
+    aside {
+        display: block;
+    }
+    main {
+        margin-left: 210px;
+        
+        .frame-header a[data-action="toggle-menu"] {
+            display: none;
+        }
+    }
+    #dock {
+        display: block;
     }
 }
 

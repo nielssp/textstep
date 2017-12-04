@@ -591,20 +591,20 @@ form {
   width: 50%; }
 
 .grid-1-1-1 > .cell {
-  width: 33.3333333333%; }
+  width: 33.33333%; }
 
 .grid-1-1-1-1 > .cell {
   width: 25%; }
 
 .grid-1-2 > .cell:first-child {
-  width: 33.3333333333%; }
+  width: 33.33333%; }
   .grid-1-2 > .cell:first-child + .cell {
-    width: 66.6666666667%; }
+    width: 66.66667%; }
 
 .grid-2-1 > .cell:first-child {
-  width: 66.6666666667%; }
+  width: 66.66667%; }
   .grid-2-1 > .cell:first-child + .cell {
-    width: 33.3333333333%; }
+    width: 33.33333%; }
 
 .grid-1-1-2 > .cell:first-child {
   width: 25%; }
@@ -712,7 +712,7 @@ form {
   @media screen and (min-width: 768px) {
     .grid-auto > .cell,
     .grid-auto-md > .cell {
-      width: 33.3333333333%; } }
+      width: 33.33333%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto > .cell,
     .grid-auto-md > .cell {
@@ -730,13 +730,13 @@ form {
     clear: left; }
   @media screen and (min-width: 480px) {
     .grid-auto-xs > .cell {
-      width: 33.3333333333%; } }
+      width: 33.33333%; } }
   @media screen and (min-width: 768px) {
     .grid-auto-xs > .cell {
       width: 20%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto-xs > .cell {
-      width: 14.2857142857%; } }
+      width: 14.28571%; } }
 
 .grid-auto-sm {
   margin: 0 -10px 20px; }
@@ -776,7 +776,7 @@ form {
       width: 50%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto-lg > .cell {
-      width: 33.3333333333%; } }
+      width: 33.33333%; } }
 
 /*
 BlogSTEP 
@@ -1112,6 +1112,58 @@ main {
       main > .frame > .frame-header > .frame-header-title {
         padding: 10px 6px; } }
 
+#dock {
+  display: none;
+  float: right;
+  margin: 10px 10px 0 10px;
+  text-align: center;
+  overflow-y: auto;
+  max-height: 100%; }
+  #dock .dock-frame {
+    position: relative;
+    height: 64px;
+    /*margin-bottom: 16px;*/
+    width: 48px;
+    cursor: pointer;
+    text-align: left;
+    height: 48px;
+    padding-top: 6px;
+    padding-left: 6px;
+    border: 2px solid #fff;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+    box-shadow: inset -1px -1px 0 #222233;
+    background: #aaaabb;
+    /* Old browsers */
+    background: -moz-linear-gradient(-45deg, #aaaabb 0%, #555566 100%);
+    /* FF3.6-15 */
+    background: -webkit-linear-gradient(-45deg, #aaaabb 0%, #555566 100%);
+    /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(135deg, #aaaabb 0%, #555566 100%);
+    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aaaabb', endColorstr='#555566',GradientType=1 );
+    /* IE6-9 fallback on horizontal gradient */ }
+    #dock .dock-frame label {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      text-align: center;
+      font-size: 0.6em;
+      cursor: pointer;
+      opacity: 0.8; }
+    #dock .dock-frame:hover label {
+      /*text-decoration: underline;*/ }
+    #dock .dock-frame:active {
+      border: 2px solid #000;
+      border-right: 1px solid #fff;
+      border-bottom: 1px solid #fff;
+      box-shadow: inset 1px 1px 0px #9A9286;
+      padding-top: 7px;
+      padding-left: 7px; }
+      #dock .dock-frame:active label {
+        bottom: 0;
+        right: 0; }
+
 @media screen and (max-width: 767px) {
   body.show-menu:before {
     content: '';
@@ -1136,8 +1188,13 @@ main {
     z-index: 1000; }
   body.show-menu main {
     opacity: 0.5; }
-  body.show-menu .shortcuts {
-    opacity: 0.5; } }
+  body.show-menu #dock {
+    display: block;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    z-index: 1000; } }
 @media screen and (min-width: 768px) {
   aside {
     display: block; }
@@ -1145,57 +1202,10 @@ main {
   main {
     margin-left: 210px; }
     main .frame-header a[data-action="toggle-menu"] {
-      display: none; } }
-#dock {
-  display: none;
-  float: right;
-  margin: 10px 10px 0 10px;
-  text-align: center; }
-  #dock .shortcut {
-    position: relative;
-    height: 64px;
-    /*margin-bottom: 16px;*/
-    width: 48px;
-    cursor: pointer;
-    text-align: left;
-    height: 48px;
-    padding-top: 6px;
-    padding-left: 6px;
-    border: 2px solid #fff;
-    border-bottom: 1px solid #000;
-    border-right: 1px solid #000;
-    box-shadow: inset -1px -1px 0 #222233;
-    background: #aaaabb;
-    /* Old browsers */
-    background: -moz-linear-gradient(-45deg, #aaaabb 0%, #555566 100%);
-    /* FF3.6-15 */
-    background: -webkit-linear-gradient(-45deg, #aaaabb 0%, #555566 100%);
-    /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(135deg, #aaaabb 0%, #555566 100%);
-    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aaaabb', endColorstr='#555566',GradientType=1 );
-    /* IE6-9 fallback on horizontal gradient */ }
-    #dock .shortcut label {
-      position: absolute;
-      bottom: 1px;
-      right: 1px;
-      text-align: center;
-      font-size: 0.6em;
-      cursor: pointer;
-      opacity: 0.8; }
-    #dock .shortcut:hover label {
-      /*text-decoration: underline;*/ }
-    #dock .shortcut:active {
-      border: 2px solid #000;
-      border-right: 1px solid #fff;
-      border-bottom: 1px solid #fff;
-      box-shadow: inset 1px 1px 0px #9A9286;
-      padding-top: 7px;
-      padding-left: 7px; }
-      #dock .shortcut:active label {
-        bottom: 0;
-        right: 0; }
+      display: none; }
 
+  #dock {
+    display: block; } }
 #viewer, #player {
   position: absolute;
   top: 0;
