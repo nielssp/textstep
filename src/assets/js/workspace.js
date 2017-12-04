@@ -191,6 +191,7 @@ App.prototype.disableAction = function (name) {
 App.prototype.setTitle = function (title) {
     this.title = title;
     this.frame.find('.frame-header-title').text(this.title);
+    this.dockFrame.attr('title', this.title);
     document.title = this.title;
 };
 
