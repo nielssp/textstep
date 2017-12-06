@@ -38,7 +38,7 @@ module.exports = {
         new webpack.optimize.CommonsChunkPlugin("init"),
         new webpack.optimize.UglifyJsPlugin({minimize: true, sourceMap: true}),
         new ExtractTextPlugin({
-          filename: "css/[name].css"
+          filename: "scss/extract/_[name].scss"
         })
     ]
 };

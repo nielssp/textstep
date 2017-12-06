@@ -1246,20 +1246,20 @@ Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
-.editor-frame {
+.editor-frame > .frame-content {
   padding: 0;
   display: flex;
   flex-direction: column; }
-  .editor-frame .editor-statusbar {
+  .editor-frame > .frame-content .editor-statusbar {
     color: #000000; }
-  .editor-frame .editor-toolbar {
+  .editor-frame > .frame-content .editor-toolbar {
     border: 0; }
-    .editor-frame .editor-toolbar a {
+    .editor-frame > .frame-content .editor-toolbar a {
       border-radius: 0;
       background: transparent; }
-      .editor-frame .editor-toolbar a:focus {
+      .editor-frame > .frame-content .editor-toolbar a:focus {
         outline: 1px solid #000000; }
-      .editor-frame .editor-toolbar a:hover {
+      .editor-frame > .frame-content .editor-toolbar a:hover {
         background-color: #bab7ba;
         color: #000000;
         box-shadow: inset -1px -1px 0px #555555;
@@ -1267,28 +1267,28 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-right: 1px solid #000000;
         border-bottom: 1px solid #000000;
         border-radius: 1px; }
-      .editor-frame .editor-toolbar a:active, .editor-frame .editor-toolbar a.active {
+      .editor-frame > .frame-content .editor-toolbar a:active, .editor-frame > .frame-content .editor-toolbar a.active {
         background-color: #ffffff;
         border: 1px solid #000000;
         border-right: 1px solid #fff;
         border-bottom: 1px solid #fff;
         box-shadow: none; }
-    .editor-frame .editor-toolbar .separator {
+    .editor-frame > .frame-content .editor-toolbar .separator {
       border-right: 0;
       border-left: 1px solid #666; }
-    .editor-frame .editor-toolbar:after, .editor-frame .editor-toolbar:before {
+    .editor-frame > .frame-content .editor-toolbar:after, .editor-frame > .frame-content .editor-toolbar:before {
       margin: 0; }
-    .editor-frame .editor-toolbar.fullscreen a:active, .editor-frame .editor-toolbar.fullscreen a.active {
+    .editor-frame > .frame-content .editor-toolbar.fullscreen a:active, .editor-frame > .frame-content .editor-toolbar.fullscreen a.active {
       border: 1px solid #000; }
-    .editor-frame .editor-toolbar.disabled-for-preview a:not(.no-disable) {
+    .editor-frame > .frame-content .editor-toolbar.disabled-for-preview a:not(.no-disable) {
       background: transparent; }
-  .editor-frame .CodeMirror {
+  .editor-frame > .frame-content .CodeMirror {
     flex-grow: 1;
     border-radius: 0;
     border-bottom: 1px solid #666;
     border-top: 1px solid #666;
     position: relative; }
-    .editor-frame .CodeMirror .CodeMirror-scroll {
+    .editor-frame > .frame-content .CodeMirror .CodeMirror-scroll {
       position: absolute;
       top: 0;
       left: 0;
