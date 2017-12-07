@@ -5,6 +5,7 @@
 <title>BLOGSTEP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <?php echo $this->block('meta'); ?>
+<link rel="shortcut icon" href="<?php echo $this->link('asset:img/icon.ico'); ?>" />
 <?php echo $this->resourceBlock("style"); ?>
 </head>
 <body data-path="<?php echo $this->link(''); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">

@@ -1,4 +1,4 @@
-<?php $this->import('css/viewer.css;dist/viewer.js'); ?><div class="frame">
+<?php $this->import('css/viewer.css;dist/viewer.js'); ?><div class="frame View-app">
 <div class="frame-header">
 <div class="frame-header-actions">
 <a href="" data-action="toggle-menu"></a>
