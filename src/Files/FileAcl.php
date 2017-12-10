@@ -99,19 +99,4 @@ class FileAcl
             $this->deletions[$recordKey] = true;
         }
     }
-
-    public function getOwner(array $path)
-    {
-        return $this->get($path, 'owner', 'system');
-    }
-
-    public function getGroup(array $path)
-    {
-        return $this->get($path, 'group', 'system');
-    }
-
-    public function getMode(array $path)
-    {
-        return $this->get($path, 'mode', 0x3A);
-    }
 }

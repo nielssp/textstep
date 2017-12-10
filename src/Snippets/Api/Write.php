@@ -6,9 +6,9 @@
 namespace Blogstep\Snippets\Api;
 
 /**
- * Edit file content.
+ * Write file content.
  */
-class Edit extends \Blogstep\AuthenticatedSnippet
+class Write extends \Blogstep\AuthenticatedSnippet
 {
     
     public function post(array $data)

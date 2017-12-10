@@ -130,38 +130,37 @@ class File implements \IteratorAggregate, HasRoute
     
     public function getOwner()
     {
-        return $this->system->acl->getOwner($this->path);
+        return $this->system->acl->get($this->path, 'owner', 'system');
     }
     
     public function getGroup()
     {
-        return $this->system->acl->getGroup($this->path);
+        return $this->system->acl->get($this->path, 'group', 'system');
     }
     
     public function getMode()
     {
-        return $this->system->acl->getMode($this->path);
+        return $this->system->acl->get($this->path, 'mode', ['rw', 'r', '']);
     }
     
     public function getModeString()
     {
         $mode = $this->getMode();
-        $str = ($mode & 0x20 ? 'r' : '-');
-        $str .= ($mode & 0x10 ? 'w' : '-');
-        $str .= ($mode & 0x08 ? 'r' : '-');
-        $str .= ($mode & 0x04 ? 'w' : '-');
-        $str .= ($mode & 0x02 ? 'r' : '-');
-        $str .= ($mode & 0x01 ? 'w' : '-');
-        return $str;
+        return implode(',', $mode);
     }
     
     public function setModeString($str)
     {
-        $mode = 0;
+        if (strpos($str, ',') !== false) {
+            $mode = explode(',', $str);
+            Assume::that(count($mode) == 3);
+            return $this->set('mode', $mode);
+        }
+        $mode = ['', '', ''];
         Assume::that(strlen($str) === 6);
         for ($i = 0; $i < 6; $i++) {
             if ($str[$i] !== '-') {
-                $mode |= 0x20 >> $i;
+                $mode[floor($i / 2)] .= ($i % 2 == 0) ? 'r' : 'w';
             }
         }
         return $this->set('mode', $mode);
@@ -169,25 +168,24 @@ class File implements \IteratorAggregate, HasRoute
     
     public function getUserMode()
     {
-        return ($this->getMode() & 0x30) >> 4;
+        return $this->getMode()[0];
     }
     
     public function getGroupMode()
     {
-        return ($this->getMode() & 0xC) >> 2;
+        return $this->getMode()[1];
     }
     
     public function getAllMode()
     {
-        return $this->getMode() & 0x3;
+        return $this->getMode()[2];
     }
     
     private function assumeReadable()
     {
         if (!$this->isReadable()) {
-            $dir = $this->isDirectory() ? $this : $this->parent;
             throw new FileException(
-                I18n::get('Directory is not readable: %1', $dir->getPath()),
+                I18n::get('File is not readable: %1', $this->getPath()),
                 FileException::NOT_READABLE
             );
         }
@@ -196,9 +194,8 @@ class File implements \IteratorAggregate, HasRoute
     private function assumeWritable()
     {
         if (!$this->isWritable()) {
-            $dir = $this->isDirectory() ? $this : $this->parent;
             throw new FileException(
-                I18n::get('Directory is not writable: %1', $dir->getPath()),
+                I18n::get('File is not writable: %1', $this->getPath()),
                 FileException::NOT_WRITABLE
             );
         }
@@ -211,12 +208,12 @@ class File implements \IteratorAggregate, HasRoute
         }
         $mode = $this->getAllMode();
         if ($this->system->user->isMemberOf($this->getGroup())) {
-            $mode |= $this->getGroupMode();
+            $mode .= $this->getGroupMode();
         }
         if ($this->system->user->getName() === $this->getOwner()) {
-            $mode |= $this->getUserMode();
+            $mode .= $this->getUserMode();
         }
-        return ($mode & 0x2) !== 0;
+        return strpos($mode, 'r') !== false;
     }
     
     public function isWritable()
@@ -231,12 +228,12 @@ class File implements \IteratorAggregate, HasRoute
         }
         $mode = $this->getAllMode();
         if ($this->system->user->isMemberOf($this->getGroup())) {
-            $mode |= $this->getGroupMode();
+            $mode .= $this->getGroupMode();
         }
         if ($this->system->user->getName() === $this->getOwner()) {
-            $mode |= $this->getUserMode();
+            $mode .= $this->getUserMode();
         }
-        return ($mode & 0x1) !== 0;
+        return strpos($mode, 'w') !== false;
     }
     
     public function getBrief()

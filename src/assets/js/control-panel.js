@@ -14,6 +14,7 @@ BLOGSTEP.init('control-panel', function (app) {
     menu.addItem('Users and groups', 'users');
     menu.addItem('Personalization', 'personalization');
     menu.addItem('System', 'system');
+    menu.addItem('About BLOGSTEP', 'about');
     menu.addItem('Close', 'close');
     
     app.frame.find('.frame-content').hide();

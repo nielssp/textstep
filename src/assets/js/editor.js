@@ -182,7 +182,7 @@ function close() {
 function saveFile() {
     if (simplemde !== null && current !== null) {
         var buffer = current;
-        BLOGSTEP.post('edit', {path: buffer.path, data: buffer.data}).done(function () {
+        BLOGSTEP.post('write', {path: buffer.path, data: buffer.data}).done(function () {
             buffer.unsaved = false;
             buffer.item.text(buffer.name);
             if (current === buffer) {

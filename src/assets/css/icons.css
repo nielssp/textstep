@@ -340,6 +340,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .frame-toolbar .icon-system:before, .login-frame .icon-system:before {
   background-image: url(../img/icons/22/system.png); }
 
+.icon-blogstep:before {
+  background-image: url(../img/icons/32/blogstep.png); }
+
+.files-list .icon-blogstep:before {
+  background-image: url(../img/icons/16/blogstep.png); }
+
+.frame-toolbar .icon-blogstep:before, .login-frame .icon-blogstep:before {
+  background-image: url(../img/icons/22/blogstep.png); }
+
 .icon-users:before {
   background-image: url(../img/icons/32/users.png); }
 

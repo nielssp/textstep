@@ -65,7 +65,7 @@ function saveFile()
 {
     var app = this;
     codemirror.save();
-    BLOGSTEP.post('edit', { path: path, data: textarea.val() }).done(function () {
+    BLOGSTEP.post('write', { path: path, data: textarea.val() }).done(function () {
 	app.setTitle(path + ' – Code editor');
     });
 }

@@ -25,7 +25,7 @@ class SystemAcl
     
     public function __destruct()
     {
-        if (count($this->changes) > 0) {
+        if (count($this->additions) > 0 or count($this->deletions) > 0) {
             $this->store->open(true);
             $data = $this->store->read();
             foreach ($this->additions as $key => $groups) {

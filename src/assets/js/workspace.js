@@ -285,6 +285,8 @@ App.prototype.close = function () {
         if (tasks.length > 0) {
             running = tasks.pop();
             running.resume();
+        } else {
+            running = null;
         }
     }
     if (this.dockFrame !== null) {
