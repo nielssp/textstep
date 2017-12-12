@@ -115,6 +115,18 @@ var commands = {
             writeLine(tasks[i].name + ' (' + tasks[i].state + ')');
         }
         prompt();
+    },
+    kill: function (args) {
+        var tasks = BLOGSTEP.getTasks();
+        for (var i = 0; i < tasks.length; i++) {
+            if (tasks[i].name === args) {
+                tasks[i].kill();
+                prompt();
+                return;
+            }
+        }
+        writeLine(args + ': task not found');
+        prompt();
     }
 };
 

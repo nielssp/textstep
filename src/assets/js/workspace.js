@@ -235,7 +235,7 @@ App.prototype.init = function () {
 
 App.prototype.open = function (args) {
     if (this.state !== 'initialized') {
-        console.error('open: unexpected state', this.state, 'app', this.name);
+        console.error(this.name + ': open: unexpected state:', this.state);
         return;
     }
     this.state = 'opening';
@@ -250,7 +250,14 @@ App.prototype.open = function (args) {
         }
     }
     if (this.onOpen !== null) {
-        this.onOpen(this, args || {});
+        try {
+            this.onOpen(this, args || {});
+        } catch (e) {
+            console.error(this.name + ': open: exception caught:', e);
+            alert('Could not open application: ' + this.name);
+            this.kill();
+            return;
+        }
     }
     if (this.dockFrame !== null) {
         $('#dock').append(this.dockFrame);
@@ -259,9 +266,40 @@ App.prototype.open = function (args) {
     this.state = 'running';
 };
 
+App.prototype.kill = function () {
+    this.state = 'closing';
+    if (this.onClose !== null) {
+        try {
+            this.onClose(this);
+        } catch (e) {
+        }
+    }
+    this.frame.removeClass('active').hide();
+    for (var i = 0; i < this.menus.length; i++) {
+        this.menus[i].frame.hide();
+    }
+    for (var name in this.toolFrames) {
+        if (this.toolFrames.hasOwnProperty(name)) {
+            this.toolFrames[name].hide();
+        }
+    }
+    if (running === this) {
+        if (tasks.length > 0) {
+            running = tasks.pop();
+            running.resume();
+        } else {
+            running = null;
+        }
+    }
+    if (this.dockFrame !== null) {
+        this.dockFrame.detach();
+    }
+    this.state = 'initialized';
+};
+
 App.prototype.close = function () {
     if (this.state !== 'running') {
-        console.error('close: unexpected state', this.state, 'app', this.name);
+        console.error(this.name + ': close: unexpected state:', this.state);
         return;
     }
     this.state = 'closing';
@@ -298,11 +336,18 @@ App.prototype.close = function () {
 
 App.prototype.reopen = function (args) {
     if (this.state !== 'running') {
-        console.error('reopen: unexpected state', this.state, 'app', this.name);
+        console.error(this.name + ': reopen: unexpected state:', this.state);
         return;
     }
     if (this.onReopen !== null) {
-        this.onReopen(this, args || {});
+        try {
+            this.onReopen(this, args || {});
+        } catch (e) {
+            console.error(this.name + ': reopen: exception caught:', e);
+            alert('Could not open application: ' + this.name);
+            this.kill();
+            return;
+        }
     } else {
         this.state = 'closing';
         if (this.onClose !== null) {
@@ -315,7 +360,7 @@ App.prototype.reopen = function (args) {
 
 App.prototype.suspend = function () {
     if (this.state !== 'running') {
-        console.error('suspend: unexpected state', this.state, 'app', this.name);
+        console.error(this.name + ': suspend: unexpected state:', this.state);
         return;
     }
     this.state = 'suspending';
@@ -338,7 +383,7 @@ App.prototype.suspend = function () {
 
 App.prototype.resume = function () {
     if (this.state !== 'suspended') {
-        console.error('resume: unexpected state', this.state, 'app', this.name);
+        console.error(this.name + ': resume: unexpected state:', this.state);
         return;
     }
     this.state = 'resuming';

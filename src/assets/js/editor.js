@@ -32,7 +32,7 @@ function createBuffer(path) {
         reopen(self, {path: path});
     });
     bufferPanel.append(item);
-    buffer = {
+    var buffer = {
         path: path,
         name: paths.fileName(path),
         cwd: paths.dirName(path),
@@ -88,7 +88,7 @@ function openBuffer(path) {
 }
 
 function open(app, args) {
-    path = args.path;
+    var path = args.path;
     app.frame.find('textarea').val('');
     app.setTitle(path + ' (...) – Editor');
 
@@ -149,7 +149,7 @@ function open(app, args) {
 }
 
 function reopen(app, args) {
-    path = args.path;
+    var path = args.path;
     app.setTitle(path + ' (...) – Editor');
     app.frame.find('textarea').val('');
 
