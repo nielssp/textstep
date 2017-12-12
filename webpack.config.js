@@ -31,6 +31,16 @@ module.exports = {
                 fallback: "style-loader",
                 use: "css-loader"
               })
+            },
+            {
+              test: /\.js$/,
+              exclude: /node_modules/,
+              use: {
+                loader: 'babel-loader',
+                options: {
+                  presets: ['env']
+                }
+              }
             }
         ]
     },
