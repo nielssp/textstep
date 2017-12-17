@@ -224,7 +224,7 @@ function addFileInfo($column, file) {
         case 'png':
         case 'ico':
             $icon = $('<img class="file-thumbnail">');
-            $icon.attr('src', BLOGSTEP.PATH + '/api/download?path=' + encodeURIComponent(file.path));
+            $icon.attr('src', BLOGSTEP.PATH + '/api/thumbnail?path=' + encodeURIComponent(file.path) + '&width=200&height=200');
             action = 'View';
             break;
         case 'webm':
