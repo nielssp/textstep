@@ -250,6 +250,7 @@ class File implements \IteratorAggregate, HasRoute
             'modeString' => $this->getModeString(),
             'read' => $this->isReadable(),
             'write' => $this->isWritable(),
+            'size' => $this->getSize(),
         ];
     }
     

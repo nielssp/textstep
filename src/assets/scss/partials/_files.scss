@@ -159,6 +159,11 @@ a.file {
         word-wrap: break-word;
         margin-bottom: 10px;
     }
+    .file-size {
+        display: block;
+        color: lighten($frameFg, 30%);
+        margin-bottom: 10px;
+    }
     .file-modified {
         display: block;
         color: lighten($frameFg, 30%);

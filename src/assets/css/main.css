@@ -1435,6 +1435,10 @@ a.file:focus, a.file.match {
     display: block;
     word-wrap: break-word;
     margin-bottom: 10px; }
+  .file-info .file-size {
+    display: block;
+    color: #4d4d4d;
+    margin-bottom: 10px; }
   .file-info .file-modified {
     display: block;
     color: #4d4d4d;

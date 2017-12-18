@@ -211,6 +211,20 @@ function addFile($column, file) {
     return $file;
 }
 
+function humanSize(size) {
+    if (size < 1024) {
+        return size + ' B';
+    } else if (size < 1024 * 1024) {
+        return parseFloat(size / 1024).toFixed(1) + ' KiB';
+    } else if (size < 1024 * 1024 * 1024) {
+        return parseFloat(size / (1024 * 1024)).toFixed(1) + ' MiB';
+    } else if (size < 1024 * 1024 * 1024 * 1024) {
+        return parseFloat(size / (1024 * 1024 * 1024)).toFixed(1) + ' GiB';
+    } else if (size < 1024 * 1024 * 1024 * 1024 * 1024) {
+        return parseFloat(size / (1024 * 1024 * 1024 * 1024)).toFixed(1) + ' TiB';
+    }
+}
+
 function addFileInfo($column, file) {
     if (!files.hasOwnProperty(file.path)) {
         createFile(file);
@@ -238,11 +252,13 @@ function addFileInfo($column, file) {
     }
     var $name = $('<span class="file-name">');
     $name.text(file.name);
+    var $size = $('<span class="file-size">');
+    $size.text(humanSize(file.size));
     var $modified = $('<span class="file-modified">');
     $modified.text(new Date(file.modified * 1000).toString());
     var $access = $('<span class="file-access">');
     $access.text(file.modeString + ' ' + file.owner + ':' + file.group + ' (' + (file.read ? 'r' : '-') + (file.write ? 'w' : '-') + ')');
-    $li.append($icon).append($name).append($modified).append($access);
+    $li.append($icon).append($name).append($size).append($modified).append($access);
     if (file.read) {
         var $button = $('<button>' + action + '</button>');
         $button.click(function () {
