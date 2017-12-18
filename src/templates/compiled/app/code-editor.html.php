@@ -14,3 +14,14 @@
 <textarea></textarea>
 </div>
 </div>
+<div class="tool-frame" data-name="buffers">
+<div class="tool-frame-header">
+        Buffers
+</div>
+<div class="tool-frame-content">
+<div class="files-panel">
+<div class="files-list">
+</div>
+</div>
+</div>
+</div>

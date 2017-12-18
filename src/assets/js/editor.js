@@ -48,7 +48,7 @@ function createBuffer(path) {
     }
     current = buffer;
     current.item.addClass('active');
-    BLOGSTEP.get('download', {path: path}).done(function (data) {
+    BLOGSTEP.get('download', {path: path}, 'text').done(function (data) {
         buffer.data = data;
         if (current === buffer) {
             openBuffer(path);
