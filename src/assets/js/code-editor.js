@@ -222,7 +222,7 @@ BLOGSTEP.init('code-editor', function (app) {
     
     app.bindKey('c-s', 'save');
     
-    var menu = app.addMenu('Editor');
+    var menu = app.addMenu('Code Editor');
     menu.addItem('New', 'new');
     menu.addItem('Save', 'save');
     menu.addItem('Close buffer', 'close-buffer');

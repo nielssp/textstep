@@ -322,6 +322,24 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .frame-toolbar .icon-editor:before, .login-frame .icon-editor:before {
   background-image: url(../img/icons/22/editor.png); }
 
+.icon-code-editor:before {
+  background-image: url(../img/icons/32/code-editor.png); }
+
+.files-list .icon-code-editor:before {
+  background-image: url(../img/icons/16/code-editor.png); }
+
+.frame-toolbar .icon-code-editor:before, .login-frame .icon-code-editor:before {
+  background-image: url(../img/icons/22/code-editor.png); }
+
+.icon-terminal:before {
+  background-image: url(../img/icons/32/terminal.png); }
+
+.files-list .icon-terminal:before {
+  background-image: url(../img/icons/16/terminal.png); }
+
+.frame-toolbar .icon-terminal:before, .login-frame .icon-terminal:before {
+  background-image: url(../img/icons/22/terminal.png); }
+
 .icon-site:before {
   background-image: url(../img/icons/32/site.png); }
 

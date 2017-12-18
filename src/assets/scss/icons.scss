@@ -158,6 +158,8 @@ $size22: '.frame-toolbar, .login-frame';
 @include icon('unlock');
 @include icon('appearance');
 @include icon('editor');
+@include icon('code-editor');
+@include icon('terminal');
 @include icon('site');
 @include icon('system');
 @include icon('blogstep');
