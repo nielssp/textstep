@@ -12,13 +12,15 @@ class SystemAcl
 {
     private $file;
     private $store;
+    private $users;
     private $aclMap = null;
     private $additions = [];
     private $deletions = [];
     
-    public function __construct($file)
+    public function __construct($file, \Blogstep\UserModel $users)
     {
         $this->file = $file;
+        $this->users = $users;
         $this->store = new \Jivoo\Store\PhpStore($file);
         $this->store->touch();
     }
@@ -68,6 +70,24 @@ class SystemAcl
     {
         $record = $this->getRecord($key);
         return count(array_intersect($groups, $record)) > 0;
+    }
+    
+    public function withAuthentication($key, Files\File $file, callable $callback)
+    {
+        $system = $file->get('/');
+        $user = $system->getAuthentication();
+        if (!isset($user)) {
+            $callback($file);
+            return;
+        }
+        $groups = [$user->getPrimaryGroup()] + $user->getGroups();
+        if ($this->check($key, $groups)) {
+            $system->setAuthentication($this->users->getUser('system'));
+            $callback($file);
+            $system->setAuthentication($user);
+        } else {
+            $callback($file);
+        }
     }
     
     public function set($key, $group)

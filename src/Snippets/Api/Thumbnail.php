@@ -32,6 +32,25 @@ class Thumbnail extends AuthenticatedSnippet
         if ($fs->getType() == 'directory') {
             return $this->error('not a file', Status::BAD_REQUEST);
         }
+        $maxWidth = null;
+        $maxHeight = null;
+        $size = '';
+        if (isset($this->request->query['width'])) {
+            $maxWidth = intval($this->request->query['width']);
+            $size .= '_W' . $maxWidth;
+        }
+        if (isset($this->request->query['height'])) {
+            $maxHeight = intval($this->request->query['height']);
+            $size .= '_H' . $maxWidth;
+        }
+        $cacheKey = md5($fs->getPath()) . $size;
+        $cached = $this->m->files->get('/system/cache/thumbnails/' . $cacheKey . '.png');
+        if ($cached->exists() and $cached->getCreated() >= $fs->getModified()) {
+            $path = $cached->getRealPath();
+            $mimeType = $this->m->assets->getMimeType($path);
+            $response = Response::file($path, $mimeType);
+            return $response;
+        }
         $path = $fs->getRealPath();
         $imgType = getimagesize($path);
         if ($imgType === false) {
@@ -40,13 +59,11 @@ class Thumbnail extends AuthenticatedSnippet
         $width = $imgType[0];
         $height = $imgType[1];
         
-        $maxWidth = $width;
-        $maxHeight = $height;
-        if (isset($this->request->query['width'])) {
-            $maxWidth = intval($this->request->query['width']);
+        if (!isset($maxWidth)) {
+            $maxWidth = $width;
         }
-        if (isset($this->request->query['height'])) {
-            $maxHeight = intval($this->request->query['height']);
+        if (!isset($maxHeight)) {
+            $maxHeight = $width;
         }
         
         if ($width > $maxWidth or $height > $maxHeight) {
@@ -71,6 +88,25 @@ class Thumbnail extends AuthenticatedSnippet
             if (isset($source) and $source !== false) {
                 $resized = imagecreatetruecolor($targetWidth, $targetHeight);
                 imagecopyresampled($resized, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+                $created = false;
+                $this->m->acl->withAuthentication('thumbnail.generate', $cached, function ($cached) use ($resized, $created) {
+                    try {
+                        if ($cached->makeFile()) {
+                            $cacheOut = $cached->openStream('wb+');
+                            $f = $cacheOut->detach();
+                            imagepng($resized, $f);
+                            fclose($f);
+                            $created = true;
+                        }
+                    } catch (\Blogstep\Files\FileException $e) {
+                    }
+                });
+                if ($created) {
+                    $path = $cached->getRealPath();
+                    $mimeType = $this->m->assets->getMimeType($path);
+                    $response = Response::file($path, $mimeType);
+                    return $response;
+                }
                 $stream = fopen('php://memory', 'wb+');
                 if ($stream) {
                     imagepng($resized, $stream);

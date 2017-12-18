@@ -452,10 +452,13 @@ class File implements \IteratorAggregate, HasRoute
                 break;
             case 'r+':
             case 'r+b':
+            case 'rb+':
             case 'w+':
             case 'w+b':
+            case 'wb+':
             case 'a+':
             case 'a+b':
+            case 'ab+':
                 $this->assumeReadable();
                 $this->assumeWritable();
                 break;
@@ -468,13 +471,15 @@ class File implements \IteratorAggregate, HasRoute
                 break;
             case 'x+':
             case 'x+b':
+            case 'xb+':
             case 'c+':
             case 'c+b':
+            case 'cb+':
                 // TODO: check parent permissions etc.
                 throw new \Exception('not implemented');
                 break;
             default:
-                throw new InvalidArgumentException('undefined file mode: ' + $mode);
+                throw new InvalidArgumentException('undefined file mode: ' . $mode);
         }
         return new PhpStream($this->getRealPath(), $mode);
     }

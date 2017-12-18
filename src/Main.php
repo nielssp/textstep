@@ -165,7 +165,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Initialize authentication system
         $this->m->users = new UserModel($this->m->files);
         
-        $this->m->acl = new SystemAcl($this->m->files->get('system/sysacl.php')->getRealPath());
+        $this->m->acl = new SystemAcl($this->m->files->get('system/sysacl.php')->getRealPath(), $this->m->users);
         
         $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
         $this->m->auth->session = new \Jivoo\Security\Authentication\SessionAuthentication($this->m->session);

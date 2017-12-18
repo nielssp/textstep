@@ -40,6 +40,11 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
         $this->acl = new FileAcl($this->get('system/fileacl.php')->getRealPath());
     }
     
+    public function getAuthentication()
+    {
+        return $this->user;
+    }
+    
     public function setAuthentication(\Blogstep\User $user)
     {
         $this->user = $user;
