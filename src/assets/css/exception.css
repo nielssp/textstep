@@ -279,6 +279,9 @@ dl {
     height: 16px; }
   .button .icon + .label, button .icon + .label, input[type=button] .icon + .label, input[type=reset] .icon + .label, input[type=submit] .icon + .label {
     margin-left: 0px; }
+.button .shortcut, button .shortcut, input[type=button] .shortcut, input[type=reset] .shortcut, input[type=submit] .shortcut {
+  float: right;
+  color: #666666; }
 
 .button-group {
   display: inline-block;
@@ -472,6 +475,9 @@ select:not([size]), select[size="1"] {
       height: 16px; }
     select:not([size]) .icon + .label, select[size="1"] .icon + .label {
       margin-left: 0px; }
+  select:not([size]) .shortcut, select[size="1"] .shortcut {
+    float: right;
+    color: #666666; }
   select:not([size]) option, select[size="1"] option {
     padding: 3px 5px 1px 7px; }
 

@@ -13,6 +13,9 @@ var paths = require('./common/paths');
 
 window.BLOGSTEP = {};
 
+window.BLOGSTEP.ui = ui;
+window.BLOGSTEP.paths = paths;
+
 var apps = {};
 
 var tasks = [];
@@ -41,6 +44,11 @@ Menu.prototype.addItem = function (label, action) {
     });
     var item = $('<li>');
     item.append(button);
+    for (var key in this.app.keyMap) {
+        if (this.app.keyMap.hasOwnProperty(key) && this.app.keyMap[key] === action) {
+            button.append('<span class="shortcut">' + key + '</span>');
+        }
+    }
     this.itemList.append(item);
 };
 
@@ -87,18 +95,18 @@ App.prototype.keydown = function (e) {
     }
     var key = '';
     if (e.ctrlKey) {
-        key += 'c-';
+        key += 'Ctrl-';
     }
     if (e.altKey) {
-        key += 'a-';
+        key += 'Alt-';
     }
     if (e.shiftKey) {
-        key += 's-';
+        key += 'Shift-';
     }
     if (e.metaKey) {
-        key += 'm-';
+        key += 'Meta-';
     }
-    key += e.key.toLowerCase();
+    key += e.key.toUpperCase();
     if (this.keyMap.hasOwnProperty(key)) {
         e.preventDefault();
         this.activate(this.keyMap[key]);
@@ -113,17 +121,20 @@ App.prototype.bindKey = function (key, action) {
     for (var i = 0; i < parts.length - 1; i++) {
         switch (parts[i]) {
             case 'c':
-                e.ctrlKey = 'c-';
+                e.ctrlKey = 'Ctrl-';
                 break;
             case 'a':
-                e.altKey = 'a-';
+                e.altKey = 'Alt-';
                 break;
             case 's':
-                e.shiftKey = 's-';
+                e.shiftKey = 'Shift-';
+                break;
+            case 'm':
+                e.metaKey = 'Meta-';
                 break;
         }
     }
-    key = e.ctrlKey + e.altKey + e.shiftKey + key;
+    key = e.ctrlKey + e.altKey + e.shiftKey + key.toUpperCase();
     this.keyMap[key] = action;
 };
 
