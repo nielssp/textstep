@@ -95,16 +95,16 @@ App.prototype.keydown = function (e) {
     }
     var key = '';
     if (e.ctrlKey) {
-        key += 'Ctrl-';
+        key += 'Ctrl+';
     }
     if (e.altKey) {
-        key += 'Alt-';
+        key += 'Alt+';
     }
     if (e.shiftKey) {
-        key += 'Shift-';
+        key += 'Shift+';
     }
     if (e.metaKey) {
-        key += 'Meta-';
+        key += 'Meta+';
     }
     key += e.key.toUpperCase();
     if (this.keyMap.hasOwnProperty(key)) {
@@ -121,16 +121,16 @@ App.prototype.bindKey = function (key, action) {
     for (var i = 0; i < parts.length - 1; i++) {
         switch (parts[i]) {
             case 'c':
-                e.ctrlKey = 'Ctrl-';
+                e.ctrlKey = 'Ctrl+';
                 break;
             case 'a':
-                e.altKey = 'Alt-';
+                e.altKey = 'Alt+';
                 break;
             case 's':
-                e.shiftKey = 'Shift-';
+                e.shiftKey = 'Shift+';
                 break;
             case 'm':
-                e.metaKey = 'Meta-';
+                e.metaKey = 'Meta+';
                 break;
         }
     }

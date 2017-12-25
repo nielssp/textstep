@@ -37,7 +37,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border: 1px solid #555;
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
-    overflow-y: scroll;
     /*min-height: 200px;*/
     flex-grow: 1;
     position: relative;
@@ -70,6 +69,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-left: 1px solid #000;
     border-top: 1px solid #000;
     margin: 0;
+    overflow-y: scroll;
 }
 
 .file {
