@@ -148,7 +148,6 @@ input[type=radio] {
 select:not([size]), select[size="1"] {
     @include button;
     display: block;
-    width: 100%;
 
     option {
         padding: 3px 5px 1px 7px;
@@ -157,7 +156,6 @@ select:not([size]), select[size="1"] {
 
 select:not([size="1"]) {
     display: block;
-    width: 100%;
     padding: 1px 4px 1px 4px;
     margin: 2px 0;
     background-color: $contentBg;
@@ -267,6 +265,7 @@ select:not([size="1"]) {
         display: block;
         margin-bottom: 2px;
         overflow: hidden;
+        float: left;
     }
     &.field-required label:first-child:after {
         content: '*';
@@ -296,5 +295,45 @@ form {
     }
     & > *:last-child {
         margin-bottom: 0;
+    }
+}
+
+fieldset {
+    border: 1px solid #555;
+    border-bottom-color: #fff;
+    border-right-color: #fff;
+    box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #555;
+    padding: 5px;
+    margin-bottom: 10px;
+    position: relative;
+    
+    legend {
+        text-align: center;
+        padding: 0 5px;
+        font-size: 0.9em;
+        background-color: $frameBg;
+        display: block;
+    }
+    
+    .field {
+        display: flex;
+        align-items: center;
+        label {
+            width: 120px;
+            
+            &:after {
+                content: ':';
+            }
+        }
+        
+        #{$inputs} {
+            flex-grow: 1;
+            width: auto;
+            margin: 0;
+        }
+        
+        select {
+            margin: 0;
+        }
     }
 }

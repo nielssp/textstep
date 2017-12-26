@@ -592,7 +592,7 @@ function matchFilter(filter) {
 
 function updateFilter() {
     var $filter = $currentColumn.children('.filter');
-    $currentColumn.find('.match').removeClass('match');
+    $columns.find('.match').removeClass('match');
     if ($filter.length > 0) {
         if ($filter.val() === '') {
             $filter.remove();
@@ -634,6 +634,7 @@ function keydown(e) {
                         var $match = $currentColumn.find('.match');
                         if ($match.length > 0) {
                             $(this).remove();
+                            $match.removeClass('match');
                             $match.click();
                         }
                         return false;

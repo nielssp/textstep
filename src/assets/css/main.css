@@ -420,8 +420,7 @@ input[type=radio] {
     opacity: 0.5; }
 
 select:not([size]), select[size="1"] {
-  display: block;
-  width: 100%; }
+  display: block; }
   select:not([size]), select:not([size]):link, select:not([size]):visited, select:not([size]):active, select[size="1"], select[size="1"]:link, select[size="1"]:visited, select[size="1"]:active {
     color: #000;
     text-decoration: none;
@@ -484,7 +483,6 @@ select:not([size]), select[size="1"] {
 
 select:not([size="1"]) {
   display: block;
-  width: 100%;
   padding: 1px 4px 1px 4px;
   margin: 2px 0;
   background-color: #ffffff;
@@ -569,7 +567,8 @@ select:not([size="1"]) {
     font-size: 0.95em;
     display: block;
     margin-bottom: 2px;
-    overflow: hidden; }
+    overflow: hidden;
+    float: left; }
   .field.field-required label:first-child:after {
     content: '*';
     margin-left: 4px;
@@ -592,6 +591,34 @@ form {
     margin-bottom: 20px; }
   form > *:last-child {
     margin-bottom: 0; }
+
+fieldset {
+  border: 1px solid #555;
+  border-bottom-color: #fff;
+  border-right-color: #fff;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #555;
+  padding: 5px;
+  margin-bottom: 10px;
+  position: relative; }
+  fieldset legend {
+    text-align: center;
+    padding: 0 5px;
+    font-size: 0.9em;
+    background-color: #AEAAAE;
+    display: block; }
+  fieldset .field {
+    display: flex;
+    align-items: center; }
+    fieldset .field label {
+      width: 120px; }
+      fieldset .field label:after {
+        content: ':'; }
+    fieldset .field input[type=text], fieldset .field input[type=email], fieldset .field input[type=password], fieldset .field input[type=date], fieldset .field input[type=time], fieldset .field input[type=datetime], fieldset .field textarea {
+      flex-grow: 1;
+      width: auto;
+      margin: 0; }
+    fieldset .field select {
+      margin: 0; }
 
 .grid-1-1 > .cell {
   width: 50%; }
@@ -898,17 +925,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     font-size: 0.95em;
     margin-top: 7px;
     margin-bottom: 0; }
-
-fieldset {
-  border: 1px solid #555;
-  border-bottom-color: #fff;
-  border-right-color: #fff;
-  padding: 5px;
-  margin-bottom: 10px; }
-  fieldset legend {
-    text-align: center;
-    padding: 0 5px;
-    font-size: 0.9em; }
 
 /*
 BlogSTEP 
@@ -1248,6 +1264,9 @@ main {
     background-color: rgba(0, 0, 0, 0.7); }
     #login-overlay.login-overlay-dark > #login-frame {
       box-shadow: 0 0 5px #000000; }
+
+body.loading {
+  cursor: wait; }
 
 /*
 BlogSTEP 

@@ -65,8 +65,8 @@
 <label>Target URI</label>
 <input type="text" />
 </div>
-<button>Save</button>
 </fieldset>
+<button>Apply</button>
 </div>
 </div>
 <div class="dock-frame">
