@@ -8,7 +8,22 @@
 
 var $ = require('jquery');
 
+var self;
+
+function switchPage(page) {
+    self.frame.find('.control-panel-page').removeClass('active');
+    self.frame.find('.control-panel-' + page).addClass('active');
+}
+
 BLOGSTEP.init('control-panel', function (app) {
+    self = app;
+
+    app.defineAction('site', switchPage);
+    app.defineAction('users', switchPage);
+    app.defineAction('personalization', switchPage);
+    app.defineAction('system', switchPage);
+    app.defineAction('about', switchPage);
+    
     var menu = app.addMenu('Control panel');
     menu.addItem('Site', 'site');
     menu.addItem('Users and groups', 'users');
@@ -17,6 +32,5 @@ BLOGSTEP.init('control-panel', function (app) {
     menu.addItem('About BLOGSTEP', 'about');
     menu.addItem('Close', 'close');
     
-    app.frame.find('.frame-content').hide();
-    app.frame.find('.control-panel-site').show();
+    switchPage('site');
 });

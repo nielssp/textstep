@@ -10,5 +10,9 @@
 <div class="frame-content">
 <p>Hello, World!</p>
 <button data-action="test">Test</button>
+<p>1:
+<input type="text" class="textbox-1" /></p>
+<p>2:
+<input type="text" class="textbox-2" /></p>
 </div>
 </div>

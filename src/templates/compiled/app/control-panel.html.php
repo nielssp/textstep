@@ -29,7 +29,8 @@
 </button>
 </div>
 </div>
-<div class="frame-content control-panel-site">
+<div class="frame-content control-panel-page control-panel-site active">
+<div class="horizontal-fieldset-panel">
 <fieldset>
 <legend>Site</legend>
 <div class="field">
@@ -60,13 +61,58 @@
 <div class="field">
 <label>Target directory</label>
 <input type="text" />
+<button>Select</button>
 </div>
 <div class="field">
 <label>Target URI</label>
 <input type="text" />
 </div>
 </fieldset>
+</div>
+</div>
+<div class="frame-content control-panel-page control-panel-users">
+<div class="horizontal-fieldset-panel">
+<fieldset>
+<legend>Change password</legend>
+<div class="field">
+<label>Current password</label>
+<input type="password" />
+</div>
+<div class="field">
+<label>New password</label>
+<input type="password" />
+</div>
+<div class="field">
+<label>Repeat new password</label>
+<input type="password" />
+</div>
+</fieldset>
+</div>
+</div>
+<div class="frame-content control-panel-page control-panel-personalization">
+<div class="horizontal-fieldset-panel">
+<fieldset>
+<legend>Theme</legend>
+</fieldset>
+</div>
+</div>
+<div class="frame-content control-panel-page control-panel-system">
+<div class="horizontal-fieldset-panel">
+<fieldset>
+<legend>System</legend>
+</fieldset>
+</div>
+</div>
+<div class="frame-content control-panel-page control-panel-about">
+<div class="horizontal-fieldset-panel">
+<fieldset>
+<legend>BLOGSTEP</legend>
+</fieldset>
+</div>
+</div>
+<div class="frame-footer frame-footer-buttons">
 <button>Apply</button>
+<button>Cancel</button>
 </div>
 </div>
 <div class="dock-frame">

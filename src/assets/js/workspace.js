@@ -159,7 +159,7 @@ App.prototype.defineAction = function (name, callback, groups) {
 
 App.prototype.activate = function (name) {
     if (typeof name === 'string') {
-        this.actions[name].apply(this);
+        this.actions[name].apply(this, [name]);
     } else {
         name.apply(this);
     }
@@ -695,14 +695,14 @@ $(document).ready(function () {
         $('#login-username').val(data.username);
         $('#login-overlay').addClass('login-overlay-dark');
 
-        BLOGSTEP.run('files', {path: '/'}).done(function () {
-            var run = $('body').data('run');
-            if (run !== '') {
-                var args = $('body').data('args');
-                console.log(args);
-                BLOGSTEP.run(run, args);
-            }
-        });
+        var run = $('body').data('run');
+        if (run !== '') {
+            var args = $('body').data('args');
+            console.log(args);
+            BLOGSTEP.run(run, args);
+        } else {
+            BLOGSTEP.run('files', {path: '/'});
+        }
     });
 });
 

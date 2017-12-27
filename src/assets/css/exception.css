@@ -586,17 +586,18 @@ select:not([size="1"]) {
 form {
   display: block;
   margin-bottom: 20px; }
-  form .buttons {
-    margin-bottom: 20px; }
   form > *:last-child {
     margin-bottom: 0; }
+
+.footer-buttons {
+  text-align: right; }
 
 fieldset {
   border: 1px solid #555;
   border-bottom-color: #fff;
   border-right-color: #fff;
   box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #555;
-  padding: 5px;
+  padding: 5px 10px 10px 10px;
   margin-bottom: 10px;
   position: relative; }
   fieldset legend {
@@ -609,15 +610,32 @@ fieldset {
     display: flex;
     align-items: center; }
     fieldset .field label {
-      width: 120px; }
-      fieldset .field label:after {
-        content: ':'; }
+      flex-basis: 120px;
+      flex-shrink: 0;
+      text-align: right;
+      padding-right: 5px; }
     fieldset .field input[type=text], fieldset .field input[type=email], fieldset .field input[type=password], fieldset .field input[type=date], fieldset .field input[type=time], fieldset .field input[type=datetime], fieldset .field textarea {
       flex-grow: 1;
-      width: auto;
       margin: 0; }
     fieldset .field select {
+      flex-grow: 1;
       margin: 0; }
+    fieldset .field:last-child {
+      margin-bottom: 0; }
+
+.control-panel-page {
+  display: none; }
+  .control-panel-page.active {
+    display: block; }
+
+.horizontal-fieldset-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+  .horizontal-fieldset-panel fieldset {
+    max-width: 500px;
+    width: 100%; }
 
 .grid-1-1 > .cell {
   width: 50%; }
@@ -898,7 +916,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     padding: 6px;
     flex-grow: 1;
     position: relative;
-    align-items: stretch; }
+    overflow-y: auto; }
     .frame-content > .stretch {
       flex-grow: 1; }
     .frame-content > *:last-child {
@@ -908,6 +926,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     .frame-content-flex {
       display: flex;
       flex-direction: column; }
+  .frame-footer {
+    background-color: #AEAAAE;
+    color: #000;
+    padding: 6px; }
+    .frame-footer-buttons {
+      text-align: right; }
   .frame hr {
     border-top: 1px solid #555;
     border-bottom: 1px solid #fff; }

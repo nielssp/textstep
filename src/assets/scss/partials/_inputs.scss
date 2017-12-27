@@ -290,12 +290,12 @@ select:not([size="1"]) {
 form {
     display: block;
     margin-bottom: $pmargin;
-    .buttons {
-        margin-bottom: $pmargin;
-    }
     & > *:last-child {
         margin-bottom: 0;
     }
+}
+.footer-buttons {
+    text-align: right;
 }
 
 fieldset {
@@ -303,7 +303,7 @@ fieldset {
     border-bottom-color: #fff;
     border-right-color: #fff;
     box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #555;
-    padding: 5px;
+    padding: 5px 10px 10px 10px;
     margin-bottom: 10px;
     position: relative;
     
@@ -319,21 +319,44 @@ fieldset {
         display: flex;
         align-items: center;
         label {
-            width: 120px;
-            
-            &:after {
-                content: ':';
-            }
+            flex-basis: 120px;
+            flex-shrink: 0;
+            text-align: right;
+            padding-right: 5px;
         }
         
         #{$inputs} {
             flex-grow: 1;
-            width: auto;
             margin: 0;
         }
         
         select {
+            flex-grow: 1;
             margin: 0;
         }
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.control-panel-page {
+    display: none;
+    
+    &.active {
+        display: block;
+    }
+}
+
+.horizontal-fieldset-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    fieldset {
+        max-width: 500px;
+        width: 100%;
     }
 }

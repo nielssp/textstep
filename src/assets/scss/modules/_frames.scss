@@ -90,7 +90,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     padding: 6px;
     flex-grow: 1;
     position: relative;
-    align-items: stretch;
     
     & > .stretch {
         flex-grow: 1;
@@ -103,4 +102,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     & > img {
         max-width: 100%;
     }
+}
+
+@mixin frame-footer {
+    background-color: $frameBg;
+    color: #000;
+    padding: 6px;
 }

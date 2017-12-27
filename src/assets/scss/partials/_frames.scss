@@ -28,9 +28,18 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &-content {
         @include frame-content;
         
+        overflow-y: auto;
+        
         &-flex {
             display: flex;
             flex-direction: column;
+        }
+    }
+    &-footer {
+        @include frame-footer;
+        
+        &-buttons {
+            text-align: right;
         }
     }
     hr {
