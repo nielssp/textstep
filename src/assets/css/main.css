@@ -642,20 +642,20 @@ fieldset {
   width: 50%; }
 
 .grid-1-1-1 > .cell {
-  width: 33.3333333333%; }
+  width: 33.33333%; }
 
 .grid-1-1-1-1 > .cell {
   width: 25%; }
 
 .grid-1-2 > .cell:first-child {
-  width: 33.3333333333%; }
+  width: 33.33333%; }
   .grid-1-2 > .cell:first-child + .cell {
-    width: 66.6666666667%; }
+    width: 66.66667%; }
 
 .grid-2-1 > .cell:first-child {
-  width: 66.6666666667%; }
+  width: 66.66667%; }
   .grid-2-1 > .cell:first-child + .cell {
-    width: 33.3333333333%; }
+    width: 33.33333%; }
 
 .grid-1-1-2 > .cell:first-child {
   width: 25%; }
@@ -763,7 +763,7 @@ fieldset {
   @media screen and (min-width: 768px) {
     .grid-auto > .cell,
     .grid-auto-md > .cell {
-      width: 33.3333333333%; } }
+      width: 33.33333%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto > .cell,
     .grid-auto-md > .cell {
@@ -781,13 +781,13 @@ fieldset {
     clear: left; }
   @media screen and (min-width: 480px) {
     .grid-auto-xs > .cell {
-      width: 33.3333333333%; } }
+      width: 33.33333%; } }
   @media screen and (min-width: 768px) {
     .grid-auto-xs > .cell {
       width: 20%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto-xs > .cell {
-      width: 14.2857142857%; } }
+      width: 14.28571%; } }
 
 .grid-auto-sm {
   margin: 0 -10px 20px; }
@@ -827,7 +827,7 @@ fieldset {
       width: 50%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto-lg > .cell {
-      width: 33.3333333333%; } }
+      width: 33.33333%; } }
 
 /*
 BlogSTEP 
@@ -850,6 +850,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-bottom: 1px solid #4F4F4F;
     position: relative;
     flex-grow: 0;
+    flex-shrink: 0;
     display: flex; }
     .frame-header > .frame-header-actions {
       font-size: 0.8em;
@@ -1156,7 +1157,7 @@ main {
   main > .frame {
     flex-grow: 1; }
     @media screen and (max-width: 767px) {
-      main > .frame > .frame-header > .frame-header-actions a {
+      main > .frame > .frame-header > .frame-header-actions a, main > .frame > .frame-header > .frame-header-actions button {
         width: 35px; }
       main > .frame > .frame-header > .frame-header-title {
         padding: 10px 6px; } }

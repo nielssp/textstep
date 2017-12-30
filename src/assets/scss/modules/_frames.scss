@@ -22,6 +22,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-bottom: 1px solid #4F4F4F;
     position: relative;
     flex-grow: 0;
+    flex-shrink: 0;
     display: flex;
     
     & > .frame-header-actions {

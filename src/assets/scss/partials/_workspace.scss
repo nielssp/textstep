@@ -99,7 +99,7 @@ main {
         @media screen and (max-width: $sm - 1) {
             & > .frame-header {
                 & > .frame-header-actions {
-                    a {
+                    a, button {
                         width: 35px;
                     }
                 }
