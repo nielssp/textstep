@@ -98,7 +98,7 @@ Data:
 
 Read contents of a file.
 
-URL: `GET /download?path=:path[&force]`
+URL: `GET /download[/:filename]?path=:path[&force]`
 
 ### fast-build [REMOVE]
 

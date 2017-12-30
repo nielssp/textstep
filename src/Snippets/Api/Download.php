@@ -33,6 +33,9 @@ class Download extends \Blogstep\AuthenticatedSnippet
         }
         $path = $fs->getRealPath();
         $type = $this->m->assets->getMimeType($path);
+        if (!isset($type)) {
+            $type = 'application/octet-stream';
+        }
         $response = \Jivoo\Http\Message\Response::file($path, $type);
         if (isset($this->request->query['force'])) {
 //            $type = 'application/octet-stream';
