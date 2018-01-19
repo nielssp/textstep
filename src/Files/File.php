@@ -52,11 +52,6 @@ class File implements \IteratorAggregate, HasRoute
      */
     private $valid = true;
     
-    /**
-     * @var Config
-     */
-    private $metadata = null;
-    
     protected function __construct(FileSystem $system, array $path, $type)
     {
         $this->system = $system;
@@ -75,7 +70,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         $files = [];
         foreach ($names as $name) {
-            if ($name == '.' or $name == '..' or $name == '.metadata.json') {
+            if ($name == '.' or $name == '..') {
                 continue;
             }
             $files[] = $this->get($name);
