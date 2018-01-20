@@ -61,7 +61,6 @@
 <div class="field">
 <label>Target directory</label>
 <input type="text" />
-<button>Select</button>
 </div>
 <div class="field">
 <label>Target URI</label>

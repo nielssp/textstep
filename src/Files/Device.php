@@ -5,16 +5,7 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Files;
 
-use Blogstep\UnauthorizedException;
-use Jivoo\Assume;
-use Jivoo\Http\Message\PhpStream;
 use Jivoo\Http\Message\UploadedFile;
-use Jivoo\Http\Route\HasRoute;
-use Jivoo\I18n\I18n;
-use Jivoo\InvalidArgumentException;
-use Jivoo\Store\Config;
-use Jivoo\Store\JsonStore;
-use Jivoo\Utilities;
 
 /**
  * A file system device.
@@ -22,16 +13,58 @@ use Jivoo\Utilities;
 interface Device
 {
 
-    public function scanDir($path);
+    /**
+     * List contents of a directory.
+     * 
+     * @param string $path Directory path.
+     * @return string[] List of files in directory.
+     * @throws FileException On error.
+     */
+    public function scan($path);
 
+    /**
+     * Gets the size of the given file.
+     * 
+     * @param string $path File path.
+     * @return int File size in bytes.
+     * @throws FileException On error.
+     */
     public function getSize($path);
 
+    /**
+     * Gets the modification time of the given file.
+     * 
+     * @param string $path File path.
+     * @return int File modification time as a UNIX timestamp.
+     * @throws FileException On error.
+     */
     public function getModified($path);
 
+    /**
+     * Gets the creation time of the given file.
+     * 
+     * @param string $path File path.
+     * @return int File creation time as a UNIX timestamp.
+     * @throws FileException On error.
+     */
     public function getCreated($path);
 
+    /**
+     * Returns whether the file or directory is readable.
+     * 
+     * @param string $path File path.
+     * @return bool True if the file exists and is readable, false otherwise.
+     * @throws FileException On error.
+     */
     public function isReadable($path);
 
+    /**
+     * Returns whether the file or directory is writable.
+     * 
+     * @param string $path File path.
+     * @return bool True if the file exists and is writable, false otherwise.
+     * @throws FileException On error.
+     */
     public function isWritable($path);
 
     public function isDirectory($path);

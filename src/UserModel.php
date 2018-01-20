@@ -34,12 +34,12 @@ class UserModel implements \Jivoo\Security\UserModel
     
     private $groups = null;
     
-    public function __construct(File $fs)
+    public function __construct(File $fs, $systemDir)
     {
         $this->fs = $fs;
         $this->systemGroup = new Group('system');
         $this->system = new User('system', null, $fs->get('system'), 'system', []);
-        $this->state = new StateMap($fs->get('system')->getRealPath());
+        $this->state = new StateMap($systemDir);
     }
     
     public function getUsers()

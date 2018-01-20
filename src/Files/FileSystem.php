@@ -6,7 +6,7 @@
 namespace Blogstep\Files;
 
 /**
- * Description of FileSystemRoot
+ * Root file system
  */
 class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
 {
@@ -14,11 +14,6 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
      * @var \Blogstep\User
      */
     protected $user;
-    
-    /**
-     * @var string
-     */
-    protected $root;
     
     /**
      * @var \Psr\Log\LoggerInterface
@@ -30,14 +25,12 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
      */
     protected $acl;
     
-    public function __construct($rootPath, \Blogstep\User $user = null)
+    public function __construct(\Blogstep\User $user = null)
     {
         parent::__construct($this, [], 'directory');
-        \Jivoo\Assume::that(is_dir($rootPath));
-        $this->root = rtrim($rootPath, '/');
+        $this->mount(new NullDevice());
         $this->user = $user;
         $this->logger = new \Psr\Log\NullLogger();
-        $this->acl = new FileAcl($this->get('system/fileacl.php')->getRealPath());
     }
     
     public function getAuthentication()
@@ -48,6 +41,11 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
     public function setAuthentication(\Blogstep\User $user)
     {
         $this->user = $user;
+    }
+    
+    public function setAcl(FileAcl $acl)
+    {
+        $this->acl = $acl;
     }
 
     public function setLogger(\Psr\Log\LoggerInterface $logger)

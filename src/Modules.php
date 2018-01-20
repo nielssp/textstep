@@ -16,7 +16,6 @@ namespace Blogstep;
  * @property \Jivoo\Http\SapiServer $server
  * @property \Jivoo\Paths $paths
  * @property \Jivoo\Cache\Cache $cache
- * @property \Jivoo\Store\StateMap $state
  * @property \Jivoo\Http\Router $router
  * @property \Jivoo\Store\Session $session
  * @property \Jivoo\Http\Token $token
@@ -37,7 +36,6 @@ class Modules extends \Jivoo\Modules
         'server' => 'Jivoo\Http\SapiServer',
         'paths' => 'Jivoo\Paths',
         'cache' => 'Jivoo\Cache\Cache',
-        'state' => 'Jivoo\Store\StateMap',
         'router' => 'Jivoo\Http\Router',
         'session' => 'Jivoo\Store\Session',
         'token' => 'Jivoo\Http\Token',

@@ -28,6 +28,16 @@ class File implements \IteratorAggregate, HasRoute
     private $system;
     
     /**
+     * @var Device
+     */
+    private $device;
+    
+    /**
+     * @var string
+     */
+    private $devicePath;
+    
+    /**
      * @var string[]
      */
     private $path;
@@ -59,14 +69,32 @@ class File implements \IteratorAggregate, HasRoute
         $this->type = $type;
         $this->parent = $this;
     }
+    
+    public function mount(Device $device)
+    {
+        $this->device = $device;
+        $this->devicePath = '/';
+        $this->cache = [];
+        $this->type = 'directory';
+    }
+    
+    /**
+     * @deprecated
+     */
+    public function getRealPath()
+    {
+        if (!($this->device instanceof HostDevice)) {
+            throw new FileException('Operation not supported');
+        }
+        return $this->device->getRealPath($this->devicePath);
+    }
 
     public function getIterator()
     {
         $this->assumeReadable();
         $names = [];
-        $path = $this->getRealPath();
-        if (is_dir($path)) {
-            $names = scandir($path);
+        if ($this->isDirectory()) {
+            $names = $this->device->scan($this->devicePath);
         }
         $files = [];
         foreach ($names as $name) {
@@ -76,11 +104,6 @@ class File implements \IteratorAggregate, HasRoute
             $files[] = $this->get($name);
         }
         return new \ArrayIterator($files);
-    }
-    
-    public function getRealPath()
-    {
-        return $this->system->root . $this->getPath();
     }
     
     public function getPath()
@@ -98,17 +121,17 @@ class File implements \IteratorAggregate, HasRoute
     
     public function getSize()
     {
-        return (int) filesize($this->getRealPath());
+        return $this->device->getSize($this->devicePath);
     }
     
     public function getModified()
     {
-        return (int) filemtime($this->getRealPath());
+        return $this->device->getModified($this->devicePath);
     }
     
     public function getCreated()
     {
-        return (int) filectime($this->getRealPath());
+        return $this->device->getCreated($this->devicePath);
     }
     
     private function isSystem()
@@ -199,7 +222,7 @@ class File implements \IteratorAggregate, HasRoute
     public function isReadable()
     {
         if ($this->isSystem()) {
-            return is_readable($this->getRealPath());
+            return $this->device->isReadable($this->devicePath);
         }
         $mode = $this->getAllMode();
         if ($this->system->user->isMemberOf($this->getGroup())) {
@@ -214,10 +237,10 @@ class File implements \IteratorAggregate, HasRoute
     public function isWritable()
     {
         if ($this->isSystem()) {
-            if (file_exists($this->getRealPath())) {
-                return is_writable($this->getRealPath());
+            if ($this->device->exists($this->devicePath)) {
+                return $this->device->isWritable($this->devicePath);
             } elseif ($this->parent !== $this) {
-                return is_writable($this->parent->getRealPath());
+                return $this->parent->isWritable();
             }
             return false;            
         }
@@ -278,12 +301,11 @@ class File implements \IteratorAggregate, HasRoute
     public function getType()
     {
         if ($this->type === 'unknown') {
-            $real = $this->getRealPath();
-            if (file_exists($real)) {
-                if (is_dir($real)) {
+            if ($this->device->exists($this->devicePath)) {
+                if ($this->device->isDirectory($this->devicePath)) {
                     $this->type = 'directory';
                 } else {
-                    $this->type = Utilities::getFileExtension($real);
+                    $this->type = Utilities::getFileExtension($this->getName());
                 }
             }
         }
@@ -297,7 +319,7 @@ class File implements \IteratorAggregate, HasRoute
     
     public function exists()
     {
-        return file_exists($this->getRealPath());
+        return $this->device->exists($this->devicePath);
     }
     
     public function isInside(File $dir)
@@ -320,22 +342,30 @@ class File implements \IteratorAggregate, HasRoute
             foreach ($this as $file) {
                 $file->copy($destination->get($file->getName()));
             }
-        } elseif (!copy($this->getRealPath(), $destination->getRealPath())) {
-            if ($destination->exists()) {
+        } else {
+            $result = false;
+            if ($this->device === $destination->device) {
+                $result = $this->device->copy($this->devicePath, $destination->devicePath);
+            } else {
+                $result = $destination->device->copyFromDevice($this->device, $this->devicePath, $destination->devicePath);
+            }
+            if (!$result) {
+                if ($destination->exists()) {
+                    throw new FileException(
+                        I18n::get('Destination exists: %1', $destination->getPath()),
+                        FileException::DESTINATION_EXISTS
+                    );
+                } elseif (!$destination->getParent()->isDirectory()) {
+                    throw new FileException(
+                        I18n::get('Destination is not a directory: %1', $destination->getParent()->getPath()),
+                        FileException::NOT_A_DIRECTORY
+                    );
+                }
                 throw new FileException(
-                    I18n::get('Destination exists: %1', $destination->getPath()),
-                    FileException::DESTINATION_EXISTS
-                );
-            } elseif (!$destination->getParent()->isDirectory()) {
-                throw new FileException(
-                    I18n::get('Destination is not a directory: %1', $destination->getParent()->getPath()),
-                    FileException::NOT_A_DIRECTORY
+                    I18n::get('Could not copy to destination: %1', $destination->getPath()),
+                    FileException::COPY_ERROR
                 );
             }
-            throw new FileException(
-                I18n::get('Could not copy to destination: %1', $destination->getPath()),
-                FileException::COPY_ERROR
-            );
         }
         return true;
     }
@@ -358,9 +388,16 @@ class File implements \IteratorAggregate, HasRoute
             }
             $this->invalidate();
             return $this->delete();
-        } elseif (rename($this->getRealPath(), $destination->getRealPath())) {
-            $this->invalidate();
-            return true;
+        } else {
+            if ($this->device === $destination->device) {
+                if ($this->device->move($this->devicePath, $destination->devicePath)) {
+                    $this->invalidate();
+                    return true;
+                }
+            } else if ($destination->device->moveFromDevice($this->device, $this->devicePath, $destination->devicePath)) {
+                $this->invalidate();
+                return true;
+            }
         }
         if ($destination->exists()) {
             throw new FileException(
@@ -385,7 +422,7 @@ class File implements \IteratorAggregate, HasRoute
             return false;
         }
         $this->assumeWritable();
-        $file->moveTo($this->getRealPath());
+        $this->device->moveUploadedFile($file, $this->devicePath);
         $this->type = Utilities::getFileExtension($this->getName());
         return true;
     }
@@ -396,7 +433,7 @@ class File implements \IteratorAggregate, HasRoute
             return false;
         }
         $this->assumeWritable();
-        if (mkdir($this->getRealPath())) {
+        if ($this->device->createDirectory($this->devicePath)) {
             $this->type = 'directory';
             return true;
         }
@@ -409,7 +446,7 @@ class File implements \IteratorAggregate, HasRoute
             return false;
         }
         $this->assumeWritable();
-        if (touch($this->getRealPath())) {
+        if ($this->device->createFile($this->devicePath)) {
             $this->type = Utilities::getFileExtension($this->getName());
             return true;
         }
@@ -419,7 +456,7 @@ class File implements \IteratorAggregate, HasRoute
     public function getContents()
     {
         $this->assumeReadable();
-        return file_get_contents($this->getRealPath());
+        return $this->device->getContents($this->devicePath);
     }
     
     public function putContents($data)
@@ -430,7 +467,7 @@ class File implements \IteratorAggregate, HasRoute
                 return false;
             }
         }
-        return file_put_contents($this->getRealPath(), $data);
+        return $this->device->putContents($this->devicePath, $data);
     }
     
     public function openStream($mode = 'rb')
@@ -477,7 +514,7 @@ class File implements \IteratorAggregate, HasRoute
             default:
                 throw new InvalidArgumentException('undefined file mode: ' . $mode);
         }
-        return new PhpStream($this->getRealPath(), $mode);
+        return $this->device->open($this->devicePath, $mode);
     }
     
     public function delete($recursive = true)
@@ -488,36 +525,36 @@ class File implements \IteratorAggregate, HasRoute
             }
         }
         $this->assumeWritable();
-        if ($this->isDirectory()) {
-            if (!rmdir($this->getRealPath())) {
+        if (!$this->device->delete($this->devicePath)) {
+            if ($this->isDirectory()) {
+                    if (!$this->exists()) {
+                        throw new FileException(
+                            I18n::get('Directory does not exist: %1', $this->getPath()),
+                            FileException::NOT_FOUND
+                        );
+                    }
+                    if (iterator_count($this->getIterator()) > 0) {
+                        throw new FileException(
+                            I18n::get('Directory is not empty: %1', $this->getPath()),
+                            FileException::NOT_EMPTY
+                        );
+                    }
+                    throw new FileException(
+                        I18n::get('Could not delete directory: %1', $this->getPath()),
+                        FileException::DELETE_ERROR
+                    );
+            } else {
                 if (!$this->exists()) {
                     throw new FileException(
-                        I18n::get('Directory does not exist: %1', $this->getPath()),
+                        I18n::get('File does not exist: %1', $this->getPath()),
                         FileException::NOT_FOUND
                     );
                 }
-                if (iterator_count($this->getIterator()) > 0) {
-                    throw new FileException(
-                        I18n::get('Directory is not empty: %1', $this->getPath()),
-                        FileException::NOT_EMPTY
-                    );
-                }
                 throw new FileException(
-                    I18n::get('Could not delete directory: %1', $this->getPath()),
+                    I18n::get('Could not delete file: %1', $this->getPath()),
                     FileException::DELETE_ERROR
                 );
             }
-        } elseif (!unlink($this->getRealPath())) {
-            if (!$this->exists()) {
-                throw new FileException(
-                    I18n::get('File does not exist: %1', $this->getPath()),
-                    FileException::NOT_FOUND
-                );
-            }
-            throw new FileException(
-                I18n::get('Could not delete file: %1', $this->getPath()),
-                FileException::DELETE_ERROR
-            );
         }
         $this->invalidate();
         return true;
@@ -556,6 +593,12 @@ class File implements \IteratorAggregate, HasRoute
             if (! isset($this->cache[$name])) {
                 $type = 'unknown';
                 $this->cache[$name] = new self($this->system, array_merge($this->path, [$name]), $type);
+                $this->cache[$name]->device = $this->device;
+                if ($this->devicePath == '/') {
+                    $this->cache[$name]->devicePath ='/' . $name;
+                } else {
+                    $this->cache[$name]->devicePath = $this->devicePath . '/' . $name;
+                }
                 $this->cache[$name]->parent = $this;
             }
             return $this->cache[$name]->getRelative($path);

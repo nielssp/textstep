@@ -641,20 +641,20 @@ fieldset {
   width: 50%; }
 
 .grid-1-1-1 > .cell {
-  width: 33.33333%; }
+  width: 33.3333333333%; }
 
 .grid-1-1-1-1 > .cell {
   width: 25%; }
 
 .grid-1-2 > .cell:first-child {
-  width: 33.33333%; }
+  width: 33.3333333333%; }
   .grid-1-2 > .cell:first-child + .cell {
-    width: 66.66667%; }
+    width: 66.6666666667%; }
 
 .grid-2-1 > .cell:first-child {
-  width: 66.66667%; }
+  width: 66.6666666667%; }
   .grid-2-1 > .cell:first-child + .cell {
-    width: 33.33333%; }
+    width: 33.3333333333%; }
 
 .grid-1-1-2 > .cell:first-child {
   width: 25%; }
@@ -762,7 +762,7 @@ fieldset {
   @media screen and (min-width: 768px) {
     .grid-auto > .cell,
     .grid-auto-md > .cell {
-      width: 33.33333%; } }
+      width: 33.3333333333%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto > .cell,
     .grid-auto-md > .cell {
@@ -780,13 +780,13 @@ fieldset {
     clear: left; }
   @media screen and (min-width: 480px) {
     .grid-auto-xs > .cell {
-      width: 33.33333%; } }
+      width: 33.3333333333%; } }
   @media screen and (min-width: 768px) {
     .grid-auto-xs > .cell {
       width: 20%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto-xs > .cell {
-      width: 14.28571%; } }
+      width: 14.2857142857%; } }
 
 .grid-auto-sm {
   margin: 0 -10px 20px; }
@@ -826,7 +826,7 @@ fieldset {
       width: 50%; } }
   @media screen and (min-width: 1200px) {
     .grid-auto-lg > .cell {
-      width: 33.33333%; } }
+      width: 33.3333333333%; } }
 
 /*
 BlogSTEP 

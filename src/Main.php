@@ -46,7 +46,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->cache = new \Jivoo\Cache\Cache();
         
-        $this->m->files = new Files\FileSystem($this->p('user'));
+        $this->m->files = new Files\FileSystem();
+        $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
+        $this->m->files->mount(new Files\HostDevice($this->p('user')));
         
         $this->m->router = new BlogstepRouter($this->config['user']['router']);
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
@@ -111,8 +113,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         return $this->m->paths->p($ipath);
     }
 
-   
-
     public function run()
     {
         $exceptionHandler = new ExceptionHandler($this->m);
@@ -153,8 +153,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
             });
         }
         
-        // Initialize application state system
-        $this->m->state = new \Jivoo\Store\StateMap($this->p('system/state'));
+        // Mount file systems
+        $this->m->files->mount(new Files\HostDevice($this->p('user')));
         
         // Initialize session
         $session = new \Jivoo\Store\PhpSessionStore();
@@ -163,9 +163,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->token = \Jivoo\Http\Token::create($this->m->session);
         
         // Initialize authentication system
-        $this->m->users = new UserModel($this->m->files);
+        $this->m->users = new UserModel($this->m->files, $this->p('system'));
         
-        $this->m->acl = new SystemAcl($this->m->files->get('system/sysacl.php')->getRealPath(), $this->m->users);
+        $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
         
         $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
         $this->m->auth->session = new \Jivoo\Security\Authentication\SessionAuthentication($this->m->session);

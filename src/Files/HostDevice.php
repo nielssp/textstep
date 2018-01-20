@@ -5,16 +5,8 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Files;
 
-use Blogstep\UnauthorizedException;
-use Jivoo\Assume;
 use Jivoo\Http\Message\PhpStream;
 use Jivoo\Http\Message\UploadedFile;
-use Jivoo\Http\Route\HasRoute;
-use Jivoo\I18n\I18n;
-use Jivoo\InvalidArgumentException;
-use Jivoo\Store\Config;
-use Jivoo\Store\JsonStore;
-use Jivoo\Utilities;
 
 /**
  * Host file system.
@@ -26,6 +18,11 @@ class HostDevice implements Device
     public function __construct($rootPath)
     {
         $this->rootPath = $rootPath;
+    }
+    
+    public function getRealPath($path)
+    {
+        return $this->rootPath . $path;
     }
 
     public function scan($path)
@@ -93,6 +90,7 @@ class HostDevice implements Device
         if ($device instanceof HostDevice) {
             return copy($device->rootPath . $source, $this->rootPath . $destination);
         }
+        // TODO: call generic device->device copy utility function
         return false;
     }
 
@@ -101,12 +99,13 @@ class HostDevice implements Device
         if ($device instanceof HostDevice) {
             return rename($device->rootPath . $source, $this->rootPath . $destination);
         }
+        // TODO: call generic device->device copy utility function
         return false;
     }
 
     public function moveUploadedFile(UploadedFile $file, $destination)
     {
-        $file->moveTo($this->rootPath . $path);
+        $file->moveTo($this->rootPath . $destination);
         return true;
     }
 
