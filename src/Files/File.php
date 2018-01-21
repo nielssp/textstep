@@ -72,6 +72,12 @@ class File implements \IteratorAggregate, HasRoute
     
     public function mount(Device $device)
     {
+        if (!$this->isSystem()) {
+            throw new FileException(
+                I18n::get('Not allowed to mount'),
+                FileException::AUTH_ERROR
+            );
+        }
         $this->device = $device;
         $this->devicePath = '/';
         $this->cache = [];

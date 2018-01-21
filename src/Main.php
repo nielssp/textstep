@@ -48,7 +48,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         
         $this->m->files = new Files\FileSystem();
         $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
-        $this->m->files->mount(new Files\HostDevice($this->p('user')));
         
         $this->m->router = new BlogstepRouter($this->config['user']['router']);
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
@@ -96,6 +95,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\Load');
         $this->m->router->auto('snippet:Api\MakeDir');
         $this->m->router->auto('snippet:Api\MakeFile');
+        $this->m->router->auto('snippet:Api\Mount');
+        $this->m->router->auto('snippet:Api\Unmount');
         $this->m->router->auto('snippet:Api\Delete');
         $this->m->router->auto('snippet:Api\Write');
         $this->m->router->auto('snippet:Api\Append');
@@ -154,7 +155,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         }
         
         // Mount file systems
-        $this->m->files->mount(new Files\HostDevice($this->p('user')));
+        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
         
         // Initialize session
         $session = new \Jivoo\Store\PhpSessionStore();

@@ -20,6 +20,7 @@ namespace Blogstep;
  * @property \Jivoo\Store\Session $session
  * @property \Jivoo\Http\Token $token
  * @property Files\FileSystem $files
+ * @property Files\MountHandler $mounts
  * @property \Jivoo\Http\Cookie\CookiePool $cookies
  * @property \Jivoo\Security\Auth $auth
  * @property UserModel $users
@@ -40,6 +41,7 @@ class Modules extends \Jivoo\Modules
         'session' => 'Jivoo\Store\Session',
         'token' => 'Jivoo\Http\Token',
         'files' => 'Blogstep\Files\FileSystem',
+        'mounts' => 'Blogstep\Files\MountHandler',
         'cookies' => 'Jivoo\Http\Cookie\CookiePool',
         'auth' => 'Jivoo\Security\Auth',
         'users' => 'Blogstep\UserModel',
