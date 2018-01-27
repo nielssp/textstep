@@ -10,9 +10,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border: 1px solid #000;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
-@mixin frame-header {
+@mixin frame-head {
     background-color: #000;
     color: #fff;
     font-weight: bold;
@@ -25,7 +26,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     flex-shrink: 0;
     display: flex;
     
-    & > .frame-header-actions {
+    & > .frame-actions {
         font-size: 0.8em;
         padding: 1px 1px 1px 0;
         a {
@@ -66,7 +67,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             }
         }
     }
-    & > .frame-header-title {
+    & > .frame-title {
         flex-grow: 1;
         padding: 2px 6px;
         text-align: center;
@@ -76,17 +77,22 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     }
 }
 
-@mixin frame-toolbar {
+@mixin frame-body {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex-grow: 1;
     background-color: $frameBg;
     border-top: 1px solid #000;
+}
+
+@mixin frame-toolbar {
     color: #000;
     padding:6px;
     flex-grow: 0;
 }
 
 @mixin frame-content {
-    background-color: $frameBg;
-    border-top: 1px solid #000;
     color: #000;
     padding: 6px;
     flex-grow: 1;
@@ -106,7 +112,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 }
 
 @mixin frame-footer {
-    background-color: $frameBg;
     color: #000;
     padding: 6px;
 }

@@ -13,12 +13,11 @@ class Unmount extends \Blogstep\AuthenticatedSnippet
     
     public function post(array $data)
     {
-        $path = '';
         if (isset($data['path'])) {
             $path = $data['path'];
+            $fs = $this->m->files->get($path);
+            $this->m->mounts->unmount($fs);
         }
-        $fs = $this->m->files->get($path);
-        $this->m->mounts->unmount($fs);
         return $this->ok();
     }
     

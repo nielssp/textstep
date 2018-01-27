@@ -13,16 +13,12 @@ class Mount extends \Blogstep\AuthenticatedSnippet
     
     public function post(array $data)
     {
-        $path = '';
-        if (isset($data['path'])) {
+        if (isset($data['path']) and isset($data['target'])) {
             $path = $data['path'];
-        }
-        $target = '';
-        if (isset($data['target'])) {
             $target = $data['target'];
+            $fs = $this->m->files->get($path);
+            $this->m->mounts->mount($fs, $target);
         }
-        $fs = $this->m->files->get($path);
-        $this->m->mounts->mount($fs, $target);
         return $this->ok();
     }
     

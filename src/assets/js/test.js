@@ -42,8 +42,6 @@ Property.prototype.get = function () {
 };
 
 BLOGSTEP.init('test', function (app) {
-    app.frame.find('.header-path').text('loaded');
-    
     app.defineAction('test', function () {
 	app.frame.find('.header-path').text('activated');
 	app.disableAction('test');
@@ -68,9 +66,26 @@ BLOGSTEP.init('test', function (app) {
 	});
     });
     menu.addItem('File selection', function () {
-	BLOGSTEP.selectFile().done(function (data) {
-	    alert('you selected ' + data.path);
-	});
+        var $overlay = $('<div class="dialog-overlay">');
+        
+        app.body.append($overlay);
+        
+        var $dialog = $('<div class="frame">');
+        $('<div class="frame-head">')
+            .append($('<div class="frame-title">').text('Confirm'))
+            .appendTo($dialog);
+        var $body = $('<div class="frame-body">').appendTo($dialog);
+        $('<div class="frame-content">').text('Delete all files in all directories?').appendTo($body);
+        var $footer = $('<div class="frame-footer frame-footer-buttons">').appendTo($body);
+        $('<button>').text('OK').click(function () {
+            $dialog.detach();
+            $overlay.detach();
+        }).appendTo($footer);
+        $dialog.appendTo($overlay);
+        
+//	BLOGSTEP.selectFile().done(function (data) {
+//	    alert('you selected ' + data.path);
+//	});
     });
     
     var prop = new Property();

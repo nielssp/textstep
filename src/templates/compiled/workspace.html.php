@@ -33,9 +33,10 @@
 </main>
 <div id="login-overlay">
 <div class="frame" id="login-frame">
-<div class="frame-header">
-<div class="frame-header-title">Log in</div>
+<div class="frame-head">
+<div class="frame-title">Log in</div>
 </div>
+<div class="frame-body">
 <div class="frame-content">
 <form method="post" id="login">
 <div class="field">
@@ -57,6 +58,7 @@
 </button>
 </div>
 </form>
+</div>
 </div>
 </div>
 </div>

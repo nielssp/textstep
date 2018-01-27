@@ -1,15 +1,16 @@
 <?php $this->import('dist/build.js'); ?><div class="frame">
-<div class="frame-header">
-<div class="frame-header-actions">
+<div class="frame-head">
+<div class="frame-actions">
 <a href="" data-action="toggle-menu"></a>
 </div>
-<div class="frame-header-title">
+<div class="frame-title">
             Builder
 </div>
-<div class="frame-header-actions">
+<div class="frame-actions">
 <a href="" data-action="close"></a>
 </div>
 </div>
+<div class="frame-body">
 <div class="frame-content">
 <form id="build" data-token="<?php echo $token; ?>">
 
@@ -21,5 +22,6 @@
 <div class="label">Ready to build</div>
 </div>
 <textarea readonly="readonly" class="build-status-history"></textarea>
+</div>
 </div>
 </div>

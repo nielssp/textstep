@@ -1,12 +1,13 @@
 <?php $this->import('css/files.css;dist/files.js'); ?><div class="frame Files-app">
-<div class="frame-header">
-<div class="frame-header-actions">
+<div class="frame-head">
+<div class="frame-actions">
 <a href="" data-action="toggle-menu"></a>
 </div>
-<div class="frame-header-title">
+<div class="frame-title">
             Files
 </div>
 </div>
+<div class="frame-body">
 <div class="frame-toolbar">
 <div class="button-group">
 <button data-action="back" title="Go back">
@@ -52,6 +53,7 @@
 </div>
 <div class="files-shelf">
 <div class="files-grid">
+</div>
 </div>
 </div>
 </div>

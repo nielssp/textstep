@@ -8,43 +8,58 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 .frame {
     @include frame;
-    &-header {
-        @include frame-header;
+    & > &-head {
+        @include frame-head;
     }
-    &-toolbar {
-        @include frame-toolbar;
-        & ~ .frame-content {
-            padding-top: 0;
-            border-top: none;
+    & > &-body {
+        @include frame-body;
+        & > .frame-toolbar {
+            @include frame-toolbar;
+            & ~ .frame-content {
+                padding-top: 0;
+            }
         }
-    }
-    &-iconbar {
-        @include frame-toolbar;
-        & ~ .frame-content {
-            padding-top: 0;
-            border-top: none;
+        & > .frame-iconbar {
+            @include frame-toolbar;
+            & ~ .frame-content {
+                padding-top: 0;
+            }
         }
-    }
-    &-content {
-        @include frame-content;
-        
-        overflow-y: auto;
-        
-        &-flex {
-            display: flex;
-            flex-direction: column;
+        & > .frame-content {
+            @include frame-content;
+
+            overflow-y: auto;
+
+            &-flex {
+                display: flex;
+                flex-direction: column;
+            }
         }
-    }
-    &-footer {
-        @include frame-footer;
-        
-        &-buttons {
-            text-align: right;
+        & > .frame-footer {
+            @include frame-footer;
+
+            &-buttons {
+                text-align: right;
+            }
         }
-    }
-    hr {
-	border-top: 1px solid #555;
-	border-bottom: 1px solid #fff;
+        hr {
+            border-top: 1px solid #555;
+            border-bottom: 1px solid #fff;
+        }
+        & > .dialog-overlay {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            background-color: rgba(0, 0, 0, 0.7);
+            text-align: center;
+            & > .frame {
+                display: inline-block;
+                margin-top: 30px;
+                box-shadow: 0 0 5px #000000;
+            }
+        }
     }
 }
 

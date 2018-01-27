@@ -5,7 +5,7 @@ Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
-.editor-frame > .frame-content {
+.editor-frame > .frame-body > .frame-content {
     padding: 0;
     display: flex;
     flex-direction: column;

@@ -59,6 +59,8 @@ function App(name) {
     this.deferred = null;
     this.args = null;
     this.frame = null;
+    this.head = null;
+    this.body = null;
     this.dockFrame = null;
     this.actions = {};
     this.actionGroups = {};
@@ -201,7 +203,7 @@ App.prototype.disableAction = function (name) {
 
 App.prototype.setTitle = function (title) {
     this.title = title;
-    this.frame.find('.frame-header-title').text(this.title);
+    this.head.find('.frame-title').text(this.title);
     this.dockFrame.attr('title', this.title);
     document.title = this.title;
 };
@@ -593,7 +595,9 @@ function load(name) {
             var $styles = $doc.children('link[rel="stylesheet"]');
             var $scripts = $doc.children('script[src]');
             apps[name].frame = $doc.children('.frame');
-            apps[name].title = apps[name].frame.find('.frame-header-title').text();
+            apps[name].head = apps[name].frame.children('.frame-head');
+            apps[name].body = apps[name].frame.children('.frame-body');
+            apps[name].title = apps[name].head.find('.frame-title').text();
             apps[name].state = 'loaded';
             $doc.children('.tool-frame').each(function () {
                 apps[name].toolFrames[$(this).data('name')] = $(this);

@@ -14,7 +14,7 @@ aside {
     max-height: 100%;
 
     header,
-    .tool-frame > .tool-frame-header {
+    .tool-frame > .tool-frame-head {
         background-color: #000;
         color: #fff;
         text-align: left;
@@ -38,7 +38,7 @@ aside {
     
     .tool-frame {
         margin-bottom: 16px;
-        & > .tool-frame-content {
+        & > .tool-frame-body {
             background-color: $frameBg;
             border-left: 1px solid #fff;
             border-right: 1.5px solid #403E3B;
@@ -97,13 +97,13 @@ main {
         flex-grow: 1;
         
         @media screen and (max-width: $sm - 1) {
-            & > .frame-header {
-                & > .frame-header-actions {
+            & > .frame-head {
+                & > .frame-actions {
                     a, button {
                         width: 35px;
                     }
                 }
-                & > .frame-header-title {
+                & > .frame-title {
                     padding: 10px 6px;
                 }
             }
@@ -208,14 +208,14 @@ main {
     }
 }
 
-@media screen and  (min-width: $sm) {
+@media screen and (min-width: $sm) {
     aside {
         display: block;
     }
     main {
         margin-left: 210px;
         
-        .frame-header a[data-action="toggle-menu"] {
+        & > .frame > .frame-head > .frame-actions > a[data-action="toggle-menu"] {
             display: none;
         }
     }
@@ -270,6 +270,6 @@ body.loading {
     cursor: wait;
 }
 
-.View-app > .frame-content {
+.View-app > .frame-body > .frame-content {
     overflow: hidden;
 }

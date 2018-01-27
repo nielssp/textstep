@@ -838,8 +838,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
   text-align: left;
   border: 1px solid #000;
   display: flex;
-  flex-direction: column; }
-  .frame-header {
+  flex-direction: column;
+  position: relative; }
+  .frame > .frame-head {
     background-color: #000;
     color: #fff;
     font-weight: bold;
@@ -851,10 +852,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     flex-grow: 0;
     flex-shrink: 0;
     display: flex; }
-    .frame-header > .frame-header-actions {
+    .frame > .frame-head > .frame-actions {
       font-size: 0.8em;
       padding: 1px 1px 1px 0; }
-      .frame-header > .frame-header-actions a {
+      .frame > .frame-head > .frame-actions a {
         display: block;
         height: 100%;
         width: 19px;
@@ -870,72 +871,82 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-right: 1px solid #4F4F4F;
         border-bottom: 1px solid #4F4F4F;
         position: relative; }
-        .frame-header > .frame-header-actions a:active {
+        .frame > .frame-head > .frame-actions a:active {
           background-color: #fff;
           border-color: #fff; }
-        .frame-header > .frame-header-actions a[data-action="close"] {
+        .frame > .frame-head > .frame-actions a[data-action="close"] {
           background-image: url(../img/close2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .frame-header-actions a[data-action="close"]:active {
+          .frame > .frame-head > .frame-actions a[data-action="close"]:active {
             background-image: url(../img/close1.png); }
-        .frame-header > .frame-header-actions a[data-action="toggle-menu"] {
+        .frame > .frame-head > .frame-actions a[data-action="toggle-menu"] {
           background-image: url(../img/menu2.png);
           background-repeat: no-repeat;
           background-position: center center; }
-          .frame-header > .frame-header-actions a[data-action="toggle-menu"]:active {
+          .frame > .frame-head > .frame-actions a[data-action="toggle-menu"]:active {
             background-image: url(../img/menu1.png); }
-    .frame-header > .frame-header-title {
+    .frame > .frame-head > .frame-title {
       flex-grow: 1;
       padding: 2px 6px;
       text-align: center;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap; }
-  .frame-toolbar {
-    background-color: #AEAAAE;
-    border-top: 1px solid #000;
-    color: #000;
-    padding: 6px;
-    flex-grow: 0; }
-    .frame-toolbar ~ .frame-content {
-      padding-top: 0;
-      border-top: none; }
-  .frame-iconbar {
-    background-color: #AEAAAE;
-    border-top: 1px solid #000;
-    color: #000;
-    padding: 6px;
-    flex-grow: 0; }
-    .frame-iconbar ~ .frame-content {
-      padding-top: 0;
-      border-top: none; }
-  .frame-content {
-    background-color: #AEAAAE;
-    border-top: 1px solid #000;
-    color: #000;
-    padding: 6px;
-    flex-grow: 1;
+  .frame > .frame-body {
+    display: flex;
+    flex-direction: column;
     position: relative;
-    overflow-y: auto; }
-    .frame-content > .stretch {
-      flex-grow: 1; }
-    .frame-content > *:last-child {
-      margin-bottom: 0; }
-    .frame-content > img {
-      max-width: 100%; }
-    .frame-content-flex {
-      display: flex;
-      flex-direction: column; }
-  .frame-footer {
+    flex-grow: 1;
     background-color: #AEAAAE;
-    color: #000;
-    padding: 6px; }
-    .frame-footer-buttons {
-      text-align: right; }
-  .frame hr {
-    border-top: 1px solid #555;
-    border-bottom: 1px solid #fff; }
+    border-top: 1px solid #000; }
+    .frame > .frame-body > .frame-toolbar {
+      color: #000;
+      padding: 6px;
+      flex-grow: 0; }
+      .frame > .frame-body > .frame-toolbar ~ .frame-content {
+        padding-top: 0; }
+    .frame > .frame-body > .frame-iconbar {
+      color: #000;
+      padding: 6px;
+      flex-grow: 0; }
+      .frame > .frame-body > .frame-iconbar ~ .frame-content {
+        padding-top: 0; }
+    .frame > .frame-body > .frame-content {
+      color: #000;
+      padding: 6px;
+      flex-grow: 1;
+      position: relative;
+      overflow-y: auto; }
+      .frame > .frame-body > .frame-content > .stretch {
+        flex-grow: 1; }
+      .frame > .frame-body > .frame-content > *:last-child {
+        margin-bottom: 0; }
+      .frame > .frame-body > .frame-content > img {
+        max-width: 100%; }
+      .frame > .frame-body > .frame-content-flex {
+        display: flex;
+        flex-direction: column; }
+    .frame > .frame-body > .frame-footer {
+      color: #000;
+      padding: 6px; }
+      .frame > .frame-body > .frame-footer-buttons {
+        text-align: right; }
+    .frame > .frame-body hr {
+      border-top: 1px solid #555;
+      border-bottom: 1px solid #fff; }
+    .frame > .frame-body > .dialog-overlay {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+      background-color: rgba(0, 0, 0, 0.7);
+      text-align: center; }
+      .frame > .frame-body > .dialog-overlay > .frame {
+        display: inline-block;
+        margin-top: 30px;
+        box-shadow: 0 0 5px #000000; }
 
 #login-frame {
   margin: 14% auto 0 auto;

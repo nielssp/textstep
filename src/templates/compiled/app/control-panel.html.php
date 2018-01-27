@@ -1,15 +1,16 @@
 <?php $this->import('dist/control-panel.js'); ?><div class="frame">
-<div class="frame-header">
-<div class="frame-header-actions">
+<div class="frame-head">
+<div class="frame-actions">
 <a href="" data-action="toggle-menu"></a>
 </div>
-<div class="frame-header-title">
+<div class="frame-title">
             Control panel
 </div>
-<div class="frame-header-actions">
+<div class="frame-actions">
 <a href="" data-action="close"></a>
 </div>
 </div>
+<div class="frame-body">
 <div class="frame-iconbar">
 <div class="button-group" data-choice="button">
 <button data-action="site" title="Site" class="active">
@@ -112,6 +113,7 @@
 <div class="frame-footer frame-footer-buttons">
 <button>Apply</button>
 <button>Cancel</button>
+</div>
 </div>
 </div>
 <div class="dock-frame">
