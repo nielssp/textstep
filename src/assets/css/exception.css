@@ -256,7 +256,9 @@ dl {
   border-bottom: 1px solid #fff;
   box-shadow: none;
   /*box-shadow: inset 1px 1px 0px #555555;*/
-  padding: 3px 5px 1px 7px; }
+  padding: 3px 5px 1px 7px;
+  margin-top: -1px;
+  margin-bottom: 1px; }
 .button[disabled], .button[disabled]:hover, .button[disabled]:active, button[disabled], button[disabled]:hover, button[disabled]:active, input[type=button][disabled], input[type=button][disabled]:hover, input[type=button][disabled]:active, input[type=reset][disabled], input[type=reset][disabled]:hover, input[type=reset][disabled]:active, input[type=submit][disabled], input[type=submit][disabled]:hover, input[type=submit][disabled]:active {
   color: #666666;
   text-shadow: 1px 1px 0 #eee;
@@ -451,7 +453,9 @@ select:not([size]), select[size="1"] {
     border-bottom: 1px solid #fff;
     box-shadow: none;
     /*box-shadow: inset 1px 1px 0px #555555;*/
-    padding: 3px 5px 1px 7px; }
+    padding: 3px 5px 1px 7px;
+    margin-top: -1px;
+    margin-bottom: 1px; }
   select:not([size])[disabled], select:not([size])[disabled]:hover, select:not([size])[disabled]:active, select[size="1"][disabled], select[size="1"][disabled]:hover, select[size="1"][disabled]:active {
     color: #666666;
     text-shadow: 1px 1px 0 #eee;
@@ -941,12 +945,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
       left: 0px;
       right: 0px;
       bottom: 0px;
-      background-color: rgba(0, 0, 0, 0.7);
-      text-align: center; }
+      background-color: rgba(0, 0, 0, 0.5);
+      text-align: center;
+      z-index: 999; }
       .frame > .frame-body > .dialog-overlay > .frame {
         display: inline-block;
         margin-top: 30px;
-        box-shadow: 0 0 5px #000000; }
+        box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4); }
 
 #login-frame {
   margin: 14% auto 0 auto;

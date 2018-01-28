@@ -71,7 +71,9 @@ aside {
                     width: 100%;
                     &:default {
                         font-weight: normal;
-                    }           
+                    }
+                    &:active {
+                    }
                     @media screen and (max-width: $sm - 1) {
                         padding-top: 6px;
                         padding-bottom: 6px;
@@ -261,7 +263,7 @@ main {
     &.login-overlay-dark {
 	background-color: rgba(0, 0, 0, 0.7);
 	& > #login-frame {
-	    box-shadow: 0 0 5px #000000;
+	    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
 	}
     }
 }

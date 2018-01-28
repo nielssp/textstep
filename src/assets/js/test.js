@@ -50,6 +50,16 @@ BLOGSTEP.init('test', function (app) {
 	}, 5000);
     });
     
+    app.defineAction('test-alert', function () {
+        app.alert('Alert', 'This is an alert!');
+    });
+    
+    app.defineAction('test-confirm', function () {
+        app.confirm('Confirm', 'Delete everything???', ['Delete it', 'No', 'Cancel'], 'Delete it').done(function (choice) {
+            app.alert('Choice', choice);
+        });
+    });
+    
     app.bindKey('c-a', 'test');
     
     var menu = app.addMenu('Test menu');

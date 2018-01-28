@@ -52,6 +52,73 @@ Menu.prototype.addItem = function (label, action) {
     this.itemList.append(item);
 };
 
+function Dialog(parent) {
+    this.deferred = null;
+    this.parent = parent;
+    this.overlay = $('<div class="dialog-overlay">');
+    this.frame = $('<div class="frame">').appendTo(this.overlay);
+    this.head = $('<div class="frame-head">').appendTo(this.frame);
+    this.body = $('<div class="frame-body">').appendTo(this.frame);
+    $('<div class="frame-title">').appendTo(this.head);
+};
+
+Dialog.prototype.setTitle = function (title) {
+    this.head.find('.frame-title').text(title);
+};
+
+Dialog.prototype.open = function () {
+    this.deferred = $.Deferred();
+    if (this.parent.children('.dialog-overlay').length > 0) {
+        // TODO: what to do? queue or something else?
+        this.deferred.reject();
+    } else {
+        this.overlay.appendTo(this.parent);
+    }
+    return this.deferred.promise();
+};
+
+Dialog.prototype.close = function (result) {
+    this.overlay.detach();
+    this.deferred.resolve(result);
+};
+
+Dialog.alert = function (parent, title, message) {
+    var dialog = new Dialog(parent);
+    dialog.setTitle(title);
+    $('<div class="frame-content">').text(message).appendTo(dialog.body);
+    var footer = $('<div class="frame-footer frame-footer-buttons">').appendTo(dialog.body);
+    var okButton = $('<button>').text('OK').appendTo(footer);
+    okButton.click(function () {
+        dialog.close();
+    });
+    var dfr = dialog.open();
+    okButton.focus();
+    return dfr;
+};
+
+Dialog.confirm = function (parent, title, message, choices = ['OK', 'Cancel'], defaultChoice = 'OK') {
+    var dialog = new Dialog(parent);
+    dialog.setTitle(title);
+    $('<div class="frame-content">').text(message).appendTo(dialog.body);
+    var footer = $('<div class="frame-footer frame-footer-buttons">').appendTo(dialog.body);
+    var defaultButton = null;
+    for (var i = 0; i < choices.length; i++) {
+        footer.append(' ');
+        var button = $('<button>').text(choices[i]).appendTo(footer);
+        button.click(function () {
+            dialog.close($(this).text());
+        });
+        if (choices[i] === defaultChoice) {
+            defaultButton = button;
+        }
+    }
+    var dfr = dialog.open();
+    if (defaultButton !== null) {
+        defaultButton.focus();
+    }
+    return dfr;
+};
+
 function App(name) {
     this.name = name;
     this.title = '';
@@ -84,6 +151,14 @@ App.prototype.addMenu = function (title) {
     var menu = new Menu(this, title);
     this.menus.push(menu);
     return menu;
+};
+
+App.prototype.alert = function (title, message) {
+    return Dialog.alert(this.body, title, message);
+};
+
+App.prototype.confirm = function (title, message, choices, defaultChoice) {
+    return Dialog.confirm(this.body, title, message, choices, defaultChoice);
 };
 
 App.prototype.keydown = function (e) {

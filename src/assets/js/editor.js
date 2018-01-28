@@ -180,6 +180,7 @@ function close() {
 }
 
 function saveFile() {
+    var dfr = $.Deferred();
     if (simplemde !== null && current !== null) {
         var buffer = current;
         BLOGSTEP.post('write', {path: buffer.path, data: buffer.data}).done(function () {
@@ -189,17 +190,29 @@ function saveFile() {
                 self.setTitle(current.path + ' – Editor');
                 simplemde.clearAutosavedValue();
             }
-        });
+            dfr.resolve();
+        }).fail(dfr.reject);
+    } else {
+        dfr.resolve();
     }
+    return dfr.promise();
 }
 
 function closeBuffer() {
     if (simplemde !== null && current !== null) {
-        var ok = true;
+        var dfr = $.Deferred();
         if (current.unsaved) {
-            ok = confirm('The buffer contains unsaved changed.');
+            self.confirm('Editor', 'Do you want to save this buffer?', ['Yes', 'No', 'Cancel'], 'Yes').done(function (choice) {
+                if (choice === 'Yes') {
+                    saveFile().done(dfr.resolve);
+                } else if (choice === 'No') {
+                    dfr.resolve();
+                }   
+            });
+        } else {
+            dfr.resolve();
         }
-        if (ok) {
+        dfr.done(function () {
             delete(buffers[current.path]);
             current.item.remove();
             current = null;
@@ -211,7 +224,7 @@ function closeBuffer() {
             if (current === null) {
                 self.close();
             }
-        }
+        });
     }
 }
 
@@ -225,7 +238,7 @@ function isUnsaved() {
 }
 
 function newFile() {
-    alert('not implemented');
+    self.alert('New file', 'not implemented');
 }
 
 function resizeView() {

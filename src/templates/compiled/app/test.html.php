@@ -11,6 +11,10 @@
 <div class="frame-content">
 <p>Hello, World!</p>
 <button data-action="test">Test</button>
+<p>Dialogs:
+<button data-action="test-alert">Alert</button>
+<button data-action="test-confirm">Confirm</button>
+</p>
 <p>Binding 1:
 <input type="text" class="textbox-1" /></p>
 <p>Binding 2:

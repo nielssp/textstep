@@ -52,12 +52,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             left: 0px;
             right: 0px;
             bottom: 0px;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.5);
             text-align: center;
+            z-index: 999;
             & > .frame {
                 display: inline-block;
                 margin-top: 30px;
-                box-shadow: 0 0 5px #000000;
+                box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
             }
         }
     }
