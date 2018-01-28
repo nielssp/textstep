@@ -385,14 +385,14 @@ App.prototype.kill = function () {
     this.state = 'initialized';
 };
 
-App.prototype.close = function () {
+App.prototype.close = function (action) {
     if (this.state !== 'running') {
         console.error(this.name + ': close: unexpected state:', this.state);
         return;
     }
     this.state = 'closing';
     if (this.onClose !== null) {
-        var ok = this.onClose(this);
+        var ok = this.onClose(this, action);
         if (ok === false) {
             this.state = 'running';
             return false;

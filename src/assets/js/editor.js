@@ -158,25 +158,34 @@ function reopen(app, args) {
     }
 }
 
-function close() {
-    for (var path in buffers) {
-        if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
-            var ok = confirm('One or more buffers contain unsaved changed.');
-            if (ok) {
+function close(app, action) {
+    var unsaved = null;
+    if (action !== 'confirm') {
+        for (var path in buffers) {
+            if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
+                unsaved = path;
                 break;
-            } else {
-                if (current === null || !current.unsaved) {
-                    openBuffer(path);
-                }
-                return false;
             }
         }
     }
-    simplemde.toTextArea();
-    simplemde = null;
-    buffers = [];
-    bufferPanel.empty();
-    return true;
+    if (unsaved !== null) {
+        self.confirm('Editor', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').done(function (choice) {
+            if (choice === 'Close without saving') {
+                self.close('confirm');
+            } else {
+                if (current === null || !current.unsaved) {
+                    openBuffer(unsaved);
+                }
+            }
+        });
+        return false;
+    } else {
+        simplemde.toTextArea();
+        simplemde = null;
+        buffers = [];
+        bufferPanel.empty();
+        return true;
+    }
 }
 
 function saveFile() {
