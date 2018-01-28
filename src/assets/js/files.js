@@ -664,43 +664,45 @@ function home() {
 }
 
 function newFolder() {
-    var name = prompt('Enter the new name:');
-    if (name !== null) {
-        if (name === '') {
-            alert('Invalid name');
-            return;
+    self.prompt('New folder', 'Enter the new name:').done(function (name) {
+        if (name !== null) {
+            if (name === '') {
+                self.alert('New folder', 'Invalid name');
+                return;
+            }
+            var path;
+            if (cwd === '/') {
+                path = cwd + name;
+            } else {
+                path = cwd + '/' + name;
+            }
+            BLOGSTEP.post('make-dir', {path: path}).done(function (data) {
+                addFile($currentColumn, data);
+                enter(path);
+            });
         }
-        var path;
-        if (cwd === '/') {
-            path = cwd + name;
-        } else {
-            path = cwd + '/' + name;
-        }
-	BLOGSTEP.post('make-dir', { path: path }).done(function (data) {
-	    addFile($currentColumn, data);
-	    enter(path);
-	});
-    }
+    });
 }
 
 function newFile() {
-    var name = prompt('Enter the new name:');
-    if (name !== null) {
-        if (name === '') {
-            alert('Invalid name');
-            return;
+    self.prompt('New file', 'Enter the new name:').done(function (name) {
+        if (name !== null) {
+            if (name === '') {
+                self.alert('New file', 'Invalid name');
+                return;
+            }
+            var path;
+            if (cwd === '/') {
+                path = cwd + name;
+            } else {
+                path = cwd + '/' + name;
+            }
+            BLOGSTEP.post('make-file', {path: path}).done(function (data) {
+                addFile($currentColumn, data);
+                enter(path);
+            });
         }
-        var path;
-        if (cwd === '/') {
-            path = cwd + name;
-        } else {
-            path = cwd + '/' + name;
-        }
-	BLOGSTEP.post('make-file', { path: path }).done(function (data) {
-	    addFile($currentColumn, data);
-	    enter(path);
-	});
-    }
+    });
 }
 
 function upload() {
@@ -759,35 +761,41 @@ function rename() {
         return;
     }
     var path = selection[0];
-    var name = prompt('Enter the new name:', files[path].data.name);
-    if (name !== null) {
-        if (name === '') {
-            alert('Invalid name');
+    
+    self.prompt('Rename', 'Enter the new name:', files[path].data.name).done(function (name) {
+        if (name !== null) {
+            if (name === '') {
+                self.alert('Rename', 'Invalid name');
+                return;
+            }
+            var destination = paths.convert(name, paths.dirName(path));
+            BLOGSTEP.post('move', { path: path, destination: destination }).done(function (data) {
+                enter(destination);
+                refresh();
+            });
         }
-        var destination = paths.convert(name, paths.dirName(path));
-	BLOGSTEP.post('move', { path: path, destination: destination }).done(function (data) {
-	    enter(destination);
-	    refresh();
-	});
-    }
+    });
 }
 
 function trash() {
     var confirmation;
     var data = {};
     if (selection.length === 1) {
-        confirmation = confirm('Permanently delete file: ' + selection[0]);
+        var file = files[selection[0]].data;
+        confirmation = 'Permanently delete "' + file.name + '"?';
         data.path = selection[0];
     } else {
-        confirmation = confirm('Permanently delete ' + selection.length + ' files?');
+        confirmation = 'Permanently delete the ' + selection.length + ' selected files?';
         data.paths = selection;
     }
-    if (confirmation) {
-	BLOGSTEP.post('delete', data).done(function (data) {
-	    removeSelection();
-	    refresh();
-	});
-    }
+    self.confirm('Files', confirmation, ['Delete', 'Cancel'], 'Delete').done(function (choice) {
+        if (choice === 'Delete') {
+            BLOGSTEP.post('delete', data).done(function (data) {
+                removeSelection();
+                refresh();
+            });
+        }
+    });
 }
 
 function download() {

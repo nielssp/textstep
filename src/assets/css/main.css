@@ -904,7 +904,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     position: relative;
     flex-grow: 1;
     background-color: #AEAAAE;
-    border-top: 1px solid #000; }
+    border-top: 1px solid #000;
+    margin: 0; }
     .frame > .frame-body > .frame-toolbar {
       color: #000;
       padding: 6px;

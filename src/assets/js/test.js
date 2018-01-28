@@ -60,6 +60,12 @@ BLOGSTEP.init('test', function (app) {
         });
     });
     
+    app.defineAction('test-prompt', function () {
+        app.prompt('Prompt', 'Foo bar:', 'baz').done(function (choice) {
+            app.alert('Choice', choice);
+        });
+    });
+    
     app.bindKey('c-a', 'test');
     
     var menu = app.addMenu('Test menu');

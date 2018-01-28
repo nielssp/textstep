@@ -14,6 +14,7 @@
 <p>Dialogs:
 <button data-action="test-alert">Alert</button>
 <button data-action="test-confirm">Confirm</button>
+<button data-action="test-prompt">Prompt</button>
 </p>
 <p>Binding 1:
 <input type="text" class="textbox-1" /></p>

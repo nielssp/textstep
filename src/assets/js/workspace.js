@@ -58,7 +58,7 @@ function Dialog(parent) {
     this.overlay = $('<div class="dialog-overlay">');
     this.frame = $('<div class="frame">').appendTo(this.overlay);
     this.head = $('<div class="frame-head">').appendTo(this.frame);
-    this.body = $('<div class="frame-body">').appendTo(this.frame);
+    this.body = $('<form class="frame-body">').appendTo(this.frame);
     $('<div class="frame-title">').appendTo(this.head);
 };
 
@@ -90,6 +90,10 @@ Dialog.alert = function (parent, title, message) {
     var okButton = $('<button>').text('OK').appendTo(footer);
     okButton.click(function () {
         dialog.close();
+    }).keydown(function (e) {
+        if (e.key === 'Escape') {
+            dialog.close(null);
+        }
     });
     var dfr = dialog.open();
     okButton.focus();
@@ -107,6 +111,10 @@ Dialog.confirm = function (parent, title, message, choices = ['OK', 'Cancel'], d
         var button = $('<button>').text(choices[i]).appendTo(footer);
         button.click(function () {
             dialog.close($(this).text());
+        }).keydown(function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
         });
         if (choices[i] === defaultChoice) {
             defaultButton = button;
@@ -115,6 +123,47 @@ Dialog.confirm = function (parent, title, message, choices = ['OK', 'Cancel'], d
     var dfr = dialog.open();
     if (defaultButton !== null) {
         defaultButton.focus();
+    }
+    return dfr;
+};
+
+Dialog.prompt = function (parent, title, message, value = '') {
+    var dialog = new Dialog(parent);
+    dialog.setTitle(title);
+    var content = $('<div class="frame-content">').appendTo(dialog.body);
+    $('<div>').text(message).appendTo(content);
+    var input = $('<input type="text">').appendTo(content);
+    var footer = $('<div class="frame-footer frame-footer-buttons">').appendTo(dialog.body);
+    dialog.body.submit(function (e) {
+        dialog.close(input.val());
+    });
+    input.keydown(function (e) {
+        if (e.key === 'Escape') {
+            dialog.close(null);
+        }
+    });
+    $('<input type="submit">').text('OK').appendTo(footer)
+        .click(function () {
+            dialog.close(input.val());
+        }).keydown(function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
+        });
+    footer.append(' ');
+    $('<button>').text('Cancel').appendTo(footer)
+        .click(function () {
+            dialog.close(null);
+        }).keydown(function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
+        });
+    var dfr = dialog.open();
+    input.focus();
+    if (value.length > 0) {
+        input.val(value);
+        input[0].setSelectionRange(0, value.length)
     }
     return dfr;
 };
@@ -161,8 +210,12 @@ App.prototype.confirm = function (title, message, choices, defaultChoice) {
     return Dialog.confirm(this.body, title, message, choices, defaultChoice);
 };
 
+App.prototype.prompt = function (title, message, value) {
+    return Dialog.prompt(this.body, title, message, value);
+};
+
 App.prototype.keydown = function (e) {
-    if (e.defaultPrevented) {
+    if (e.defaultPrevented || this.isDialogOpen()) {
         return;
     }
     if (this.onKeydown !== null) {
@@ -240,6 +293,10 @@ App.prototype.activate = function (name) {
     } else {
         name.apply(this);
     }
+};
+
+App.prototype.isDialogOpen = function () {
+    return this.body.children('.dialog-overlay').length > 0;
 };
 
 App.prototype.enableGroup = function (group) {
