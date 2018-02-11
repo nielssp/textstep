@@ -125,17 +125,17 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Mount file systems
         $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
         
-        $config = $this->config->getSubconfig('system.config');
+        $sysConfig = $this->config->getSubconfig('system.config');
         
         // Set timezone (required by file logger)
-        if (!isset($config['timeZone'])) {
+        if (!isset($sysConfig['timeZone'])) {
             $defaultTimeZone = 'UTC';
             \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
                 $defaultTimeZone = @date_default_timezone_get();
             });
-            $config['timeZone'] = $defaultTimeZone;
+            $sysConfig['timeZone'] = $defaultTimeZone;
         }
-        if (!date_default_timezone_set($config['timeZone'])) {
+        if (!date_default_timezone_set($sysConfig['timeZone'])) {
             date_default_timezone_set('UTC');
         }
         
@@ -143,7 +143,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         if ($this->m->logger instanceof \Jivoo\Log\Logger) {
             $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
                 $this->p('system/log/blogstep-' . date('Y-m-d') . '.log'),
-                $config->get('logLevel', \Psr\Log\LogLevel::WARNING)
+                $sysConfig->get('logLevel', \Psr\Log\LogLevel::WARNING)
             ));
         }
         
@@ -182,7 +182,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->view = new \Jivoo\View\View(
             $this->m->assets,
             $this->m->router,
-            new \Jivoo\Store\Document($config->getSubconfig('view')->getData()),
+            new \Jivoo\Store\Document($sysConfig->getSubconfig('view')->getData()),
             $this->m->logger
         );
         $this->m->view->addTemplateDir($this->p('src/templates'));

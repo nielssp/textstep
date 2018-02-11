@@ -118,14 +118,14 @@ class FileConfig extends Config
             $this->update();
         }
         $data = [];
-        $nsLength = strlen($this->namespace);
+        $nsLength = strlen($this->localNamespace);
         foreach ($this->localRoot->data as $key => $value) {
-            if (strpos($key, $this->namespace) === 0) {
+            if ($nsLength == 0 || strpos($key, $this->localNamespace) === 0) {
                 $data[substr($key, $nsLength)] = $value;
             }
         }
         foreach ($this->localRoot->changes as $key => $value) {
-            if (strpos($key, $this->namespace) === 0) {
+            if ($nsLength == 0 || strpos($key, $this->localNamespace) === 0) {
                 $data[substr($key, $nsLength)] = $value;
             }
         }

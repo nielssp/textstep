@@ -19,6 +19,7 @@ class SetConf extends \Blogstep\AuthenticatedSnippet
             foreach ($data['data'] as $key => $value) {
                 if ($this->m->acl->check('config.set.' . $key, $user)) {
                     $this->m->main->config->set($key, $value);
+                    $result[] = $key;
                 }
             }
             $this->m->main->config->commit();
