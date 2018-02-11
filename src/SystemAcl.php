@@ -60,10 +60,15 @@ class SystemAcl
         if (!isset($this->aclMap)) {
             $this->loadMap();
         }
-        if (isset($this->aclMap[$key])) {
-            return $this->aclMap[$key];
+        $dot = strrpos($key, '.');
+        $parent = [];
+        if ($dot !== false) {
+            $parent = $this->getRecord(substr($key, 0, $dot));
         }
-        return [];
+        if (isset($this->aclMap[$key])) {
+            return array_merge($this->aclMap[$key], $parent);
+        }
+        return $parent;
     }
     
     public function check($key, \Blogstep\User $user = null)
