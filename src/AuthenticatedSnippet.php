@@ -10,7 +10,7 @@ namespace Blogstep;
  */
 class AuthenticatedSnippet extends Snippet
 {
-    
+
     public function before()
     {
         if (! $this->m->auth->isLoggedIn()) {

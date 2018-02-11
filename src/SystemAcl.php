@@ -66,22 +66,20 @@ class SystemAcl
         return [];
     }
     
-    public function check($key, array $groups)
+    public function check($key, \Blogstep\User $user = null)
     {
+        if (!isset($user) or $user->isSystem()) {
+            return true;
+        }
         $record = $this->getRecord($key);
-        return count(array_intersect($groups, $record)) > 0;
+        return count(array_intersect($user->getGroups(), $record)) > 0;
     }
     
     public function withAuthentication($key, Files\File $file, callable $callback)
     {
         $system = $file->get('/');
         $user = $system->getAuthentication();
-        if (!isset($user)) {
-            $callback($file);
-            return;
-        }
-        $groups = [$user->getPrimaryGroup()] + $user->getGroups();
-        if ($this->check($key, $groups)) {
+        if ($this->check($key, $user)) {
             $system->setAuthentication($this->users->getUser('system'));
             $callback($file);
             $system->setAuthentication($user);

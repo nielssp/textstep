@@ -13,6 +13,8 @@ var self;
 function switchPage(page) {
     self.frame.find('.control-panel-page').removeClass('active');
     self.frame.find('.control-panel-' + page).addClass('active');
+    self.frame.find('.frame-iconbar button').removeClass('active');
+    self.frame.find('.frame-iconbar button[data-action="' + page + '"]').addClass('active');
 }
 
 BLOGSTEP.init('control-panel', function (app) {

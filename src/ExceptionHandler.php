@@ -86,7 +86,7 @@ class ExceptionHandler
             'Uncaught exception: ' . $exception->getMessage(),
             ['exception' => $exception]
         );
-        if ($this->m->main->config['system']['createCrashReports']) {
+        if ($this->m->main->config['debug.createCrashReports']) {
             $file = $exception->getFile();
             $line = $exception->getLine();
             $message = $exception->getMessage();
@@ -106,7 +106,7 @@ class ExceptionHandler
                     $this->m->logger->alert('Failed to create crash report: {name}', ['name' => $name]);
                 }
             }
-            if (!$this->m->main->config['system']['showReference']) {
+            if (!$this->m->main->config['debug.showReference']) {
                 $hash = null;
             }
         }
@@ -120,7 +120,7 @@ class ExceptionHandler
         }
         $response = new Response(Status::INTERNAL_SERVER_ERROR);
         $response = $response->withHeader('Content-Type', 'text/html');
-        if ($this->m->main->config['system']['showExceptions']) {
+        if ($this->m->main->config['debug.showExceptions']) {
             $body = $this->crashReport($exception);
             $response->getBody()->write($body);
         } else {

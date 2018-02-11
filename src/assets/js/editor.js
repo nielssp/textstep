@@ -40,7 +40,8 @@ function createBuffer(path) {
         data: null,
         loaded: false,
         unsaved: false,
-        history: null
+        history: null,
+        scrollInfo: null
     };
     buffers[path] = buffer;
     if (current !== null) {
@@ -60,6 +61,8 @@ function openBuffer(path) {
     if (buffers.hasOwnProperty(path)) {
         if (current !== null) {
             current.item.removeClass('active');
+            console.log(simplemde.codemirror.getScrollInfo());
+            current.scrollInfo = simplemde.codemirror.getScrollInfo();
         }
         current = buffers[path];
         current.item.addClass('active');
@@ -78,6 +81,10 @@ function openBuffer(path) {
                 self.setTitle(current.path + ' (*) – Editor');
             } else {
                 self.setTitle(current.path + ' – Editor');
+            }
+            if (current.scrollInfo !== null) {
+                console.log(current.scrollInfo);
+                simplemde.codemirror.scrollTo(current.scrollInfo.left, current.scrollInfo.top);
             }
         } else {
             self.setTitle(current.path + ' (...) – Editor');

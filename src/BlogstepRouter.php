@@ -10,6 +10,7 @@ namespace Blogstep;
  */
 class BlogstepRouter extends \Jivoo\Http\Router
 {
+
     protected function buildQuery(array $query)
     {
         return str_replace('%2F', '/', parent::buildQuery($query));

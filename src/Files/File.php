@@ -5,15 +5,11 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Files;
 
-use Blogstep\UnauthorizedException;
 use Jivoo\Assume;
-use Jivoo\Http\Message\PhpStream;
 use Jivoo\Http\Message\UploadedFile;
 use Jivoo\Http\Route\HasRoute;
 use Jivoo\I18n\I18n;
 use Jivoo\InvalidArgumentException;
-use Jivoo\Store\Config;
-use Jivoo\Store\JsonStore;
 use Jivoo\Utilities;
 
 /**
@@ -142,8 +138,7 @@ class File implements \IteratorAggregate, HasRoute
     
     private function isSystem()
     {
-        return ! isset($this->system->user) or $this->system->user->getName() === 'system' or
-            $this->system->user->isMemberOf('system');
+        return ! isset($this->system->user) or $this->system->user->isSystem();
     }
     
     public function set($key, $value)
@@ -321,6 +316,23 @@ class File implements \IteratorAggregate, HasRoute
     public function isDirectory()
     {
         return $this->getType() === 'directory';
+    }
+
+    public function isFile()
+    {
+        if ($this->type === 'unknown') {
+            if ($this->device->exists($this->devicePath)) {
+                if ($this->device->isDirectory($this->devicePath)) {
+                    $this->type = 'directory';
+                } else {
+                    $this->type = Utilities::getFileExtension($this->getName());
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return $this->type !== 'directory';
+        }
     }
     
     public function exists()
