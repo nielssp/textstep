@@ -115,6 +115,14 @@ Data:
 }
 ```
 
+### get-conf
+
+Read configuration.
+
+URL: `GET /get-conf?key=:key`
+
+URL: `GET /get-conf?keys[]=:key1&keys[]=:key2&...&`
+
 ### list-files
 
 Get file metadata and contents of directories.
@@ -182,6 +190,20 @@ Data:
   paths: [object]
 }
 ```
+
+### set-conf
+
+Read configuration.
+
+URL: `POST /set-conf`
+
+Data:
+```
+{
+  data: [object]
+}
+```
+
 
 ### setup [REMOVE]
 
