@@ -36,7 +36,7 @@ class View extends \Jivoo\View\View
         $this->siteMap = $siteMap;
         $this->addTemplateDir($siteMap->getBuildPath()->getRealPath());
         
-        $this->data->config = $compiler->config->toArray();
+        $this->data->config = $compiler->config->getData();
         $this->data->content = $compiler->content;
         $this->contentHandler = $compiler->content->getHandler();
         

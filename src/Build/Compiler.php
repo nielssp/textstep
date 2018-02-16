@@ -33,7 +33,7 @@ class Compiler extends \Blogstep\Task\TaskBase
     
     private $total = 0;
     
-    public function __construct(File $buildDir, \Jivoo\Store\Document $config)
+    public function __construct(File $buildDir, \Blogstep\Config\Config $config)
     {
         $this->siteMap = new SiteMap($buildDir);
         $this->buildDir = $buildDir;
