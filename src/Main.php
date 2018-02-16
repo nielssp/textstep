@@ -22,7 +22,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
     private $m;
     
     /**
-     * @var \Jivoo\Store\Document
+     * @var \Blogstep\Config\DirConfig
      */
     private $config;
     
@@ -39,17 +39,15 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->paths = new \Jivoo\Paths(getcwd(), $userPath);
         $this->m->paths->src = dirname(__FILE__);
         $this->m->paths->user = $userPath;
-        
-        $this->config = new \Jivoo\Store\Document();
-        $userConfig = new \Jivoo\Store\PhpStore($this->p('system/config.php'));
-        $this->config['user'] = new \Jivoo\Store\Config($userConfig);
-        
+                
         $this->m->cache = new \Jivoo\Cache\Cache();
         
         $this->m->files = new Files\FileSystem();
         $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
         
-        $this->m->router = new BlogstepRouter($this->config['user']['router']);
+        $this->config = new Config\DirConfig($this->m->files);
+        
+        $this->m->router = new BlogstepRouter();
         $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
         $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
         $this->m->server->add(new \Jivoo\Http\EntityTag);
@@ -107,6 +105,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\ChangeOwner');
         $this->m->router->auto('snippet:Api\WhoAmI');
         $this->m->router->auto('snippet:Api\Setup');
+        $this->m->router->auto('snippet:Api\GetConf');
+        $this->m->router->auto('snippet:Api\SetConf');
     }
     
     public function p($ipath)
@@ -122,15 +122,20 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Force output buffering so that error handlers can clear it.
         ob_start();
         
+        // Mount file systems
+        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
+        
+        $sysConfig = $this->config->getSubconfig('system.config');
+        
         // Set timezone (required by file logger)
-        if (!isset($this->config['user']['timeZone'])) {
+        if (!isset($sysConfig['timeZone'])) {
             $defaultTimeZone = 'UTC';
             \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
                 $defaultTimeZone = @date_default_timezone_get();
             });
-            $this->config['user']['timeZone'] = $defaultTimeZone;
+            $sysConfig['timeZone'] = $defaultTimeZone;
         }
-        if (!date_default_timezone_set($this->config['user']['timeZone'])) {
+        if (!date_default_timezone_set($sysConfig['timeZone'])) {
             date_default_timezone_set('UTC');
         }
         
@@ -138,7 +143,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         if ($this->m->logger instanceof \Jivoo\Log\Logger) {
             $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
                 $this->p('system/log/blogstep-' . date('Y-m-d') . '.log'),
-                $this->config['system']->get('logLevel', \Psr\Log\LogLevel::WARNING)
+                $sysConfig->get('logLevel', \Psr\Log\LogLevel::WARNING)
             ));
         }
         
@@ -153,9 +158,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
                 return new \Jivoo\Cache\NullPool();
             });
         }
-        
-        // Mount file systems
-        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
         
         // Initialize session
         $session = new \Jivoo\Store\PhpSessionStore();
@@ -177,7 +179,12 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'), null, true);
         
         // Initialize view
-        $this->m->view = new \Jivoo\View\View($this->m->assets, $this->m->router, $this->config['user']['view'], $this->m->logger);
+        $this->m->view = new \Jivoo\View\View(
+            $this->m->assets,
+            $this->m->router,
+            new \Jivoo\Store\Document($sysConfig->getSubconfig('view')->getData()),
+            $this->m->logger
+        );
         $this->m->view->addTemplateDir($this->p('src/templates'));
         
         $this->m->snippets = new Route\SnippetScheme($this->m, 'Blogstep\Snippets');

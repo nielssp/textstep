@@ -60,28 +60,31 @@ class SystemAcl
         if (!isset($this->aclMap)) {
             $this->loadMap();
         }
-        if (isset($this->aclMap[$key])) {
-            return $this->aclMap[$key];
+        $dot = strrpos($key, '.');
+        $parent = [];
+        if ($dot !== false) {
+            $parent = $this->getRecord(substr($key, 0, $dot));
         }
-        return [];
+        if (isset($this->aclMap[$key])) {
+            return array_merge($this->aclMap[$key], $parent);
+        }
+        return $parent;
     }
     
-    public function check($key, array $groups)
+    public function check($key, \Blogstep\User $user = null)
     {
+        if (!isset($user) or $user->isSystem()) {
+            return true;
+        }
         $record = $this->getRecord($key);
-        return count(array_intersect($groups, $record)) > 0;
+        return count(array_intersect($user->getGroups(), $record)) > 0;
     }
     
     public function withAuthentication($key, Files\File $file, callable $callback)
     {
         $system = $file->get('/');
         $user = $system->getAuthentication();
-        if (!isset($user)) {
-            $callback($file);
-            return;
-        }
-        $groups = [$user->getPrimaryGroup()] + $user->getGroups();
-        if ($this->check($key, $groups)) {
+        if ($this->check($key, $user)) {
             $system->setAuthentication($this->users->getUser('system'));
             $callback($file);
             $system->setAuthentication($user);

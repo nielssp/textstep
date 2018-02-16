@@ -41,22 +41,22 @@
 
                     <div class="field">
                         <label>Title</label>
-                        <input type="text"/>
+                        <input type="text" data-binding="system.config.title"/>
                     </div>
 
                     <div class="field">
                         <label>Subtitle</label>
-                        <input type="text"/>
+                        <input type="text" data-binding="system.config.subtitle"/>
                     </div>
 
                     <div class="field">
                         <label>Description</label>
-                        <input type="text"/>
+                        <input type="text" data-binding="system.config.description"/>
                     </div>
 
                     <div class="field">
                         <label>Copyright</label>
-                        <input type="text"/>
+                        <input type="text" data-binding="system.config.copyright"/>
                     </div>
 
                     <div class="field">
@@ -64,19 +64,6 @@
                         <select size="1">
                             <option>UTC</option>
                         </select>
-                    </div>
-                </fieldset>
-                <fieldset>
-                    <legend>Deployment</legend>
-
-                    <div class="field">
-                        <label>Target directory</label>
-                        <input type="text"/>
-                    </div>
-
-                    <div class="field">
-                        <label>Target URI</label>
-                        <input type="text"/>
                     </div>
                 </fieldset>
             </div>
@@ -125,8 +112,8 @@
             </div>
         </div>
         <div class="frame-footer frame-footer-buttons">
-            <button>Apply</button>
-            <button>Cancel</button>
+            <button data-action="save">Apply</button>
+            <button data-action="cancel">Cancel</button>
         </div>
     </div>
 </div>

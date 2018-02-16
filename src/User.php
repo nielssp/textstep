@@ -30,6 +30,7 @@ class User
         $this->home = $home;
         $this->primaryGroup = strval($primaryGroupId);
         $this->groups = array_map('strval', $groups);
+        $this->groups[] = $this->primaryGroup;
     }
     
     public function getName()
@@ -60,6 +61,11 @@ class User
     public function isMemberOf($group)
     {
         return $group === $this->primaryGroup or in_array($group, $this->groups, true);
+    }
+    
+    public function isSystem()
+    {
+        return $this->username === 'system' or $this->isMemberOf('system');
     }
     
     /**

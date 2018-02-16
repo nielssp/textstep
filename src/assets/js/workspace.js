@@ -11,10 +11,18 @@ var Cookies = require('js-cookie');
 var ui = require('./common/ui');
 var paths = require('./common/paths');
 
+import Config from './Config';
+
 window.BLOGSTEP = {};
 
 window.BLOGSTEP.ui = ui;
 window.BLOGSTEP.paths = paths;
+
+window.BLOGSTEP.config = new Config(function (keys) {
+    return BLOGSTEP.get('get-conf', { keys: keys });
+}, function (data) {
+    return BLOGSTEP.post('set-conf', { data: data });
+});
 
 var apps = {};
 
