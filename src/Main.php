@@ -175,23 +175,31 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->auth->cookie = new \Jivoo\Security\Authentication\CookieAuthentication($this->m->cookies);
         $this->m->auth->authenticate(null);
         
-        // Initialize assets
-        $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'), null, true);
+        if (php_sapi_name() === 'cli') {
+            // Open shell if running from CLI
+            $this->m->shell = new Shell($this->m);
+            $this->m->shell->run();
+        } else {
+            // Otherwise prepare to handle a request
         
-        // Initialize view
-        $this->m->view = new \Jivoo\View\View(
-            $this->m->assets,
-            $this->m->router,
-            new \Jivoo\Store\Document($sysConfig->getSubconfig('view')->getData()),
-            $this->m->logger
-        );
-        $this->m->view->addTemplateDir($this->p('src/templates'));
-        
-        $this->m->snippets = new Route\SnippetScheme($this->m, 'Blogstep\Snippets');
-        
-        // Initialize routes
-        $this->initRoutes();
+            // Initialize assets
+            $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'), null, true);
 
-        $this->m->server->listen();
+            // Initialize view
+            $this->m->view = new \Jivoo\View\View(
+                $this->m->assets,
+                $this->m->router,
+                new \Jivoo\Store\Document($sysConfig->getSubconfig('view')->getData()),
+                $this->m->logger
+            );
+            $this->m->view->addTemplateDir($this->p('src/templates'));
+
+            $this->m->snippets = new Route\SnippetScheme($this->m, 'Blogstep\Snippets');
+
+            // Initialize routes
+            $this->initRoutes();
+
+            $this->m->server->listen();
+        }
     }
 }

@@ -118,6 +118,10 @@ class ExceptionHandler
         while (ob_get_level() > 0) {
             ob_end_clean();
         }
+        if (php_sapi_name() === 'cli') {
+            Shell::dumpException($exception);
+            exit;
+        }
         $response = new Response(Status::INTERNAL_SERVER_ERROR);
         $response = $response->withHeader('Content-Type', 'text/html');
         if ($this->m->main->config['debug.showExceptions']) {
