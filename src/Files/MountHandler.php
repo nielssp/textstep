@@ -49,7 +49,7 @@ class MountHandler
         if (!isset($options['path']) || !is_string($options['path'])) {
             throw new \Blogstep\RuntimeException('Missing device path');
         }
-        return new HostDevice($options['path']);
+        return new HostDevice($options['path'], $options);
     }
     
     public function mount(File $mountPoint, $options)

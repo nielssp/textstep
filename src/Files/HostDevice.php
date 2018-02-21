@@ -15,9 +15,29 @@ class HostDevice implements Device
 {
     private $rootPath;
 
-    public function __construct($rootPath)
+    private $fileMode = null;
+    
+    private $dirMode = null;
+    
+    private $user = null;
+    
+    private $group = null;
+    
+    public function __construct($rootPath, array $options = [])
     {
         $this->rootPath = $rootPath;
+        if (isset($options['fileMode'])) {
+            $this->fileMode = intval($options['fileMode']);
+        }
+        if (isset($options['dirMode'])) {
+            $this->dirMode = intval($options['dirMode']);
+        }
+        if (isset($options['user'])) {
+            $this->user = $options['user'];
+        }
+        if (isset($options['group'])) {
+            $this->group = $options['group'];
+        }
     }
     
     public function getRealPath($path)
@@ -108,15 +128,36 @@ class HostDevice implements Device
         $file->moveTo($this->rootPath . $destination);
         return true;
     }
+    
+    public function setOwnership($path) {
+        $path = $this->rootPath . $path;
+        if (isset($this->dirMode)) {
+            chmod($path, $this->dirMode);
+        }
+        if (isset($this->user)) {
+            chown($path, $this->user);
+        }
+        if (isset($this->group)) {
+            chgrp($path, $this->group);
+        }
+    }
 
     public function createDirectory($path)
     {
-        return mkdir($this->rootPath . $path);
+        if (mkdir($this->rootPath . $path)) {
+            $this->setOwnership($path);
+            return true;
+        }
+        return false;
     }
 
     public function createFile($path)
     {
-        return touch($this->rootPath . $path);
+        if (touch($this->rootPath . $path)) {
+            $this->setOwnership($path);
+            return true;
+        }
+        return false;
     }
 
     public function getContents($path)
