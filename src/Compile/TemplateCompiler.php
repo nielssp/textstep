@@ -37,23 +37,36 @@ class TemplateCompiler
 
     public function compile(\Blogstep\Files\File $file)
     {
-        $contentBuildDir = $this->buildDir->get('.' . $file->getPath());
-        if (!$contentBuildDir->makeDirectory(true)) {
-            throw new \Blogstep\RuntimeException('Could not create build directory: ' . $contentBuildDir->getPath());
-        }
         $name = $file->getName();
-        if (Unicode::endsWith($name, '.html')) {
+        if (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();
             $node = $this->templateCompiler->compile($html);
             if ($node->count() > 1) {
-                // TODO: do something
+                foreach ($node->getChildren() as $child) {
+                    if (!$child->hasProperty('target-path')) {
+                        throw new \Blogstep\RuntimeException('Missing target path property');
+                    }
+                    // TODO: add to sitemap .. if property 'detach' or something not set
+                    $target = $this->buildDir->get('.' . $child->getProperty('target-path') . '.php');
+                    $target->getParent()->makeDirectory(true);
+                    $target->putContents($child->__toString());
+                }
             } else {
-                $output = $node->__toString();
+                // TODO: add to sitemap
+                $target = $this->buildDir->get('.' . $file->getPath() . '.php');
+                $target->getParent()->makeDirectory(true);
+                $target->putContents($node->__toString());
             }
         } elseif (preg_match('/\.([a-z0-9]+)\.php$/i', $name)) {
-            
+            // TODO: add to sitemap (minus .php extension) unless starting with _ or .
+            $target = $this->buildDir->get('.' . $file->getPath());
+            $target->getParent()->makeDirectory(true);
+            $file->copy($target);
         } else {
-            // nothing to do
+            // TODO: add to sitemap unless starting with _ or .
+            $target = $this->buildDir->get('.' . $file->getPath());
+            $target->getParent()->makeDirectory(true);
+            $file->copy($target);
         }
     }
 }

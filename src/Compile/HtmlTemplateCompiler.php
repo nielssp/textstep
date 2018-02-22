@@ -5,6 +5,13 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Compile;
 
+use Jivoo\View\Compile\HtmlNode;
+use Jivoo\View\Compile\InternalNode;
+use Jivoo\View\Compile\InvalidMacroException;
+use Jivoo\View\Compile\Macros;
+use Jivoo\View\Compile\PhpNode;
+use Jivoo\View\Compile\TemplateNode;
+use Jivoo\View\Compile\TextNode;
 use Jivoo\View\InvalidTemplateException;
 use SimpleHtmlDom\simple_html_dom;
 use SimpleHtmlDom\simple_html_dom_node;
@@ -39,7 +46,7 @@ class HtmlTemplateCompiler
      */
     public function addMacros($macros, $namespace = 'j')
     {
-        if ($macros instanceof \Jivoo\View\Compile\Macros) {
+        if ($macros instanceof Macros) {
             $this->addMacros($macros->getMacros(), $macros->getNamespace());
             return;
         }
@@ -52,7 +59,7 @@ class HtmlTemplateCompiler
      * Compile a template file by reading it, converting the DOM using
      * {@see convert()}, then applying macros using {@see transform()}.
      * @param string $source Template source.
-     * @return \Jivoo\View\Compile\InternalNode Template node.
+     * @return InternalNode Template node.
      * @throws InvalidTemplateException If template is inaccessible or invalid.
      */
     public function compile($source)
@@ -62,18 +69,20 @@ class HtmlTemplateCompiler
             throw new InvalidTemplateExceptionn('Could not parse template');
         }
 
-        $root = new \Jivoo\View\Compile\InternalNode();
+        $root = new InternalNode();
 
         $main = $dom->find('[j:main]', 0);
         if (isset($main)) {
             $root->append($this->convert($main));
         } else {
+            $content = new InternalNode();
             foreach ($dom->find('*, text') as $html) {
                 if ($html->parent->tag != 'root') {
                     continue;
                 }
-                $root->append($this->convert($html));
+                $content->append($this->convert($html));
             }
+            $root->append($content);
         }
         $this->transform($root);
 
@@ -88,19 +97,19 @@ class HtmlTemplateCompiler
     public function convert(simple_html_dom_node $node)
     {
         if ($node->tag === 'text' or $node->tag === 'unknown') {
-            return new \Jivoo\View\Compile\TextNode($node->innertext);
+            return new TextNode($node->innertext);
         } elseif ($node->tag === 'comment') {
             if (preg_match('/^<!-- *\{(.*)\} *-->$/ms', $node->innertext, $matches) === 1) {
-                return new \Jivoo\View\Compile\PhpNode($matches[1], true);
+                return new PhpNode($matches[1], true);
             }
-            return new \Jivoo\View\Compile\TextNode('');
+            return new TextNode('');
         } else {
-            $output = new \Jivoo\View\Compile\HtmlNode($node->tag);
+            $output = new HtmlNode($node->tag);
             foreach ($node->attr as $name => $value) {
                 if (preg_match('/^{(.*)}([\?])?$/', $value, $matches) === 1) {
-                    $value = new \Jivoo\View\Compile\PhpNode($matches[1], false, isset($matches[2]) ? $matches[2] : '');
+                    $value = new PhpNode($matches[1], false, isset($matches[2]) ? $matches[2] : '');
                 } elseif ($value !== true) {
-                    $value = new \Jivoo\View\Compile\TextNode($value);
+                    $value = new TextNode($value);
                 } else {
                     $value = null;
                 }
@@ -126,7 +135,7 @@ class HtmlTemplateCompiler
      * @param TemplateNode $node Node.
      * @throws InvalidMacroException If macro is unknown.
      */
-    public function transform(TemplateNode $node)
+    public function transform(\Jivoo\View\Compile\TemplateNode $node)
     {
         if ($node instanceof InternalNode) {
             foreach ($node->getChildren() as $child) {
@@ -138,7 +147,7 @@ class HtmlTemplateCompiler
                 continue;
             }
             if (!isset($this->macros[$macro])) {
-                throw new \Jivoo\View\Compile\InvalidMacroException(
+                throw new InvalidMacroException(
                     'Undefined macro "' . $macro
                 );
             }

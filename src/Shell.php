@@ -153,6 +153,10 @@ class Shell
                 $compiler->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
                 $compiler->compile($this->workingDir->get($parameters[0]));
                 break;
+            case 'tc':
+                $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $this->m->logger);
+                $compiler->compile($this->workingDir->get($parameters[0]));
+                break;
             default:
                 $this->error('command not found: ' . $command);
         }
