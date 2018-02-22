@@ -445,10 +445,15 @@ class File implements \IteratorAggregate, HasRoute
         return true;
     }
     
-    public function makeDirectory()
+    public function makeDirectory($recursive = false)
     {
         if ($this->exists()) {
-            return false;
+            return $recursive && $this->isDirectory();
+        }
+        if ($recursive && $this->parent !== $this) {
+            if (!$this->parent->makeDirectory(true)) {
+                return false;
+            }
         }
         $this->assumeWritable();
         if ($this->device->createDirectory($this->devicePath)) {

@@ -5,7 +5,6 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep;
 
-use Exception;
 use Jivoo\I18n\I18n;
 use Jivoo\Log\CallbackHandler;
 use Jivoo\Log\ErrorException;
@@ -146,6 +145,14 @@ class Shell
             case 'pwd':
                 $this->put($this->workingDir->getPath());
                 break;
+            case 'cc':
+                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $this->m->logger);
+                $id = function ($content) { return $content; };
+                $compiler->getHandler()->addHandler('html', $id);
+                $compiler->getHandler()->addHandler('htm', $id);
+                $compiler->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
+                $compiler->compile($this->workingDir->get($parameters[0]));
+                break;
             default:
                 $this->error('command not found: ' . $command);
         }
@@ -215,7 +222,7 @@ class Shell
         fflush($stream);
     }
 
-    public function handleException(Exception $exception)
+    public function handleException(\Exception $exception)
     {
         $this->lastError = $exception;
         if (isset($this->options['trace'])) {
@@ -395,7 +402,7 @@ class Shell
                 } else {
                     $this->evalCommand($line);
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->handleException($e);
             }
         }
