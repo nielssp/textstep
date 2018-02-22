@@ -178,7 +178,7 @@ class ContentCompiler
         }
         
         $noTitleFile = $contentBuildDir->get('content-no-title.html');
-        $noTitleFile->putCOntents($this->removeTitle($html)->__toString());
+        $noTitleFile->putContents($this->removeTitle($html)->__toString());
         
     }
 }
