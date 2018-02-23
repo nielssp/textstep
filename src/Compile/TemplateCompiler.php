@@ -25,48 +25,49 @@ class TemplateCompiler
      * @var BlogstepMacros
      */
     private $macros;
+
+    /**
+     * @var SiteMap
+     */
+    private $siteMap;
     
-    public function __construct(\Blogstep\Files\File $buildDir, \Psr\Log\LoggerInterface $log)
+    public function __construct(\Blogstep\Files\File $buildDir, \Psr\Log\LoggerInterface $log, SiteMap $siteMap)
     {
         $this->buildDir = $buildDir;
         $this->handler = new \Blogstep\Build\ContentHandler();
         $this->templateCompiler = new HtmlTemplateCompiler();
-        $this->macros = new BlogstepMacros();
+        $this->macros = new BlogstepMacros($siteMap);
         $this->templateCompiler->addMacros($this->macros);
+        $this->siteMap = $siteMap;
     }
 
-    public function compile(\Blogstep\Files\File $file)
+    public function compile(\Blogstep\Files\File $file, $destination = null)
     {
+        if (!isset($destination)) {
+            // TODO: something
+            $destination = preg_replace('/^\/site/', '', $file->getParent()->getPath());
+        }
         $name = $file->getName();
         if (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();
-            $node = $this->templateCompiler->compile($html);
-            if ($node->count() > 1) {
-                foreach ($node->getChildren() as $child) {
-                    if (!$child->hasProperty('target-path')) {
-                        throw new \Blogstep\RuntimeException('Missing target path property');
-                    }
-                    // TODO: add to sitemap .. if property 'detach' or something not set
-                    $target = $this->buildDir->get('.' . $child->getProperty('target-path') . '.php');
-                    $target->getParent()->makeDirectory(true);
-                    $target->putContents($child->__toString());
-                }
+            $target = $this->buildDir->get('.' . $file->getPath() . '.php');
+            $target->getParent()->makeDirectory(true);
+            $this->templateCompiler->targetTemplate = $target;
+            if (!\Jivoo\Unicode::startsWith($name, '_')) {
+                $path = $destination . '/' . $name;
+                $this->siteMap->add($path, 'eval', [$target->getPath()]);
+                $this->templateCompiler->currentPath = $path;
             } else {
-                // TODO: add to sitemap
-                $target = $this->buildDir->get('.' . $file->getPath() . '.php');
-                $target->getParent()->makeDirectory(true);
-                $target->putContents($node->__toString());
+                $this->templateCompiler->currentPath = null;
             }
+            $node = $this->templateCompiler->compile($html);
+            $target->putContents($node->__toString());
         } elseif (preg_match('/\.([a-z0-9]+)\.php$/i', $name)) {
-            // TODO: add to sitemap (minus .php extension) unless starting with _ or .
-            $target = $this->buildDir->get('.' . $file->getPath());
-            $target->getParent()->makeDirectory(true);
-            $file->copy($target);
-        } else {
-            // TODO: add to sitemap unless starting with _ or .
-            $target = $this->buildDir->get('.' . $file->getPath());
-            $target->getParent()->makeDirectory(true);
-            $file->copy($target);
+            $path = $destination . '/' . preg_replace('/\.php$/i', '', $name);
+            $this->siteMap->add($path, 'eval', [$file->getPath()]);
+        } else if (!\Jivoo\Unicode::startsWith($name, '_')) {
+            $path = $destination . '/' . $name;
+            $this->siteMap->add($path, 'copy', [$file->getPath()]);
         }
     }
 }

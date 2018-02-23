@@ -25,6 +25,11 @@ class ContentCompiler
      * @var string[]
      */
     private $urlAttributes = ['src', 'href'];
+
+    /**
+     * @var ContentMap
+     */
+    private $contentMap;
     
     public function __construct(\Blogstep\Files\File $buildDir, \Psr\Log\LoggerInterface $log)
     {
@@ -168,11 +173,13 @@ class ContentCompiler
             $briefNoTitleFile = $contentBuildDir->get('brief-no-title.html');
             $briefNoTitleFile->putContents(rtrim($this->removeTitle($briefHtml)));
         }
+
+        $this->contentMap->add($file->getPath(), $metadata);
         
         $metadataFile = $contentBuildDir->get('metadata.json');
         $metadataFile->putContents(\Jivoo\Json::prettyPrint($metadata->toArray()));
         
-        $html = $dom->__toString();        
+        $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {
             throw new \Blogstep\RuntimeException('Could not write file: ' . $htmlFile->getPath());
         }

@@ -21,6 +21,23 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
     protected $properties = ['data', 'path', 'as'];
     
     private $context = [];
+
+    private $siteMap;
+
+    private $contentMap;
+
+    private $contentTree;
+
+    public $currentPath = null;
+
+    public $targetTemplate = null;
+
+    public function __construct(SiteMap $siteMap, ContentMap $contentMap)
+    {
+        $this->siteMap = $siteMap;
+        $this->contentMap = $contentMap;
+        $this->contentTree = new ContentTree($this->contentMap, '/content/');
+    }
     
     private function evaluate($_code, $_statement = false)
     {
@@ -37,44 +54,28 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
 
     public function forkMacro(HtmlNode $node, TemplateNode $value)
     {
-        if (isset($this->siteNode) and isset($this->compiler)) {
-            $pathFormat = $node->getProperty('bs:path');
-            $var = $node->getProperty('bs:as');
-            $varName = ltrim($var->code, '$');
-            $this->context = [
-                'content' => $this->compiler->content
-            ];
-            $root = $this->siteNode->parent;
-            foreach ($this->evaluate($value->code) as $item) {
-                $this->context[$varName] = $item;
-                $path = $this->evaluate($pathFormat->code);
-                $template = $root->getBuildPath()->get(ltrim($path . '.php', '/'));
-                $descendant = $root->createDescendant($path);
-                if ($item instanceof ContentNode) {
-                    $item->setName($descendant->getName());
-                    $item->setFile($template);
-                } else {
-                    $item = new ObjectNode($template, $item);
-                    $item->setName(preg_replace('/\.php$/', '', $item->getName()));
-                }
-                $descendant->replaceWith($item);
-                $code = '<?php ';
-                $code .= '$node = $this->getNode(' . var_export($item->getPath(), true) . ');';
-                if ($item instanceof ObjectNode) {
-                    $code .= $var->code . ' = $node->getObject();';
-                } else {
-                    $code .= $var->code . ' = $node;';
-                }
-                $data = '['
-                    . var_export('node', true) . ' => $node, '
-                    . var_export($varName, true) . ' => ' . $var->code
-                    . ']';
-                $code .= 'echo $this->embed(' . var_export($this->siteNode->getPath(), true) . ', ' . $data . ');';
-                $template->putContents($code);
+        $pathFormat = $node->getProperty('bs:path');
+        $var = $node->getProperty('bs:as');
+        $varName = ltrim($var->code, '$');
+        $this->context = [
+            'content' => $this->contentTree
+        ];
+        foreach ($this->evaluate($value->code) as $item) {
+            $this->context[$varName] = $item;
+            $path = $this->evaluate($pathFormat->code);
+            $template = $this->targetTemplate->getPath();
+
+            if ($item instanceof ContentNode) {
+                $type = 'content';
+                $arg = $item->path;
+            } else {
+                $type = 'object';
+                $arg = serialize($item);
             }
-            $this->siteNode->detach();
-            $this->siteNode = null;
+            $this->siteMap->add($path, 'eval', [$template, $type, $arg]);
         }
+        $code = $var->code . ' = $this->getArg(2);';
+        $node->before(new PhpNode($code, true));
     }
     
     public function foreachMacro(HtmlNode $node, TemplateNode $value)
