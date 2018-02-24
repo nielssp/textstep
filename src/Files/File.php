@@ -448,7 +448,7 @@ class File implements \IteratorAggregate, HasRoute
     public function makeDirectory($recursive = false)
     {
         if ($this->exists()) {
-            return $recursive && $this->isDirectory();
+            return $this->isDirectory();
         }
         if ($recursive && $this->parent !== $this) {
             if (!$this->parent->makeDirectory(true)) {
@@ -463,10 +463,15 @@ class File implements \IteratorAggregate, HasRoute
         return false;
     }
     
-    public function makeFile()
+    public function makeFile($recursive = false)
     {
         if ($this->exists()) {
-            return false;
+            return $this->isFile();
+        }
+        if ($recursive && $this->parent !== $this) {
+            if (!$this->parent->makeDirectory(true)) {
+                return false;
+            }
         }
         $this->assumeWritable();
         if ($this->device->createFile($this->devicePath)) {

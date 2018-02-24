@@ -31,18 +31,30 @@ class TemplateCompiler
      */
     private $siteMap;
     
-    public function __construct(\Blogstep\Files\File $buildDir, \Psr\Log\LoggerInterface $log, SiteMap $siteMap)
+    /**
+     * @var ContentMap
+     */
+    private $contentMap;
+    
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, ContentMap $contentMap)
     {
         $this->buildDir = $buildDir;
-        $this->handler = new \Blogstep\Build\ContentHandler();
-        $this->templateCompiler = new HtmlTemplateCompiler();
-        $this->macros = new BlogstepMacros($siteMap);
-        $this->templateCompiler->addMacros($this->macros);
         $this->siteMap = $siteMap;
+        $this->contentMap = $contentMap;
+        $this->templateCompiler = new HtmlTemplateCompiler();
+        $this->macros = new BlogstepMacros($siteMap, $contentMap);
+        $this->templateCompiler->addMacros(new \Jivoo\View\Compile\DefaultMacros);
+        $this->templateCompiler->addMacros($this->macros);
     }
 
     public function compile(\Blogstep\Files\File $file, $destination = null)
     {
+        if ($file->isDirectory()) {
+            foreach ($file as $child) {
+                $this->compile($child);
+            }
+            return;
+        }
         if (!isset($destination)) {
             // TODO: something
             $destination = preg_replace('/^\/site/', '', $file->getParent()->getPath());
@@ -52,13 +64,13 @@ class TemplateCompiler
             $html = $file->getContents();
             $target = $this->buildDir->get('.' . $file->getPath() . '.php');
             $target->getParent()->makeDirectory(true);
-            $this->templateCompiler->targetTemplate = $target;
+            $this->macros->targetTemplate = $target;
             if (!\Jivoo\Unicode::startsWith($name, '_')) {
                 $path = $destination . '/' . $name;
                 $this->siteMap->add($path, 'eval', [$target->getPath()]);
-                $this->templateCompiler->currentPath = $path;
+                $this->macros->currentPath = $path;
             } else {
-                $this->templateCompiler->currentPath = null;
+                $this->macros->currentPath = null;
             }
             $node = $this->templateCompiler->compile($html);
             $target->putContents($node->__toString());

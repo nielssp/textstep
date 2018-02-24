@@ -146,7 +146,8 @@ class Shell
                 $this->put($this->workingDir->getPath());
                 break;
             case 'cc':
-                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $this->m->logger);
+                $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
+                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $contentMap);
                 $id = function ($content) { return $content; };
                 $compiler->getHandler()->addHandler('html', $id);
                 $compiler->getHandler()->addHandler('htm', $id);
@@ -154,7 +155,9 @@ class Shell
                 $compiler->compile($this->workingDir->get($parameters[0]));
                 break;
             case 'tc':
-                $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $this->m->logger);
+                $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
+                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $siteMap, $contentMap);
                 $compiler->compile($this->workingDir->get($parameters[0]));
                 break;
             default:

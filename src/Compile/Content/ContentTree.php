@@ -17,19 +17,19 @@ class ContentTree implements IteratorAggregate, Selectable
     private $map;
 
     private $namespace;
-    
+
     private $namespaces = [];
-    
+
     private $nodes = null;
-    
+
     private $recursive = false;
-    
-    public function __construct(ContentMap $map, $namespace = '/')
+
+    public function __construct(\Blogstep\Compile\ContentMap $map, $namespace = '/')
     {
         $this->map = $map;
         $this->namespace = $namespace;
     }
-    
+
     public function __get($namespace)
     {
         if (!isset($this->namespaces[$namespace])) {
@@ -37,19 +37,24 @@ class ContentTree implements IteratorAggregate, Selectable
         }
         return $this->namespaces[$namespace];
     }
-    
+
+    public function get($path)
+    {
+        return $this->map->get($path);
+    }
+
     public function recursive($recursive = true)
     {
         $copy = clone $this;
         $copy->recursive = $recursive;
         return $copy;
     }
-    
+
     protected function select()
     {
         return new ContentSelection($this);
     }
-    
+
     public function getNodes()
     {
         if (! isset($this->nodes)) {
@@ -57,7 +62,7 @@ class ContentTree implements IteratorAggregate, Selectable
         }
         return $this->nodes;
     }
-    
+
     public function getIterator()
     {
         return new \ArrayIterator($this->getNodes());

@@ -1,5 +1,5 @@
 <?php
-// BlogSTEP 
+// BlogSTEP
 // Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
@@ -19,7 +19,7 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
     protected $namespace = 'bs';
 
     protected $properties = ['data', 'path', 'as'];
-    
+
     private $context = [];
 
     private $siteMap;
@@ -36,9 +36,9 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
     {
         $this->siteMap = $siteMap;
         $this->contentMap = $contentMap;
-        $this->contentTree = new ContentTree($this->contentMap, '/content/');
+        $this->contentTree = new \Blogstep\Compile\Content\ContentTree($this->contentMap, '/content/');
     }
-    
+
     private function evaluate($_code, $_statement = false)
     {
         extract($this->context, EXTR_SKIP);
@@ -60,24 +60,28 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
         $this->context = [
             'content' => $this->contentTree
         ];
+        $this->siteMap->remove($this->currentPath);
+        $i = 0;
         foreach ($this->evaluate($value->code) as $item) {
             $this->context[$varName] = $item;
             $path = $this->evaluate($pathFormat->code);
             $template = $this->targetTemplate->getPath();
 
-            if ($item instanceof ContentNode) {
+            if ($item instanceof Content\ContentNode) {
                 $type = 'content';
                 $arg = $item->path;
+//            } else if ($item instanceof Content\ContentPage) {
             } else {
-                $type = 'object';
-                $arg = serialize($item);
+                $type = 'element';
+                $arg = $i;
             }
             $this->siteMap->add($path, 'eval', [$template, $type, $arg]);
+            $i++;
         }
-        $code = $var->code . ' = $this->getArg(2);';
+        $code = $var->code . ' = $this->forkArg();';
         $node->before(new PhpNode($code, true));
     }
-    
+
     public function foreachMacro(HtmlNode $node, TemplateNode $value)
     {
         if (!isset($value)) {

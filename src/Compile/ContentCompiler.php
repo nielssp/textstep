@@ -10,17 +10,17 @@ namespace Blogstep\Compile;
  */
 class ContentCompiler
 {
-    
+
     /**
      * @var \Blogstep\Files\File
      */
     private $buildDir;
-    
+
     /**
      * @var \Blogstep\Build\ContentHandler
      */
     private $handler;
-    
+
     /**
      * @var string[]
      */
@@ -30,18 +30,19 @@ class ContentCompiler
      * @var ContentMap
      */
     private $contentMap;
-    
-    public function __construct(\Blogstep\Files\File $buildDir, \Psr\Log\LoggerInterface $log)
+
+    public function __construct(\Blogstep\Files\File $buildDir, \Blogstep\Compile\ContentMap $contentMap)
     {
         $this->buildDir = $buildDir;
         $this->handler = new \Blogstep\Build\ContentHandler();
+        $this->contentMap = $contentMap;
     }
-    
+
     public function getHandler()
     {
         return $this->handler;
     }
-    
+
     private function convertSource(\Blogstep\Files\File $file)
     {
         $handler = $this->handler->getHandler($file->getType());
@@ -51,7 +52,7 @@ class ContentCompiler
         $content = $file->getContents();
         return $handler($content);
     }
-    
+
     private function parseHtml($html, \Blogstep\Files\File $htmlFile)
     {
         $dom = new \SimpleHtmlDom\simple_html_dom();
@@ -61,7 +62,7 @@ class ContentCompiler
         }
         return $dom;
     }
-    
+
     private function extractMetadataBlock(\SimpleHtmlDom\simple_html_dom $dom)
     {
         $data = [];
@@ -77,7 +78,7 @@ class ContentCompiler
         }
         return $data;
     }
-    
+
     private function getBrief($html)
     {
         $dom = new \SimpleHtmlDom\simple_html_dom();
@@ -92,7 +93,7 @@ class ContentCompiler
         }
         return $dom;
     }
-    
+
     private function removeTitle($html)
     {
         $dom = new \SimpleHtmlDom\simple_html_dom();
@@ -103,7 +104,7 @@ class ContentCompiler
         }
         return $dom;
     }
-    
+
     private function copyAssets(\Blogstep\Files\File $source, \SimpleHtmlDom\simple_html_dom $dom)
     {
         foreach ($this->urlAttributes as $attribute) {
@@ -130,22 +131,32 @@ class ContentCompiler
             }
         }
     }
-    
+
     public function compile(\Blogstep\Files\File $file)
     {
+        if ($file->isDirectory()) {
+            foreach ($file as $child) {
+                $this->compile($child);
+            }
+            return;
+        }
+        $handler = $this->handler->getHandler($file->getType());
+        if (!isset($handler)) {
+            return;
+        }
         $contentBuildDir = $this->buildDir->get('.' . $file->getPath());
         if (!$contentBuildDir->makeDirectory(true)) {
             throw new \Blogstep\RuntimeException('Could not create build directory: ' . $contentBuildDir->getPath());
         }
-        $html = $this->convertSource($file);
+        $html = $handler($file->getContents());
         $htmlFile = $contentBuildDir->get('content.html');
         if (!$htmlFile->putContents($html)) {
             throw new \Blogstep\RuntimeException('Could not write file: ' . $htmlFile->getPath());
         }
         $dom = $this->parseHtml($html, $htmlFile);
         $this->copyAssets($file, $dom);
-        $metadata = new \Jivoo\Store\Document($this->extractMetadataBlock($dom));       
-        
+        $metadata = new \Jivoo\Store\Document($this->extractMetadataBlock($dom));
+
         $published = $metadata->get('published');
         if (!isset($published)) {
             $metadata['published'] = time();
@@ -154,7 +165,7 @@ class ContentCompiler
         }
         $metadata['path'] = $file->getPath();
         $metadata->setDefault('name', preg_replace('/\.[^.]+$/', '', $file->getName()));
-        
+
         if (!isset($metadata['title'])) {
             $title = $dom->find('h1', 0);
             if (isset($title)) {
@@ -163,9 +174,9 @@ class ContentCompiler
                 $metadata['title'] = $metadata['name'];
             }
         }
-        
+
         $metadata['hasBreak'] = $dom->find('.break', 0) !== null;
-        
+
         if ($metadata['hasBreak']) {
             $briefFile = $contentBuildDir->get('brief.html');
             $briefHtml = rtrim($this->getBrief($dom->__toString())->__toString());
@@ -174,18 +185,18 @@ class ContentCompiler
             $briefNoTitleFile->putContents(rtrim($this->removeTitle($briefHtml)));
         }
 
-        $this->contentMap->add($file->getPath(), $metadata);
-        
+        $this->contentMap->add($file->getPath(), $metadata->toArray());
+
         $metadataFile = $contentBuildDir->get('metadata.json');
         $metadataFile->putContents(\Jivoo\Json::prettyPrint($metadata->toArray()));
-        
+
         $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {
             throw new \Blogstep\RuntimeException('Could not write file: ' . $htmlFile->getPath());
         }
-        
+
         $noTitleFile = $contentBuildDir->get('content-no-title.html');
         $noTitleFile->putContents($this->removeTitle($html)->__toString());
-        
+
     }
 }

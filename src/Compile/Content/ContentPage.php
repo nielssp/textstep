@@ -3,7 +3,7 @@
 // Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
-namespace Blogstep\Build;
+namespace Blogstep\Compile\Content;
 
 /**
  * A page of content nodes.
@@ -11,7 +11,7 @@ namespace Blogstep\Build;
 class ContentPage extends ContentGroup
 {
     private $base = '';
-    
+
     public function __construct($properties, $page, $pages, $offset, $total)
     {
         parent::__construct(array_merge($properties, [
@@ -21,22 +21,22 @@ class ContentPage extends ContentGroup
             'totalItems' => $total
         ]), [['*', 'count', 'itemsOnPage']]);
     }
-    
+
     public function path($base = null)
     {
         return $this->link($this->page, $base);
     }
-    
+
     public function isFirst()
     {
         return $this->page == 1;
     }
-    
+
     public function isLast()
     {
         return $this->page == $this->pages;
     }
-    
+
     /**
      * Create a list of pages, useful for page selectors.
      *
@@ -61,7 +61,7 @@ class ContentPage extends ContentGroup
         }
         return $pages;
     }
-    
+
     private function expRange($start, $end, $n)
     {
         if ($n == 1) {
@@ -92,7 +92,7 @@ class ContentPage extends ContentGroup
         }
         return $nums;
     }
-    
+
     public function listPages($n = 11)
     {
         if ($this->pages <= $n) {
