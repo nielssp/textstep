@@ -59,9 +59,9 @@ class FileConfig extends Config
             $this->data = [];
             if ($this->file->getType() === 'php') {
                 // TODO: getRealPath deprecated
-                $store = new \Jivoo\Store\PhpStore($this->file->getRealPath());
+                $store = new \Jivoo\Store\PhpStore($this->file->getHostPath());
             } else {
-                $store = new \Jivoo\Store\JsonStore($this->file->getRealPath());
+                $store = new \Jivoo\Store\JsonStore($this->file->getHostPath());
             }
             $store->open(false);
             $this->data = $store->read();
@@ -76,9 +76,9 @@ class FileConfig extends Config
         } else {
             if ($this->file->getType() === 'php') {
                 // TODO: getRealPath deprecated
-                $store = new \Jivoo\Store\PhpStore($this->file->getRealPath());
+                $store = new \Jivoo\Store\PhpStore($this->file->getHostPath());
             } else {
-                $store = new \Jivoo\Store\JsonStore($this->file->getRealPath());
+                $store = new \Jivoo\Store\JsonStore($this->file->getHostPath());
             }
             $store->open(true);
             $this->data = $store->read();

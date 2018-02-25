@@ -1,5 +1,5 @@
 <?php
-// BlogSTEP 
+// BlogSTEP
 // Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
@@ -17,47 +17,47 @@ use Jivoo\Utilities;
  */
 class File implements \IteratorAggregate, HasRoute
 {
-    
+
     /**
      * @var FileSystem
      */
     private $system;
-    
+
     /**
      * @var Device
      */
     private $device;
-    
+
     /**
      * @var string
      */
     private $devicePath;
-    
+
     /**
      * @var string[]
      */
     private $path;
-    
+
     /**
      * @var string
      */
     private $type;
-    
+
     /**
      * @var File
      */
     private $parent;
-    
+
     /**
      * @var File[]
      */
     private $cache = [];
-    
+
     /**
      * @var bool
      */
     private $valid = true;
-    
+
     protected function __construct(FileSystem $system, array $path, $type)
     {
         $this->system = $system;
@@ -65,7 +65,7 @@ class File implements \IteratorAggregate, HasRoute
         $this->type = $type;
         $this->parent = $this;
     }
-    
+
     public function mount(Device $device)
     {
         if (!$this->isSystem()) {
@@ -79,16 +79,14 @@ class File implements \IteratorAggregate, HasRoute
         $this->cache = [];
         $this->type = 'directory';
     }
-    
-    /**
-     * @deprecated
-     */
-    public function getRealPath()
+
+    public function getHostPath()
     {
         if (!($this->device instanceof HostDevice)) {
+            // TODO:
             throw new FileException('Operation not supported');
         }
-        return $this->device->getRealPath($this->devicePath);
+        return $this->device->getHostPath($this->devicePath);
     }
 
     public function getIterator()
@@ -107,12 +105,12 @@ class File implements \IteratorAggregate, HasRoute
         }
         return new \ArrayIterator($files);
     }
-    
+
     public function getPath()
     {
         return '/' . implode('/', $this->path);
     }
-    
+
     public function getName()
     {
         if (count($this->path)) {
@@ -120,54 +118,54 @@ class File implements \IteratorAggregate, HasRoute
         }
         return '';
     }
-    
+
     public function getSize()
     {
         return $this->device->getSize($this->devicePath);
     }
-    
+
     public function getModified()
     {
         return $this->device->getModified($this->devicePath);
     }
-    
+
     public function getCreated()
     {
         return $this->device->getCreated($this->devicePath);
     }
-    
+
     private function isSystem()
     {
         return ! isset($this->system->user) or $this->system->user->isSystem();
     }
-    
+
     public function set($key, $value)
     {
         $this->assumeWritable();
         $this->system->acl->set($this->path, $key, $value);
     }
-    
+
     public function getOwner()
     {
         return $this->system->acl->get($this->path, 'owner', 'system');
     }
-    
+
     public function getGroup()
     {
         return $this->system->acl->get($this->path, 'group', 'system');
     }
-    
+
     public function getMode()
     {
         return $this->system->acl->get($this->path, 'mode', ['rw', 'r', '']);
     }
-    
+
     public function getModeString()
     {
         $mode = $this->getMode();
         return implode(',', $mode);
     }
-    
+
     public function setModeString($str)
     {
         if (strpos($str, ',') !== false) {
@@ -184,22 +182,22 @@ class File implements \IteratorAggregate, HasRoute
         }
         return $this->set('mode', $mode);
     }
-    
+
     public function getUserMode()
     {
         return $this->getMode()[0];
     }
-    
+
     public function getGroupMode()
     {
         return $this->getMode()[1];
     }
-    
+
     public function getAllMode()
     {
         return $this->getMode()[2];
     }
-    
+
     private function assumeReadable()
     {
         if (!$this->isReadable()) {
@@ -209,7 +207,7 @@ class File implements \IteratorAggregate, HasRoute
             );
         }
     }
-    
+
     private function assumeWritable()
     {
         if (!$this->isWritable()) {
@@ -219,7 +217,7 @@ class File implements \IteratorAggregate, HasRoute
             );
         }
     }
-    
+
     public function isReadable()
     {
         if ($this->isSystem()) {
@@ -234,7 +232,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return strpos($mode, 'r') !== false;
     }
-    
+
     public function isWritable()
     {
         if ($this->isSystem()) {
@@ -243,7 +241,7 @@ class File implements \IteratorAggregate, HasRoute
             } elseif ($this->parent !== $this) {
                 return $this->parent->isWritable();
             }
-            return false;            
+            return false;
         }
         $mode = $this->getAllMode();
         if ($this->system->user->isMemberOf($this->getGroup())) {
@@ -254,7 +252,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return strpos($mode, 'w') !== false;
     }
-    
+
     public function getBrief()
     {
         return [
@@ -272,7 +270,7 @@ class File implements \IteratorAggregate, HasRoute
             'size' => $this->getSize(),
         ];
     }
-    
+
     public function getDetailed()
     {
         $brief = $this->getBrief();
@@ -290,7 +288,7 @@ class File implements \IteratorAggregate, HasRoute
             'query' => ['path' => $this->getPath()]
         ];
     }
-    
+
     public function getFilesRoute()
     {
         return [
@@ -298,7 +296,7 @@ class File implements \IteratorAggregate, HasRoute
             'query' => ['path' => $this->getPath()]
         ];
     }
-    
+
     public function getType()
     {
         if ($this->type === 'unknown') {
@@ -312,7 +310,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return $this->type;
     }
-    
+
     public function isDirectory()
     {
         return $this->getType() === 'directory';
@@ -334,17 +332,40 @@ class File implements \IteratorAggregate, HasRoute
             return $this->type !== 'directory';
         }
     }
-    
+
     public function exists()
     {
         return $this->device->exists($this->devicePath);
     }
-    
+
     public function isInside(File $dir)
     {
         return \Jivoo\Unicode::startsWith($this->getPath(), $dir->getPath());
     }
-    
+
+    public function getRelativePath(File $source)
+    {
+        $path = $this->path;
+        $other = $source->path;
+        while (true) {
+            if (!isset($path[0]) or !isset($other[0]) or $path[0] !== $other[0]) {
+                break;
+            }
+            array_shift($path);
+            array_shift($other);
+        }
+        $relative = '';
+        $ups = count($other) - 1;
+        for ($i = 0; $i < $ups; $i++) {
+            $relative .= '../';
+        }
+        $relative .= implode('/', $path);
+        if ($relative == '') {
+            return '.';
+        }
+        return $relative;
+    }
+
     public function copy(File $destination)
     {
         $this->assumeReadable();
@@ -387,7 +408,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return true;
     }
-    
+
     public function move(File $destination)
     {
         $this->assumeReadable();
@@ -433,7 +454,7 @@ class File implements \IteratorAggregate, HasRoute
             FileException::MOVE_ERROR
         );
     }
-    
+
     public function moveHere(UploadedFile $file)
     {
         if ($this->exists()) {
@@ -444,7 +465,7 @@ class File implements \IteratorAggregate, HasRoute
         $this->type = Utilities::getFileExtension($this->getName());
         return true;
     }
-    
+
     public function makeDirectory($recursive = false)
     {
         if ($this->exists()) {
@@ -462,7 +483,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return false;
     }
-    
+
     public function makeFile($recursive = false)
     {
         if ($this->exists()) {
@@ -480,13 +501,13 @@ class File implements \IteratorAggregate, HasRoute
         }
         return false;
     }
-    
+
     public function getContents()
     {
         $this->assumeReadable();
         return $this->device->getContents($this->devicePath);
     }
-    
+
     public function putContents($data)
     {
         $this->assumeWritable();
@@ -497,7 +518,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return $this->device->putContents($this->devicePath, $data);
     }
-    
+
     public function openStream($mode = 'rb')
     {
         switch ($mode) {
@@ -544,7 +565,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return $this->device->open($this->devicePath, $mode);
     }
-    
+
     public function delete($recursive = true)
     {
         if ($recursive) {
@@ -587,7 +608,7 @@ class File implements \IteratorAggregate, HasRoute
         $this->invalidate();
         return true;
     }
-    
+
     protected function invalidate()
     {
         $this->system->acl->remove($this->path);
@@ -598,7 +619,7 @@ class File implements \IteratorAggregate, HasRoute
             unset($parent->cache[$name]);
         }
     }
-    
+
     public function getParent()
     {
         if (isset($this->parent)) {
@@ -606,7 +627,7 @@ class File implements \IteratorAggregate, HasRoute
         }
         return $this;
     }
-    
+
     private function getRelative(array $path)
     {
         if (! count($path)) {
@@ -632,7 +653,7 @@ class File implements \IteratorAggregate, HasRoute
             return $this->cache[$name]->getRelative($path);
         }
     }
-    
+
     public function get($relativePath)
     {
         if ($relativePath == '') {

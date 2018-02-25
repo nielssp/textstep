@@ -31,7 +31,7 @@ return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $ma
             trigger_error('imageSize: could not find: ' . $src, E_USER_NOTICE);
             continue;
         }
-        $src = $link->getFile()->getRealPath();
+        $src = $link->getFile()->getHostPath();
         $type = getimagesize($src);
         if ($type === false) {
             trigger_error('imageSize: could not read: ' . $src, E_USER_NOTICE);
@@ -82,7 +82,7 @@ return function (View $view, ContentNode $contentNode, simple_html_dom $dom, $ma
                     $resized = imagecreatetruecolor($targetWidth, $targetHeight);
                     imagecopyresampled($resized, $image, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
                     $func = 'image' . $destType;
-                    $func($resized, $destFile->getRealPath());
+                    $func($resized, $destFile->getHostPath());
                     imagedestroy($resized);
                     imagedestroy($image);
                 } elseif ($image === false) {

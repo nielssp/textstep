@@ -48,7 +48,7 @@ class FastBuild extends AuthenticatedSnippet
             foreach ($structure->get('filters') as $file) {
                 if (Unicode::endsWith($file->getName(), '.php')) {
                     $name = substr($file->getName(), 0, -4);
-                    $handler->addFilter($name, require $file->getRealPath());
+                    $handler->addFilter($name, require $file->getHostPath());
                 }
             }
         }        

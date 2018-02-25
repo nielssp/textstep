@@ -74,7 +74,7 @@ class User
      */
     public function getSessions()
     {
-        $file = new \Jivoo\Store\PhpStore($this->home->get('.sessions.php')->getRealPath());
+        $file = new \Jivoo\Store\PhpStore($this->home->get('.sessions.php')->getHostPath());
         $file->touch();
         return new \Jivoo\Store\State($file);
     }

@@ -46,12 +46,12 @@ class Thumbnail extends AuthenticatedSnippet
         $cacheKey = md5($fs->getPath()) . $size;
         $cached = $this->m->files->get('/system/cache/thumbnails/' . $cacheKey . '.png');
         if ($cached->exists() and $cached->getCreated() >= $fs->getModified()) {
-            $path = $cached->getRealPath();
+            $path = $cached->getHostPath();
             $mimeType = $this->m->assets->getMimeType($path);
             $response = Response::file($path, $mimeType);
             return $response;
         }
-        $path = $fs->getRealPath();
+        $path = $fs->getHostPath();
         $imgType = getimagesize($path);
         if ($imgType === false) {
             return $this->error('not an image', Status::BAD_REQUEST);
@@ -102,7 +102,7 @@ class Thumbnail extends AuthenticatedSnippet
                     }
                 });
                 if ($created) {
-                    $path = $cached->getRealPath();
+                    $path = $cached->getHostPath();
                     $mimeType = $this->m->assets->getMimeType($path);
                     $response = Response::file($path, $mimeType);
                     return $response;

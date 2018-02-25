@@ -10,17 +10,17 @@ namespace Blogstep\Compile;
  */
 class TemplateCompiler
 {
-    
+
     /**
      * @var \Blogstep\Files\File
      */
     private $buildDir;
-    
+
     /**
      * @var HtmlTemplateCompiler
      */
     private $templateCompiler;
-    
+
     /**
      * @var BlogstepMacros
      */
@@ -30,12 +30,17 @@ class TemplateCompiler
      * @var SiteMap
      */
     private $siteMap;
-    
+
     /**
      * @var ContentMap
      */
     private $contentMap;
-    
+
+    /**
+     * @var \Blogstep\Files\File
+     */
+    private $templateRoot = null;
+
     public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, ContentMap $contentMap)
     {
         $this->buildDir = $buildDir;
@@ -47,7 +52,19 @@ class TemplateCompiler
         $this->templateCompiler->addMacros($this->macros);
     }
 
-    public function compile(\Blogstep\Files\File $file, $destination = null)
+    private function findRoot(\Blogstep\Files\File $file)
+    {
+        if ($file->isDirectory()) {
+            if ($file->get('site.json')->isFile()) {
+                return $file;
+            } else if ($file->getParent() === $file) {
+                return null;
+            }
+        }
+        return $this->findRoot($file->getParent());
+    }
+
+    public function compile(\Blogstep\Files\File $file)
     {
         if ($file->isDirectory()) {
             foreach ($file as $child) {
@@ -55,19 +72,21 @@ class TemplateCompiler
             }
             return;
         }
-        if (!isset($destination)) {
-            // TODO: something
-            $destination = preg_replace('/^\/site/', '', $file->getParent()->getPath());
+        if (!isset($this->templateRoot) || !$file->isInside($this->templateRoot)) {
+            $this->templateRoot = $this->findRoot($file);
+            if (!isset($this->templateRoot)) {
+                throw new \Blogstep\RuntimeException('File not inside valid template directory: ' . $file->getPath());
+            }
         }
         $name = $file->getName();
         if (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();
             $target = $this->buildDir->get('.' . $file->getPath() . '.php');
             $target->getParent()->makeDirectory(true);
-            $this->macros->targetTemplate = $target;
+            $path = $file->getRelativePath($this->templateRoot);
+            $this->macros->targetTemplate = $path;
             if (!\Jivoo\Unicode::startsWith($name, '_')) {
-                $path = $destination . '/' . $name;
-                $this->siteMap->add($path, 'eval', [$target->getPath()]);
+                $this->siteMap->add($path, 'eval', [$path]);
                 $this->macros->currentPath = $path;
             } else {
                 $this->macros->currentPath = null;
@@ -75,10 +94,10 @@ class TemplateCompiler
             $node = $this->templateCompiler->compile($html);
             $target->putContents($node->__toString());
         } elseif (preg_match('/\.([a-z0-9]+)\.php$/i', $name)) {
-            $path = $destination . '/' . preg_replace('/\.php$/i', '', $name);
-            $this->siteMap->add($path, 'eval', [$file->getPath()]);
+            $path = preg_replace('/\.php$/i', '', $file->getRelativePath($this->templateRoot));
+            $this->siteMap->add($path, 'eval', [$path]);
         } else if (!\Jivoo\Unicode::startsWith($name, '_')) {
-            $path = $destination . '/' . $name;
+            $path = $file->getRelativePath($this->templateRoot);
             $this->siteMap->add($path, 'copy', [$file->getPath()]);
         }
     }

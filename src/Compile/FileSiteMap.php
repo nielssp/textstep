@@ -1,19 +1,19 @@
 <?php
-// BlogSTEP 
+// BlogSTEP
 // Copyright (c) 2018 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Compile;
 
 /**
- * 
+ *
  */
 class FileSiteMap implements SiteMap
 {
     private $file;
-    
+
     private $data;
-    
+
     public function __construct(\Blogstep\Files\File $file)
     {
         $this->file = $file;
@@ -23,12 +23,12 @@ class FileSiteMap implements SiteMap
         } catch (\Jivoo\JsonException $e) {
         }
     }
-    
+
     function __destruct()
     {
         $this->file->putContents(\Jivoo\Json::prettyPrint($this->data));
     }
-    
+
     public function add($path, $handler, array $data)
     {
         $this->data[$path] = [

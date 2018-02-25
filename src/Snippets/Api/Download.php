@@ -31,7 +31,7 @@ class Download extends \Blogstep\AuthenticatedSnippet
             }
             return $this->error('extension not loaded: zip');
         }
-        $path = $fs->getRealPath();
+        $path = $fs->getHostPath();
         $type = $this->m->assets->getMimeType($path);
         if (!isset($type)) {
             $type = 'application/octet-stream';

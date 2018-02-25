@@ -1,5 +1,5 @@
 <?php
-// BlogSTEP 
+// BlogSTEP
 // Copyright (c) 2018 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
@@ -16,13 +16,13 @@ class HostDevice implements Device
     private $rootPath;
 
     private $fileMode = null;
-    
+
     private $dirMode = null;
-    
+
     private $user = null;
-    
+
     private $group = null;
-    
+
     public function __construct($rootPath, array $options = [])
     {
         $this->rootPath = $rootPath;
@@ -39,8 +39,8 @@ class HostDevice implements Device
             $this->group = $options['group'];
         }
     }
-    
-    public function getRealPath($path)
+
+    public function getHostPath($path)
     {
         return $this->rootPath . $path;
     }
@@ -128,7 +128,7 @@ class HostDevice implements Device
         $file->moveTo($this->rootPath . $destination);
         return true;
     }
-    
+
     public function setOwnership($path) {
         $path = $this->rootPath . $path;
         if (isset($this->dirMode)) {

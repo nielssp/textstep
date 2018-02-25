@@ -43,6 +43,8 @@ class SiteAssembler
         $this->content = $contentTree;
         $this->config = $config;
         $this->view = new View($this);
+        $this->view->addTemplateDir($this->buildDir->get('site')->getHostPath());
+        $this->view->addTemplateDir($this->buildDir->get('/site')->getHostPath());
     }
 
     public function getBuildDir()
@@ -65,16 +67,17 @@ class SiteAssembler
         return $this->config;
     }
 
-    public function compile($path)
+    public function assemble($path)
     {
         $node = $this->siteMap->get($path);
-        $target = $this->buldDir->get('output' . $path);
+        $target = $this->buildDir->get('output' . $path);
         $target->getParent()->makeDirectory(true);
         switch ($node['handler']) {
             case 'eval':
                 $args = $node['data'];
                 $template = array_shift($args);
-                $html = $this->view->render($this->buildDir->get($template)->getRealPath(), ['evalArgs' => $args]);
+                $this->view->currentNode = $node;
+                $html = $this->view->render($template, ['evalArgs' => $args]);
                 $target->putContents($html);
                 break;
             case 'copy':

@@ -18,13 +18,13 @@ return function (SiteNode $node, Compiler $compiler) {
         $destFile = $node->getFile()->getParent()->get($destName);
         switch ($ext) {
             case 'js':
-                $minifier = new MatthiasMullie\Minify\JS($node->getFile()->getRealPath());
-                $minifier->minify($destFile->getRealPath());
+                $minifier = new MatthiasMullie\Minify\JS($node->getFile()->getHostPath());
+                $minifier->minify($destFile->getHostPath());
                 $node->setFile($destFile);
                 break;
             case 'css':
-                $minifier = new MatthiasMullie\Minify\CSS($node->getFile()->getRealPath());
-                $minifier->minify($destFile->getRealPath());
+                $minifier = new MatthiasMullie\Minify\CSS($node->getFile()->getHostPath());
+                $minifier->minify($destFile->getHostPath());
                 $node->setFile($destFile);
                 break;
         }

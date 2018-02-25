@@ -27,14 +27,14 @@ class View extends \Jivoo\View\View
     public function __construct(SiteMap $siteMap, Compiler $compiler)
     {
         parent::__construct(
-            new \Jivoo\Http\Route\AssetScheme($siteMap->getBuildPath()->getRealPath()),
+            new \Jivoo\Http\Route\AssetScheme($siteMap->getBuildPath()->getHostPath()),
             new \Jivoo\Http\Router()
         );
         $this->compiler = $compiler;
         $this->uriPrefix = rtrim($compiler->config->get('targetUri', ''), '/') . '/';
         $this->absPrefix = parse_url($this->uriPrefix, PHP_URL_PATH);
         $this->siteMap = $siteMap;
-        $this->addTemplateDir($siteMap->getBuildPath()->getRealPath());
+        $this->addTemplateDir($siteMap->getBuildPath()->getHostPath());
         
         $this->data->config = $compiler->config->getData();
         $this->data->content = $compiler->content;

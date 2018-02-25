@@ -64,8 +64,8 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
         $i = 0;
         foreach ($this->evaluate($value->code) as $item) {
             $this->context[$varName] = $item;
-            $path = $this->evaluate($pathFormat->code);
-            $template = $this->targetTemplate->getPath();
+            $path = ltrim($this->evaluate($pathFormat->code), '/');
+            $template = $this->targetTemplate;
 
             if ($item instanceof Content\ContentNode) {
                 $type = 'content';

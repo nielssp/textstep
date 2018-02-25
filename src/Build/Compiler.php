@@ -70,7 +70,7 @@ class Compiler extends \Blogstep\Task\TaskBase
                 mkdir($dest);
             }
         } elseif ($node instanceof FileNode) {
-            copy($node->getFile()->getRealPath(), $dest);
+            copy($node->getFile()->getHostPath(), $dest);
         }
         foreach ($node->getChildren() as $child) {
             $this->installNode($child, $dest . '/' . $child->getName());

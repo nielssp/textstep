@@ -18,6 +18,8 @@ class View extends \Jivoo\View\View
 
     private $contentHandler;
 
+    private $buildDir;
+
     public $currentNode = null;
 
     private $forceAbsolute = false;
@@ -25,13 +27,14 @@ class View extends \Jivoo\View\View
     public function __construct(SiteAssembler $assembler)
     {
         parent::__construct(
-            new \Jivoo\Http\Route\AssetScheme($assembler->getBuildDir()->getRealPath()),
+            new \Jivoo\Http\Route\AssetScheme($assembler->getBuildDir()->getHostPath()),
             new \Jivoo\Http\Router()
         );
+        $this->buildDir = $assembler->getBuildDir();
         $this->uriPrefix = rtrim($assembler->getConfig()->get('targetUri', ''), '/') . '/';
         $this->absPrefix = parse_url($this->uriPrefix, PHP_URL_PATH);
         $this->siteMap = $assembler->getSiteMap();
-        $this->addTemplateDir($assembler->getBuildDir()->get('/site')->getRealPath());
+        $this->addTemplateDir($assembler->getBuildDir()->get('/site')->getHostPath());
 
         $this->data->config = $assembler->getConfig()->getData();
         $this->data->content = $assembler->getContent();
@@ -133,6 +136,18 @@ class View extends \Jivoo\View\View
     public function forkArg()
     {
 
+    }
+
+    public function findTemplate($name)
+    {
+        if (\Jivoo\Utilities::isAbsolutePath($name)) {
+            return array(
+                'compiled' => false,
+                'name' => $name,
+                'file' => $this->buildDir->get($name)->getHostPath()
+            );
+        }
+        return parent::findTemplate($name);
     }
 
     public function render($template, $data = array(), $withLayout = true)

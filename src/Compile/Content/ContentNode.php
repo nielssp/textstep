@@ -22,7 +22,7 @@ class ContentNode
     {
         $this->path = $path;
         $this->metadata = $metadata;
-        $this->namespace = '/^' . preg_quote(rtrim($namespace, '/'), '/') . '/';
+        $this->namespace = '/^' . preg_quote(rtrim($namespace, '/'), '/') . '\//';
     }
 
     public function __get($property)

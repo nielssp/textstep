@@ -40,12 +40,12 @@ class Shell
     protected $shortOptions = array(
         'h' => 'help'
     );
-    
+
     /**
      * @var Modules
-     */    
+     */
     private $m;
-    
+
     /**
      * @var Files\File
      */
@@ -62,11 +62,11 @@ class Shell
     {
         global $argv;
         $this->name = array_shift($argv);
-        
+
         $command = array();
-        
+
         $option = null;
-        
+
         foreach ($argv as $arg) {
             if (preg_match('/^--(.*)$/', $arg, $matches) === 1) {
                 $o = $matches[1];
@@ -159,6 +159,13 @@ class Shell
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
                 $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $siteMap, $contentMap);
                 $compiler->compile($this->workingDir->get($parameters[0]));
+                break;
+            case 'sa':
+                $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
+                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
+                $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $siteMap, $contentTree, $this->m->main->config->getSubconfig('system.config'));
+                $assembler->assemble($parameters[0]);
                 break;
             default:
                 $this->error('command not found: ' . $command);

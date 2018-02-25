@@ -26,7 +26,7 @@ return function (SiteNode $node, Compiler $compiler) use ($templateCompiler, $ma
             $template = $node->getFile();
             $dest = $node->getFile()->getParent()->get($name . '.php');
             $node->setFile($dest);
-            $data = $templateCompiler->compile($template->getRealPath());
+            $data = $templateCompiler->compile($template->getHostPath());
             $dest->putContents($data);
             if (isset($node->parent) and Unicode::startsWith($name, '_')) {
                 $node->detach();

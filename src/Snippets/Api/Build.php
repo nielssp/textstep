@@ -56,7 +56,7 @@ class Build extends AuthenticatedSnippet
             foreach ($structure->get('filters') as $file) {
                 if (Unicode::endsWith($file->getName(), '.php')) {
                     $name = substr($file->getName(), 0, -4);
-                    $handler->addFilter($name, require $file->getRealPath());
+                    $handler->addFilter($name, require $file->getHostPath());
                 }
             }
         }
@@ -82,7 +82,7 @@ class Build extends AuthenticatedSnippet
             $compiler->install($target);
         }, 'Installing'));
         
-        $state = new \Jivoo\Store\SerializedStore($this->m->files->get('build/.build')->getRealPath());
+        $state = new \Jivoo\Store\SerializedStore($this->m->files->get('build/.build')->getHostPath());
         $state->touch();
         
         $this->m->session->close();
