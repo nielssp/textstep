@@ -70,13 +70,13 @@ class SiteAssembler
     public function assemble($path)
     {
         $node = $this->siteMap->get($path);
-        $target = $this->buildDir->get('output' . $path);
+        $target = $this->buildDir->get('output/' . $path);
         $target->getParent()->makeDirectory(true);
         switch ($node['handler']) {
             case 'eval':
                 $args = $node['data'];
                 $template = array_shift($args);
-                $this->view->currentNode = $node;
+                $this->view->currentPath = $path;
                 $html = $this->view->render($template, ['evalArgs' => $args]);
                 $target->putContents($html);
                 break;

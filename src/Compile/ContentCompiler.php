@@ -30,27 +30,23 @@ class ContentCompiler
      * @var ContentMap
      */
     private $contentMap;
+    
+    /**
+     * @var SiteMap
+     */
+    private $siteMap;
 
-    public function __construct(\Blogstep\Files\File $buildDir, \Blogstep\Compile\ContentMap $contentMap)
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap)
     {
         $this->buildDir = $buildDir;
         $this->handler = new \Blogstep\Build\ContentHandler();
         $this->contentMap = $contentMap;
+        $this->siteMap = $siteMap;
     }
 
     public function getHandler()
     {
         return $this->handler;
-    }
-
-    private function convertSource(\Blogstep\Files\File $file)
-    {
-        $handler = $this->handler->getHandler($file->getType());
-        if (!isset($handler)) {
-            throw new \Blogstep\RuntimeException('No handler found for type: ' . $file->getType());
-        }
-        $content = $file->getContents();
-        return $handler($content);
     }
 
     private function parseHtml($html, \Blogstep\Files\File $htmlFile)
@@ -113,12 +109,7 @@ class ContentCompiler
                 if (strpos($url, ':') === false and !\Jivoo\Unicode::startsWith($url, '//')) {
                     $file = $source->getParent()->get($url);
                     $path = 'assets' . $file->getPath();
-                    $destination = $this->buildDir->get($path);
-                    $dir = $destination->getParent();
-                    if (!$dir->makeDirectory(true)) {
-                        throw new \Blogstep\RuntimeException('Could not create build directory: ' . $dir->getPath());
-                    }
-                    $file->copy($destination);
+                    $this->siteMap->add($path, 'copy', [$file->getPath()]);
                     $element->setAttribute($attribute, 'bs:/' . $path);
                     if ($element->tag === 'img' && $attribute === 'src') {
                         $options = [];

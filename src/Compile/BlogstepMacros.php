@@ -70,6 +70,9 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
             if ($item instanceof Content\ContentNode) {
                 $type = 'content';
                 $arg = $item->path;
+                $metadata = $item->metadata;
+                $metadata['link'] = $path;
+                $this->contentMap->add($arg, $metadata);
 //            } else if ($item instanceof Content\ContentPage) {
             } else {
                 $type = 'element';

@@ -147,7 +147,8 @@ class Shell
                 break;
             case 'cc':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
-                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $contentMap);
+                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $siteMap, $contentMap);
                 $id = function ($content) { return $content; };
                 $compiler->getHandler()->addHandler('html', $id);
                 $compiler->getHandler()->addHandler('htm', $id);

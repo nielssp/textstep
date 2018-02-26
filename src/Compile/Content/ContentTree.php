@@ -47,6 +47,7 @@ class ContentTree implements IteratorAggregate, Selectable
     {
         $copy = clone $this;
         $copy->recursive = $recursive;
+        $copy->nodes = null;
         return $copy;
     }
 

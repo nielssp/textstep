@@ -20,9 +20,11 @@ class View extends \Jivoo\View\View
 
     private $buildDir;
 
-    public $currentNode = null;
+    public $currentPath = null;
 
     private $forceAbsolute = false;
+    
+    private $assembler;
 
     public function __construct(SiteAssembler $assembler)
     {
@@ -30,37 +32,56 @@ class View extends \Jivoo\View\View
             new \Jivoo\Http\Route\AssetScheme($assembler->getBuildDir()->getHostPath()),
             new \Jivoo\Http\Router()
         );
+        $this->assembler = $assembler;
         $this->buildDir = $assembler->getBuildDir();
         $this->uriPrefix = rtrim($assembler->getConfig()->get('targetUri', ''), '/') . '/';
-        $this->absPrefix = parse_url($this->uriPrefix, PHP_URL_PATH);
+        $this->absPrefix = rtrim(parse_url($this->uriPrefix, PHP_URL_PATH), '/');
         $this->siteMap = $assembler->getSiteMap();
         $this->addTemplateDir($assembler->getBuildDir()->get('/site')->getHostPath());
 
         $this->data->config = $assembler->getConfig()->getData();
         $this->data->content = $assembler->getContent();
 
-        foreach (['getNode', 'isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter', 'forkArg'] as $f) {
+        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter', 'forkArg'] as $f) {
             $this->addFunction($f, [$this, $f]);
         }
     }
-
-    public function getNode($name)
+    
+    private function getRelativePath($destination)
     {
-        return $this->siteMap->get($name);
+        $path = explode('/', $destination);
+        $other = explode('/', $this->currentPath);
+        while (true) {
+            if (!isset($path[0]) or !isset($other[0]) or $path[0] !== $other[0]) {
+                break;
+            }
+            array_shift($path);
+            array_shift($other);
+        }
+        $relative = '';
+        $ups = count($other) - 1;
+        for ($i = 0; $i < $ups; $i++) {
+            $relative .= '../';
+        }
+        $relative .= implode('/', $path);
+        if ($relative == '') {
+            return '.';
+        }
+        return $relative;
     }
 
     public function isCurrent($link)
     {
-        if (!($link instanceof SiteNode)) {
-            $link = $this->siteMap->get($link);
+        if ($link instanceof Content\ContentNode) {
+            $link = $link->link;
         }
         if (!isset($link)) {
             return false;
         }
-        if ($this->currentNode->getName() == 'index.html') {
-            return $link === $this->currentNode->parent;
+        if ($this->currentPath != null and \Jivoo\Unicode::endsWith($this->currentPath, 'index.html')) {
+            return $link === preg_replace('/\/index.html$/', '', $this->currentPath);
         }
-        return $link === $this->currentNode;
+        return $link === $this->currentPath;
     }
 
     public function forceAbsoluteLinks()
@@ -71,40 +92,40 @@ class View extends \Jivoo\View\View
     public function link($link = null, $absolute = false)
     {
         if (!isset($link)) {
-            $link = $this->currentNode;
+            $link = $this->currentPath;
         }
-        if (!($link instanceof SiteNode)) {
-            $path = $link;
-            $link = $this->siteMap->get($path);
+        if ($link instanceof Content\ContentNode) {
+            $content = $link;
+            $link = $content->link;
             if (!isset($link)) {
-                return '#not-found/' . $path;
+                return '#not-found' . $content->path;
             }
         }
-        if ($link->getName() == 'index.html') {
-            $link = $link->parent;
+        if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
+            $link = preg_replace('/\/index.html$/', '', $link);
         }
-        if ($absolute or $this->forceAbsolute or !$this->compiler->config->get('relativePaths', true)) {
-            return $this->absPrefix . $link->getPath();
+        if ($absolute or $this->forceAbsolute or !$this->assembler->getConfig()->get('relativePaths', true)) {
+            return $this->absPrefix . '/' . ltrim($link, '/');
         }
-        return $link->getRelativePath($this->currentNode);
+        return $this->getRelativePath($link);
     }
 
     public function url($link = null)
     {
         if (!isset($link)) {
-            $link = $this->currentNode;
+            $link = $this->currentPath;
         }
-        if (!($link instanceof SiteNode)) {
-            $path = $link;
-            $link = $this->siteMap->get($path);
+        if ($link instanceof Content\ContentNode) {
+            $content = $link;
+            $link = $content->link;
             if (!isset($link)) {
-                return '#not-found/' . $path;
+                return '#not-found' . $content->path;
             }
         }
-        if ($link->getName() == 'index.html') {
-            $link = $link->parent;
+        if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
+            $link = preg_replace('/\/index.html$/', '', $link);
         }
-        return $this->uriPrefix . $link->getPath();
+        return $this->uriPrefix . '/' . $link->getPath();
     }
 
     public function filter(ContentNode $content, array $filters = [])

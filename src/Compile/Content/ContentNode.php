@@ -22,7 +22,7 @@ class ContentNode
     {
         $this->path = $path;
         $this->metadata = $metadata;
-        $this->namespace = '/^' . preg_quote(rtrim($namespace, '/'), '/') . '\//';
+        $this->namespace = '/^' . preg_quote(rtrim($namespace, '/'), '/') . '/';
     }
 
     public function __get($property)
@@ -35,10 +35,11 @@ class ContentNode
             case 'monthName':
                 return \Jivoo\I18n\I18n::date('F', $this->published);
             case 'relativePath':
-                return preg_replace($this->namespace, '', $this->path->getParent()->getPath());
+                return ltrim(preg_replace($this->namespace, '', $this->path->getParent()->getPath()), '/');
             case 'path':
                 return $this->path->getPath();
             case 'namespace':
+            case 'metadata':
                 return $this->$property;
         }
         if (isset($this->metadata[$property])) {
