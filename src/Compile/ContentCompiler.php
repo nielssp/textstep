@@ -100,6 +100,15 @@ class ContentCompiler
         }
         return $dom;
     }
+    
+    public static function displayTag($tag, array $options)
+    {
+        $pairs = [];
+        foreach ($options as $key => $value) {
+            $pairs[] = urlencode($key) . '=' . urlencode($value);
+        }
+        return '<?bs ' . $tag . '?' . implode('&', $options) . ' ?>';
+    }
 
     private function copyAssets(\Blogstep\Files\File $source, \SimpleHtmlDom\simple_html_dom $dom)
     {
@@ -112,11 +121,7 @@ class ContentCompiler
                     $this->siteMap->add($path, 'copy', [$file->getPath()]);
                     $element->setAttribute($attribute, 'bs:/' . $path);
                     if ($element->tag === 'img' && $attribute === 'src') {
-                        $options = [];
-                        foreach ($element->attr as $key => $value) {
-                            $options[] = urlencode($key) . '=' . urlencode($value);
-                        }
-                        $element->outertext = '<?bs img?' . implode('&', $options) . ' ?>';
+                        $element->outertext = self::displayTag('img', $element->attr);
                     }
                 }
             }
@@ -155,6 +160,7 @@ class ContentCompiler
             $metadata['published'] = strtotime($published);
         }
         $metadata['path'] = $file->getPath();
+        $metadata['contentFile'] = $htmlFile->getPath();
         $metadata->setDefault('name', preg_replace('/\.[^.]+$/', '', $file->getName()));
 
         if (!isset($metadata['title'])) {
@@ -172,14 +178,11 @@ class ContentCompiler
             $briefFile = $contentBuildDir->get('brief.html');
             $briefHtml = rtrim($this->getBrief($dom->__toString())->__toString());
             $briefFile->putContents($briefHtml);
+            $metadata['briefFile'] = $briefFile->getPath();
             $briefNoTitleFile = $contentBuildDir->get('brief-no-title.html');
             $briefNoTitleFile->putContents(rtrim($this->removeTitle($briefHtml)));
+            $metadata['briefNoTitleFile'] = $briefNoTitleFile->getPath();
         }
-
-        $this->contentMap->add($file->getPath(), $metadata->toArray());
-
-        $metadataFile = $contentBuildDir->get('metadata.json');
-        $metadataFile->putContents(\Jivoo\Json::prettyPrint($metadata->toArray()));
 
         $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {
@@ -188,6 +191,8 @@ class ContentCompiler
 
         $noTitleFile = $contentBuildDir->get('content-no-title.html');
         $noTitleFile->putContents($this->removeTitle($html)->__toString());
-
+        $metadata['noTitleFile'] = $noTitleFile->getPath();
+        
+        $this->contentMap->add($file->getPath(), $metadata->toArray());
     }
 }

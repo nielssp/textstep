@@ -77,7 +77,8 @@ class SiteAssembler
                 $args = $node['data'];
                 $template = array_shift($args);
                 $this->view->currentPath = $path;
-                $html = $this->view->render($template, ['evalArgs' => $args]);
+                $this->view->data->evalArgs = $args;
+                $html = $this->view->render($template);
                 $target->putContents($html);
                 break;
             case 'copy':

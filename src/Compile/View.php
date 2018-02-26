@@ -42,14 +42,14 @@ class View extends \Jivoo\View\View
         $this->data->config = $assembler->getConfig()->getData();
         $this->data->content = $assembler->getContent();
 
-        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter', 'forkArg'] as $f) {
+        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter'] as $f) {
             $this->addFunction($f, [$this, $f]);
         }
     }
     
     private function getRelativePath($destination)
     {
-        $path = explode('/', $destination);
+        $path = explode('/', ltrim($destination, '/'));
         $other = explode('/', $this->currentPath);
         while (true) {
             if (!isset($path[0]) or !isset($other[0]) or $path[0] !== $other[0]) {
@@ -79,9 +79,9 @@ class View extends \Jivoo\View\View
             return false;
         }
         if ($this->currentPath != null and \Jivoo\Unicode::endsWith($this->currentPath, 'index.html')) {
-            return $link === preg_replace('/\/index.html$/', '', $this->currentPath);
+            return ltrim($link, '/') === preg_replace('/\/index.html$/', '', $this->currentPath);
         }
-        return $link === $this->currentPath;
+        return ltrim($link, '/') === $this->currentPath;
     }
 
     public function forceAbsoluteLinks()
@@ -152,11 +152,6 @@ class View extends \Jivoo\View\View
             }
         }
         return $dom->__toString();
-    }
-
-    public function forkArg()
-    {
-
     }
 
     public function findTemplate($name)

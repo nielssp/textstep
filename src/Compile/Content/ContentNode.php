@@ -59,6 +59,11 @@ class ContentNode
             return $property;
         }, $format), '/');
     }
+    
+    public function getContent()
+    {
+        return $this->path->get($this->contentFile)->getContents();
+    }
 
     public function __toString()
     {

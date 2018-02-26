@@ -62,6 +62,7 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
         ];
         $this->siteMap->remove($this->currentPath);
         $i = 0;
+        $listType = null;
         foreach ($this->evaluate($value->code) as $item) {
             $this->context[$varName] = $item;
             $path = ltrim($this->evaluate($pathFormat->code), '/');
@@ -78,10 +79,25 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
                 $type = 'element';
                 $arg = $i;
             }
+            if (!isset($listType)) {
+                $listType = $type;
+            } else if ($listType !== $type) {
+                throw new \Blogstep\RuntimeException('Inconsistent list type');
+            }
             $this->siteMap->add($path, 'eval', [$template, $type, $arg]);
             $i++;
         }
-        $code = $var->code . ' = $this->forkArg();';
+        switch ($listType) {
+            case 'content':
+                $code = $var->code . ' = $this->content->get($evalArgs[1]);';
+                break;
+            case 'element':
+                $code = '$_elements = ' . $value->code . ';';
+                $code .= $var->code . ' = $_elements[$evalArgs[1]];';
+                break;
+            default:
+                return;
+        }
         $node->before(new PhpNode($code, true));
     }
 
