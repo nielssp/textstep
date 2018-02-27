@@ -101,13 +101,13 @@ class ContentCompiler
         return $dom;
     }
     
-    public static function displayTag($tag, array $options)
+    public static function displayTag($tag, array $attributes)
     {
         $pairs = [];
-        foreach ($options as $key => $value) {
+        foreach ($attributes as $key => $value) {
             $pairs[] = urlencode($key) . '=' . urlencode($value);
         }
-        return '<?bs ' . $tag . '?' . implode('&', $options) . ' ?>';
+        return '<?bs ' . $tag . '?' . implode('&', $attributes) . ' ?>';
     }
 
     private function copyAssets(\Blogstep\Files\File $source, \SimpleHtmlDom\simple_html_dom $dom)
