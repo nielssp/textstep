@@ -6,21 +6,20 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-use Blogstep\Build\ContentNode;
-use Blogstep\Build\SiteNode;
-use SimpleHtmlDom\simple_html_dom;
+use Blogstep\Compile\View;
+use Blogstep\Compile\Filter;
+use Jivoo\View\Html;
 
-$attributes = ['src', 'href'];
+$filter = new Filter();
 
-return function (\Blogstep\Build\View $view, ContentNode $contentNode, simple_html_dom $dom) use ($attributes) {
-    foreach ($attributes as $attribute) {
-        foreach ($dom->find('[' . $attribute . '^=bs:]') as $element) {
-            $path = preg_replace('/^bs:/', '', $element->getAttribute($attribute));
-            $link = $view->currentNode->root->get($path);
-            if (!isset($link)) {
-                throw new \RuntimeException('Could not find node: ' . $path . ' (in ' . $contentNode->getPath() . ')');
-            }
-            $element->setAttribute($attribute, $view->url($link));
-        }
+$filter->display = function (View $view, $content, array $parameters) {
+    if (!isset($parameters['links'])) {
+        return $content;
     }
+    return preg_replace_callback('/(src|href)\s*=\s*"bs:([^"]*)"/i', function ($matches) use ($view) {
+        $link = $view->url($matches[2]);
+        return $matches[1] . '="' . Html::h($link) . '"';
+    }, $content);
 };
+
+return $filter;

@@ -6,18 +6,30 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-use Blogstep\Build\ContentNode;
-use Blogstep\Build\View;
+use Blogstep\Compile\View;
+use Blogstep\Compile\ContentCompiler;
+use Blogstep\Compile\Filter;
+use Blogstep\Files\File;
 use SimpleHtmlDom\simple_html_dom;
 
-return function (View $view, ContentNode $contentNode, simple_html_dom $dom) {
+$filter = new Filter();
+
+$filter->html = function (ContentCompiler $cc, File $file, simple_html_dom $dom) {
     $break = $dom->find('.break', 0);
     if (isset($break)) {
-        $sibling = $break->nextSibling();
-        while (isset($sibling)) {
-            $sibling->outertext = '';
-            $sibling = $sibling->nextSibling();
-        }
+        $break->outertext = '<?bs brief ?>';
     }
-    $dom->load(rtrim($dom->__toString()), true, false);
 };
+
+$filter->content = function (View $view, $content, array $parameters) {
+    if (isset($parameters['brief'])) {
+        return explode('<?bs brief ?>', $content)[0];
+    }
+    return $content;
+};
+
+$filter['brief'] = function (View $view, $attr, $enabled) {
+    return '';
+};
+
+return $filter;

@@ -148,7 +148,10 @@ class Shell
             case 'cc':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
-                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $siteMap, $contentMap);
+                $filterSet = new Compile\FilterSet();
+                $filterSet->addFilters($this->m->main->p('src/filters'));
+                $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
+                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
                 $id = function ($content) { return $content; };
                 $compiler->getHandler()->addHandler('html', $id);
                 $compiler->getHandler()->addHandler('htm', $id);
@@ -158,14 +161,20 @@ class Shell
             case 'tc':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
-                $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $siteMap, $contentMap);
+                $filterSet = new Compile\FilterSet();
+                $filterSet->addFilters($this->m->main->p('src/filters'));
+                $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
+                $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
                 $compiler->compile($this->workingDir->get($parameters[0]));
                 break;
             case 'sa':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
                 $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
-                $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $siteMap, $contentTree, $this->m->main->config->getSubconfig('system.config'));
+                $filterSet = new Compile\FilterSet();
+                $filterSet->addFilters($this->m->main->p('src/filters'));
+                $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
+                $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
                 $assembler->assemble($parameters[0]);
                 break;
             default:

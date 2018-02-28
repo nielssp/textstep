@@ -26,6 +26,8 @@ class View extends \Jivoo\View\View
     
     private $assembler;
 
+    private $filterSet;
+
     public function __construct(SiteAssembler $assembler)
     {
         parent::__construct(
@@ -33,6 +35,7 @@ class View extends \Jivoo\View\View
             new \Jivoo\Http\Router()
         );
         $this->assembler = $assembler;
+        $this->filterSet = $assembler->getFilterSet();
         $this->buildDir = $assembler->getBuildDir();
         $this->uriPrefix = rtrim($assembler->getConfig()->get('targetUri', ''), '/') . '/';
         $this->absPrefix = rtrim(parse_url($this->uriPrefix, PHP_URL_PATH), '/');
@@ -45,6 +48,17 @@ class View extends \Jivoo\View\View
         foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter'] as $f) {
             $this->addFunction($f, [$this, $f]);
         }
+    }
+    
+    public function __get($property)
+    {
+        switch ($property) {
+            case 'assembler':
+            case 'uriPrefix':
+            case 'absPrefix':
+                return $this->$property;
+        }
+        return parent::__get($property);
     }
     
     private function getRelativePath($destination)
@@ -128,11 +142,9 @@ class View extends \Jivoo\View\View
         return $this->uriPrefix . '/' . $link->getPath();
     }
 
-    public function filter(ContentNode $content, array $filters = [])
+    public function filter(Content\ContentNode $content, array $filters = [])
     {
-        $dom = $content->createDom();
-        $filters = array_merge($filters, $this->contentHandler->getDefaultFilters());
-        $available = $this->contentHandler->getFilters();
+        $parameters = [];
         foreach ($filters as $name => $param) {
             if (is_int($name)) {
                 $name = $param;
@@ -144,15 +156,14 @@ class View extends \Jivoo\View\View
                     $param = \Jivoo\Json::decode('[' . $param . ']');
                 }
             }
-            if (isset($available[$name])) {
-                call_user_func_array($available[$name], array_merge(
-                    [$this, $content, $dom],
-                    $param
-                ));
-            }
+            $parameters[$name] = $param;
         }
-        return $dom->__toString();
+        $content = $content->getContent();
+        $content = $this->filterSet->applyContentFilters($this, $content, $parameters);
+        $content = $this->filterSet->applyDisplayTags($this, $content, $parameters);
+        return $this->filterSet->applyDisplayFilters($this, $content, $parameters);
     }
+
 
     public function findTemplate($name)
     {
@@ -172,5 +183,20 @@ class View extends \Jivoo\View\View
         $this->blocks->clear();
         $this->forceAbsolute = false;
         return parent::render($template, $data, $withLayout);
+    }
+
+    public static function html($tag, array $attributes = [])
+    {
+        $html = new \Jivoo\View\Html($tag);
+        if (isset($attributes['innerText'])) {
+            $html->html(\Jivoo\View\Html::h($attributes['innerText']));
+            unset($attributes['innerText']);
+        }
+        if (isset($attributes['innerHtml'])) {
+            $html->html($attributes['innerHtml']);
+            unset($attributes['innerHtml']);
+        }
+        $html->attr($attributes);
+        return $html->toString();
     }
 }

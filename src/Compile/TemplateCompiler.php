@@ -41,15 +41,30 @@ class TemplateCompiler
      */
     private $templateRoot = null;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, ContentMap $contentMap)
+    /**
+     * @var FilterSet
+     */
+    private $filterSet;
+
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, ContentMap $contentMap, FilterSet $filterSet)
     {
         $this->buildDir = $buildDir;
         $this->siteMap = $siteMap;
         $this->contentMap = $contentMap;
+        $this->filterSet = $filterSet;
         $this->templateCompiler = new HtmlTemplateCompiler();
         $this->macros = new BlogstepMacros($siteMap, $contentMap);
         $this->templateCompiler->addMacros(new \Jivoo\View\Compile\DefaultMacros);
         $this->templateCompiler->addMacros($this->macros);
+    }
+    
+    public function __get($property)
+    {
+        switch ($property)
+        {
+            case 'buildDir':
+                return $this->$property;
+        }
     }
 
     private function findRoot(\Blogstep\Files\File $file)
@@ -78,6 +93,7 @@ class TemplateCompiler
                 throw new \Blogstep\RuntimeException('File not inside valid template directory: ' . $file->getPath());
             }
         }
+        $file = $this->filterSet->applyFileFilters($this, $file);
         $name = $file->getName();
         if (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();

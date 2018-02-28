@@ -36,12 +36,18 @@ class ContentCompiler
      */
     private $siteMap;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap)
+    /**
+     * @var FilterSet
+     */
+    private $filterSet;
+
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap, FilterSet $filterSet)
     {
         $this->buildDir = $buildDir;
         $this->handler = new \Blogstep\Build\ContentHandler();
         $this->contentMap = $contentMap;
         $this->siteMap = $siteMap;
+        $this->filterSet = $filterSet;
     }
 
     public function getHandler()
@@ -107,7 +113,7 @@ class ContentCompiler
         foreach ($attributes as $key => $value) {
             $pairs[] = urlencode($key) . '=' . urlencode($value);
         }
-        return '<?bs ' . $tag . '?' . implode('&', $attributes) . ' ?>';
+        return '<?bs ' . $tag . ' ' . implode('&', $pairs) . ' ?>';
     }
 
     private function copyAssets(\Blogstep\Files\File $source, \SimpleHtmlDom\simple_html_dom $dom)
@@ -171,27 +177,13 @@ class ContentCompiler
                 $metadata['title'] = $metadata['name'];
             }
         }
-
-        $metadata['hasBreak'] = $dom->find('.break', 0) !== null;
-
-        if ($metadata['hasBreak']) {
-            $briefFile = $contentBuildDir->get('brief.html');
-            $briefHtml = rtrim($this->getBrief($dom->__toString())->__toString());
-            $briefFile->putContents($briefHtml);
-            $metadata['briefFile'] = $briefFile->getPath();
-            $briefNoTitleFile = $contentBuildDir->get('brief-no-title.html');
-            $briefNoTitleFile->putContents(rtrim($this->removeTitle($briefHtml)));
-            $metadata['briefNoTitleFile'] = $briefNoTitleFile->getPath();
-        }
+        
+        $this->filterSet->applyHtmlFilters($this, $file, $dom);
 
         $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {
             throw new \Blogstep\RuntimeException('Could not write file: ' . $htmlFile->getPath());
         }
-
-        $noTitleFile = $contentBuildDir->get('content-no-title.html');
-        $noTitleFile->putContents($this->removeTitle($html)->__toString());
-        $metadata['noTitleFile'] = $noTitleFile->getPath();
         
         $this->contentMap->add($file->getPath(), $metadata->toArray());
     }

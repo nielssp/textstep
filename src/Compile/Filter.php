@@ -15,6 +15,15 @@ class Filter implements \ArrayAccess
     
     public $display = null;
     
+    public $content = null;
+
+    public $sourceFile;
+
+    public function __construct()
+    {
+        $this->sourceFile = debug_backtrace()[1]['file'];
+    }
+    
     public function offsetExists($displayTag)
     {
         return isset($this->displayTags[$displayTag]);
@@ -28,7 +37,7 @@ class Filter implements \ArrayAccess
         return null;
     }
 
-    public function offsetSet($displayTag, callable $handler)
+    public function offsetSet($displayTag, $handler)
     {
         $this->displayTags[$displayTag] = $handler;
     }

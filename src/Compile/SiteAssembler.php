@@ -36,12 +36,18 @@ class SiteAssembler
      */
     private $config;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, Content\ContentTree $contentTree, \Blogstep\Config\Config $config)
+    /**
+     * @var FilterSet
+     */
+    private $filterSet;
+
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, Content\ContentTree $contentTree, FilterSet $filterSet, \Blogstep\Config\Config $config)
     {
         $this->buildDir = $buildDir;
         $this->siteMap = $siteMap;
         $this->content = $contentTree;
         $this->config = $config;
+        $this->filterSet = $filterSet;
         $this->view = new View($this);
         $this->view->addTemplateDir($this->buildDir->get('site')->getHostPath());
         $this->view->addTemplateDir($this->buildDir->get('/site')->getHostPath());
@@ -65,6 +71,11 @@ class SiteAssembler
     public function getConfig()
     {
         return $this->config;
+    }
+
+    public function getFilterSet()
+    {
+        return $this->filterSet;
     }
 
     public function assemble($path)
