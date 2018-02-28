@@ -139,7 +139,7 @@ class View extends \Jivoo\View\View
         if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
             $link = preg_replace('/\/index.html$/', '', $link);
         }
-        return $this->uriPrefix . '/' . $link->getPath();
+        return $this->uriPrefix . '/' . $link;
     }
 
     public function filter(Content\ContentNode $content, array $filters = [])

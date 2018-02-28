@@ -89,7 +89,7 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
         }
         switch ($listType) {
             case 'content':
-                $code = $var->code . ' = $this->content->get($evalArgs[1]);';
+                $code = $var->code . ' = $content->get($evalArgs[1]);';
                 break;
             case 'element':
                 $code = '$_elements = ' . $value->code . ';';

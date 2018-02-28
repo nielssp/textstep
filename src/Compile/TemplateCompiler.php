@@ -93,7 +93,6 @@ class TemplateCompiler
                 throw new \Blogstep\RuntimeException('File not inside valid template directory: ' . $file->getPath());
             }
         }
-        $file = $this->filterSet->applyFileFilters($this, $file);
         $name = $file->getName();
         if (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();
@@ -114,6 +113,7 @@ class TemplateCompiler
             $this->siteMap->add($path, 'eval', [$path]);
         } else if (!\Jivoo\Unicode::startsWith($name, '_')) {
             $path = $file->getRelativePath($this->templateRoot);
+            $file = $this->filterSet->applyFileFilters($this, $file);
             $this->siteMap->add($path, 'copy', [$file->getPath()]);
         }
     }

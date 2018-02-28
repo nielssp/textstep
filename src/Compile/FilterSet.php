@@ -89,7 +89,7 @@ class FilterSet
 
     public function applyDisplayTags(View $view, $content, array $parameters)
     {
-        return preg_replace_callback('/<\?bs\s*([a-z0-9_]+)(?:\s+([^?]+?))?\s*\?>/', function ($matches) use ($view, $parameters) {
+        return preg_replace_callback('/<\?bs\s*([a-z0-9_]+)(?:\s+([^?]+?))?\s*\?>/i', function ($matches) use ($view, $parameters) {
             $tag = $matches[1];
             $attributes = [];
             if (isset($matches[2])) {

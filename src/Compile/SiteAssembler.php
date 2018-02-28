@@ -81,6 +81,10 @@ class SiteAssembler
     public function assemble($path)
     {
         $node = $this->siteMap->get($path);
+        if (!isset($node)) {
+            trigger_error('Site node not found: ' . $path, E_USER_WARNING);
+            return;
+        }
         $target = $this->buildDir->get('output/' . $path);
         $target->getParent()->makeDirectory(true);
         switch ($node['handler']) {

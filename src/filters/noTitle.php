@@ -17,7 +17,7 @@ $filter = new Filter();
 $filter->html = function (ContentCompiler $cc, File $file, simple_html_dom $dom) {
     $title = $dom->find('h1', 0);
     if (isset($title)) {
-        $dom->outertext = ContentCompiler::displayTag('noTitle', $title->attr);
+        $title->outertext = ContentCompiler::displayTag('noTitle', array_merge($title->attr, ['innerText' => $title->innertext]));
     }
 };
 
