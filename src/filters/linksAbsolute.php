@@ -13,7 +13,7 @@ use Jivoo\View\Html;
 $filter = new Filter();
 
 $filter->display = function (View $view, $content, array $parameters) {
-    if (!isset($parameters['links'])) {
+    if (!isset($parameters['linksAbsolute'])) {
         return $content;
     }
     return preg_replace_callback('/(src|href)\s*=\s*"bs:([^"]*)"/i', function ($matches) use ($view) {

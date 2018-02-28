@@ -37,7 +37,7 @@ class View extends \Jivoo\View\View
         $this->assembler = $assembler;
         $this->filterSet = $assembler->getFilterSet();
         $this->buildDir = $assembler->getBuildDir();
-        $this->uriPrefix = rtrim($assembler->getConfig()->get('targetUri', ''), '/') . '/';
+        $this->uriPrefix = rtrim($assembler->getConfig()->get('targetUri', ''), '/');
         $this->absPrefix = rtrim(parse_url($this->uriPrefix, PHP_URL_PATH), '/');
         $this->siteMap = $assembler->getSiteMap();
         $this->addTemplateDir($assembler->getBuildDir()->get('/site')->getHostPath());
@@ -139,7 +139,7 @@ class View extends \Jivoo\View\View
         if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
             $link = preg_replace('/\/index.html$/', '', $link);
         }
-        return $this->uriPrefix . '/' . $link;
+        return $this->uriPrefix . '/' . ltrim($link, '/');
     }
 
     public function filter(Content\ContentNode $content, array $filters = [])
