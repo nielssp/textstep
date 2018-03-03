@@ -177,6 +177,11 @@ class Shell
                 $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
                 $assembler->assemble($parameters[0]);
                 break;
+            case 'si':
+                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $installer = new Compile\SiteInstaller($this->m->files->get('target'), $siteMap);
+                $installer->install($parameters[0]);
+                break;
             default:
                 $this->error('command not found: ' . $command);
         }

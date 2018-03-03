@@ -86,7 +86,6 @@ class SiteAssembler
             return;
         }
         $target = $this->buildDir->get('output/' . $path);
-        $target->getParent()->makeDirectory(true);
         switch ($node['handler']) {
             case 'eval':
                 $args = $node['data'];
@@ -94,13 +93,10 @@ class SiteAssembler
                 $this->view->currentPath = $path;
                 $this->view->data->evalArgs = $args;
                 $html = $this->view->render($template);
+                $target->getParent()->makeDirectory(true);
                 $target->putContents($html);
+                $this->siteMap->add($path, 'copy', [$target->getPath()]);
                 break;
-            case 'copy':
-                $target->get($node['data'][0])->copy($target);
-                break;
-            default:
-                throw new \Blogstep\RuntimeException('Undefined site node handler: ' . $node['handler']);
         }
     }
 }

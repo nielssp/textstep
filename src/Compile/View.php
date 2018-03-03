@@ -23,7 +23,7 @@ class View extends \Jivoo\View\View
     public $currentPath = null;
 
     private $forceAbsolute = false;
-    
+
     private $assembler;
 
     private $filterSet;
@@ -49,7 +49,7 @@ class View extends \Jivoo\View\View
             $this->addFunction($f, [$this, $f]);
         }
     }
-    
+
     public function __get($property)
     {
         switch ($property) {
@@ -60,7 +60,7 @@ class View extends \Jivoo\View\View
         }
         return parent::__get($property);
     }
-    
+
     private function getRelativePath($destination)
     {
         $path = explode('/', ltrim($destination, '/'));
@@ -187,9 +187,9 @@ class View extends \Jivoo\View\View
 
     public static function html($tag, array $attributes = [])
     {
-        $html = new \Jivoo\View\Html($tag);
+        $html = new Html($tag);
         if (isset($attributes['innerText'])) {
-            $html->html(\Jivoo\View\Html::h($attributes['innerText']));
+            $html->html(Html::h($attributes['innerText']));
             unset($attributes['innerText']);
         }
         if (isset($attributes['innerHtml'])) {
