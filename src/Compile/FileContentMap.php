@@ -24,7 +24,7 @@ class FileContentMap implements ContentMap
         }
     }
 
-    function __destruct()
+    public function commit()
     {
         $this->file->putContents(\Jivoo\Json::prettyPrint($this->data));
     }
