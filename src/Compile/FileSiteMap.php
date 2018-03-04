@@ -24,7 +24,7 @@ class FileSiteMap implements SiteMap
         }
     }
 
-    function __destruct()
+    public function commit()
     {
         $this->file->putContents(\Jivoo\Json::prettyPrint($this->data));
     }
@@ -42,12 +42,12 @@ class FileSiteMap implements SiteMap
         return $this->data[$path];
     }
 
-    public function getAll($prefix = '/', $recursive = true)
+    public function getAll($prefix = '', $recursive = true)
     {
         $result = [];
         $prefixLength = strlen($prefix);
         foreach ($this->data as $key => $value) {
-            if (strpos($key, $prefix) === 0) {
+            if ($prefix === '' or strpos($key, $prefix) === 0) {
                 if ($recursive or strrpos($key, '/', $prefixLength) === false) {
                     $result[$key] = $value;
                 }

@@ -157,6 +157,8 @@ class Shell
                 $compiler->getHandler()->addHandler('htm', $id);
                 $compiler->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
                 $compiler->compile($this->workingDir->get($parameters[0]));
+                $siteMap->commit();
+                $contentMap->commit();
                 break;
             case 'tc':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
@@ -166,6 +168,8 @@ class Shell
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
                 $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
                 $compiler->compile($this->workingDir->get($parameters[0]));
+                $siteMap->commit();
+                $contentMap->commit();
                 break;
             case 'sa':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
@@ -175,7 +179,35 @@ class Shell
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
                 $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
-                $assembler->assemble($parameters[0]);
+                $prefix = '';
+                if (isset($parameters[0])) {
+                    $prefix = $parameters[0];
+                }
+                $paths = array_keys($siteMap->getAll($prefix));
+                $i = 1;
+                $n = count($paths);
+                foreach ($paths as $path) {
+                    $this->put('Assembling ' . $i . ' of ' . $n . ': ' . $path);
+                    $assembler->assemble($path);
+                    $i++;
+                }
+                $siteMap->commit();
+                break;
+            case 'si':
+                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $installer = new Compile\SiteInstaller($this->m->files->get('target'), $siteMap);
+                $prefix = '';
+                if (isset($parameters[0])) {
+                    $prefix = $parameters[0];
+                }
+                $paths = array_keys($siteMap->getAll($prefix));
+                $i = 1;
+                $n = count($paths);
+                foreach ($paths as $path) {
+                    $this->put('Installing  ' . $i . ' of ' . $n . ': ' . $path);
+                    $installer->install($path);
+                    $i++;
+                }
                 break;
             default:
                 $this->error('command not found: ' . $command);
