@@ -178,7 +178,7 @@ class ContentCompiler
             }
         }
         
-        $this->filterSet->applyHtmlFilters($this, $file, $dom);
+        $this->filterSet->applyHtmlFilters($this, $file, $metadata, $dom);
 
         $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {

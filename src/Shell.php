@@ -204,7 +204,7 @@ class Shell
                 $i = 1;
                 $n = count($paths);
                 foreach ($paths as $path) {
-                    $this->put('Installing  ' . $i . ' of ' . $n . ': ' . $path);
+                    $this->put('Installing ' . $i . ' of ' . $n . ': ' . $path);
                     $installer->install($path);
                     $i++;
                 }

@@ -48,9 +48,6 @@ class SiteAssembler
         $this->content = $contentTree;
         $this->config = $config;
         $this->filterSet = $filterSet;
-        $this->view = new View($this);
-        $this->view->addTemplateDir($this->buildDir->get('site')->getHostPath());
-        $this->view->addTemplateDir($this->buildDir->get('/site')->getHostPath());
     }
 
     public function getBuildDir()
@@ -80,6 +77,9 @@ class SiteAssembler
 
     public function assemble($path)
     {
+        $this->view = new View($this);
+        $this->view->addTemplateDir($this->buildDir->get('site')->getHostPath());
+        $this->view->addTemplateDir($this->buildDir->get('/site')->getHostPath());
         $node = $this->siteMap->get($path);
         if (!isset($node)) {
             trigger_error('Site node not found: ' . $path, E_USER_WARNING);
