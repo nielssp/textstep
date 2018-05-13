@@ -165,6 +165,7 @@ class ContentCompiler
         } elseif (is_string($published)) {
             $metadata['published'] = strtotime($published);
         }
+        $metadata['modified'] = $file->getModified();
         $metadata['path'] = $file->getPath();
         $metadata['contentFile'] = $htmlFile->getPath();
         $metadata->setDefault('name', preg_replace('/\.[^.]+$/', '', $file->getName()));
