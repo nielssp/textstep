@@ -113,7 +113,7 @@ function open(app, args) {
     app.setTitle(path + ' (...) – Code editor');
     
     codemirror = CodeMirror.fromTextArea(app.frame.find('textarea')[0], {
-	lineNumbers: true
+        lineNumbers: true
     });
 
     codemirror.on('changes', function () {

@@ -43,11 +43,11 @@ Property.prototype.get = function () {
 
 BLOGSTEP.init('test', function (app) {
     app.defineAction('test', function () {
-	app.frame.find('.header-path').text('activated');
-	app.disableAction('test');
-	setTimeout(function () {
-	    app.enableAction('test');
-	}, 5000);
+        app.frame.find('.header-path').text('activated');
+        app.disableAction('test');
+        setTimeout(function () {
+            app.enableAction('test');
+        }, 5000);
     });
     
     app.defineAction('test-alert', function () {
@@ -71,15 +71,15 @@ BLOGSTEP.init('test', function (app) {
     var menu = app.addMenu('Test menu');
     menu.addItem('Test', 'test');
     menu.addItem('Open terminal', function () {
-	BLOGSTEP.run('terminal');
+        BLOGSTEP.run('terminal');
     });
     menu.addItem('Open file', function () {
-	BLOGSTEP.run('editor', { path: '/content/pages/things.md' });
+        BLOGSTEP.run('editor', { path: '/content/pages/things.md' });
     });
     menu.addItem('Who am I', function () {
-	BLOGSTEP.get('who-am-i').done(function (data) {
-	    alert('you are ' + data.username);
-	});
+        BLOGSTEP.get('who-am-i').done(function (data) {
+            alert('you are ' + data.username);
+        });
     });
     menu.addItem('File selection', function () {
         var $overlay = $('<div class="dialog-overlay">');
@@ -99,9 +99,9 @@ BLOGSTEP.init('test', function (app) {
         }).appendTo($footer);
         $dialog.appendTo($overlay);
         
-//	BLOGSTEP.selectFile().done(function (data) {
-//	    alert('you selected ' + data.path);
-//	});
+//        BLOGSTEP.selectFile().done(function (data) {
+//            alert('you selected ' + data.path);
+//        });
     });
     
     var prop = new Property();
@@ -110,14 +110,14 @@ BLOGSTEP.init('test', function (app) {
     prop.set('foo');
     
     app.onOpen = function (app, args) {
-	app.frame.find('.header-path').text('opened');
+        app.frame.find('.header-path').text('opened');
     };
     
     app.onResume = function (app, args) {
-	app.frame.find('.header-path').text('resumed');
+        app.frame.find('.header-path').text('resumed');
     };
     
     app.onResize = function () {
-	app.frame.find('.header-path').text('resized');
+        app.frame.find('.header-path').text('resized');
     };
 });

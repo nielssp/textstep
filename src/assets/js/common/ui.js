@@ -111,11 +111,11 @@ exports.handleError = function (event, xhr, settings, thrownError) {
     }
     if (xhr.status === 401) {
         $('#login-overlay').show();
-	if ($('#login-username').val() === '') {
-	    $('#login-username').focus();
-	} else {
-	    $('#login-password').focus();
-	}
+        if ($('#login-username').val() === '') {
+            $('#login-username').focus();
+        } else {
+            $('#login-password').focus();
+        }
         exports.handleLogin(function () {
             $('#login-overlay').hide();
             $.ajax(settings);

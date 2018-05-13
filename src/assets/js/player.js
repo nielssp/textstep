@@ -18,25 +18,25 @@ BLOGSTEP.init('player', function (app) {
     menu.addItem('Close', 'close');    
 
     app.onOpen = function (app, args) {
-	app.setTitle(args.path + ' – Player');
-	
-	$video = $("<video autoplay controls loop/>");
-	$video.attr('src', BLOGSTEP.PATH + '/api/download?path=' + args.path);
-	$videoContainer.append($video);
+        app.setTitle(args.path + ' – Player');
+        
+        $video = $("<video autoplay controls loop/>");
+        $video.attr('src', BLOGSTEP.PATH + '/api/download?path=' + args.path);
+        $videoContainer.append($video);
     };
     
     app.onSuspend = function (app) {
-	paused = $video[0].paused;
-	$video[0].pause();
+        paused = $video[0].paused;
+        $video[0].pause();
     };
     
     app.onResume = function (app) {
-	if (!paused) {
-	    $video[0].play();
-	}
+        if (!paused) {
+            $video[0].play();
+        }
     };
     
     app.onClose = function (app) {
-	$video.remove();
+        $video.remove();
     };
 });
