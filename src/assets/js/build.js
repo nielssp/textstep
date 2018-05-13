@@ -113,6 +113,11 @@ function cancel() {
     });
 }
 
+function clean() {
+    doCancel = true;
+    BLOGSTEP.post('delete', {path: '/build', recursive: true});
+}
+
 
 BLOGSTEP.init('builder', function (app) {
     self = app;
@@ -122,10 +127,12 @@ BLOGSTEP.init('builder', function (app) {
 
     app.defineAction('build', build);
     app.defineAction('cancel', cancel);
+    app.defineAction('clean', clean);
 
     var menu = app.addMenu('Builder');
     menu.addItem('Build', 'build');
     menu.addItem('Cancel', 'cancel');
+    menu.addItem('Clean', 'clean');
     menu.addItem('Close', 'close');
 
     app.onOpen = function (app, args) {
