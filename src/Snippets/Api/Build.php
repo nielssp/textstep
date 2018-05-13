@@ -58,9 +58,6 @@ class Build extends AuthenticatedSnippet
         
         $runner = new Runner('build');
 
-        $runner->add(new UnitTask('clean', function () use ($destination) {
-            $destination->get('.build')->delete();
-        }, 'Cleaning'));
         $runner->add(new UnitTask('cc', function () use ($cc, $content, $siteMap, $contentMap) {
             $cc->compile($content);
             $siteMap->commit();
@@ -80,11 +77,14 @@ class Build extends AuthenticatedSnippet
         
         $state = new \Jivoo\Store\SerializedStore($destination->get('.build')->getHostPath());
         $state->touch();
+
+        $this->m->logger->debug('Using state file: ' . $destination->get('.build')->getHostPath());
         
         $this->m->session->close();
         
         $service = new Service($this->m->logger, $this->request, $state, $serializer);
         $service->run($runner, function () use ($destination) {
+            $this->m->logger->debug('Build done, deleting state');
             $destination->get('.build')->delete();
         });
     }
