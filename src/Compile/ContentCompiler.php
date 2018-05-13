@@ -17,7 +17,7 @@ class ContentCompiler
     private $buildDir;
 
     /**
-     * @var \Blogstep\Build\ContentHandler
+     * @var \Blogstep\Compile\Content\ContentHandler
      */
     private $handler;
 
@@ -44,7 +44,7 @@ class ContentCompiler
     public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap, FilterSet $filterSet)
     {
         $this->buildDir = $buildDir;
-        $this->handler = new \Blogstep\Build\ContentHandler();
+        $this->handler = new \Blogstep\Compile\Content\ContentHandler();
         $this->contentMap = $contentMap;
         $this->siteMap = $siteMap;
         $this->filterSet = $filterSet;
@@ -165,6 +165,7 @@ class ContentCompiler
         } elseif (is_string($published)) {
             $metadata['published'] = strtotime($published);
         }
+        $metadata['modified'] = $file->getModified();
         $metadata['path'] = $file->getPath();
         $metadata['contentFile'] = $htmlFile->getPath();
         $metadata->setDefault('name', preg_replace('/\.[^.]+$/', '', $file->getName()));
@@ -178,7 +179,7 @@ class ContentCompiler
             }
         }
         
-        $this->filterSet->applyHtmlFilters($this, $file, $dom);
+        $this->filterSet->applyHtmlFilters($this, $file, $metadata, $dom);
 
         $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {

@@ -6,9 +6,13 @@
 namespace Blogstep\Snippets\Api;
 
 use Blogstep\AuthenticatedSnippet;
-use Blogstep\Build\Compiler;
-use Blogstep\Build\ContentHandler;
-use Blogstep\Build\Task;
+use Blogstep\Compile\FileContentMap;
+use Blogstep\Compile\FileSiteMap;
+use Blogstep\Compile\FilterSet;
+use Blogstep\Compile\ContentCompiler;
+use Blogstep\Compile\TemplateCompiler;
+use Blogstep\Compile\SiteAssembler;
+use Blogstep\Compile\SiteInstaller;
 use Jivoo\Unicode;
 
 /**
@@ -22,55 +26,45 @@ class FastBuild extends AuthenticatedSnippet
         $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
 
-        $compiler = new Compiler($destination, $this->m->main->config->getSubconfig('system.config'));
-        $compiler->addTask(Task::load($this->m->main->p('src/tasks/copyStructure.php')));
-        $compiler->addTask(Task::load($this->m->main->p('src/tasks/templateToPhp.php')));
-        $compiler->addTask(Task::load($this->m->main->p('src/tasks/copyContentAssets.php')));
-        $compiler->addTask(Task::load($this->m->main->p('src/tasks/phpToText.php')));
-        $compiler->addTask(Task::load($this->m->main->p('src/tasks/minifyAssets.php')));
-        
-        $compiler->clean();
-        $handler = new ContentHandler();
-        
+        $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
+        $siteMap = new FileSiteMap($this->m->files->get('build/sitemap.json'));
+
+        $filterSet = new FilterSet();
+        $filterSet->addFilters($this->m->main->p('src/filters'));
+        $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
+
+        $cc = new ContentCompiler($destination, $siteMap, $contentMap, $filterSet);
         $id = function ($content) { return $content; };
-        $handler->addHandler('html', $id);
-        $handler->addHandler('htm', $id);
-        $handler->addHandler('md', [new \Parsedown(), 'text']);
-        
-        $dir = scandir($this->m->main->p('src/filters'));
-        foreach ($dir as $file) {
-            if (Unicode::endsWith($file, '.php')) {
-                $name = substr($file, 0, -4);
-                $handler->addFilter($name, require $this->m->main->p('src/filters/' . $file));
-            }
+        $cc->getHandler()->addHandler('html', $id);
+        $cc->getHandler()->addHandler('htm', $id);
+        $cc->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
+        $cc->compile($content);
+        $siteMap->commit();
+        $contentMap->commit();
+
+        $tc = new TemplateCompiler($destination, $siteMap, $contentMap, $filterSet);
+        $tc->compile($structure);
+        $siteMap->commit();
+        $contentMap->commit();
+
+        $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
+
+        $assembler = new SiteAssembler($destination, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
+        foreach ($siteMap->getAll('') as $path => $node) {
+          $assembler->assemble($path);
         }
-        if ($structure->get('filters')->getType() === 'directory') {
-            foreach ($structure->get('filters') as $file) {
-                if (Unicode::endsWith($file->getName(), '.php')) {
-                    $name = substr($file->getName(), 0, -4);
-                    $handler->addFilter($name, require $file->getHostPath());
-                }
-            }
-        }        
-        $handler->setDefaultFilters(['links']);
-        
-        $compiler->createContentTree($content, $handler);
-        $compiler->createStructure($structure);
-        
-        while (!$compiler->isDone()) {
-            $compiler->run(function () {
-                return true;
-            });
+        $siteMap->commit();
+
+        $installer = new SiteInstaller($this->m->files->get('target'), $siteMap);
+        foreach ($siteMap->getAll('') as $path => $node) {
+          $installer->install($path);
         }
-        
-        $target = $this->m->main->config['user']->get('target', $this->m->main->p('target'));
-        $compiler->install($target);
-        
+
         return $this->ok();
     }
-    
+
     public function get()
     {
-        return $this->methodNotAllowed();
+      return $this->methodNotAllowed();
     }
 }

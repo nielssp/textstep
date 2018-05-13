@@ -258,7 +258,7 @@ class Html implements \ArrayAccess
             }
         }
         if ($this->content == '' and isset(self::$selfClosingTags[$this->tag])) {
-            return $output . ' />';
+            return $output . '/>';
         }
         $output .= '>';
         $output .= $this->content;

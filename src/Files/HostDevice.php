@@ -167,7 +167,10 @@ class HostDevice implements Device
 
     public function putContents($path, $data)
     {
-        return file_put_contents($this->rootPath . $path, $data);
+        // TODO: file_put_contents returns number of bytes (0 if data is empty)
+        // or false on error. It should be specified in the interface whether
+        // putContents returns an int or a boolean.
+        return file_put_contents($this->rootPath . $path, $data) !== false;
     }
 
     public function open($path, $mode)

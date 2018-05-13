@@ -64,10 +64,10 @@ class FilterSet
         return $file;
     }
     
-    public function applyHtmlFilters(ContentCompiler $cc, \Blogstep\Files\File $file, \SimpleHtmlDom\simple_html_dom $dom)
+    public function applyHtmlFilters(ContentCompiler $cc, \Blogstep\Files\File $file, \Jivoo\Store\Document $metadata, \SimpleHtmlDom\simple_html_dom $dom)
     {
         foreach ($this->html as $handler) {
-            $handler($cc, $file, $dom);
+            $handler($cc, $file, $metadata, $dom);
         }
     }
     

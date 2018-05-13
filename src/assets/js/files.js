@@ -100,7 +100,7 @@ function initColumn($column) {
             ui.shake($('main > .frame'));
         };
         request.open('POST', BLOGSTEP.PATH + '/api/upload?path=' + $column.data('path'));
-	BLOGSTEP.addToken(request);
+        BLOGSTEP.addToken(request);
         request.send(data);
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
@@ -296,7 +296,7 @@ function refresh() {
 
 function enter(path) {
     if (path === cwd) {
-	return;
+        return;
     }
     cd(path);
     if (files.hasOwnProperty(path)) {
@@ -484,33 +484,33 @@ function updateColumn($column, path) {
             }
         } else if (path !== null) {
             $column.addClass('loading');
-	    BLOGSTEP.get('list-files', { path: path }).done(function (data) {
-		$column.removeClass('loading');
-		$list.empty();
-		$column.removeClass('readonly');
-		$column.data('path', path);
-		if (!data.write) {
-		    $column.addClass('readonly');
-		}
-		if (!files.hasOwnProperty(data.path)) {
-		    createFile(data);
-		}
-		if (data.type === 'directory' && typeof data.files !== 'undefined') {
-		    for (var i = 0; i < data.files.length; i++) {
-			var file = data.files[i];
-			addFile($column, file);
-		    }
-		    if ($column.is($currentColumn)) {
-			self.enableGroup('dir');
-		    }
-		} else {
-		    addFileInfo($column, data);
-		    if ($column.is($currentColumn)) {
-			self.disableGroup('dir');
-		    }
-		}
-		$column.trigger('loaded');
-	    });
+            BLOGSTEP.get('list-files', { path: path }).done(function (data) {
+                $column.removeClass('loading');
+                $list.empty();
+                $column.removeClass('readonly');
+                $column.data('path', path);
+                if (!data.write) {
+                    $column.addClass('readonly');
+                }
+                if (!files.hasOwnProperty(data.path)) {
+                    createFile(data);
+                }
+                if (data.type === 'directory' && typeof data.files !== 'undefined') {
+                    for (var i = 0; i < data.files.length; i++) {
+                        var file = data.files[i];
+                        addFile($column, file);
+                    }
+                    if ($column.is($currentColumn)) {
+                        self.enableGroup('dir');
+                    }
+                } else {
+                    addFileInfo($column, data);
+                    if ($column.is($currentColumn)) {
+                        self.disableGroup('dir');
+                    }
+                }
+                $column.trigger('loaded');
+            });
         }
     }
     if (files.hasOwnProperty(path)) {
@@ -617,7 +617,7 @@ function keydown(e) {
         return true;
     }
     if ($filter.length === 0) {
-	e.preventDefault();
+        e.preventDefault();
         $('<input type="text" class="filter">')
                 .val(e.key)
                 .appendTo($currentColumn)
@@ -731,7 +731,7 @@ function upload() {
             ui.shake($('main > .frame'));
         };
         request.open('POST', BLOGSTEP.PATH + '/api/upload?path=' + encodeURIComponent($column.data('path')));
-	BLOGSTEP.addToken(request);
+        BLOGSTEP.addToken(request);
         request.onreadystatechange = function () {
             if (this.readyState === 4) {
                 if (this.status !== 200) {
@@ -864,15 +864,15 @@ function paste() {
             data.destination = paths.convert(file.data.name, cwd);
             fileData.push(file);
         }
-	BLOGSTEP.post(duplicate ? 'copy' : 'move', data).done(function (data) {
-	    $pastee.remove();
-	    if (!duplicate) {
-		fileData.forEach(function (file) {
-		    file.link.remove();
-		});
-	    }
-	    refresh();
-	});
+        BLOGSTEP.post(duplicate ? 'copy' : 'move', data).done(function (data) {
+            $pastee.remove();
+            if (!duplicate) {
+                fileData.forEach(function (file) {
+                    file.link.remove();
+                });
+            }
+            refresh();
+        });
     }
 }
 

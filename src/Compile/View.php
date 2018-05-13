@@ -93,7 +93,7 @@ class View extends \Jivoo\View\View
             return false;
         }
         if ($this->currentPath != null and \Jivoo\Unicode::endsWith($this->currentPath, 'index.html')) {
-            return ltrim($link, '/') === preg_replace('/\/?index.html$/', '', $this->currentPath);
+          return ltrim($link, '/') === preg_replace('/^index.html$|\/index.html$/', '', $this->currentPath);
         }
         return ltrim($link, '/') === $this->currentPath;
     }

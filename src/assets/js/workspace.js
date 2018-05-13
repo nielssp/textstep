@@ -700,7 +700,7 @@ BLOGSTEP.ajax = function (url, method, data, responseType) {
             });
             return;
         } else if (typeof xhr.responseJSON !== 'undefined') {
-            alert(xhr.responseJSON.message);
+            console.warn(xhr.responseJSON.message);
         }
         ui.shake($('main > .frame.active'));
 

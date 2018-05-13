@@ -82,8 +82,17 @@ class TemplateCompiler
     public function compile(\Blogstep\Files\File $file)
     {
         if ($file->isDirectory()) {
+            $ignore = ['.ignore' => true, 'site.json' => true];
+            if ($file->get('.ignore')->isFile()) {
+                $content = explode("\n", $file->get('.ignore')->getContents());
+                foreach ($content as $line) {
+                    $ignore[trim($line)] = true;
+                }
+            }
             foreach ($file as $child) {
-                $this->compile($child);
+                if (!isset($ignore[$child->getName()])) {
+                    $this->compile($child);
+                }
             }
             return;
         }

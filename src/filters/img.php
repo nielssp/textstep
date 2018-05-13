@@ -14,11 +14,15 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
     if (!$enabled) {
         return View::html('img', $attr);
     }
-    if (!extension_loaded('gd')) {
+    $useImageMagick = false;
+    if (isset($view->data->config['useImageMagick']) and $view->data->config['useImageMagick']) {
+      $useImageMagick = false;
+    } else  if (!extension_loaded('gd')) {
         trigger_error('img: missing extension: gd', E_USER_WARNING);
         return;
     }
-    $reloadDom = false;
+    $usePngcrush = (isset($view->data->config['usePngcrush']) and $view->data->config['usePngcrush']);
+    $preserveLossless = (isset($view->data->config['preserveLossless']) and $view->data->config['preserveLossless']);
     $src = $attr['src'];
     if (Jivoo\Unicode::startsWith($src, 'bs:')) {
         $path = preg_replace('/^bs:\/?/', '', $src);
@@ -62,52 +66,124 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
             $targetWidth = min($requestedWidth, $maxWidth);
             $targetHeight = floor($targetWidth / $ratio);
         }
-        $destType = $quality == 100 ? 'png' : 'jpeg';
+        if ($preserveLossless or $quality == 100) {
+            switch ($type[2]) {
+                case IMAGETYPE_JPEG:
+                    $destType = 'jeg';
+                    break;
+                case IMAGETYPE_GIF:
+                    $destType = 'gif';
+                    break;
+                default:
+                    $destType = 'png';
+                    break;
+            }
+        } else {
+            $destType = 'jpg';
+        }
         $destName = preg_replace('/\.[^\.]+$/', '.' . $targetWidth . 'x' . $targetHeight . 'q' . $quality . '.' . $destType, $file->getName());
         $destDir = $view->assembler->getBuildDir()->get('.' . $file->getParent()->getPath());
         $destDir->makeDirectory(true);
         $destFile = $destDir->get($destName);
         if (!$destFile->exists()) {
-            $image = null;
-            switch ($type[2]) {
-                case IMAGETYPE_JPEG:
-                    $image = imagecreatefromjpeg($src);
-                    break;
-                case IMAGETYPE_PNG:
-                    $image = imagecreatefrompng($src);
-                    break;
-                case IMAGETYPE_GIF:
-                    break;
-                default:
-                    trigger_error('imageSize: unsupported format: ' . $src . ' (' . $type[2] . ')', E_USER_NOTICE);
-                    break;
-            }
-            if (isset($image) and $image !== false) {
-                $resized = imagecreatetruecolor($targetWidth, $targetHeight);
-                imagecopyresampled($resized, $image, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
-                $func = 'image' . $destType;
-                $func($resized, $destFile->getHostPath());
-                imagedestroy($resized);
-                imagedestroy($image);
-            } elseif ($image === false) {
-                trigger_error('img: could not read: ' . $src, E_USER_NOTICE);
+            if (!$useImageMagick) {
+                $image = null;
+                switch ($type[2]) {
+                    case IMAGETYPE_JPEG:
+                        $image = imagecreatefromjpeg($src);
+                        break;
+                    case IMAGETYPE_PNG:
+                        $image = imagecreatefrompng($src);
+                        break;
+                    case IMAGETYPE_GIF:
+                        $image = imagecreatefromgif($src);
+                        break;
+                    default:
+                        trigger_error('imageSize: unsupported format: ' . $src . ' (' . $type[2] . ')', E_USER_NOTICE);
+                        break;
+                }
+                if (isset($image) and $image !== false) {
+                    $resized = imagecreatetruecolor($targetWidth, $targetHeight);
+                    imagecopyresampled($resized, $image, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+                    switch ($destType) {
+                        case 'jpg':
+                            imagejpeg($resized, $destFile->getHostPath(), $quality);
+                            break;
+                        case 'png':
+                            imagepng($resized, $destFile->getHostPath(), 9);
+                            break;
+                        case 'gif':
+                            imagegif($resized, $destFile->getHostPath());
+                            break;
+                    }
+                    imagedestroy($resized);
+                    imagedestroy($image);
+                } elseif ($image === false) {
+                    trigger_error('img: could not read: ' . $src, E_USER_NOTICE);
+                }
+            } else {
+                exec(sprintf(
+                    'convert %s -resize %dx%d -quality %d %s',
+                    escapeshellarg($src),
+                    $targetWidth,
+                    $targetHeight,
+                    $quality,
+                    escapeshellarg($destFile->getHostPath())
+                ), $output, $status);
+                if ($status !== 0 ) {
+                    trigger_error('img: ImageMagick convert failed with status ' . $status . ' for: ' . $src, E_USER_WARNING);
+                }
             }
         }
-        if ($destFile->exists() and $destFile->getSize() <= $file->getSize()) {
-            $newPath = preg_replace('/\/[^\/]+$/', '/' . $destName, $path);
-            $view->assembler->getSiteMap()->add($newPath, 'copy', [$destFile->getPath()]);
-            $attr['src'] = 'bs:' . $newPath;
+        if ($destFile->exists()) {
+            if ($usePngcrush and $destType == 'png') {
+                $outName = preg_replace('/\.png$/i', '.c.png', $destFile->getName());
+                $crushOut = $destDir->get($outName);
+                exec(sprintf(
+                    'pngcrush %s %s',
+                    escapeshellarg($destFile->getHostPath()),
+                    escapeshellarg($crushOut->getHostPath())
+                ), $output, $status);
+                if ($status === 0 and $crushOut->exists()) {
+                    $destFile = $crushOut;
+                } else {
+                    trigger_error('img: pngcrush failed with status ' . $status . ' for: ' . $destFile->getHostPath(), E_USER_WARNING);
+                }
+            }
+            if ($destFile->getSize() <= $file->getSize()) {
+                $newPath = preg_replace('/\/[^\/]+$/', '/' . $destFile->getName(), $path);
+                $view->assembler->getSiteMap()->add($newPath, 'copy', [$destFile->getPath()]);
+                $attr['src'] = 'bs:' . $newPath;
+            }
         }
         $attr['width'] = $targetWidth;
         $attr['height'] = $targetHeight;
         if ($linkFull) {
             $prefix = '<a href="bs:' . \Jivoo\View\Html::h($path) . '">';
             $suffix = '</a>';
-            $reloadDom = true;
         }
     } else {
         $attr['width'] = $width;
         $attr['height'] = $height;
+        if ($usePngcrush and $type[2] === IMAGETYPE_PNG) {
+            $destName = preg_replace('/\.png$/i', '.c.png', $file->getName());
+            $destDir = $view->assembler->getBuildDir()->get('.' . $file->getParent()->getPath());
+            $destDir->makeDirectory(true);
+            $destFile = $destDir->get($destName);
+            if (!$destFile->exists()) {
+                exec(sprintf(
+                    'pngcrush %s %s',
+                    escapeshellarg($src),
+                    escapeshellarg($destFile->getHostPath())
+                ), $output, $status);
+                if ($status !== 0 or !$destFile->exists()) {
+                    trigger_error('img: pngcrush failed with status ' . $status . ' for: ' . $src, E_USER_WARNING);
+                }
+            }
+            $newPath = preg_replace('/\/[^\/]+$/', '/' . $file->getName(), $path);
+            $view->assembler->getSiteMap()->add($newPath, 'copy', [$destFile->getPath()]);
+            $attr['src'] = 'bs:' . $newPath;
+        }
     }
     return $prefix . View::html('img', $attr) . $suffix;
 };

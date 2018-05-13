@@ -35,8 +35,8 @@ var commands = {
         exec('list-files?path=' + nwd, {}, function (data) {
             if (data.type === 'directory') {
                 cwd = nwd;
-		self.setTitle(cwd + ' – Terminal');
-		self.setArgs({ path: cwd });
+                self.setTitle(cwd + ' – Terminal');
+                self.setArgs({ path: cwd });
             } else {
                 writeLine('not a directory');
             }
@@ -94,20 +94,20 @@ var commands = {
         });
     },
     exit: function (args) {
-	self.close();
+        self.close();
     },
     open: function (args) {
-	BLOGSTEP.open(convertPath(args));
-	prompt();
+        BLOGSTEP.open(convertPath(args));
+        prompt();
     },
     edit: function (args) {
-	BLOGSTEP.run('code-editor', {path: convertPath(args)});
-	prompt();
+        BLOGSTEP.run('code-editor', {path: convertPath(args)});
+        prompt();
     },
     run: function (args) {
         args = args.split(' ');
-	BLOGSTEP.run(args[0], args.length > 1 ? { path: convertPath(args[1]) } : {});
-	prompt();
+        BLOGSTEP.run(args[0], args.length > 1 ? { path: convertPath(args[1]) } : {});
+        prompt();
     },
     ps: function (args) {
         var tasks = BLOGSTEP.getTasks();
@@ -135,10 +135,10 @@ function open(app, args)
     self = app;
     buffer = '';
     exec('who-am-i', {}, function (data) {
-	user = data;
-	if (typeof args.path === 'string') {
-	    cwd = args.path;
-	}
+        user = data;
+        if (typeof args.path === 'string') {
+            cwd = args.path;
+        }
     });
 }
 
@@ -195,13 +195,13 @@ function readLine(callback)
 function exec(command, data, success)
 {
     BLOGSTEP.post(command, data).done(success).fail(function (xhr) {
-	if (xhr.status === 404) {
-	    writeLine(xhr.status + ' ' + command + ': command not found');
-	} else if (typeof xhr.responseJSON !== 'undefined') {
-	    writeLine(xhr.status + '(' + xhr.responseJSON.code + ') ' + xhr.responseJSON.message);
-	} else {
-	    writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
-	}
+        if (xhr.status === 404) {
+            writeLine(xhr.status + ' ' + command + ': command not found');
+        } else if (typeof xhr.responseJSON !== 'undefined') {
+            writeLine(xhr.status + '(' + xhr.responseJSON.code + ') ' + xhr.responseJSON.message);
+        } else {
+            writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
+        }
     }).always(prompt);
 }
 
@@ -246,62 +246,62 @@ BLOGSTEP.init('terminal', function (app) {
     $terminal.attr('readonly', true);
 
     $terminal.click(function () {
-	var start = $terminal[0].selectionStart;
-	var end = $terminal[0].selectionEnd;
-	if (start === end) {
-	    if (start < buffer.length) {
-		$terminal[0].selectionStart = $terminal.val().length;
-	    }
-	}
+        var start = $terminal[0].selectionStart;
+        var end = $terminal[0].selectionEnd;
+        if (start === end) {
+            if (start < buffer.length) {
+                $terminal[0].selectionStart = $terminal.val().length;
+            }
+        }
     });
     $terminal.keydown(function (e) {
-	if (e.key === 'Enter' && !e.shiftKey) {
-	    if (readCallback !== null) {
-		$terminal.attr('readonly', true).blur();
-		var line = $terminal.val().substr(buffer.length);
-		cmdHistory.push(line);
-		buffer += line + '\n';
-		flush();
-		var callback = readCallback;
-		readCallback = null;
-		callback(line);
-	    }
-	    return false;
-	} else if (e.key === 'ArrowUp') {
-	    if (readCallback !== null) {
-		if (cmdHistory.length > 0) {
-		    if (cmdHistoryPos < 0) {
-			cmdHistoryPos = cmdHistory.length - 1;
-		    } else if (cmdHistoryPos > 0) {
-			cmdHistoryPos--;
-		    }
-		    $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
-		}
-	    }
-	    return false;
-	} else if (e.key === 'ArrowDown') {
-	    if (readCallback !== null) {
-		if (cmdHistory.length > 0 && cmdHistoryPos >= 0) {
-		    if (cmdHistoryPos < cmdHistory.length - 1) {
-			cmdHistoryPos++;
-			$terminal.val(buffer + cmdHistory[cmdHistoryPos]);
-		    } else {
-			cmdHistoryPos = -1;
-			$terminal.val(buffer);
-		    }
-		}
-	    }
-	    return false;
-	} else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
-	    var start = $terminal[0].selectionStart;
-	    var end = $terminal[0].selectionEnd;
-	    if (start === end) {
-		if (start <= buffer.length) {
-		    return false;
-		}
-	    }
-	}
-	return true;
+        if (e.key === 'Enter' && !e.shiftKey) {
+            if (readCallback !== null) {
+                $terminal.attr('readonly', true).blur();
+                var line = $terminal.val().substr(buffer.length);
+                cmdHistory.push(line);
+                buffer += line + '\n';
+                flush();
+                var callback = readCallback;
+                readCallback = null;
+                callback(line);
+            }
+            return false;
+        } else if (e.key === 'ArrowUp') {
+            if (readCallback !== null) {
+                if (cmdHistory.length > 0) {
+                    if (cmdHistoryPos < 0) {
+                        cmdHistoryPos = cmdHistory.length - 1;
+                    } else if (cmdHistoryPos > 0) {
+                        cmdHistoryPos--;
+                    }
+                    $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
+                }
+            }
+            return false;
+        } else if (e.key === 'ArrowDown') {
+            if (readCallback !== null) {
+                if (cmdHistory.length > 0 && cmdHistoryPos >= 0) {
+                    if (cmdHistoryPos < cmdHistory.length - 1) {
+                        cmdHistoryPos++;
+                        $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
+                    } else {
+                        cmdHistoryPos = -1;
+                        $terminal.val(buffer);
+                    }
+                }
+            }
+            return false;
+        } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+            var start = $terminal[0].selectionStart;
+            var end = $terminal[0].selectionEnd;
+            if (start === end) {
+                if (start <= buffer.length) {
+                    return false;
+                }
+            }
+        }
+        return true;
     });
 
 });
