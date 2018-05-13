@@ -137,7 +137,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
         }
         if ($destFile->exists()) {
             if ($usePngcrush and $destType == 'png') {
-                $outName = preg_replace('/\.png$/', '.c.png', $destFile->getName());
+                $outName = preg_replace('/\.png$/i', '.c.png', $destFile->getName());
                 $crushOut = $destDir->get($outName);
                 exec(sprintf(
                     'pngcrush %s %s',
@@ -165,6 +165,23 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
     } else {
         $attr['width'] = $width;
         $attr['height'] = $height;
+        if ($usePngcrush and $type[2] === IMAGETYPE_PNG) {
+            $destDir = $view->assembler->getBuildDir()->get('.' . $file->getParent()->getPath());
+            $destDir->makeDirectory(true);
+            $destFile = $destDir->get($file->getName());
+            exec(sprintf(
+                'pngcrush %s %s',
+                escapeshellarg($src),
+                escapeshellarg($destFile->getHostPath())
+            ), $output, $status);
+            if ($status === 0 and $destFile->exists()) {
+                $newPath = preg_replace('/\/[^\/]+$/', '/' . $destFile->getName(), $path);
+                $view->assembler->getSiteMap()->add($newPath, 'copy', [$destFile->getPath()]);
+                $attr['src'] = 'bs:' . $newPath;
+            } else {
+                trigger_error('img: pngcrush failed with status ' . $status . ' for: ' . $src, E_USER_WARNING);
+            }
+        }
     }
     return $prefix . View::html('img', $attr) . $suffix;
 };
