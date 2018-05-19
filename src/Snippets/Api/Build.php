@@ -35,6 +35,7 @@ class Build extends AuthenticatedSnippet
 
         $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
         $siteMap = new FileSiteMap($this->m->files->get('build/sitemap.json'));
+        $installMap = new FileSiteMap($this->m->files->get('build/install.json'));
 
         $filterSet = new FilterSet();
         $filterSet->addFilters($this->m->main->p('src/filters'));
@@ -50,9 +51,9 @@ class Build extends AuthenticatedSnippet
 
         $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
 
-        $assembler = new SiteAssembler($destination, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
+        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
 
-        $installer = new SiteInstaller($this->m->files->get('target'), $siteMap);
+        $installer = new SiteInstaller($this->m->files->get('target'), $installMap);
         
         $serializer = new Serializer();
         
@@ -68,9 +69,9 @@ class Build extends AuthenticatedSnippet
             $siteMap->commit();
             $contentMap->commit();
         }, 'Compiling templates'));
-        $runner->add(new SiteAssemblerTask($assembler, $siteMap), 7);
-        $runner->add(new UnitTask('install', function () use ($installer, $siteMap) {
-            foreach ($siteMap->getAll('') as $path => $node) {
+        $runner->add(new SiteAssemblerTask($assembler, $installMap, $siteMap), 7);
+        $runner->add(new UnitTask('install', function () use ($installer, $installMap) {
+            foreach ($installMap->getAll('') as $path => $node) {
                 $installer->install($path);
             }
         }, 'Installing'));
@@ -98,13 +99,15 @@ class Build extends AuthenticatedSnippet
 class SiteAssemblerTask extends \Blogstep\Task\TaskBase
 {
     private $assembler;
+    private $installMap;
     private $siteMap;
     private $total = 0;
     private $paths = null;
 
-    public function __construct(SiteAssembler $assembler, SiteMap $siteMap)
+    public function __construct(SiteAssembler $assembler, SiteMap $installMap, SiteMap $siteMap)
     {
         $this->assembler = $assembler;
+        $this->installMap = $installMap;
         $this->siteMap = $siteMap;
     }
 
@@ -125,7 +128,7 @@ class SiteAssemblerTask extends \Blogstep\Task\TaskBase
                 break;
             }
         }
-        $this->siteMap->commit();
+        $this->installMap->commit();
         $remaining = count($this->paths);
         $progress = 0;
         if ($this->total > 0) {

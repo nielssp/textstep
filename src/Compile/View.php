@@ -31,8 +31,8 @@ class View extends \Jivoo\View\View
     public function __construct(SiteAssembler $assembler)
     {
         parent::__construct(
-            new \Jivoo\Http\Route\AssetScheme($assembler->getBuildDir()->getHostPath()),
-            new \Jivoo\Http\Router()
+            $assembler->getAssetScheme(),
+            $assembler->getRouter()
         );
         $this->assembler = $assembler;
         $this->filterSet = $assembler->getFilterSet();

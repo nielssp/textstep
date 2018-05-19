@@ -107,7 +107,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\Setup');
         $this->m->router->auto('snippet:Api\GetConf');
         $this->m->router->auto('snippet:Api\SetConf');
-        $this->m->router->auto('snippet:Api\Make');
+        $this->m->router->auto('snippet:Api\Preview');
     }
 
     public function p($ipath)

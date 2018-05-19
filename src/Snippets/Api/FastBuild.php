@@ -28,6 +28,7 @@ class FastBuild extends AuthenticatedSnippet
 
         $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
         $siteMap = new FileSiteMap($this->m->files->get('build/sitemap.json'));
+        $installMap = new FileSiteMap($this->m->files->get('build/install.json'));
 
         $filterSet = new FilterSet();
         $filterSet->addFilters($this->m->main->p('src/filters'));
@@ -49,14 +50,14 @@ class FastBuild extends AuthenticatedSnippet
 
         $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
 
-        $assembler = new SiteAssembler($destination, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
+        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
         foreach ($siteMap->getAll('') as $path => $node) {
           $assembler->assemble($path);
         }
-        $siteMap->commit();
+        $installMap->commit();
 
-        $installer = new SiteInstaller($this->m->files->get('target'), $siteMap);
-        foreach ($siteMap->getAll('') as $path => $node) {
+        $installer = new SiteInstaller($this->m->files->get('target'), $installMap);
+        foreach ($installMapMap->getAll('') as $path => $node) {
           $installer->install($path);
         }
 

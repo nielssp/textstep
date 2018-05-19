@@ -152,7 +152,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
             }
             if ($destFile->getSize() <= $file->getSize()) {
                 $newPath = preg_replace('/\/[^\/]+$/', '/' . $destFile->getName(), $path);
-                $view->assembler->getSiteMap()->add($newPath, 'copy', [$destFile->getPath()]);
+                $view->assembler->getInstallMap()->add($newPath, 'copy', [$destFile->getPath()]);
                 $attr['src'] = 'bs:' . $newPath;
             }
         }
@@ -181,7 +181,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
                 }
             }
             $newPath = preg_replace('/\/[^\/]+$/', '/' . $file->getName(), $path);
-            $view->assembler->getSiteMap()->add($newPath, 'copy', [$destFile->getPath()]);
+            $view->assembler->getInstallMap()->add($newPath, 'copy', [$destFile->getPath()]);
             $attr['src'] = 'bs:' . $newPath;
         }
     }
