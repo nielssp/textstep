@@ -45,7 +45,7 @@ class View extends \Jivoo\View\View
         $this->data->config = $assembler->getConfig()->getData();
         $this->data->content = $assembler->getContent();
 
-        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter'] as $f) {
+        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter', 'embedResource'] as $f) {
             $this->addFunction($f, [$this, $f]);
         }
     }
@@ -122,6 +122,20 @@ class View extends \Jivoo\View\View
             return $this->absPrefix . '/' . ltrim($link, '/');
         }
         return $this->getRelativePath($link);
+    }
+
+    public function embedResource($path)
+    {
+        $node = $this->assembler->getSiteMap()->get($path);
+        if (!isset($node)) {
+            $node = $this->assembler->getInstallMap()->get($path);
+        }
+        if ($node['handler'] !== 'copy') {
+            return '#unknown-handler';
+        }
+        $resource = $this->assembler->getBuildDir()->get($node['data'][0]);
+        $content = $resource->getContents();
+        return '<style type="text/css">' . $content . '</style>';
     }
 
     public function url($link = null)

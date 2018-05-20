@@ -83,7 +83,7 @@ class ExceptionHandler
     public function handleError($exception, $fatal = false)
     {
         $this->m->logger->critical(
-            'Uncaught exception: ' . $exception->getMessage(),
+            'Uncaught exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(),
             ['exception' => $exception]
         );
         if ($this->m->main->config['debug.createCrashReports']) {

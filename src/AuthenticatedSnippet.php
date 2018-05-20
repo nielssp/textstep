@@ -19,7 +19,7 @@ class AuthenticatedSnippet extends Snippet
             }
             $this->m->session['loginReturnPath'] = $this->request->path;
             $this->m->session['loginReturnQuery'] = $this->request->query;
-            return $this->redirect('snippet:Login');
+            return $this->redirect('snippet:Workspace');
         }
         $this->m->files->setAuthentication($this->m->auth->user);
         $this->viewData['user'] = $this->m->auth->user;
