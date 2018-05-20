@@ -120,7 +120,7 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
     
     public function embedMacro(HtmlNode $node, TemplateNode $value)
     {
-        $embedNode = new PhpNode('$this->embedResource(' . PhpNode::expr($value)->code . ')');
+        $embedNode = new PhpNode('$this->embedResource("' . $node->tag . '", '  . PhpNode::expr($value)->code . ')');
         $node->replaceWith($embedNode);
     }
 }

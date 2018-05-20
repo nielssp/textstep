@@ -124,7 +124,7 @@ class View extends \Jivoo\View\View
         return $this->getRelativePath($link);
     }
 
-    public function embedResource($path)
+    public function embedResource($type, $path)
     {
         $node = $this->assembler->getSiteMap()->get($path);
         if (!isset($node)) {
@@ -135,7 +135,14 @@ class View extends \Jivoo\View\View
         }
         $resource = $this->assembler->getBuildDir()->get($node['data'][0]);
         $content = $resource->getContents();
-        return '<style type="text/css">' . $content . '</style>';
+        switch ($type) {
+            case 'link':
+                return '<style type="text/css">' . $content . '</style>';
+            case 'script':
+                return '<script type="text/javascript">' . $content . '</script>';
+            default:
+                return '#unknown-type';
+        }
     }
 
     public function url($link = null)
