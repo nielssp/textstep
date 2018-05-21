@@ -27,8 +27,15 @@ use Jivoo\Unicode;
  */
 class Build extends AuthenticatedSnippet
 {
+    private static $targets = ['all', 'content', 'template', 'assemble', 'install'];
+    
     public function post(array $data)
     {
+        $target = 'all';
+        if (isset($data['target']) and in_array($data['target'], self::$targets)) {
+            $target = $data['target'];
+        }
+        
         $content = $this->m->files->get('content');
         $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
@@ -59,34 +66,44 @@ class Build extends AuthenticatedSnippet
         
         $runner = new Runner('build');
 
-        $runner->add(new UnitTask('cc', function () use ($cc, $content, $siteMap, $contentMap) {
-            $cc->compile($content);
-            $siteMap->commit();
-            $contentMap->commit();
-        }, 'Compiling content'));
-        $runner->add(new UnitTask('tc', function () use ($tc, $structure, $siteMap, $contentMap) {
-            $tc->compile($structure);
-            $siteMap->commit();
-            $contentMap->commit();
-        }, 'Compiling templates'));
-        $runner->add(new SiteAssemblerTask($assembler, $installMap, $siteMap), 7);
-        $runner->add(new UnitTask('install', function () use ($installer, $installMap) {
-            foreach ($installMap->getAll('') as $path => $node) {
-                $installer->install($path);
-            }
-        }, 'Installing'));
+        if ($target == 'all' or $target == 'content') {
+            $runner->add(new UnitTask('cc', function () use ($cc, $content, $siteMap, $contentMap) {
+                $cc->compile($content);
+                $siteMap->commit();
+                $contentMap->commit();
+            }, 'Compiling content'));
+        }
+        if ($target == 'all' or $target == 'template') {
+            $runner->add(new UnitTask('tc', function () use ($tc, $structure, $siteMap, $contentMap) {
+                $tc->compile($structure);
+                $siteMap->commit();
+                $contentMap->commit();
+            }, 'Compiling templates'));
+        }
+        if ($target == 'all' or $target == 'assemble') {
+            $runner->add(new SiteAssemblerTask($assembler, $installMap, $siteMap), 7);
+        }
+        if ($target == 'all' or $target == 'install') {
+            $runner->add(new UnitTask('install', function () use ($installer, $installMap) {
+                foreach ($installMap->getAll('') as $path => $node) {
+                    $installer->install($path);
+                }
+            }, 'Installing'));
+        }
         
-        $state = new \Jivoo\Store\SerializedStore($destination->get('.build')->getHostPath());
+        $serviceFile = $destination->get('.build-' . $target);
+        
+        $state = new \Jivoo\Store\SerializedStore($serviceFile->getHostPath());
         $state->touch();
 
-        $this->m->logger->debug('Using state file: ' . $destination->get('.build')->getHostPath());
+        $this->m->logger->debug('Using state file: ' . $serviceFile->getHostPath());
         
         $this->m->session->close();
         
         $service = new Service($this->m->logger, $this->request, $state, $serializer);
-        $service->run($runner, function () use ($destination) {
+        $service->run($runner, function () use ($serviceFile) {
             $this->m->logger->debug('Build done, deleting state');
-            $destination->get('.build')->delete();
+            $serviceFile->delete();
         });
     }
     

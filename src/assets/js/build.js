@@ -13,12 +13,14 @@ var self = null;
 
 var progressBar = null;
 var $statusHistory = null;
+var preview = null;
 
 var doCancel = false;
 
-function build() {
+function build(target) {
+    target = target.replace(/^build-/, '');
     doCancel = false;
-    self.disableAction('build');
+    self.disableAction('build-all');
     self.enableAction('cancel');
     var start = performance.now();
     ui.setProgress(progressBar, 0, 'Building...');
@@ -57,7 +59,7 @@ function build() {
             }
         };
 
-        request.send();
+        request.send('target=' + target);
     };
 
     var done = false;
@@ -78,8 +80,9 @@ function build() {
                         case 'done':
                             updateProgress(100);
                             done = true;
-                            self.enableAction('build');
+                            self.enableAction('build-all');
                             self.disableAction('cancel');
+                            preview.contentWindow.location.reload();
                             return;
                         case 'error':
                             done = true;
@@ -108,7 +111,7 @@ function build() {
 function cancel() {
     doCancel = true;
     BLOGSTEP.post('delete', {path: '/build/.build'}).always(function () {
-        self.enableAction('build');
+        self.enableAction('build-all');
         self.disalbeAction('cancel');
     });
 }
@@ -124,19 +127,28 @@ BLOGSTEP.init('builder', function (app) {
 
     progressBar = app.frame.find('.build-progress')[0];
     $statusHistory = app.frame.find('.build-status-history');
+    preview = app.frame.find('.build-preview')[0];
+    preview.src = BLOGSTEP.PATH + '/api/preview';
 
-    app.defineAction('build', build);
+    app.defineAction('build-all', build);
+    app.defineAction('build-content', build);
+    app.defineAction('build-template', build);
+    app.defineAction('build-assemble', build);
+    app.defineAction('build-install', build);
     app.defineAction('cancel', cancel);
     app.defineAction('clean', clean);
 
     var menu = app.addMenu('Builder');
-    menu.addItem('Build', 'build');
+    menu.addItem('Build', 'build-all');
+    menu.addItem('Preview', function () {
+        preview.src = BLOGSTEP.PATH + '/api/preview';
+    });
     menu.addItem('Cancel', 'cancel');
     menu.addItem('Clean', 'clean');
     menu.addItem('Close', 'close');
 
     app.onOpen = function (app, args) {
-        app.enableAction('build');
+        app.enableAction('build-all');
         app.disableAction('cancel');
     };
 });

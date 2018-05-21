@@ -1,4 +1,4 @@
-<div class="frame" j:import="dist/build.js">
+<div class="frame Build-app" j:import="css/build.css;dist/build.js">
 
     <div class="frame-head">
         <div class="frame-actions">
@@ -13,13 +13,17 @@
     </div>
 
     <div class="frame-body">
-        <div class="frame-content">
-            <form id="build" data-token="{$token}" >
+        <div class="frame-content frame-content-flex">
+            <form data-token="{$token}" >
                 <!--            <div class="field">
                                 <label>Destination</label>
                                 <input type="text" />
                             </div>-->
-                <input type="submit" value="Build" data-action="build"/>
+                <input type="submit" value="Build all" data-action="build-all"/>
+                <input type="submit" value="Compile content" data-action="build-content"/>
+                <input type="submit" value="Compile templates" data-action="build-template"/>
+                <input type="submit" value="Assemble" data-action="build-assemble"/>
+                <input type="submit" value="Install" data-action="build-install"/>
                 <input type="submit" value="Cancel" data-action="cancel" disabled/>
             </form>
 
@@ -30,6 +34,8 @@
             </div>
 
             <textarea readonly="readonly" class="build-status-history"></textarea>
+            
+            <iframe class="build-preview"></iframe>
         </div>
     </div>
 </div>
