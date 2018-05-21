@@ -174,11 +174,12 @@ class Shell
             case 'sa':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $installMap = new Compile\FileSiteMap($this->m->files->get('build/install.json'));
                 $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
                 $filterSet = new Compile\FilterSet();
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
-                $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
+                $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
                 $prefix = '';
                 if (isset($parameters[0])) {
                     $prefix = $parameters[0];
@@ -191,16 +192,16 @@ class Shell
                     $assembler->assemble($path);
                     $i++;
                 }
-                $siteMap->commit();
+                $installMap->commit();
                 break;
             case 'si':
-                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
-                $installer = new Compile\SiteInstaller($this->m->files->get('target'), $siteMap);
+                $installMap = new Compile\FileSiteMap($this->m->files->get('build/install.json'));
+                $installer = new Compile\SiteInstaller($this->m->files->get('target'), $installMap);
                 $prefix = '';
                 if (isset($parameters[0])) {
                     $prefix = $parameters[0];
                 }
-                $paths = array_keys($siteMap->getAll($prefix));
+                $paths = array_keys($installMap->getAll($prefix));
                 $i = 1;
                 $n = count($paths);
                 foreach ($paths as $path) {

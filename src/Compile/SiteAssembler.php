@@ -19,6 +19,11 @@ class SiteAssembler
     /**
      * @var SiteMap
      */
+    private $installMap;
+
+    /**
+     * @var SiteMap
+     */
     private $siteMap;
 
     /**
@@ -40,19 +45,31 @@ class SiteAssembler
      * @var FilterSet
      */
     private $filterSet;
+    
+    private $assetScheme;
+    
+    private $router;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, Content\ContentTree $contentTree, FilterSet $filterSet, \Blogstep\Config\Config $config)
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $installMap, SiteMap $siteMap, Content\ContentTree $contentTree, FilterSet $filterSet, \Blogstep\Config\Config $config)
     {
         $this->buildDir = $buildDir;
+        $this->installMap = $installMap;
         $this->siteMap = $siteMap;
         $this->content = $contentTree;
         $this->config = $config;
         $this->filterSet = $filterSet;
+        $this->assetScheme = new \Jivoo\Http\Route\AssetScheme($buildDir->getHostPath());
+        $this->router = new \Jivoo\Http\Router();
     }
 
     public function getBuildDir()
     {
         return $this->buildDir;
+    }
+
+    public function getInstallMap()
+    {
+        return $this->installMap;
     }
 
     public function getSiteMap()
@@ -73,6 +90,16 @@ class SiteAssembler
     public function getFilterSet()
     {
         return $this->filterSet;
+    }
+    
+    public function getAssetScheme()
+    {
+        return $this->assetScheme;
+    }
+    
+    public function getRouter()
+    {
+        return $this->router;
     }
 
     public function assemble($path)
@@ -95,7 +122,10 @@ class SiteAssembler
                 $html = $this->view->render($template);
                 $target->getParent()->makeDirectory(true);
                 $target->putContents($html);
-                $this->siteMap->add($path, 'copy', [$target->getPath()]);
+                $this->installMap->add($path, 'copy', [$target->getPath()]);
+                break;
+            default:
+                $this->installMap->add($path, $node['handler'], $node['data']);
                 break;
         }
     }

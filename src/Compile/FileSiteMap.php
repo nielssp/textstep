@@ -39,7 +39,10 @@ class FileSiteMap implements SiteMap
 
     public function get($path)
     {
-        return $this->data[$path];
+        if (isset($this->data[$path])) {
+            return $this->data[$path];
+        }
+        return null;
     }
 
     public function getAll($prefix = '', $recursive = true)
