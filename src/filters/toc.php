@@ -17,8 +17,13 @@ $filter = new Filter();
 $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, simple_html_dom $dom) {
     $toc = $dom->find('.toc', 0);
     if (isset($toc)) {
-        $headings = $dom->find('h2, h3, h4, h5, h6');
-        $f = function ($f, &$headings, $prefix) {
+        $fragments = [];
+        if ($toc->hasAttribute('data-headings')) {
+            $headings = $dom->find($toc->getAttribute('data-headings'));
+        } else {
+            $headings = $dom->find('h2, h3, h4, h5, h6');
+        }
+        $f = function ($f, &$headings, &$fragments, $prefix) {
             if (!count($headings)) {
                 return;
             }
@@ -30,7 +35,14 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
                 $number = $prefix . $i;
                 $i++;
                 $title = $heading->innertext;
-                $fragment = preg_replace('/[^-a-z0-9.]/i', '_', $title);
+                $baseFragment = preg_replace('/[^-a-z0-9.]/i', '_', $title);
+                $fragment = $baseFragment;
+                $j = 2;
+                while (isset($fragments[$fragment])) {
+                    $fragment = $baseFragment . '-' . $j;
+                    $j++;
+                }
+                $fragments[$fragment] = true;
                 $heading->id = $fragment;
                 $heading->innertext = $number . ' ' . $heading->innertext;
                 $output .= '<li>';
@@ -42,7 +54,7 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
                 if (count($headings)) {
                     $nextLevel = intval($headings[0]->tag[1]);
                     if ($nextLevel > $level) {
-                        $output .= $f($f, $headings, $number . '.');
+                        $output .= $f($f, $headings, $fragments, $number . '.');
                         if (count($headings)) {
                             $nextLevel = intval($headings[0]->tag[1]);
                         }
@@ -56,7 +68,7 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
             } while (count($headings));
             return $output . '</ol>';
         };
-        $output = $f($f, $headings, '');
+        $output = $f($f, $headings, $fragments, '');
         $toc->innertext = '<h2>Contents</h2>' . $output;
     }
 };

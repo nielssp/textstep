@@ -112,7 +112,7 @@ function cancel() {
     doCancel = true;
     BLOGSTEP.post('delete', {path: '/build/.build'}).always(function () {
         self.enableAction('build-all');
-        self.disalbeAction('cancel');
+        self.disableAction('cancel');
     });
 }
 
