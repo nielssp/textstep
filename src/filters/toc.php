@@ -23,7 +23,15 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
         } else {
             $headings = $dom->find('h2, h3, h4, h5, h6');
         }
-        $f = function ($f, &$headings, &$fragments, $prefix) {
+        if ($toc->hasAttribute('data-list-depth')) {
+          $listDepth = $toc->getAttribute('data-list-depth');
+        } else {
+          $listDepth = 6;
+        }
+        $numberedItems = $toc->hasAttribute('data-numbered-items');
+        $numberedHeadings = $toc->hasAttribute('data-numbered-headings');
+        $fragmentLinks = $toc->hasAttribute('data-fragment-links');
+        $f = function ($f, &$headings, &$fragments, $prefix) use ($listDepth, $numberedItems, $numberedHeadings, $fragmentLinks) {
             if (!count($headings)) {
                 return;
             }
@@ -35,7 +43,7 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
                 $number = $prefix . $i;
                 $i++;
                 $title = $heading->innertext;
-                $baseFragment = preg_replace('/[^-a-z0-9.]/i', '_', $title);
+                $baseFragment = preg_replace('/[^-a-z0-9]/i', '-', strtolower($title));
                 $fragment = $baseFragment;
                 $j = 2;
                 while (isset($fragments[$fragment])) {
@@ -44,17 +52,28 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
                 }
                 $fragments[$fragment] = true;
                 $heading->id = $fragment;
-                $heading->innertext = $number . ' ' . $heading->innertext;
+                if ($numberedHeadings) {
+                    $heading->innertext = $number . ' ' . $heading->innertext;
+                }
+                if ($fragmentLinks) {
+                    $heading->innertext = '<a class="heading-fragment" href="#' . $fragment . '" title="Permalink" aria-hidden>#</a> ' . $heading->innertext;
+                }
                 $output .= '<li>';
                 $output .= '<a href="#' . $fragment . '">';
-//                $output .= '<span class="toc-number">' . $number . '</span>';
-//                $output .= '<span class="toc-heading">' . $title . '</span>';
-                $output .= $title;
+                if ($numberedItems) {
+                    $output .= '<span class="toc-number">' . $number . '</span> ';
+                    $output .= '<span class="toc-heading">' . $title . '</span>';
+                } else {
+                    $output .= $title;
+                }
                 $output .= '</a>';
                 if (count($headings)) {
                     $nextLevel = intval($headings[0]->tag[1]);
                     if ($nextLevel > $level) {
-                        $output .= $f($f, $headings, $fragments, $number . '.');
+                        $sublist .= $f($f, $headings, $fragments, $number . '.');
+                        if ($nextLevel <= $listDepth) {
+                            $output .= $sublist;
+                        }
                         if (count($headings)) {
                             $nextLevel = intval($headings[0]->tag[1]);
                         }

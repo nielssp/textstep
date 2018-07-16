@@ -1,5 +1,9 @@
 {
   "name": "blogstep",
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch"
+  },
   "dependencies": {
     "dragula": "^3.7.2",
     "highlightjs": "^8.7.0",
@@ -9,13 +13,14 @@
     "viewerjs": "^0.5.1"
   },
   "devDependencies": {
-    "babel-core": "^6.24.1",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.0.0",
-    "babel-preset-env": "^1.5.1",
-    "css-loader": "^0.24.0",
-    "extract-text-webpack-plugin": "^2.1.2",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^1.0.0",
+    "extract-text-webpack-plugin": "^4.0.0-beta",
     "file-loader": "^0.9.0",
     "style-loader": "^0.13.2",
-    "webpack": "^3.6.0"
+    "webpack": "^4.0.1",
+    "webpack-cli": "^3.0.8"
   }
 }
