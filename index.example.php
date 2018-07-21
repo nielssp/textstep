@@ -4,7 +4,7 @@ chdir(dirname(__FILE__));
 
 require 'vendor/autoload.php';
 
-$main = new Blogstep\Main('user');
+$main = new Blogstep\Main('dist', 'user');
 
 // Development configuration:
 //$main->config['debug.showExceptions'] = true;

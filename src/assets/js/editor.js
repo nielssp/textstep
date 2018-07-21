@@ -9,11 +9,7 @@ var $ = require('jquery');
 var paths = require('./common/paths');
 var ui = require('./common/ui');
 
-require('highlightjs/styles/solarized_dark.css');
-window.hljs = require('highlightjs/highlight.pack.js');
-require('simplemde/dist/simplemde.min.css');
-
-var SimpleMDE = require('simplemde');
+var SimpleMDE = null;
 
 var self = null;
 
@@ -261,7 +257,7 @@ function resizeView() {
     simplemde.codemirror.refresh();
 }
 
-BLOGSTEP.init('editor', function (app) {
+BLOGSTEP.init('editor', ['libedit'], function (app) {
     self = app;
 
     app.defineAction('save', saveFile);

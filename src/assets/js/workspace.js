@@ -11,6 +11,8 @@ var Cookies = require('js-cookie');
 var ui = require('./common/ui');
 var paths = require('./common/paths');
 
+require('../scss/main.scss');
+
 import Config from './Config';
 
 window.BLOGSTEP = {};

@@ -9,13 +9,7 @@ var $ = require('jquery');
 var paths = require('./common/paths');
 var ui = require('./common/ui');
 
-var CodeMirror = require('codemirror');
-require('codemirror/lib/codemirror.css');
-require('codemirror/mode/php/php');
-require('codemirror/mode/css/css');
-require('codemirror/mode/sass/sass');
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/htmlmixed/htmlmixed');
+var CodeMirror = null;
 
 var self = null;
 
@@ -213,7 +207,7 @@ function resizeView() {
     codemirror.refresh();
 }
 
-BLOGSTEP.init('code-editor', function (app) {
+BLOGSTEP.init('code-editor', ['libedit'], function (app) {
     self = app;
     
     app.defineAction('save', saveFile);

@@ -26,7 +26,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
      */
     private $config;
 
-    public function __construct($userPath)
+    public function __construct($distPath, $userPath)
     {
         \Jivoo\Log\ErrorHandler::getInstance()->register();
 
@@ -35,9 +35,11 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
         $this->m->logger = \Jivoo\Log\ErrorHandler::getInstance()->getLogger();
 
+        $distPath = \Jivoo\Utilities::convertPath($distPath);
         $userPath = \Jivoo\Utilities::convertPath($userPath);
         $this->m->paths = new \Jivoo\Paths(getcwd(), $userPath);
-        $this->m->paths->src = dirname(__FILE__);
+        $this->m->paths->src = dirname(dirname(__FILE__));
+        $this->m->paths->dist = $distPath;
         $this->m->paths->user = $userPath;
 
         $this->m->cache = new \Jivoo\Cache\Cache();
@@ -184,7 +186,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
             // Otherwise prepare to handle a request
 
             // Initialize assets
-            $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('src/assets'), null, true);
+            $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('dist'), null, true);
 
             // Initialize view
             $this->m->view = new \Jivoo\View\View(

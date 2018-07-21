@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <?php $this->disableLayout(); ?><html>
-<head><?php $this->import('css/main.css;dist/init.js;css/icons.css;dist/workspace.js'); ?>
+<head><?php $this->import('apps/workspace.app/main.css;apps/workspace.app/main.js'); ?>
 <meta charset="UTF-8" />
 <title>BLOGSTEP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <?php echo $this->block('meta'); ?>
-<link rel="shortcut icon" href="<?php echo $this->link('asset:img/icon.ico'); ?>" />
+<link rel="shortcut icon" href="<?php echo $this->link('asset:apps/Workspace.app/icon.ico'); ?>" />
 <?php echo $this->resourceBlock("style"); ?>
 </head>
 <body data-path="<?php echo $this->link(''); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">
