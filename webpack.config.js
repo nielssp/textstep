@@ -1,5 +1,47 @@
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = [
+    {
+        name: "workspace.app",
+        mode: "production",
+        entry: "./workspace",
+        context: __dirname + "/src/assets/js",
+        output: {
+            path: __dirname + "/dist/apps/workspace.app/",
+            filename: "main.js"
+        }
+    },
+    {
+        name: "libedit",
+        mode: "production",
+        entry: "./libedit",
+        context: __dirname + "/src/assets/js",
+        output: {
+            path: __dirname + "/dist/lib/",
+            filename: "libedit.js"
+        },
+        node: {
+            fs: "empty"
+        },
+        module: {
+            rules: [
+                {test: /\.css$/, use: ['style-loader', 'css-loader']}
+            ]
+        }
+    },
+    {
+        name: "edit.appp",
+        mode: "production",
+        entry: "./editor",
+        context: __dirname + "/src/assets/js",
+        output: {
+            path: __dirname + "/dist/edit.app/",
+            filename: "main.js"
+        }
+    }
+];
+/*
 module.exports = {
     context: __dirname + "/src/assets/js",
     mode: "production",
@@ -14,7 +56,8 @@ module.exports = {
         "apps/build.app/main": "./build",
         "apps/test.app/main": "./test",
         "apps/workspace.app/main": "./workspace",
-        "lib/libedit": "./libedit"
+        "lib/libedit": "./libedit",
+        "share/theme/theme": "../scss/main.scss"
     },
     devtool: 'source-map',
     output: {
@@ -24,25 +67,14 @@ module.exports = {
     },
     module: {
         rules: [
-          {
-            test: /\.(jpe?g|png|gif|svg)$/i, 
-            use: "file-loader?name=/assets/[name].[ext]"
-          },
-          {
-            test: /\.css$/,
-            use: [
-              process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
-              "css-loader"
-            ]
-          },
-          {
-            test: /\.scss$/,
-            use: [
-              process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
-              "css-loader",
-              "sass-loader"
-            ]
-          }
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i, 
+                use: "file-loader?name=/assets/[name].[ext]"
+            },
+            {
+                test: /\.(css|scss)/,
+                use: ExtractTextPlugin.extract(['css-loader', 'sass-loader'])
+            }
         ]
     },
     node: {
@@ -52,6 +84,9 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: "[name].css",
             chunkFilename: "[id].css"
+        }),
+        new ExtractTextPlugin({
+            filename: '[name].css',
         })
     ]
-};
+};*/
