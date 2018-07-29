@@ -2,13 +2,13 @@
 <?php $this->disableLayout(); ?><html>
 <head><?php $this->import('themes/default/theme.css;icons/default/icons.css;apps/workspace.app/main.js'); ?>
 <meta charset="UTF-8" />
-<title>BLOGSTEP</title>
+<title>TEXTSTEP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <?php echo $this->block('meta'); ?>
 <link rel="shortcut icon" href="<?php echo $this->link('asset:apps/workspace.app/icon.ico'); ?>" />
 <?php echo $this->resourceBlock("style"); ?>
 </head>
-<body data-path="<?php echo $this->link(''); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">
+<body data-server="<?php echo $this->link('path:api'); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">
 <aside id="menu">
 <div id="workspace-menu">
 <header>
@@ -31,37 +31,6 @@
 </div>
 <main>
 </main>
-<div id="login-overlay">
-<div class="frame" id="login-frame">
-<div class="frame-head">
-<div class="frame-title">Log in</div>
-</div>
-<div class="frame-body">
-<div class="frame-content">
-<form method="post" id="login">
-<div class="field">
-<label for="login-username">Username</label>
-<input type="text" name="username" id="login-username" />
-</div>
-<div class="field">
-<label for="login-password">Password</label>
-<input type="password" name="password" id="login-password" />
-</div>
-<div class="field remember">
-<input type="checkbox" name="remember[remember]" value="remember" id="login-remember" />
-<label for="login-remember">Remember</label>
-</div>
-<div class="buttons">
-<button type="submit" title="Log in">
-<span class="icon icon-unlock">
-</span>
-</button>
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
 <?php echo $this->resourceBlock("script"); ?>
 </body>
 </html>

@@ -7,7 +7,7 @@ function app(name) {
     entry['apps/' + name + '.app'] = './' + name;
     return {
         name: name + '.app',
-        mode: 'production',
+        mode: 'development',
         entry: entry,
         context: __dirname + '/src/client',
         output: {

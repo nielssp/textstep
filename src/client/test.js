@@ -41,6 +41,11 @@ Property.prototype.get = function () {
     return this.value;
 };
 
+TEXTSTEP.initApp('test', function (app) {
+    app.onOpen = function (args) {
+    };
+});
+
 BLOGSTEP.init('test', function (app) {
     app.defineAction('test', function () {
         app.frame.find('.header-path').text('activated');

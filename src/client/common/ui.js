@@ -12,7 +12,20 @@ $.ajaxSetup({
     headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
 });
 
-exports.shake = function (el, amount) {
+export function elem(tag, attributes = {}, children = []) {
+    var elem = document.createElement(tag);
+    for (var k in attributes) {
+        if (properties.hasOwnProperty(k)) {
+            elem.setAttribute(k, v);
+        }
+    }
+    for (var i = 0; i < children.length; i++) {
+        elem.appendChild(v[i]);
+    }
+    return elem;
+}
+
+export var shake = function (el, amount) {
     amount = typeof amount === "undefined" ? 10 : amount;
     var dbl = amount * 2;
     return $(el).width($(el).width())
@@ -27,7 +40,7 @@ exports.shake = function (el, amount) {
             });
 };
 
-exports.onLongPress = function(el, callback) {
+export var onLongPress = function(el, callback) {
     var touching = false;
     
     var start = function (e) {
@@ -49,7 +62,7 @@ exports.onLongPress = function(el, callback) {
     });
 };
 
-exports.setProgress = function(el, progress, status) {
+export var setProgress = function(el, progress, status) {
     var bar = el.children[0];
     var label = el.children[1];
     progress = Math.floor(progress);
@@ -65,7 +78,7 @@ exports.setProgress = function(el, progress, status) {
     }
 };
 
-exports.handleLogin = function (done) {
+export var handleLogin = function (done) {
     var path = $('body').data('path').replace(/\/$/, '');
     $('#login').find('input').prop('disabled', false);
     $('#login-frame').show();
@@ -89,7 +102,7 @@ exports.handleLogin = function (done) {
             },
             error: function (xhr) {
                 $('#login').find('input').prop('disabled', false);
-                exports.shake($('#login-frame'));
+                shake($('#login-frame'));
                 $('#login-username').select();
                 $('#login-password').val('');
             },
@@ -99,7 +112,7 @@ exports.handleLogin = function (done) {
     });
 };
 
-exports.handleError = function (event, xhr, settings, thrownError) {
+export var handleError = function (event, xhr, settings, thrownError) {
     var newToken = Cookies.get('csrf_token');
     if (settings.headers['X-Csrf-Token'] !== newToken) {
         $.ajaxSetup({
@@ -116,7 +129,7 @@ exports.handleError = function (event, xhr, settings, thrownError) {
         } else {
             $('#login-password').focus();
         }
-        exports.handleLogin(function () {
+        handleLogin(function () {
             $('#login-overlay').hide();
             $.ajax(settings);
         });
@@ -126,6 +139,6 @@ exports.handleError = function (event, xhr, settings, thrownError) {
     } else {
         alert(xhr.responseText);
     }
-    exports.shake($('main > .frame.active'));
+    shake($('main > .frame.active'));
     console.log(event, xhr, settings, thrownError);
 };
