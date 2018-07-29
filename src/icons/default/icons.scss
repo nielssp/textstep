@@ -1,11 +1,11 @@
 /*
-BlogSTEP 
+TEXTSTEP
 Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
-@import "partials/base";
+@import "../../themes/default/partials/base";
 
 $size32: '.shortcuts, .files-grid, .frame-iconbar';
 $size16: '.files-list';
@@ -14,14 +14,14 @@ $size22: '.frame-toolbar, .login-frame';
 @mixin icon($name) {
     .icon-#{$name} {
         &:before {
-            background-image: url(../img/icons/32/#{$name}.png);
+            background-image: url(32/#{$name}.png);
         }
     }
     
     #{$size16} {
         .icon-#{$name} {
             &:before {
-                background-image: url(../img/icons/16/#{$name}.png);
+                background-image: url(16/#{$name}.png);
             }
         }
     }
@@ -29,7 +29,7 @@ $size22: '.frame-toolbar, .login-frame';
     #{$size22} {
         .icon-#{$name} {
             &:before {
-                background-image: url(../img/icons/22/#{$name}.png);
+                background-image: url(22/#{$name}.png);
             }
         }
     }
@@ -38,14 +38,14 @@ $size22: '.frame-toolbar, .login-frame';
 @mixin filetype($name) {
     .file-#{$name} {
         &:before {
-            background-image: url(../img/icons/32/file-#{$name}.png);
+            background-image: url(32/file-#{$name}.png);
         }
     }
     
     #{$size16} {
         .file-#{$name} {
             &:before {
-                background-image: url(../img/icons/16/file-#{$name}.png);
+                background-image: url(16/file-#{$name}.png);
             }
         }
     }
@@ -54,14 +54,14 @@ $size22: '.frame-toolbar, .login-frame';
 @mixin filetype-generic($name, $class) {
     .file-#{$name} {
         &:before {
-            background-image: url(../img/icons/32/generic-#{$class}.png);
+            background-image: url(32/generic-#{$class}.png);
         }
     }
     
     #{$size16} {
         .file-#{$name} {
             &:before {
-                background-image: url(../img/icons/16/generic-#{$class}.png);
+                background-image: url(16/generic-#{$class}.png);
             }
         }
     }
@@ -69,17 +69,17 @@ $size22: '.frame-toolbar, .login-frame';
 
 .file {
     &:before {
-        background-image: url(../img/icons/32/file-unknown.png);
+        background-image: url(32/file-unknown.png);
     }
     &.file-directory {
         &.active {
             &:before {
-                background-image: url(../img/icons/32/file-directory-open.png);
+                background-image: url(32/file-directory-open.png);
             }
         }
         &.locked {
             &:before {
-                background-image: url(../img/icons/32/file-directory-locked.png);
+                background-image: url(32/file-directory-locked.png);
             }
         }
     }
@@ -88,17 +88,17 @@ $size22: '.frame-toolbar, .login-frame';
 #{$size16} {
     .file {
         &:before {
-            background-image: url(../img/icons/16/file-unknown.png);
+            background-image: url(16/file-unknown.png);
         }
         &.file-directory {
             &.active {
                 &:before {
-                    background-image: url(../img/icons/16/file-directory-open.png);
+                    background-image: url(16/file-directory-open.png);
                 }
             }
             &.locked {
                 &:before {
-                    background-image: url(../img/icons/16/file-directory-locked.png);
+                    background-image: url(16/file-directory-locked.png);
                 }
             }
         }

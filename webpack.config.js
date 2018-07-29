@@ -1,92 +1,98 @@
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = [
-    {
-        name: "workspace.app",
-        mode: "production",
-        entry: "./workspace",
-        context: __dirname + "/src/assets/js",
+function app(name) {
+    var entry = {};
+    entry['apps/' + name + '.app'] = './' + name;
+    return {
+        name: name + '.app',
+        mode: 'production',
+        entry: entry,
+        context: __dirname + '/src/client',
         output: {
-            path: __dirname + "/dist/apps/workspace.app/",
-            filename: "main.js"
-        }
-    },
-    {
-        name: "libedit",
-        mode: "production",
-        entry: "./libedit",
-        context: __dirname + "/src/assets/js",
-        output: {
-            path: __dirname + "/dist/lib/",
-            filename: "libedit.js"
+            path: __dirname + '/dist/',
+            filename: '[name]/main.js'
         },
         node: {
-            fs: "empty"
+            fs: 'empty'
         },
         module: {
             rules: [
-                {test: /\.css$/, use: ['style-loader', 'css-loader']}
+                {
+                    test: /\.s?css$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: 'style-loader',
+                        use: ['css-loader?url=false', 'sass-loader']
+                    })
+                }
             ]
-        }
-    },
-    {
-        name: "edit.appp",
-        mode: "production",
-        entry: "./editor",
-        context: __dirname + "/src/assets/js",
-        output: {
-            path: __dirname + "/dist/edit.app/",
-            filename: "main.js"
-        }
-    }
-];
-/*
-module.exports = {
-    context: __dirname + "/src/assets/js",
-    mode: "production",
-    entry: {
-        "apps/edit.app/main": "./editor",
-        "apps/view.app/main": "./viewer",
-        "apps/play.app/main": "./player",
-        "apps/code.app/main": "./code-editor",
-        "apps/control-panel.app/main": "./control-panel",
-        "apps/files.app/main": "./files",
-        "apps/terminal.app/main": "./terminal",
-        "apps/build.app/main": "./build",
-        "apps/test.app/main": "./test",
-        "apps/workspace.app/main": "./workspace",
-        "lib/libedit": "./libedit",
-        "share/theme/theme": "../scss/main.scss"
-    },
-    devtool: 'source-map',
-    output: {
-        path: __dirname + "/dist/",
-        filename: "[name].js",
-        sourceMapFilename: "[file].map"
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(jpe?g|png|gif|svg)$/i, 
-                use: "file-loader?name=/assets/[name].[ext]"
-            },
-            {
-                test: /\.(css|scss)/,
-                use: ExtractTextPlugin.extract(['css-loader', 'sass-loader'])
-            }
+        },
+        plugins: [
+            new ExtractTextPlugin('[name]/main.css')
         ]
-    },
-    node: {
-        fs: "empty"
-    },
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: "[name].css",
-            chunkFilename: "[id].css"
-        }),
-        new ExtractTextPlugin({
-            filename: '[name].css',
-        })
-    ]
-};*/
+    };
+}
+
+function lib(name) {
+    return Object.assign(app(name), {
+        name: name,
+        entry: './' + name,
+        output: {
+            path: __dirname + '/dist/lib/',
+            filename: name + '.js'
+        }
+    });
+}
+
+function theme(name) {
+    return Object.assign(app(name), {
+        name: name,
+        entry: './theme.js',
+        context: __dirname + '/src/themes/' + name,
+        output: {
+            path: __dirname + '/dist/themes/' + name + '/',
+            filename: 'theme.js'
+        },
+        plugins: [
+            new ExtractTextPlugin('theme.css'),
+            new CopyWebpackPlugin([
+                {from: '**', ignore: ['*.scss', '*.js', '*.css']},
+            ], {})
+        ]
+    });
+}
+
+function icons(name) {
+    return Object.assign(app(name), {
+        name: name,
+        entry: './icons.js',
+        context: __dirname + '/src/icons/' + name,
+        output: {
+            path: __dirname + '/dist/icons/' + name + '/',
+            filename: 'icons.js'
+        },
+        plugins: [
+            new ExtractTextPlugin('icons.css'),
+            new CopyWebpackPlugin([
+                {from: '**', ignore: ['*.scss', '*.js', '*.css']},
+            ], {})
+        ]
+    });
+}
+
+module.exports = [
+    app('workspace'),
+    app('files'),
+    app('edit'),
+    app('code'),
+    app('view'),
+    app('play'),
+    app('build'),
+    app('control-panel'),
+    app('terminal'),
+    app('test'),
+    lib('libedit'),
+    theme('default'),
+    icons('default')
+];
