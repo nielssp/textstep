@@ -197,18 +197,8 @@ App.prototype.init = function () {
         return;
     }
     this.state = 'initializing';
-    this.defineAction('close', this.close);
-    this.bindKey('c-s-c', 'close');
     if (this.onInit !== null) {
         this.onInit(this);
-    }
-    for (var name in this.toolFrames) {
-        if (this.toolFrames.hasOwnProperty(name)) {
-            $('#menu').prepend(this.toolFrames[name]);
-        }
-    }
-    for (var i = 0; i < this.menus.length; i++) {
-        $('#menu').prepend(this.menus[i].frame);
     }
     this.state = 'initialized';
 };
@@ -219,16 +209,6 @@ App.prototype.open = function (args) {
         return;
     }
     this.state = 'opening';
-    this.setTitle(this.title);
-    this.frame.addClass('active').show();
-    for (var i = 0; i < this.menus.length; i++) {
-        this.menus[i].frame.show();
-    }
-    for (var name in this.toolFrames) {
-        if (this.toolFrames.hasOwnProperty(name)) {
-            this.toolFrames[name].show();
-        }
-    }
     if (this.onOpen !== null) {
         try {
             this.onOpen(this, args || {});

@@ -5,9 +5,6 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-
-var $ = require('jquery');
-
 function Property() {
     this.listeners = [];
     this.value = null;
@@ -43,9 +40,11 @@ Property.prototype.get = function () {
 
 TEXTSTEP.initApp('test', function (app) {
     app.onOpen = function (args) {
+        alert('Hello, World!');
     };
 });
 
+/*
 BLOGSTEP.init('test', function (app) {
     app.defineAction('test', function () {
         app.frame.find('.header-path').text('activated');
@@ -125,4 +124,4 @@ BLOGSTEP.init('test', function (app) {
     app.onResize = function () {
         app.frame.find('.header-path').text('resized');
     };
-});
+});*/

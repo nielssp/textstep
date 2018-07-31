@@ -9,6 +9,9 @@
 <?php echo $this->resourceBlock("style"); ?>
 </head>
 <body data-server="<?php echo $this->link('path:api'); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">
+<noscript>
+            JavaScript is required.
+</noscript>
 <?php echo $this->resourceBlock("script"); ?>
 </body>
 </html>

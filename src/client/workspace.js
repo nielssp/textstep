@@ -10,6 +10,7 @@ import * as ui from './common/ui';
 import * as paths from './common/paths';
 import Frame from './common/frame';
 import Menu from './common/menu';
+import App from './common/app';
 import Config from './Config';
 
 window.TEXTSTEP = {};
@@ -150,7 +151,7 @@ TEXTSTEP.requestLogin = function() {
                 loginFrame.formElem.password.disabled = false;
                 loginFrame.formElem.remember.disabled = false;
                 loginFrame.formElem.username.focus();
-                loginFrame.formElem.password.focus();
+                loginFrame.formElem.username.select();
                 loginFrame.formElem.password.value = '';
             });
             return false;
@@ -163,6 +164,17 @@ TEXTSTEP.initApp = function (name, dependencies, init) {
         init = dependencies;
         dependencies = [];
     }
+    if (!apps.hasOwnProperty(name)) {
+        // ???
+        return;
+    }
+    apps[name].state = 'loaded';
+    apps[name].onInit = init;
+    apps[name].init();
+    if (apps[name].deferred !== null) {
+        apps[name].deferred.resolve(apps[name]);
+        apps[name].deferred = null;
+    }
 };
 
 TEXTSTEP.initLib = function (name, dependencies, init) {
@@ -171,6 +183,37 @@ TEXTSTEP.initLib = function (name, dependencies, init) {
         dependencies = [];
     }
 };
+
+TEXTSTEP.run = function (name, args) {
+    return new Promise(function (resolve, reject) {
+        args = args || {};
+        if (apps.hasOwnProperty(name)) {
+        } else {
+            loadApp(name).then(function (app) {
+                app.open(args);
+            });
+        }
+    });
+};
+
+function loadApp(name) {
+    var promise = new Promise(function (resolve, reject) {
+        if (apps.hasOwnProperty(name)) {
+            if (apps[name].deferred === null) {
+                resolve(apps[name]);
+            } else {
+                apps[name].deferred.then(resolve, reject);
+            }
+        } else {
+            apps[name] = new App(name);
+            apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
+            var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/apps/' + name + '.app/main.js';
+            var script = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
+            root.appendChild(script);
+        }
+    });
+    return promise;
+}
 
 function createMainMenu() {
     var list = ui.elem('ul');
@@ -197,6 +240,7 @@ TEXTSTEP.init = function (root) {
         root.appendChild(dock);
         root.appendChild(main);
         ui.byId('workspace-menu').style.display = 'block';
+        TEXTSTEP.run('test');
     });
 };
 
