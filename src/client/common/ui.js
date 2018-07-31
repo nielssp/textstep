@@ -15,14 +15,22 @@ $.ajaxSetup({
 export function elem(tag, attributes = {}, children = []) {
     var elem = document.createElement(tag);
     for (var k in attributes) {
-        if (properties.hasOwnProperty(k)) {
-            elem.setAttribute(k, v);
+        if (attributes.hasOwnProperty(k)) {
+            elem.setAttribute(k, attributes[k]);
         }
     }
     for (var i = 0; i < children.length; i++) {
-        elem.appendChild(v[i]);
+        if (typeof children[i] === 'string') {
+            elem.appendChild(document.createTextNode(children[i]));
+        } else {
+            elem.appendChild(children[i]);
+        }
     }
     return elem;
+}
+
+export function byId(id) {
+    return document.getElementById(id);
 }
 
 export var shake = function (el, amount) {

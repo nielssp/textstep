@@ -1,33 +1,32 @@
 
-function Menu(frame, title) {
-    this.frame = frame;
+import * as ui from './ui';
+
+export default function Menu(parentFrame, title) {
+    this.parentFrame = parentFrame;
     this.title = title;
-    this.frame = $('<div><header></header><nav><ul></ul></div>');
-    this.header = util.elem('header');
-    this.itemList = util.elem('ul');
-    this.frame = util.elem('div', {}, [
+    this.header = ui.elem('header');
+    this.itemList = ui.elem('ul');
+    this.frame = ui.elem('div', {}, [
         this.header,
         util.elem('nav', {}, [this.itemList])
     ]);
-    this.header.text(title);
+    this.header.textContent = title;
 }
 
 Menu.prototype.addItem = function (label, action) {
-    var button = $('<button/>');
-    button.text(label);
+    var button = ui.elem('button', {}, [label]);
     if (typeof action === 'string') {
-        button.attr('data-action', action);
+        button.setAttribute('data-action', action);
     }
     var app = this.app;
-    button.click(function () {
+    button.onclick = function () {
         app.activate(action);
-    });
-    var item = $('<li>');
-    item.append(button);
+    };
+    var item = ui.elem('li', {}, [button]);
     for (var key in this.app.keyMap) {
         if (this.app.keyMap.hasOwnProperty(key) && this.app.keyMap[key] === action) {
-            button.append('<span class="shortcut">' + key + '</span>');
+            button.appendChild(ui.elem('span', {'class': 'shortcut'}, [key]));
         }
     }
-    this.itemList.append(item);
+    this.itemList.appendChild(item);
 };

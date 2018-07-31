@@ -10,7 +10,7 @@ import * as ui from './ui';
 export default function Frame(title) {
     this.title = title;
 
-    this.titleElem = ui.elem('div', {'class': 'frame-title'});
+    this.titleElem = ui.elem('div', {'class': 'frame-title'}, [this.title]);
     this.headElem = ui.elem('div', {'class': 'frame-head'}, [this.titleElem]);
     this.contentElem = ui.elem('div', {'class': 'frame-content'});
     this.bodyElem = ui.elem('div', {'class': 'frame-body'}, [this.contentElem]);

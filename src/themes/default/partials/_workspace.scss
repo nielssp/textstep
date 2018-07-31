@@ -261,10 +261,10 @@ main {
     bottom: 0px;
     z-index: 1000;
     &.login-overlay-dark {
-	background-color: rgba(0, 0, 0, 0.7);
-	& > #login-frame {
-	    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
-	}
+        background-color: rgba(0, 0, 0, 0.7);
+        & > .frame {
+            box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+        }
     }
 }
 
