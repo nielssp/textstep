@@ -39,8 +39,16 @@ Property.prototype.get = function () {
 };
 
 TEXTSTEP.initApp('test', function (app) {
+    var frame = app.createFrame('Test');
+
+    var menu = frame.addMenu('Test menu');
+
     app.onOpen = function (args) {
-        alert('Hello, World!');
+        if (frame.state === 'closed') {
+            frame.open();
+        } else if (frame.state === 'hidden') {
+            frame.show();
+        }
     };
 });
 

@@ -7,6 +7,7 @@
 
 import * as cookies from 'js-cookie';
 import * as ui from './common/ui';
+import * as util from './common/util';
 import * as paths from './common/paths';
 import Frame from './common/frame';
 import Menu from './common/menu';
@@ -15,6 +16,7 @@ import Config from './Config';
 
 window.TEXTSTEP = {};
 TEXTSTEP.cookies = cookies;
+TEXTSTEP.util = ui;
 TEXTSTEP.ui = ui;
 TEXTSTEP.paths = ui;
 
@@ -42,18 +44,6 @@ TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 TEXTSTEP.getToken = function () {
     return cookies.get('csrf_token');
 };
-
-
-function serializeData(data) {
-    var pairs = [];
-    for (var key in data) {
-        if(data.hasOwnProperty(key)) {
-            pairs.push(encodeURIComponent(key) + "=" + encodeURIComponent(data[key]));
-        }
-    }
-    return pairs.join('&');
-}
-
 
 TEXTSTEP.ajax = function(url, method, data, responseType) {
     return new Promise(function (resolve, reject) {
@@ -83,7 +73,7 @@ TEXTSTEP.ajax = function(url, method, data, responseType) {
         };
         xhr.onerror = () => reject(xhr);
         if (typeof data !== 'undefined') {
-            xhr.send(serializeData(data));
+            xhr.send(util.serializeQuery(data));
         } else {
             xhr.send();
         }

@@ -1,3 +1,9 @@
+/*
+ * TEXTSTEP
+ * Copyright (c) 2018 Niels Sonnich Poulsen (http://nielssp.dk)
+ * Licensed under the MIT license.
+ * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+ */
 
 import * as ui from './ui';
 
@@ -8,7 +14,7 @@ export default function Menu(parentFrame, title) {
     this.itemList = ui.elem('ul');
     this.frame = ui.elem('div', {}, [
         this.header,
-        util.elem('nav', {}, [this.itemList])
+        ui.elem('nav', {}, [this.itemList])
     ]);
     this.header.textContent = title;
 }

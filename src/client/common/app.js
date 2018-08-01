@@ -5,182 +5,34 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+import * as util from './util';
+import Frame from './frame';
+
+var skipHistory = false;
+var previousTitle = null;
+
 export default function App(name) {
     this.name = name;
-    this.title = '';
     this.state = 'loading';
+
     this.deferred = null;
+
     this.args = null;
-    this.frame = null;
-    this.head = null;
-    this.body = null;
+
+    this.frames = [];
+
     this.dockFrame = null;
-    this.actions = {};
-    this.actionGroups = {};
-    this.keyMap = {};
-    this.menus = [];
-    this.toolFrames = {};
     this.onInit = null;
     this.onOpen = null;
-    this.onReopen = null;
-    this.onFocus = null;
-    this.onKeydown = null;
-    this.onUnfocus = null;
     this.onClose = null;
-    this.onResize = null;
-    this.isUnsaved = null;
 }
-
-App.prototype.addMenu = function (title) {
-    var menu = new Menu(this, title);
-    this.menus.push(menu);
-    return menu;
-};
-
-App.prototype.alert = function (title, message) {
-    return Dialog.alert(this.body, title, message);
-};
-
-App.prototype.confirm = function (title, message, choices, defaultChoice) {
-    return Dialog.confirm(this.body, title, message, choices, defaultChoice);
-};
-
-App.prototype.prompt = function (title, message, value) {
-    return Dialog.prompt(this.body, title, message, value);
-};
-
-App.prototype.keydown = function (e) {
-    if (e.defaultPrevented || this.isDialogOpen()) {
-        return;
-    }
-    if (this.onKeydown !== null) {
-        if (!this.onKeydown(e)) {
-            return false;
-        }
-    }
-    var key = '';
-    if (e.ctrlKey) {
-        key += 'Ctrl+';
-    }
-    if (e.altKey) {
-        key += 'Alt+';
-    }
-    if (e.shiftKey) {
-        key += 'Shift+';
-    }
-    if (e.metaKey) {
-        key += 'Meta+';
-    }
-    key += e.key.toUpperCase();
-    if (this.keyMap.hasOwnProperty(key)) {
-        e.preventDefault();
-        this.activate(this.keyMap[key]);
-        return false;
-    }
-};
-
-App.prototype.bindKey = function (key, action) {
-    var parts = key.toLowerCase().split(/-|\+/);
-    var e = {ctrlKey: '', altKey: '', shiftKey: ''};
-    var key = parts[parts.length - 1];
-    for (var i = 0; i < parts.length - 1; i++) {
-        switch (parts[i]) {
-            case 'c':
-                e.ctrlKey = 'Ctrl+';
-                break;
-            case 'a':
-                e.altKey = 'Alt+';
-                break;
-            case 's':
-                e.shiftKey = 'Shift+';
-                break;
-            case 'm':
-                e.metaKey = 'Meta+';
-                break;
-        }
-    }
-    key = e.ctrlKey + e.altKey + e.shiftKey + key.toUpperCase();
-    this.keyMap[key] = action;
-};
-
-App.prototype.defineAction = function (name, callback, groups) {
-    var app = this;
-    this.actions[name] = callback;
-    this.frame.find('[data-action="' + name + '"]').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        app.activate(name);
-        return false;
-    });
-    if (typeof groups !== 'undefined') {
-        groups.forEach(function (group) {
-            if (!this.actionGroups.hasOwnProperty(group)) {
-                this.actionGroups[group] = [];
-            }
-            this.actionGroups[group].push(name);
-        }, this);
-    }
-};
-
-App.prototype.activate = function (name) {
-    if (typeof name === 'string') {
-        this.actions[name].apply(this, [name]);
-    } else {
-        name.apply(this);
-    }
-};
-
-App.prototype.isDialogOpen = function () {
-    return this.body.children('.dialog-overlay').length > 0;
-};
-
-App.prototype.enableGroup = function (group) {
-    if (this.actionGroups.hasOwnProperty(group)) {
-        this.actionGroups[group].forEach(this.enableAction, this);
-    }
-};
-
-App.prototype.disableGroup = function (group) {
-    if (this.actionGroups.hasOwnProperty(group)) {
-        this.actionGroups[group].forEach(this.disableAction, this);
-    }
-};
-
-App.prototype.enableAction = function (name) {
-    if (typeof name === 'string') {
-        this.frame.find('[data-action="' + name + '"]').attr('disabled', false);
-        this.menus.forEach(function (menu) {
-            menu.frame.find('[data-action="' + name + '"]').attr('disabled', false);
-        });
-    } else {
-        name.forEach(this.enableAction, this);
-    }
-};
-
-App.prototype.disableAction = function (name) {
-    if (typeof name === 'string') {
-        this.frame.find('[data-action="' + name + '"]').attr('disabled', true);
-        this.menus.forEach(function (menu) {
-            menu.frame.find('[data-action="' + name + '"]').attr('disabled', true);
-        });
-    } else {
-        name.forEach(this.disableAction, this);
-    }
-};
-
-App.prototype.setTitle = function (title) {
-    this.title = title;
-    this.head.find('.frame-title').text(this.title);
-    this.dockFrame.attr('title', this.title);
-    document.title = this.title;
-};
 
 App.prototype.setArgs = function (args) {
     this.args = args;
     if (!skipHistory) {
-        var path = BLOGSTEP.PATH + '/app/' + this.name;
-        if (!$.isEmptyObject(args)) {
-            path += '?' + $.param(args).replace(/%2F/gi, '/');
+        var path = '#' + this.name;
+        if (Object.keys(args).length !== 0) {
+            path += '?' + util.serializeQuery(args).replace(/%2F/gi, '/');
         }
         if (previousTitle !== null) {
             document.title = previousTitle;
@@ -198,7 +50,14 @@ App.prototype.init = function () {
     }
     this.state = 'initializing';
     if (this.onInit !== null) {
-        this.onInit(this);
+        try {
+            this.onInit(this);
+        } catch (e) {
+            console.error(this.name + ': init: exception caught:', e);
+            alert('Could not open application: ' + this.name);
+            this.kill();
+            return;
+        }
     }
     this.state = 'initialized';
 };
@@ -365,5 +224,12 @@ App.prototype.resume = function () {
         this.onResize();
     }
     this.state = 'running';
+};
+
+
+App.prototype.createFrame = function (title) {
+    var frame = new Frame(title):
+    this.frames.push(frame);
+    return frame;
 };
 
