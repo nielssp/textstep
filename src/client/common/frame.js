@@ -46,6 +46,9 @@ Frame.prototype.addMenu = function (title) {
 };
 
 Frame.prototype.alert = function (title, message) {
+    if (this.state === 'closed') {
+        throw 'Frame not open';
+    }
     return Dialog.alert(this.bodyElem, title, message);
 };
 
@@ -181,4 +184,8 @@ Frame.prototype.setTitle = function (title) {
     this.head.find('.frame-title').text(this.title);
     this.dockFrame.attr('title', this.title);
     document.title = this.title;
+};
+
+Frame.prototype.open = function () {
+    TEXTSTEP.openFrame(this);
 };

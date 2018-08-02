@@ -6,8 +6,6 @@
  */
 
 
-var $ = require('jquery');
-
 var self;
 
 function switchPage(page) {

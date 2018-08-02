@@ -6,7 +6,6 @@
  */
 
 
-var $ = require('jquery');
 var ui = require('./common/ui');
 var paths = require('./common/paths');
 var dragula = require('dragula');

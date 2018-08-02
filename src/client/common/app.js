@@ -78,9 +78,6 @@ App.prototype.open = function (args) {
             return;
         }
     }
-    if (this.dockFrame !== null) {
-        $('#dock').append(this.dockFrame);
-    }
     this.setArgs(args);
     this.state = 'running';
 };
@@ -228,7 +225,7 @@ App.prototype.resume = function () {
 
 
 App.prototype.createFrame = function (title) {
-    var frame = new Frame(title):
+    var frame = new Frame(title);
     this.frames.push(frame);
     return frame;
 };

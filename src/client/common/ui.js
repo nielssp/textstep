@@ -1,16 +1,9 @@
 /*
- * BlogSTEP
+ * TEXTSTEP
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
-
-var $ = require('jquery');
-var Cookies = require('js-cookie');
-
-$.ajaxSetup({
-    headers: { 'X-Csrf-Token': Cookies.get('csrf_token') }
-});
 
 export function elem(tag, attributes = {}, children = []) {
     var elem = document.createElement(tag);
@@ -33,19 +26,87 @@ export function byId(id) {
     return document.getElementById(id);
 }
 
-export var shake = function (el, amount) {
+var gaid = 0;
+
+export function animate(element) {
+    var id = gaid++;
+    var queue = [];
+    var previous = null;
+    var animation = {};
+    animation.step = function (time) {
+        if (queue.length === 0) {
+            if (element.getAttribute('data-animation') == id) {
+                element.removeAttribute('data-animation');
+            }
+            return;
+        } else if (previous !== null) {
+            if (!element.hasAttribute('data-animation')) {
+                element.setAttribute('data-animation', id);
+            } else if (element.getAttribute('data-animation') == id) {
+                var delta = time - previous;
+                if (!queue[0](delta)) {
+                    queue.splice(0, 1);
+                }
+            }
+        }
+        previous = time;
+        requestAnimationFrame(animation.step);
+        return animation;
+    };
+    animation.run = function () {
+        requestAnimationFrame(animation.step);
+        return animation;
+    };
+    animation.css = function (property, init, target, duration) {
+        var elapsed = 0;
+        var diff = target - init;
+        queue.push(function (delta) {
+            elapsed += delta;
+            if (elapsed >= duration) {
+                element.style[property] = target + 'px';
+                return false;
+            } else {
+                element.style[property] = (init + diff * elapsed / duration) + 'px';
+                return true;
+            }
+        });
+        return animation;
+    };
+    animation.then = function (callback) {
+        queue.push(function (delta) {
+            callback();
+            return false;
+        });
+        return animation;
+    };
+    return animation;
+}
+
+export var shake = function (element, amount) {
     amount = typeof amount === "undefined" ? 10 : amount;
     var dbl = amount * 2;
-    return $(el).width($(el).width())
-            .animate({marginLeft: '+=' + amount}, 50)
-            .animate({marginLeft: '-=' + dbl}, 50)
-            .animate({marginLeft: '+=' + dbl}, 50)
-            .animate({marginLeft: '-=' + amount}, 50)
-            .queue(function () {
-                $(el).css('width', '')
-                        .css('margin-left', '')
-                        .finish();
-            });
+    // TODO: getComputedStyle() may be a better solution??
+    var rect = element.getBoundingClientRect();
+    animate(element)
+      .then(function () {
+          element.style.position = 'absolute';
+          element.style.left = rect.left + 'px';
+          element.style.top = rect.top + 'px';
+          element.style.marginTop = '0';
+          element.style.marginLeft = '0';
+      })
+      .css('left', rect.left, rect.left + amount, 50)
+      .css('left', rect.left + amount, rect.left - amount, 50)
+      .css('left', rect.left - amount, rect.left + amount, 50)
+      .css('left', rect.left + amount, rect.left, 50)
+      .then(function () {
+          element.style.position = '';
+          element.style.left = '';
+          element.style.top = '';
+          element.style.marginTop = '';
+          element.style.marginLeft = '';
+      })
+      .run();
 };
 
 export var onLongPress = function(el, callback) {
@@ -86,67 +147,3 @@ export var setProgress = function(el, progress, status) {
     }
 };
 
-export var handleLogin = function (done) {
-    var path = $('body').data('path').replace(/\/$/, '');
-    $('#login').find('input').prop('disabled', false);
-    $('#login-frame').show();
-    $('#login').submit(function () {
-        $(this).find('input').prop('disabled', true);
-        $.ajax({
-            url: path,
-            method: 'post',
-            data: {
-                username: $('#login-username').val(),
-                password: $('#login-password').val(),
-                remember: $('#login-remember').is(':checked') ? { remember: 'remember' } : null
-            },
-            success: function () {
-                $('#login-frame').css({overflow: 'hidden', whiteSpace: 'no-wrap'}).animate({width: 0}, function () {
-                    $(this).hide().css({overflow: '', whiteSpace: '', width: ''});
-                    $('#login').off('submit');
-                    $('#login-password').val('');
-                    done();
-                });
-            },
-            error: function (xhr) {
-                $('#login').find('input').prop('disabled', false);
-                shake($('#login-frame'));
-                $('#login-username').select();
-                $('#login-password').val('');
-            },
-            global: false
-        });
-        return false;
-    });
-};
-
-export var handleError = function (event, xhr, settings, thrownError) {
-    var newToken = Cookies.get('csrf_token');
-    if (settings.headers['X-Csrf-Token'] !== newToken) {
-        $.ajaxSetup({
-            headers: { 'X-Csrf-Token': newToken }
-        });
-        settings.headers['X-Csrf-Token'] = newToken;
-        $.ajax(settings);
-        return;
-    }
-    if (xhr.status === 401) {
-        $('#login-overlay').show();
-        if ($('#login-username').val() === '') {
-            $('#login-username').focus();
-        } else {
-            $('#login-password').focus();
-        }
-        handleLogin(function () {
-            $('#login-overlay').hide();
-            $.ajax(settings);
-        });
-        return;
-    } else if (typeof xhr.responseJSON !== 'undefined') {
-        alert(xhr.responseJSON.message);
-    } else {
-        alert(xhr.responseText);
-    }
-    shake($('main > .frame.active'));
-    console.log(event, xhr, settings, thrownError);
-};

@@ -5,7 +5,6 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var $ = require('jquery');
 var paths = require('./common/paths');
 var ui = require('./common/ui');
 

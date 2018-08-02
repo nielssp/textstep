@@ -34,10 +34,9 @@ var loginFrame = null;
 
 var apps = {};
 var libs = {};
-var frames = {};
+var frames = [];
 
-var skipHistory = false;
-var previousTitle = null;
+var focus = null;
 
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
@@ -112,6 +111,7 @@ TEXTSTEP.requestLogin = function() {
             ]);
             loginFrame.contentElem.appendChild(loginFrame.formElem);
             loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.elem]);
+            loginFrame.elem.style.display = '';
             root.appendChild(loginFrame.overlayElem);
         }
         loginFrame.overlayElem.style.display = 'block';
@@ -137,6 +137,7 @@ TEXTSTEP.requestLogin = function() {
                 loginFrame.formElem.onsubmit = null;
                 resolve();
             }, function () {
+                ui.shake(loginFrame.elem);
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
                 loginFrame.formElem.remember.disabled = false;
@@ -196,6 +197,10 @@ function loadApp(name) {
             }
         } else {
             apps[name] = new App(name);
+            apps[name].dockFrame = ui.elem('div', {'class': 'dock-frame'}, [
+                ui.elem('label', {}, [name])
+            ]);
+            dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
             var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/apps/' + name + '.app/main.js';
             var script = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
@@ -204,6 +209,15 @@ function loadApp(name) {
     });
     return promise;
 }
+
+TEXTSTEP.openFrame = function (frame) {
+    if (frame.state === 'closed') {
+        frames.push(frame);
+        main.appendChild(frame.elem);
+        frame.elem.style.display = '';
+        frame.state = 'open';
+    }
+};
 
 function createMainMenu() {
     var list = ui.elem('ul');
