@@ -216,6 +216,15 @@ TEXTSTEP.openFrame = function (frame) {
         main.appendChild(frame.elem);
         frame.elem.style.display = '';
         frame.state = 'open';
+        TEXTSTEP.focusFrame(frame);
+    }
+};
+
+TEXTSTEP.focusFrame = function (frame) {
+    if (frame.state === 'open') {
+        if (focus !== null) {
+        }
+        focus = frame;
     }
 };
 
@@ -237,6 +246,12 @@ function createMainMenu() {
         ])
     ]);
 }
+
+window.onkeydown = function (e) {
+    if (focus !== null) {
+        focus.keydown(e);
+    }
+};
 
 TEXTSTEP.init = function (root) {
     TEXTSTEP.get('who-am-i', {}, 'json').then(function (data) {

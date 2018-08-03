@@ -7,6 +7,7 @@
 
 import * as ui from './ui';
 import Menu from './menu';
+import Dialog from './dialog';
 
 export default function Frame(title) {
     this.title = title;
@@ -24,6 +25,8 @@ export default function Frame(title) {
 
     this.menus = [];
     this.toolFrames = {};
+
+    this.dialogs = [];
 
     this.isUnsaved = null;
 
@@ -115,14 +118,7 @@ Frame.prototype.bindKey = function (key, action) {
 };
 
 Frame.prototype.defineAction = function (name, callback, groups) {
-    var app = this;
     this.actions[name] = callback;
-    this.frame.find('[data-action="' + name + '"]').click(function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        app.activate(name);
-        return false;
-    });
     if (typeof groups !== 'undefined') {
         groups.forEach(function (group) {
             if (!this.actionGroups.hasOwnProperty(group)) {
@@ -142,7 +138,7 @@ Frame.prototype.activate = function (name) {
 };
 
 Frame.prototype.isDialogOpen = function () {
-    return this.body.children('.dialog-overlay').length > 0;
+    return this.dialogs.length > 0;
 };
 
 Frame.prototype.enableGroup = function (group) {
@@ -188,4 +184,8 @@ Frame.prototype.setTitle = function (title) {
 
 Frame.prototype.open = function () {
     TEXTSTEP.openFrame(this);
+};
+
+Frame.prototype.appendChild = function (element) {
+    this.contentElem.appendChild(element);
 };

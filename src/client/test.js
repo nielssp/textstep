@@ -5,6 +5,8 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+var ui = TEXTSTEP.ui;
+
 function Property() {
     this.listeners = [];
     this.value = null;
@@ -40,6 +42,28 @@ Property.prototype.get = function () {
 
 TEXTSTEP.initApp('test', function (app) {
     var frame = app.createFrame('Test');
+
+    frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
+
+    frame.defineAction('alert', function () {
+        frame.alert('Alert', 'Hello, World!');
+    });
+
+    frame.defineAction('confirm', function () {
+        frame.confirm('Confirm', 'Hello, World?', ['Delete', 'No', 'Cancel'], 'Delete').then(function (choice) {
+            frame.alert('Choice:', choice);
+        });;
+    });
+
+    frame.defineAction('prompt', function () {
+        frame.prompt('Prompt', 'Hello, World?', 'default').then(function (choice) {
+            frame.alert('Choice:', choice);
+        });;
+    });
+
+    frame.bindKey('c-a', 'alert');
+    frame.bindKey('c-c', 'confirm');
+    frame.bindKey('c-p', 'prompt');
 
     var menu = frame.addMenu('Test menu');
 
