@@ -5,11 +5,10 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var $ = require('jquery');
-var ui = require('./common/ui');
+var ui = TEXTSTEP.ui;
 
 var self;
-var $terminal;
+var terminal;
 
 var cwd = '/';
 var buffer = '';
@@ -97,27 +96,30 @@ var commands = {
         self.close();
     },
     open: function (args) {
-        BLOGSTEP.open(convertPath(args));
+        TEXTSTEP.open(convertPath(args));
         prompt();
     },
     edit: function (args) {
-        BLOGSTEP.run('code-editor', {path: convertPath(args)});
+        TEXTSTEP.run('code-editor', {path: convertPath(args)});
         prompt();
     },
     run: function (args) {
         args = args.split(' ');
-        BLOGSTEP.run(args[0], args.length > 1 ? { path: convertPath(args[1]) } : {});
-        prompt();
+        TEXTSTEP.run(args[0], args.length > 1 ? { path: convertPath(args[1]) } : {}).catch(function (error) {
+            writeLine(args[0] + ': ' + error);
+        }).finally(function () {
+            prompt();
+        });
     },
     ps: function (args) {
-        var tasks = BLOGSTEP.getTasks();
+        var tasks = TEXTSTEP.getTasks();
         for (var i = 0; i < tasks.length; i++) {
             writeLine(tasks[i].name + ' (' + tasks[i].state + ')');
         }
         prompt();
     },
     kill: function (args) {
-        var tasks = BLOGSTEP.getTasks();
+        var tasks = TEXTSTEP.getTasks();
         for (var i = 0; i < tasks.length; i++) {
             if (tasks[i].name === args) {
                 tasks[i].kill();
@@ -129,23 +131,6 @@ var commands = {
         prompt();
     }
 };
-
-function open(app, args)
-{
-    self = app;
-    buffer = '';
-    exec('who-am-i', {}, function (data) {
-        user = data;
-        if (typeof args.path === 'string') {
-            cwd = args.path;
-        }
-    });
-}
-
-function resume(app)
-{
-    $terminal.focus();
-}
 
 function convertPath(path)
 {
@@ -171,8 +156,8 @@ function convertPath(path)
 
 function flush()
 {
-    $terminal.val(buffer);
-    $terminal[0].scrollTop = $terminal[0].scrollHeight;
+    terminal.value = buffer;
+    terminal.scrollTop = terminal.scrollHeight;
 }
 
 function write(content)
@@ -188,13 +173,14 @@ function writeLine(content)
 
 function readLine(callback)
 {
-    $terminal.attr('readonly', false).focus();
+    terminal.readOnly = false;
+    terminal.focus();
     readCallback = callback;
 }
 
 function exec(command, data, success)
 {
-    BLOGSTEP.post(command, data).done(success).fail(function (xhr) {
+    TEXTSTEP.post(command, data).then(success, function (xhr) {
         if (xhr.status === 404) {
             writeLine(xhr.status + ' ' + command + ': command not found');
         } else if (typeof xhr.responseJSON !== 'undefined') {
@@ -202,7 +188,7 @@ function exec(command, data, success)
         } else {
             writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
         }
-    }).always(prompt);
+    }).finally(prompt);
 }
 
 function prompt()
@@ -233,32 +219,53 @@ function prompt()
     });
 }
 
-BLOGSTEP.init('terminal', function (app) {
-    var menu = app.addMenu('Terminal');
-    menu.addItem('Close', 'close');
-    
-    app.onOpen = open;
-    
-    app.onResume = resume;
-    
-    $terminal = app.frame.find('textarea');
-    
-    $terminal.attr('readonly', true);
+TEXTSTEP.initApp('terminal', function (app) {
+    self = app;
+    var frame = app.createFrame('Terminal');
 
-    $terminal.click(function () {
-        var start = $terminal[0].selectionStart;
-        var end = $terminal[0].selectionEnd;
+    frame.contentElem.className = 'frame-content frame-content-flex';
+
+    terminal = ui.elem('textarea', {'class': 'stretch'});
+    frame.appendChild(terminal);
+    
+    frame.onFocus = function () {
+        terminal.focus();
+    };
+
+    app.dockFrame.innerHTML = '';
+    app.dockFrame.appendChild(TEXTSTEP.getIcon('terminal', 32));
+
+    app.onOpen = function (args) {
+        if (!frame.isOpen) {
+            buffer = '';
+            exec('who-am-i', {}, function (data) {
+                user = data;
+                if (typeof args.path === 'string') {
+                    cwd = args.path;
+                }
+            });
+            frame.open();
+        } else {
+            frame.requestFocus();
+        }
+    };
+
+    terminal.readOnly = true;
+    terminal.onclick = function () {
+        var start = terminal.selectionStart;
+        var end = terminal.selectionEnd;
         if (start === end) {
             if (start < buffer.length) {
-                $terminal[0].selectionStart = $terminal.val().length;
+                terminal.selectionStart = terminal.value.length;
             }
         }
-    });
-    $terminal.keydown(function (e) {
+    };
+    terminal.onkeydown = function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             if (readCallback !== null) {
-                $terminal.attr('readonly', true).blur();
-                var line = $terminal.val().substr(buffer.length);
+                terminal.readOnly = true;
+                terminal.blur();
+                var line = terminal.value.substr(buffer.length);
                 cmdHistory.push(line);
                 buffer += line + '\n';
                 flush();
@@ -275,7 +282,7 @@ BLOGSTEP.init('terminal', function (app) {
                     } else if (cmdHistoryPos > 0) {
                         cmdHistoryPos--;
                     }
-                    $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
+                    terminal.value = buffer + cmdHistory[cmdHistoryPos];
                 }
             }
             return false;
@@ -284,17 +291,17 @@ BLOGSTEP.init('terminal', function (app) {
                 if (cmdHistory.length > 0 && cmdHistoryPos >= 0) {
                     if (cmdHistoryPos < cmdHistory.length - 1) {
                         cmdHistoryPos++;
-                        $terminal.val(buffer + cmdHistory[cmdHistoryPos]);
+                        terminal.value = buffer + cmdHistory[cmdHistoryPos];
                     } else {
                         cmdHistoryPos = -1;
-                        $terminal.val(buffer);
+                        terminal.value = buffer;
                     }
                 }
             }
             return false;
         } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
-            var start = $terminal[0].selectionStart;
-            var end = $terminal[0].selectionEnd;
+            var start = terminal.selectionStart;
+            var end = terminal.selectionEnd;
             if (start === end) {
                 if (start <= buffer.length) {
                     return false;
@@ -302,6 +309,5 @@ BLOGSTEP.init('terminal', function (app) {
             }
         }
         return true;
-    });
-
+    };
 });

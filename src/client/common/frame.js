@@ -10,8 +10,11 @@ import Menu from './menu';
 import Dialog from './dialog';
 
 export default function Frame(title) {
+    this.id = null;
     this.title = title;
-    this.state = 'closed';
+    this.isOpen = false;
+    this.isVisible = false;
+    this.hasFocus = false;
 
     this.titleElem = ui.elem('div', {'class': 'frame-title'}, [this.title]);
     this.headElem = ui.elem('div', {'class': 'frame-head'}, [this.titleElem]);
@@ -35,7 +38,7 @@ export default function Frame(title) {
     this.onShow = null;
     this.onHide = null;
     this.onFocus = null;
-    this.onUnfocus = null;
+    this.onBlur = null;
     this.onKeydown = null;
     this.onResize = null;
 
@@ -49,7 +52,7 @@ Frame.prototype.addMenu = function (title) {
 };
 
 Frame.prototype.alert = function (title, message) {
-    if (this.state === 'closed') {
+    if (!this.isOpen) {
         throw 'Frame not open';
     }
     return Dialog.alert(this.bodyElem, title, message);
@@ -183,7 +186,67 @@ Frame.prototype.setTitle = function (title) {
 };
 
 Frame.prototype.open = function () {
+    if (this.isOpen) {
+        return;
+    }
     TEXTSTEP.openFrame(this);
+    if (this.isOpen) {
+        if (this.onOpen !== null) {
+            this.onOpen();
+        }
+    }
+};
+
+Frame.prototype.close = function () {
+    if (!this.isOpen) {
+        return;
+    }
+    TEXTSTEP.closeFrame(this);
+    if (!this.isOpen) {
+        if (this.onClose !== null) {
+            this.onClose();
+        }
+    }
+};
+
+Frame.prototype.show = function () {
+    if (!this.isOpen || this.isVisible) {
+        return;
+    }
+    this.elem.style.display = '';
+    this.isVisible = true;
+    if (this.onShow !== null) {
+        this.onShow();
+    }
+};
+
+Frame.prototype.hide = function () {
+    if (!this.isVisible) {
+        return;
+    }
+    this.elem.style.display = 'none';
+    this.isVisible = false;
+    if (this.onHide !== null) {
+        this.onHide();
+    }
+};
+
+Frame.prototype.requestFocus = function () {
+    TEXTSTEP.focusFrame(this);
+};
+
+Frame.prototype.receiveFocus = function () {
+    this.hasFocus = true;
+    if (this.onFocus !== null) {
+        this.onFocus();
+    }
+};
+
+Frame.prototype.loseFocus = function () {
+    this.hasFocus = false;
+    if (this.onBlur !== null) {
+        this.onBlur();
+    }
 };
 
 Frame.prototype.appendChild = function (element) {

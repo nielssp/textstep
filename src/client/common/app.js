@@ -35,10 +35,10 @@ App.prototype.setArgs = function (args) {
             path += '?' + util.serializeQuery(args).replace(/%2F/gi, '/');
         }
         if (previousTitle !== null) {
-            document.title = previousTitle;
+            //document.title = previousTitle;
         }
         history.pushState({app: this.name, args: args}, previousTitle, path);
-        document.title = this.title;
+        //document.title = this.title;
         previousTitle = this.title;
     }
 };
@@ -63,7 +63,7 @@ App.prototype.init = function () {
 };
 
 App.prototype.open = function (args) {
-    if (this.state !== 'initialized') {
+    if (this.state !== 'initialized' && this.state !== 'running') {
         console.error(this.name + ': open: unexpected state:', this.state);
         return;
     }
@@ -203,7 +203,6 @@ App.prototype.resume = function () {
         return;
     }
     this.state = 'resuming';
-    this.setTitle(this.title);
     this.frame.addClass('active').show();
     for (var i = 0; i < this.menus.length; i++) {
         this.menus[i].frame.show();

@@ -61,17 +61,22 @@ TEXTSTEP.initApp('test', function (app) {
         });;
     });
 
+    frame.defineAction('terminal', function () {
+        TEXTSTEP.run('terminal');
+    });
+
     frame.bindKey('c-a', 'alert');
     frame.bindKey('c-c', 'confirm');
     frame.bindKey('c-p', 'prompt');
+    frame.bindKey('a-t', 'terminal');
 
     var menu = frame.addMenu('Test menu');
 
     app.onOpen = function (args) {
-        if (frame.state === 'closed') {
+        if (!frame.isOpen) {
             frame.open();
-        } else if (frame.state === 'hidden') {
-            frame.show();
+        } else if (!frame.hasFocus) {
+            frame.requestFocus();
         }
     };
 });

@@ -34,7 +34,7 @@ var loginFrame = null;
 
 var apps = {};
 var libs = {};
-var frames = [];
+var frames = {};
 
 var focus = null;
 
@@ -44,18 +44,31 @@ TEXTSTEP.getToken = function () {
     return cookies.get('csrf_token');
 };
 
-TEXTSTEP.ajax = function(url, method, data, responseType) {
+TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
-        xhr.responseType = responseType;
+        if (responseType !== null) {
+            xhr.responseType = responseType;
+        }
         var token = TEXTSTEP.getToken();
         xhr.setRequestHeader('X-Csrf-Token', token);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.onload = function () {
             if (xhr.status === 200) {
-                resolve(xhr.response);
+                var response;
+                if (responseType === null) {
+                    responseType = xhr.getResponseHeader('Content-Type').toLowerCase();
+                    if (responseType === 'application/json') {
+                        response = JSON.parse(xhr.responseText);
+                    } else {
+                        response = xhr.response;
+                    }
+                } else {
+                    response = xhr.response;
+                }
+                resolve(response);
             } else {
                 var newToken = TEXTSTEP.getToken();
                 if (newToken !== token && xhr.status === 400) {
@@ -71,7 +84,7 @@ TEXTSTEP.ajax = function(url, method, data, responseType) {
             }
         };
         xhr.onerror = () => reject(xhr);
-        if (typeof data !== 'undefined') {
+        if (data !== null) {
             xhr.send(util.serializeQuery(data));
         } else {
             xhr.send();
@@ -79,10 +92,10 @@ TEXTSTEP.ajax = function(url, method, data, responseType) {
     });
 };
 
-TEXTSTEP.get = function (action, data, responseType) {
+TEXTSTEP.get = function (action, data = null, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'get', data, responseType);
 };
-TEXTSTEP.post = function (action, data, responseType) {
+TEXTSTEP.post = function (action, data = null, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'post', data, responseType);
 };
 
@@ -179,10 +192,12 @@ TEXTSTEP.run = function (name, args) {
     return new Promise(function (resolve, reject) {
         args = args || {};
         if (apps.hasOwnProperty(name)) {
+            apps[name].open(args);
+            resolve(apps[name]);
         } else {
             loadApp(name).then(function (app) {
                 app.open(args);
-            });
+            }, reject);
         }
     });
 };
@@ -200,31 +215,72 @@ function loadApp(name) {
             apps[name].dockFrame = ui.elem('div', {'class': 'dock-frame'}, [
                 ui.elem('label', {}, [name])
             ]);
+            apps[name].dockFrame.onmousedown = function (e) {
+                e.preventDefault();
+            };
+            apps[name].dockFrame.onclick = function (e) {
+                TEXTSTEP.run(name);
+            };
             dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
             var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/apps/' + name + '.app/main.js';
             var script = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
+            script.onerror = function () {
+                dock.removeChild(apps[name].dockFrame);
+                root.removeChild(script);
+                delete apps[name];
+                reject('Not found');
+            };
             root.appendChild(script);
         }
     });
     return promise;
 }
 
+TEXTSTEP.getIcon = function (name, size = 32) {
+    // TODO: onerror
+    return ui.elem('img', {
+        src: TEXTSTEP.SERVER + '/download?path=/dist/icons/default/' + size + '/' + name + '.png',
+        width: size,
+        height: size
+    });
+};
+
+var nextFrameId = 0;
+
 TEXTSTEP.openFrame = function (frame) {
-    if (frame.state === 'closed') {
-        frames.push(frame);
+    if (!frame.isOpen) {
+        frame.id = nextFrameId++;
+        frames[frame.id] = frame;
         main.appendChild(frame.elem);
-        frame.elem.style.display = '';
-        frame.state = 'open';
+        frame.isOpen = true;
         TEXTSTEP.focusFrame(frame);
     }
 };
 
+TEXTSTEP.closeFrame = function (frame) {
+    if (frame.isOpen && frame.id !== null) {
+        if (focus === frame) {
+            focus.loseFocus();
+            focus = null;
+            // TODO: focus next frame
+        }
+        frame.isOpen = false;
+        main.removeChild(frame.elem);
+        delete frames[frame.id];
+    }
+};
+
 TEXTSTEP.focusFrame = function (frame) {
-    if (frame.state === 'open') {
+    if (frame.isOpen) {
         if (focus !== null) {
+            focus.loseFocus();
+            focus.hide();
         }
         focus = frame;
+        focus.show();
+        focus.receiveFocus();
+        document.title = frame.title;
     }
 };
 
