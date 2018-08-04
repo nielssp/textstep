@@ -12,13 +12,14 @@ import * as paths from './common/paths';
 import Frame from './common/frame';
 import Menu from './common/menu';
 import App from './common/app';
+import Lib from './common/lib';
 import Config from './Config';
 
 window.TEXTSTEP = {};
 TEXTSTEP.cookies = cookies;
-TEXTSTEP.util = ui;
+TEXTSTEP.util = util;
 TEXTSTEP.ui = ui;
-TEXTSTEP.paths = ui;
+TEXTSTEP.paths = paths;
 
 TEXTSTEP.config = new Config(function (keys) {
     return TEXTSTEP.get('get-conf', { keys: keys });
@@ -39,6 +40,8 @@ var frames = {};
 var focus = null;
 
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
+
+TEXTSTEP.TIMEOUT = 10000;
 
 TEXTSTEP.getToken = function () {
     return cookies.get('csrf_token');
@@ -93,7 +96,15 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
 };
 
 TEXTSTEP.get = function (action, data = null, responseType = null) {
-    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'get', data, responseType);
+    if (data !== null) {
+        var query = util.serializeQuery(data);
+        if (action.indexOf('?') < 0) {
+            action += '?' + query;
+        } else {
+            action += '&' + query;
+        }
+    }
+    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'get', null, responseType);
 };
 TEXTSTEP.post = function (action, data = null, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'post', data, responseType);
@@ -172,13 +183,28 @@ TEXTSTEP.initApp = function (name, dependencies, init) {
         // ???
         return;
     }
-    apps[name].state = 'loaded';
-    apps[name].onInit = init;
-    apps[name].init();
-    if (apps[name].deferred !== null) {
-        apps[name].deferred.resolve(apps[name]);
-        apps[name].deferred = null;
+    var promises = [];
+    for (var i = 0; i < dependencies.length; i++) {
+        promises.push(loadLib(dependencies[i]));
     }
+    Promise.all(promises).then(function (dependencies) {
+        for (var i = 0; i < dependencies.length; i++) {
+            apps[name].libs[dependencies[i].name] = dependencies[i];
+        }
+        apps[name].state = 'loaded';
+        apps[name].onInit = init;
+        apps[name].init();
+        if (apps[name].deferred !== null) {
+            apps[name].deferred.resolve(apps[name]);
+            apps[name].deferred = null;
+        }
+    }).catch(function (error) {
+        if (apps[name].deferred !== null) {
+            apps[name].deferred.reject(error);
+            apps[name].deferred = null;
+        }
+        unloadApp(name);
+    });
 };
 
 TEXTSTEP.initLib = function (name, dependencies, init) {
@@ -186,18 +212,50 @@ TEXTSTEP.initLib = function (name, dependencies, init) {
         init = dependencies;
         dependencies = [];
     }
+    if (!libs.hasOwnProperty(name)) {
+        // ???
+        return;
+    }
+    var promises = [];
+    for (var i = 0; i < dependencies.length; i++) {
+        promises.push(loadLib(dependencies[i])); }
+    Promise.all(promises).then(function (dependencies) {
+        for (var i = 0; i < dependencies.length; i++) {
+            libs[name].libs[dependencies[i].name] = dependencies[i];
+        }
+        libs[name].state = 'loaded';
+        libs[name].onInit = init;
+        libs[name].init();
+        if (libs[name].deferred !== null) {
+            libs[name].deferred.resolve(libs[name]);
+            libs[name].deferred = null;
+        }
+    }).catch(function (error) {
+        if (libs[name].deferred !== null) {
+            libs[name].deferred.reject(error);
+            libs[name].deferred = null;
+        }
+        delete libs[name];
+    });
 };
 
 TEXTSTEP.run = function (name, args) {
     return new Promise(function (resolve, reject) {
         args = args || {};
         if (apps.hasOwnProperty(name)) {
-            apps[name].open(args);
-            resolve(apps[name]);
+            if (apps[name].state === 'initialized') {
+                dock.appendChild(apps[name].dockFrame);
+            }
+            try {
+                apps[name].open(args);
+                resolve(apps[name]);
+            } catch (e) {
+                reject(e);
+            }
         } else {
             loadApp(name).then(function (app) {
                 app.open(args);
-            }, reject);
+            }).catch(reject);
         }
     });
 };
@@ -224,18 +282,73 @@ function loadApp(name) {
             dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
             var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/apps/' + name + '.app/main.js';
-            var script = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
-            script.onerror = function () {
+            apps[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
+            apps[name].scriptElem.onerror = function () {
                 dock.removeChild(apps[name].dockFrame);
-                root.removeChild(script);
-                delete apps[name];
+                unloadApp(name);
                 reject('Not found');
             };
-            root.appendChild(script);
+            apps[name].timeout = setTimeout(function () {
+                if (apps.hasOwnProperty(name)) {
+                    if (apps[name].state === 'loading') {
+                        unloadApp(name);
+                        reject(name + ': Timeout');
+                    }
+                }
+            }, TEXTSTEP.TIMEOUT);
+            root.appendChild(apps[name].scriptElem);
         }
     });
     return promise;
 }
+
+function unloadApp(name) {
+    if (apps.hasOwnProperty(name)) {
+        apps[name].kill();
+        root.removeChild(apps[name].scriptElem);
+        delete(apps[name]);
+    }
+}
+
+function loadLib(name) {
+    var promise = new Promise(function (resolve, reject) {
+        if (libs.hasOwnProperty(name)) {
+            if (libs[name].deferred === null) {
+                resolve(libs[name]);
+            } else {
+                libs[name].deferred.then(resolve, reject);
+            }
+        } else {
+            libs[name] = new Lib(name);
+            libs[name].deferred = {promise: promise, resolve: resolve, reject: reject};
+            var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/lib/' + name + '.js';
+            libs[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
+            libs[name].scriptElem.onerror = function () {
+                root.removeChild(script);
+                delete libs[name];
+                reject(name + 'Not found');
+            };
+            libs[name].timeout = setTimeout(function () {
+                if (libs.hasOwnProperty(name)) {
+                    if (libs[name].state === 'loading') {
+                        unloadLib(name);
+                        reject(name + ': Timeout');
+                    }
+                }
+            }, TEXTSTEP.TIMEOUT);
+            root.appendChild(libs[name].scriptElem);
+        }
+    });
+    return promise;
+}
+
+function unloadLib(name) {
+    if (libs.hasOwnProperty(name)) {
+        root.removeChild(libs[name].scriptElem);
+        delete(libs[name]);
+    }
+}
+
 
 TEXTSTEP.getIcon = function (name, size = 32) {
     // TODO: onerror
@@ -253,6 +366,14 @@ TEXTSTEP.openFrame = function (frame) {
         frame.id = nextFrameId++;
         frames[frame.id] = frame;
         main.appendChild(frame.elem);
+        for (var tool in frame.toolFrames) {
+            if (frame.toolFrames.hasOwnProperty(tool)) {
+                menu.insertBefore(frame.toolFrames[tool].elem, menu.childNodes[0]);
+            }
+        }
+        for (var i = 0; i < frame.menus.length; i++) {
+            menu.insertBefore(frame.menus[i].elem, menu.childNodes[0]);
+        }
         frame.isOpen = true;
         TEXTSTEP.focusFrame(frame);
     }
@@ -268,6 +389,14 @@ TEXTSTEP.closeFrame = function (frame) {
         frame.isOpen = false;
         main.removeChild(frame.elem);
         delete frames[frame.id];
+        for (var i = 0; i < frame.menus.length; i++) {
+            menu.removeChild(frame.menus[i].elem);
+        }
+        for (var tool in frame.toolFrames) {
+            if (frame.toolFrames.hasOwnProperty(tool)) {
+                menu.removeChild(frame.toolFrames[tool].elem);
+            }
+        }
     }
 };
 
@@ -282,6 +411,10 @@ TEXTSTEP.focusFrame = function (frame) {
         focus.receiveFocus();
         document.title = frame.title;
     }
+};
+
+TEXTSTEP.getTasks = function () {
+    return Object.values(apps);
 };
 
 function createMainMenu() {

@@ -7,6 +7,7 @@
 
 import * as ui from './ui';
 import Menu from './menu';
+import ToolFrame from './toolframe';
 import Dialog from './dialog';
 
 export default function Frame(title) {
@@ -49,6 +50,12 @@ Frame.prototype.addMenu = function (title) {
     var menu = new Menu(this, title);
     this.menus.push(menu);
     return menu;
+};
+
+Frame.prototype.createToolFrame = function (name, title) {
+    var toolFrame = new ToolFrame(title);
+    this.toolFrames[name] = toolFrame;
+    return toolFrame;
 };
 
 Frame.prototype.alert = function (title, message) {
@@ -180,9 +187,7 @@ Frame.prototype.disableAction = function (name) {
 
 Frame.prototype.setTitle = function (title) {
     this.title = title;
-    this.head.find('.frame-title').text(this.title);
-    this.dockFrame.attr('title', this.title);
-    document.title = this.title;
+    this.titleElem.textContent = this.title;
 };
 
 Frame.prototype.open = function () {
@@ -214,6 +219,14 @@ Frame.prototype.show = function () {
         return;
     }
     this.elem.style.display = '';
+    for (var i = 0; i < this.menus.length; i++) {
+        this.menus[i].show();
+    }
+    for (var tool in this.toolFrames) {
+        if (this.toolFrames.hasOwnProperty(tool)) {
+            this.toolFrames[tool].show();
+        }
+    }
     this.isVisible = true;
     if (this.onShow !== null) {
         this.onShow();
@@ -225,6 +238,14 @@ Frame.prototype.hide = function () {
         return;
     }
     this.elem.style.display = 'none';
+    for (var i = 0; i < this.menus.length; i++) {
+        this.menus[i].hide();
+    }
+    for (var tool in this.toolFrames) {
+        if (this.toolFrames.hasOwnProperty(tool)) {
+            this.toolFrames[tool].hide();
+        }
+    }
     this.isVisible = false;
     if (this.onHide !== null) {
         this.onHide();

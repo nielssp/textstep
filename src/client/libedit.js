@@ -16,3 +16,10 @@ require('codemirror/mode/css/css');
 require('codemirror/mode/sass/sass');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/htmlmixed/htmlmixed');
+
+TEXTSTEP.initLib('libedit', function (lib) {
+    lib.export({
+        SimpleMDE: SimpleMDE,
+        CodeMirror: CodeMirror
+    });
+});

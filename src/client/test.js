@@ -40,7 +40,9 @@ Property.prototype.get = function () {
     return this.value;
 };
 
-TEXTSTEP.initApp('test', function (app) {
+TEXTSTEP.initApp('test', ['libtest'], function (app) {
+    app.require('libtest').test();
+
     var frame = app.createFrame('Test');
 
     frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
@@ -65,12 +67,16 @@ TEXTSTEP.initApp('test', function (app) {
         TEXTSTEP.run('terminal');
     });
 
-    frame.bindKey('c-a', 'alert');
-    frame.bindKey('c-c', 'confirm');
-    frame.bindKey('c-p', 'prompt');
+    frame.bindKey('a-a', 'alert');
+    frame.bindKey('a-c', 'confirm');
+    frame.bindKey('a-p', 'prompt');
     frame.bindKey('a-t', 'terminal');
 
     var menu = frame.addMenu('Test menu');
+    menu.addItem('Alert', 'alert');
+    menu.addItem('Confirm', 'confirm');
+    menu.addItem('Prompt', 'prompt');
+    menu.addItem('Open terminal', 'terminal');
 
     app.onOpen = function (args) {
         if (!frame.isOpen) {

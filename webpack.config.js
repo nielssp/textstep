@@ -21,16 +21,10 @@ function app(name) {
             rules: [
                 {
                     test: /\.s?css$/,
-                    use: ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: ['css-loader?url=false', 'sass-loader']
-                    })
+                    use: ['style-loader', 'css-loader?url=false', 'sass-loader']
                 }
             ]
-        },
-        plugins: [
-            new ExtractTextPlugin('[name]/main.css')
-        ]
+        }
     };
 }
 
@@ -41,7 +35,10 @@ function lib(name) {
         output: {
             path: __dirname + '/dist/lib/',
             filename: name + '.js'
-        }
+        },
+        plugins: [
+            new ExtractTextPlugin('[name]/main.css')
+        ]
     });
 }
 
@@ -53,6 +50,17 @@ function theme(name) {
         output: {
             path: __dirname + '/dist/themes/' + name + '/',
             filename: 'theme.js'
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.s?css$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: 'style-loader',
+                        use: ['css-loader?url=false', 'sass-loader']
+                    })
+                }
+            ]
         },
         plugins: [
             new ExtractTextPlugin('theme.css'),
@@ -71,6 +79,17 @@ function icons(name) {
         output: {
             path: __dirname + '/dist/icons/' + name + '/',
             filename: 'icons.js'
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.s?css$/,
+                    use: ExtractTextPlugin.extract({
+                        fallback: 'style-loader',
+                        use: ['css-loader?url=false', 'sass-loader']
+                    })
+                }
+            ]
         },
         plugins: [
             new ExtractTextPlugin('icons.css'),
@@ -93,6 +112,7 @@ module.exports = [
     app('terminal'),
     app('test'),
     lib('libedit'),
+    lib('libtest'),
     theme('default'),
     icons('default')
 ];

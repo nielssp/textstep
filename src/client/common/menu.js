@@ -12,7 +12,7 @@ export default function Menu(parentFrame, title) {
     this.title = title;
     this.header = ui.elem('header');
     this.itemList = ui.elem('ul');
-    this.frame = ui.elem('div', {}, [
+    this.elem = ui.elem('div', {}, [
         this.header,
         ui.elem('nav', {}, [this.itemList])
     ]);
@@ -24,15 +24,23 @@ Menu.prototype.addItem = function (label, action) {
     if (typeof action === 'string') {
         button.setAttribute('data-action', action);
     }
-    var app = this.app;
+    let frame = this.parentFrame;
     button.onclick = function () {
-        app.activate(action);
+        frame.activate(action);
     };
     var item = ui.elem('li', {}, [button]);
-    for (var key in this.app.keyMap) {
-        if (this.app.keyMap.hasOwnProperty(key) && this.app.keyMap[key] === action) {
+    for (var key in frame.keyMap) {
+        if (frame.keyMap.hasOwnProperty(key) && frame.keyMap[key] === action) {
             button.appendChild(ui.elem('span', {'class': 'shortcut'}, [key]));
         }
     }
     this.itemList.appendChild(item);
+};
+
+Menu.prototype.show = function () {
+    this.elem.style.display = '';
+};
+
+Menu.prototype.hide = function () {
+    this.elem.style.display = 'none';
 };

@@ -100,7 +100,7 @@ var commands = {
         prompt();
     },
     edit: function (args) {
-        TEXTSTEP.run('code-editor', {path: convertPath(args)});
+        TEXTSTEP.run('code', {path: convertPath(args)});
         prompt();
     },
     run: function (args) {

@@ -19,6 +19,8 @@ export default function App(name) {
 
     this.args = null;
 
+    this.libs = {};
+
     this.frames = [];
 
     this.dockFrame = null;
@@ -26,6 +28,10 @@ export default function App(name) {
     this.onOpen = null;
     this.onClose = null;
 }
+
+App.prototype.require = function (name) {
+    return this.libs[name].module;
+};
 
 App.prototype.setArgs = function (args) {
     this.args = args;
@@ -54,9 +60,7 @@ App.prototype.init = function () {
             this.onInit(this);
         } catch (e) {
             console.error(this.name + ': init: exception caught:', e);
-            alert('Could not open application: ' + this.name);
-            this.kill();
-            return;
+            throw e;
         }
     }
     this.state = 'initialized';
@@ -70,15 +74,12 @@ App.prototype.open = function (args) {
     this.state = 'opening';
     if (this.onOpen !== null) {
         try {
-            this.onOpen(this, args || {});
+            this.onOpen(args || {});
         } catch (e) {
             console.error(this.name + ': open: exception caught:', e);
-            alert('Could not open application: ' + this.name);
-            this.kill();
-            return;
+            throw e;
         }
     }
-    this.setArgs(args);
     this.state = 'running';
 };
 
@@ -86,29 +87,18 @@ App.prototype.kill = function () {
     this.state = 'closing';
     if (this.onClose !== null) {
         try {
-            this.onClose(this);
+            this.onClose();
         } catch (e) {
         }
     }
-    this.frame.removeClass('active').hide();
-    for (var i = 0; i < this.menus.length; i++) {
-        this.menus[i].frame.hide();
-    }
-    for (var name in this.toolFrames) {
-        if (this.toolFrames.hasOwnProperty(name)) {
-            this.toolFrames[name].hide();
-        }
-    }
-    if (running === this) {
-        if (tasks.length > 0) {
-            running = tasks.pop();
-            running.resume();
-        } else {
-            running = null;
+    for (var i = 0; i < this.frames.length; i++) {
+        try {
+            this.frames[i].close();
+        } catch (e) {
         }
     }
     if (this.dockFrame !== null) {
-        this.dockFrame.detach();
+        this.dockFrame.parentNode.removeChild(this.dockFrame);
     }
     this.state = 'initialized';
 };
@@ -120,31 +110,17 @@ App.prototype.close = function (action) {
     }
     this.state = 'closing';
     if (this.onClose !== null) {
-        var ok = this.onClose(this, action);
+        var ok = this.onClose(action);
         if (ok === false) {
             this.state = 'running';
             return false;
         }
     }
-    this.frame.removeClass('active').hide();
-    for (var i = 0; i < this.menus.length; i++) {
-        this.menus[i].frame.hide();
-    }
-    for (var name in this.toolFrames) {
-        if (this.toolFrames.hasOwnProperty(name)) {
-            this.toolFrames[name].hide();
-        }
-    }
-    if (running === this) {
-        if (tasks.length > 0) {
-            running = tasks.pop();
-            running.resume();
-        } else {
-            running = null;
-        }
+    for (var i = 0; i < this.frames.length; i++) {
+        this.frames[i].close();
     }
     if (this.dockFrame !== null) {
-        this.dockFrame.detach();
+        this.dockFrame.parentNode.removeChild(this.dockFrame);
     }
     this.state = 'initialized';
     return true;
@@ -167,7 +143,7 @@ App.prototype.reopen = function (args) {
     } else {
         this.state = 'closing';
         if (this.onClose !== null) {
-            this.onClose(this);
+            this.onClose();
         }
         this.state = 'initialized';
         this.open(args);

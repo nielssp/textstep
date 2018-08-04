@@ -1,16 +1,20 @@
 /*
- * BlogSTEP 
+ * TEXTSTEP
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var paths = require('./common/paths');
-var ui = require('./common/ui');
+var paths = TEXTSTEP.paths;
+var ui = TEXTSTEP.ui;
 
 var CodeMirror = null;
 
 var self = null;
+
+var frame = null;
+
+var textarea = null;
 
 var current = null;
 
@@ -20,14 +24,12 @@ var bufferPanel = null;
 
 var codemirror = null;
 
-
 function createBuffer(path) {
-    var item = $('<a class="file file-md">');
-    item.text(paths.fileName(path));
-    item.click(function () {
-        reopen(self, {path: path});
-    });
-    bufferPanel.append(item);
+    var item = ui.elem('a', {'class': 'file file-md'}, [paths.fileName(path)]);
+    item.onclick = function () {
+        reopen({path: path});
+    };
+    bufferPanel.appendChild(item);
     var buffer = {
         path: path,
         name: paths.fileName(path),
@@ -40,11 +42,11 @@ function createBuffer(path) {
     };
     buffers[path] = buffer;
     if (current !== null) {
-        current.item.removeClass('active');
+        current.item.className = 'file file-md';
     }
     current = buffer;
-    current.item.addClass('active');
-    BLOGSTEP.get('download', {path: path}, 'text').done(function (data) {
+    current.item.className = 'file file-md active';
+    TEXTSTEP.get('download', {path: path}, 'text').then(function (data) {
         buffer.data = data;
         if (current === buffer) {
             openBuffer(path);
@@ -55,10 +57,10 @@ function createBuffer(path) {
 function openBuffer(path) {
     if (buffers.hasOwnProperty(path)) {
         if (current !== null) {
-            current.item.removeClass('active');
+            current.item.className = 'file file-md';
         }
         current = buffers[path];
-        current.item.addClass('active');
+        current.item.className = 'file file-md active';
         if (current.data !== null) {
             self.setArgs({ path: path });
             var data = current.data;
@@ -88,34 +90,35 @@ function openBuffer(path) {
                 codemirror.clearHistory();
             }
             if (current.unsaved) {
-                self.setTitle(current.path + ' (*) – Code Editor');
+                frame.setTitle(current.path + ' (*) – Code Editor');
             } else {
-                self.setTitle(current.path + ' – Code Editor');
+                frame.setTitle(current.path + ' – Code Editor');
             }
         } else {
-            self.setTitle(current.path + ' (...) – Code Editor');
+            frame.setTitle(current.path + ' (...) – Code Editor');
         }
         return true;
     }
     return false;
 }
 
-function open(app, args) {
+function open(args) {
     var path = args.path;
-    app.frame.find('textarea').val('').focus();
-    app.setTitle(path + ' (...) – Code editor');
+    textarea.value = '';
+    textarea.focus();
+    frame.setTitle(path + ' (...) – Code editor');
     
-    codemirror = CodeMirror.fromTextArea(app.frame.find('textarea')[0], {
+    codemirror = CodeMirror.fromTextArea(textarea, {
         lineNumbers: true
     });
 
     codemirror.on('changes', function () {
         if (current !== null && current.data !== null) {
             current.unsaved = true;
-            current.item.text(current.name + ' (*)');
+            current.item.textContent = current.name + ' (*)';
             current.data = codemirror.getValue();
             current.history = codemirror.getHistory();
-            app.setTitle(current.path + ' (*) – Code Editor');
+            frame.setTitle(current.path + ' (*) – Code Editor');
         }
     });
     
@@ -123,10 +126,10 @@ function open(app, args) {
 }
 
 
-function reopen(app, args) {
+function reopen(args) {
     var path = args.path;
-    app.setTitle(path + ' (...) – Code Editor');
-    app.frame.find('textarea').val('');
+    frame.setTitle(path + ' (...) – Code Editor');
+    textarea.value = '';
 
     if (!openBuffer(path)) {
         createBuffer(path);
@@ -150,18 +153,18 @@ function close() {
     codemirror.toTextArea();
     codemirror = null;
     buffers = [];
-    bufferPanel.empty();
+    bufferPanel.innerHTML = '';
     return true;
 }
 
 function saveFile() {
     if (codemirror !== null && current !== null) {
         var buffer = current;
-        BLOGSTEP.post('write', {path: buffer.path, data: buffer.data}).done(function () {
+        TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
             buffer.unsaved = false;
-            buffer.item.text(buffer.name);
+            buffer.item.textContent = buffer.name;
             if (current === buffer) {
-                self.setTitle(current.path + ' – Code Editor');
+                frame.setTitle(current.path + ' – Code Editor');
             }
         });
     }
@@ -206,26 +209,44 @@ function resizeView() {
     codemirror.refresh();
 }
 
-BLOGSTEP.init('code-editor', ['libedit'], function (app) {
+TEXTSTEP.initApp('code', ['libedit'], function (app) {
     self = app;
+    CodeMirror = app.require('libedit').CodeMirror;
+
+    frame = self.createFrame('Code');
+
+    textarea = ui.elem('textarea');
+    frame.appendChild(textarea);
+
+    bufferPanel = ui.elem('div', {'class': 'files-list'});
+    var bufferTool = frame.createToolFrame('buffers', 'Buffers');
+    bufferTool.appendChild(ui.elem('div', {'class': 'files-panel'}, [bufferPanel]));
+
+    frame.defineAction('save', saveFile);
+    frame.defineAction('new', newFile);
+    frame.defineAction('close-buffer', closeBuffer);
     
-    app.defineAction('save', saveFile);
-    app.defineAction('new', newFile);
-    app.defineAction('close-buffer', closeBuffer);
+    frame.bindKey('c-s', 'save');
     
-    app.bindKey('c-s', 'save');
-    
-    var menu = app.addMenu('Code Editor');
+    var menu = frame.addMenu('Code');
     menu.addItem('New', 'new');
     menu.addItem('Save', 'save');
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
     
-    bufferPanel = app.toolFrames.buffers.find('.files-list');
-    
-    app.onOpen = open;
-    app.onReopen = reopen;
-    app.onClose = close;
-    app.onResize = resizeView;
-    app.isUnsaved = isUnsaved;
+    frame.onClose = close;
+    frame.onResize = resizeView;
+    frame.isUnsaved = isUnsaved;
+
+    self.onOpen = function (args) {
+        if (!frame.isOpen) {
+            frame.open();
+            open(args);
+        } else {
+            frame.requestFocus();
+            if (args.hasOwnProperty('path')) {
+                reopen(args);
+            }
+        }
+    };
 });
