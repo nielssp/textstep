@@ -255,6 +255,7 @@ TEXTSTEP.run = function (name, args) {
         } else {
             loadApp(name).then(function (app) {
                 app.open(args);
+                resolve(app);
             }).catch(reject);
         }
     });
@@ -439,6 +440,36 @@ function createMainMenu() {
 window.onkeydown = function (e) {
     if (focus !== null) {
         focus.keydown(e);
+    }
+};
+
+window.onresize = function () {
+    for (var frame in frames) {
+        if (frames.hasOwnProperty(frame)) {
+            frames[frame].resized();
+        }
+    }
+};
+
+window.onpopstate = function (e) {
+    if (e.state !== null) {
+        skipHistory = true;
+        TEXTSTEP.run(e.state.app, e.state.args);
+        skipHistory = false;
+    }
+};
+
+window.onbeforeunload = function (event) {
+    for (var name in apps) {
+        if (apps.hasOwnProperty(name) && apps[name].state === 'running') {
+            var frame = apps[name].getUnsavedFrame();
+            if (frame !== null) {
+                if (!frame.hasFocus) {
+                    frame.requestFocus();
+                }
+                return 'Unsaved data in: ' + frame.title;
+            }
+        }
     }
 };
 

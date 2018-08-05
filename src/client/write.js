@@ -1,32 +1,29 @@
 /*
- * BlogSTEP 
+ * TEXTSTEP
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var paths = require('./common/paths');
-var ui = require('./common/ui');
+var paths = TEXTSTEP.paths;
+var ui = TEXTSTEP.ui;
 
 var SimpleMDE = null;
 
 var self = null;
-
+var frame = null;
+var textarea = null;
 var current = null;
-
 var buffers = {};
-
 var bufferPanel = null;
-
 var simplemde = null;
 
 function createBuffer(path) {
-    var item = $('<a class="file file-md">');
-    item.text(paths.fileName(path));
-    item.click(function () {
-        reopen(self, {path: path});
-    });
-    bufferPanel.append(item);
+    var item = ui.elem('a', {'class': 'file file-md'}, [paths.fileName(path)]);
+    item.onclick = function () {
+        reopen({path: path});
+    };
+    bufferPanel.appendChild(item);
     var buffer = {
         path: path,
         name: paths.fileName(path),
@@ -40,11 +37,11 @@ function createBuffer(path) {
     };
     buffers[path] = buffer;
     if (current !== null) {
-        current.item.removeClass('active');
+        current.item.className = 'file file-md';
     }
     current = buffer;
-    current.item.addClass('active');
-    BLOGSTEP.get('download', {path: path}, 'text').done(function (data) {
+    current.item.className = 'file file-md active';
+    TEXTSTEP.get('download', {path: path}, 'text').then(function (data) {
         buffer.data = data;
         if (current === buffer) {
             openBuffer(path);
@@ -55,12 +52,11 @@ function createBuffer(path) {
 function openBuffer(path) {
     if (buffers.hasOwnProperty(path)) {
         if (current !== null) {
-            current.item.removeClass('active');
-            console.log(simplemde.codemirror.getScrollInfo());
+            current.item.className = 'file file-md';
             current.scrollInfo = simplemde.codemirror.getScrollInfo();
         }
         current = buffers[path];
-        current.item.addClass('active');
+        current.item.className = 'file file-md active';
         if (current.data !== null) {
             self.setArgs({ path: path });
             var data = current.data;
@@ -73,37 +69,37 @@ function openBuffer(path) {
                 simplemde.codemirror.clearHistory();
             }
             if (current.unsaved) {
-                self.setTitle(current.path + ' (*) – Editor');
+                frame.setTitle(current.path + ' (*) – Write');
             } else {
-                self.setTitle(current.path + ' – Editor');
+                frame.setTitle(current.path + ' – Write');
             }
             if (current.scrollInfo !== null) {
                 console.log(current.scrollInfo);
                 simplemde.codemirror.scrollTo(current.scrollInfo.left, current.scrollInfo.top);
             }
         } else {
-            self.setTitle(current.path + ' (...) – Editor');
+            frame.setTitle(current.path + ' (...) – Write');
         }
         return true;
     }
     return false;
 }
 
-function open(app, args) {
+function open(args) {
     var path = args.path;
-    app.frame.find('textarea').val('');
-    app.setTitle(path + ' (...) – Editor');
+    textarea.value = '';
+    frame.setTitle(path + ' (...) – Write');
 
     simplemde = new SimpleMDE({
         autofocus: true,
-        element: app.frame.find('textarea')[0],
+        element: textarea,
         renderingConfig: {
             codeSyntaxHighlighting: true
         },
         previewRender: function (text) {
             var html = SimpleMDE.prototype.markdown(text);
             return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
-                return 'src="' + BLOGSTEP.PATH + '/api/download?path=' + encodeURIComponent(paths.convert(url, current.cwd)) + '"';
+                return 'src="' + TEXTSTEP.SERVER + '/download?path=' + encodeURIComponent(paths.convert(url, current.cwd)) + '"';
             });
         },
         toolbar: [
@@ -140,20 +136,20 @@ function open(app, args) {
     simplemde.codemirror.on('changes', function () {
         if (current !== null && current.data !== null) {
             current.unsaved = true;
-            current.item.text(current.name + ' (*)');
+            current.item.textContent = current.name + ' (*)';
             current.data = simplemde.value();
             current.history = simplemde.codemirror.getHistory();
-            app.setTitle(current.path + ' (*) – Editor');
+            frame.setTitle(current.path + ' (*) – Write');
         }
     });
 
     createBuffer(path);
 }
 
-function reopen(app, args) {
+function reopen(args) {
     var path = args.path;
-    app.setTitle(path + ' (...) – Editor');
-    app.frame.find('textarea').val('');
+    frame.setTitle(path + ' (...) – Write');
+    textarea.value = '';
 
     if (!openBuffer(path)) {
         createBuffer(path);
@@ -171,7 +167,7 @@ function close(app, action) {
         }
     }
     if (unsaved !== null) {
-        self.confirm('Editor', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').done(function (choice) {
+        frame.confirm('Write', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').then(function (choice) {
             if (choice === 'Close without saving') {
                 self.close('confirm');
             } else {
@@ -185,47 +181,48 @@ function close(app, action) {
         simplemde.toTextArea();
         simplemde = null;
         buffers = [];
-        bufferPanel.empty();
+        bufferPanel.innerHTML = '';
         return true;
     }
 }
 
 function saveFile() {
-    var dfr = $.Deferred();
-    if (simplemde !== null && current !== null) {
-        var buffer = current;
-        BLOGSTEP.post('write', {path: buffer.path, data: buffer.data}).done(function () {
-            buffer.unsaved = false;
-            buffer.item.text(buffer.name);
-            if (current === buffer) {
-                self.setTitle(current.path + ' – Editor');
-                simplemde.clearAutosavedValue();
-            }
-            dfr.resolve();
-        }).fail(dfr.reject);
-    } else {
-        dfr.resolve();
-    }
-    return dfr.promise();
+    return new Promise(function (resolve, reject) {
+        if (simplemde !== null && current !== null) {
+            var buffer = current;
+            TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
+                buffer.unsaved = false;
+                buffer.item.textContent = buffer.name;
+                if (current === buffer) {
+                    frame.setTitle(current.path + ' – Write');
+                    simplemde.clearAutosavedValue();
+                }
+                resolve();
+            }).catch(reject);
+        } else {
+            resolve();
+        }
+    });
 }
 
 function closeBuffer() {
     if (simplemde !== null && current !== null) {
-        var dfr = $.Deferred();
-        if (current.unsaved) {
-            self.confirm('Editor', 'Do you want to save this buffer?', ['Yes', 'No', 'Cancel'], 'Yes').done(function (choice) {
-                if (choice === 'Yes') {
-                    saveFile().done(dfr.resolve);
-                } else if (choice === 'No') {
-                    dfr.resolve();
-                }   
-            });
-        } else {
-            dfr.resolve();
-        }
-        dfr.done(function () {
-            delete(buffers[current.path]);
-            current.item.remove();
+        var promise = new Promise(function (resolve, reject) {
+            if (current.unsaved) {
+                frame.confirm('Write', 'Do you want to save this buffer?', ['Yes', 'No', 'Cancel'], 'Yes').then(function (choice) {
+                    if (choice === 'Yes') {
+                        saveFile().then(resolve);
+                    } else if (choice === 'No') {
+                        resolve();
+                    }   
+                }).catch(reject);
+            } else {
+                resolve();
+            }
+        });
+        promise.then(function () {
+            delete buffers[current.path];
+            bufferPanel.removeChild(current.item);
             current = null;
             for (var path in buffers) {
                 if (buffers.hasOwnProperty(path)) {
@@ -249,33 +246,56 @@ function isUnsaved() {
 }
 
 function newFile() {
-    self.alert('New file', 'not implemented');
+    frame.alert('New file', 'not implemented');
 }
 
 function resizeView() {
     simplemde.codemirror.refresh();
 }
 
-BLOGSTEP.init('editor', ['libedit'], function (app) {
+TEXTSTEP.initApp('write', ['libedit'], function (app) {
     self = app;
+    SimpleMDE = app.require('libedit').SimpleMDE;
 
-    app.defineAction('save', saveFile);
-    app.defineAction('new', newFile);
-    app.defineAction('close-buffer', closeBuffer);
+    app.dockFrame.innerHTML = '';
+    app.dockFrame.appendChild(TEXTSTEP.getIcon('editor', 32));
 
-    app.bindKey('c-s', 'save');
+    frame = self.createFrame('Code');
+    frame.elem.className += ' editor-frame';
+    frame.bodyElem.className += ' libedit-simplemde';
 
-    var menu = app.addMenu('Editor');
+    textarea = ui.elem('textarea');
+    frame.appendChild(textarea);
+
+    bufferPanel = ui.elem('div', {'class': 'files-list'});
+    var bufferTool = frame.createToolFrame('buffers', 'Buffers');
+    bufferTool.appendChild(ui.elem('div', {'class': 'files-panel'}, [bufferPanel]));
+
+    frame.defineAction('save', saveFile);
+    frame.defineAction('new', newFile);
+    frame.defineAction('close-buffer', closeBuffer);
+
+    frame.bindKey('c-s', 'save');
+
+    var menu = frame.addMenu('Write');
     menu.addItem('New', 'new');
     menu.addItem('Save', 'save');
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
 
-    bufferPanel = app.toolFrames.buffers.find('.files-list');
+    frame.onClose = close;
+    frame.onResize = resizeView;
+    frame.isUnsaved = isUnsaved;
 
-    app.onOpen = open;
-    app.onReopen = reopen;
-    app.onClose = close;
-    app.onResize = resizeView;
-    app.isUnsaved = isUnsaved;
+    self.onOpen = function (args) {
+        if (!frame.isOpen) {
+            frame.open();
+            open(args);
+        } else {
+            frame.requestFocus();
+            if (args.hasOwnProperty('path')) {
+                reopen(args);
+            }
+        }
+    };
 });

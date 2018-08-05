@@ -11,21 +11,15 @@ var ui = TEXTSTEP.ui;
 var CodeMirror = null;
 
 var self = null;
-
 var frame = null;
-
 var textarea = null;
-
 var current = null;
-
 var buffers = {};
-
 var bufferPanel = null;
-
 var codemirror = null;
 
 function createBuffer(path) {
-    var item = ui.elem('a', {'class': 'file file-md'}, [paths.fileName(path)]);
+    var item = ui.elem('a', {'class': 'file'}, [paths.fileName(path)]);
     item.onclick = function () {
         reopen({path: path});
     };
@@ -42,10 +36,10 @@ function createBuffer(path) {
     };
     buffers[path] = buffer;
     if (current !== null) {
-        current.item.className = 'file file-md';
+        current.item.className = 'file';
     }
     current = buffer;
-    current.item.className = 'file file-md active';
+    current.item.className = 'file active';
     TEXTSTEP.get('download', {path: path}, 'text').then(function (data) {
         buffer.data = data;
         if (current === buffer) {
@@ -57,10 +51,10 @@ function createBuffer(path) {
 function openBuffer(path) {
     if (buffers.hasOwnProperty(path)) {
         if (current !== null) {
-            current.item.className = 'file file-md';
+            current.item.className = 'file';
         }
         current = buffers[path];
-        current.item.className = 'file file-md active';
+        current.item.className = 'file active';
         if (current.data !== null) {
             self.setArgs({ path: path });
             var data = current.data;
@@ -90,12 +84,12 @@ function openBuffer(path) {
                 codemirror.clearHistory();
             }
             if (current.unsaved) {
-                frame.setTitle(current.path + ' (*) – Code Editor');
+                frame.setTitle(current.path + ' (*) – Code');
             } else {
-                frame.setTitle(current.path + ' – Code Editor');
+                frame.setTitle(current.path + ' – Code');
             }
         } else {
-            frame.setTitle(current.path + ' (...) – Code Editor');
+            frame.setTitle(current.path + ' (...) – Code');
         }
         return true;
     }
@@ -106,7 +100,7 @@ function open(args) {
     var path = args.path;
     textarea.value = '';
     textarea.focus();
-    frame.setTitle(path + ' (...) – Code editor');
+    frame.setTitle(path + ' (...) – Code');
     
     codemirror = CodeMirror.fromTextArea(textarea, {
         lineNumbers: true
@@ -118,7 +112,7 @@ function open(args) {
             current.item.textContent = current.name + ' (*)';
             current.data = codemirror.getValue();
             current.history = codemirror.getHistory();
-            frame.setTitle(current.path + ' (*) – Code Editor');
+            frame.setTitle(current.path + ' (*) – Code');
         }
     });
     
@@ -128,7 +122,7 @@ function open(args) {
 
 function reopen(args) {
     var path = args.path;
-    frame.setTitle(path + ' (...) – Code Editor');
+    frame.setTitle(path + ' (...) – Code');
     textarea.value = '';
 
     if (!openBuffer(path)) {
@@ -164,7 +158,7 @@ function saveFile() {
             buffer.unsaved = false;
             buffer.item.textContent = buffer.name;
             if (current === buffer) {
-                frame.setTitle(current.path + ' – Code Editor');
+                frame.setTitle(current.path + ' – Code');
             }
         });
     }
@@ -178,7 +172,7 @@ function closeBuffer() {
         }
         if (ok) {
             delete(buffers[current.path]);
-            current.item.remove();
+            bufferPanel.removeChild(current.item);
             current = null;
             for (var path in buffers) {
                 if (buffers.hasOwnProperty(path)) {
@@ -202,7 +196,7 @@ function isUnsaved() {
 }
 
 function newFile() {
-    alert('not implemented');
+    frame.alert('New file', 'not implemented');
 }
 
 function resizeView() {
@@ -213,7 +207,12 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     self = app;
     CodeMirror = app.require('libedit').CodeMirror;
 
+    app.dockFrame.innerHTML = '';
+    app.dockFrame.appendChild(TEXTSTEP.getIcon('code-editor', 32));
+
     frame = self.createFrame('Code');
+    frame.elem.className += ' editor-frame';
+    frame.bodyElem.className += ' libedit-codemirror';
 
     textarea = ui.elem('textarea');
     frame.appendChild(textarea);

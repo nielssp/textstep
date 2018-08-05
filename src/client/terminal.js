@@ -8,6 +8,7 @@
 var ui = TEXTSTEP.ui;
 
 var self;
+var frame;
 var terminal;
 
 var cwd = '/';
@@ -34,7 +35,7 @@ var commands = {
         exec('list-files?path=' + nwd, {}, function (data) {
             if (data.type === 'directory') {
                 cwd = nwd;
-                self.setTitle(cwd + ' – Terminal');
+                frame.setTitle(cwd + ' – Terminal');
                 self.setArgs({ path: cwd });
             } else {
                 writeLine('not a directory');
@@ -221,7 +222,7 @@ function prompt()
 
 TEXTSTEP.initApp('terminal', function (app) {
     self = app;
-    var frame = app.createFrame('Terminal');
+    frame = app.createFrame('Terminal');
 
     frame.contentElem.className = 'frame-content frame-content-flex';
 

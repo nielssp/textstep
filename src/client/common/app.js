@@ -97,7 +97,7 @@ App.prototype.kill = function () {
         } catch (e) {
         }
     }
-    if (this.dockFrame !== null) {
+    if (this.dockFrame !== null && this.dockFrame.parentNode !== null) {
         this.dockFrame.parentNode.removeChild(this.dockFrame);
     }
     this.state = 'initialized';
@@ -126,76 +126,18 @@ App.prototype.close = function (action) {
     return true;
 };
 
-App.prototype.reopen = function (args) {
+App.prototype.getUnsavedFrame = function () {
     if (this.state !== 'running') {
-        console.error(this.name + ': reopen: unexpected state:', this.state);
-        return;
+        return null;
     }
-    if (this.onReopen !== null) {
-        try {
-            this.onReopen(this, args || {});
-        } catch (e) {
-            console.error(this.name + ': reopen: exception caught:', e);
-            alert('Could not open application: ' + this.name);
-            this.kill();
-            return;
-        }
-    } else {
-        this.state = 'closing';
-        if (this.onClose !== null) {
-            this.onClose();
-        }
-        this.state = 'initialized';
-        this.open(args);
-    }
-};
-
-App.prototype.suspend = function () {
-    if (this.state !== 'running') {
-        console.error(this.name + ': suspend: unexpected state:', this.state);
-        return;
-    }
-    this.state = 'suspending';
-    if (this.onSuspend !== null) {
-        this.onSuspend(this);
-    }
-    if (this.state === 'suspending') {
-        this.frame.removeClass('active').hide();
-        for (var i = 0; i < this.menus.length; i++) {
-            this.menus[i].frame.hide();
-        }
-        for (var name in this.toolFrames) {
-            if (this.toolFrames.hasOwnProperty(name)) {
-                this.toolFrames[name].hide();
+    for (var i = 0; i < this.frames.length; i++) {
+        if (this.frames[i].isUnsaved !== null) {
+            if (this.frames[i].isUnsaved()) {
+                return this.frames[i];
             }
         }
-        this.state = 'suspended';
     }
-};
-
-App.prototype.resume = function () {
-    if (this.state !== 'suspended') {
-        console.error(this.name + ': resume: unexpected state:', this.state);
-        return;
-    }
-    this.state = 'resuming';
-    this.frame.addClass('active').show();
-    for (var i = 0; i < this.menus.length; i++) {
-        this.menus[i].frame.show();
-    }
-    for (var name in this.toolFrames) {
-        if (this.toolFrames.hasOwnProperty(name)) {
-            this.toolFrames[name].show();
-        }
-    }
-    if (this.onResume !== null) {
-        this.onResume(this);
-    }
-    this.setArgs(this.args);
-    if (this.onResize !== null) {
-        this.onResize();
-    }
-    this.state = 'running';
+    return null;
 };
 
 

@@ -270,6 +270,12 @@ Frame.prototype.loseFocus = function () {
     }
 };
 
+Frame.prototype.resized = function () {
+    if (this.onResize !== null) {
+        this.onResize();
+    }
+};
+
 Frame.prototype.appendChild = function (element) {
     this.contentElem.appendChild(element);
 };

@@ -35,10 +35,7 @@ function lib(name) {
         output: {
             path: __dirname + '/dist/lib/',
             filename: name + '.js'
-        },
-        plugins: [
-            new ExtractTextPlugin('[name]/main.css')
-        ]
+        }
     });
 }
 
@@ -103,7 +100,7 @@ function icons(name) {
 module.exports = [
     app('workspace'),
     app('files'),
-    app('edit'),
+    app('write'),
     app('code'),
     app('view'),
     app('play'),
