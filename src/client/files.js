@@ -23,6 +23,8 @@ TEXTSTEP.initApp('files', function (app) {
     dirView = new ui.DirView();
     frame.appendChild(dirView.elem);
 
+    frame.createToolbar()
+      .addItem('Up', 'go-up', 'up');
     /*
     frame.defineAction('back', back, ['nav']);
     frame.defineAction('foreward', forward, ['nav']);
@@ -83,6 +85,10 @@ TEXTSTEP.initApp('files', function (app) {
     frame.isUnsaved = isUnsaved;
 
     */
+
+    frame.onResize = function () {
+        dirView.updateColumns();
+    };
 
     self.onOpen = function (args) {
         if (!frame.isOpen) {

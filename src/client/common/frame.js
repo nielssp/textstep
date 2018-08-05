@@ -8,6 +8,7 @@
 import * as ui from './ui';
 import Menu from './menu';
 import ToolFrame from './toolframe';
+import Toolbar from './toolbar';
 import Dialog from './dialog';
 
 export default function Frame(title) {
@@ -56,6 +57,12 @@ Frame.prototype.createToolFrame = function (name, title) {
     var toolFrame = new ToolFrame(title);
     this.toolFrames[name] = toolFrame;
     return toolFrame;
+};
+
+Frame.prototype.createToolbar = function () {
+    var toolbar = new Toolbar(this);
+    this.bodyElem.insertBefore(toolbar.elem, this.contentElem);
+    return toolbar;
 };
 
 Frame.prototype.alert = function (title, message) {

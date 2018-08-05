@@ -18,20 +18,19 @@ export default function DirView() {
     this.stackOffset = 0;
     this.files = {};
     this.selection = [];
-    this.selectionRoot = '/';
     this.touchSelectMode = false;
 
     this.elem = ui.elem('div', {'class': 'files-columns'});
 }
 
-DirView.prototype.addEventListener = function (eventType, handler) {
+DirView.prototype.on = function (eventType, handler) {
     if (!this.eventHandlers.hasOwnProperty(eventType)) {
         this.eventHandlers[eventType] = [];
     }
     this.eventHandlers[eventType].push(handler);
 };
 
-DirView.prototype.fireEvent = function (eventType, eventData) {
+DirView.prototype.fire = function (eventType, eventData) {
     if (this.eventHandlers.hasOwnProperty(eventType)) {
         this.eventHandlers[eventType].forEach(function (handler) {
             handler(eventData);
@@ -60,10 +59,25 @@ DirView.prototype.cd = function (path) {
     this.cwd = this.stack[this.stack.length - 1];
     this.touchSelectMode = false;
     this.selection = [];
-    this.fireEvent('selectionChanged', this.selection);
-    this.fireEvent('cwdChanged', this.cwd);
-    this.selectionRoot = this.stack[this.stack.length - 1];
+    this.fire('selectionChanged', this.selection);
+    this.fire('cwdChanged', this.cwd);
     this.updateColumns();
+};
+
+DirView.prototype.goUp = function () {
+    if (this.stack.length > 1) {
+        this.stack.pop();
+        this.cwd = this.stack[this.stack.length - 1];
+        this.touchSelectMode = false;
+        this.selection = [];
+        this.fire('selectionChanged', this.selection);
+        this.fire('cwdChanged', this.cwd);
+        this.updateColumns();
+    }
+};
+
+DirView.prototype.open = function (path) {
+    this.fire('fileOpen', path);
 };
 
 DirView.prototype.setSelection = function (path) {
@@ -73,7 +87,7 @@ DirView.prototype.setSelection = function (path) {
     }
     this.selection = [path];
     this.columns[this.stack.length - 1].setSelection(this.selection);
-    this.fireEvent('selectionChanged', this.selection);
+    this.fire('selectionChanged', this.selection);
 };
 
 DirView.prototype.addSelection = function (path) {
@@ -96,7 +110,7 @@ DirView.prototype.addSelection = function (path) {
         this.selection.push(path);
     }
     this.columns[this.stack.length - 1].setSelection(this.selection);
-    this.fireEvent('selectionChanged', this.selection);
+    this.fire('selectionChanged', this.selection);
 };
 
 DirView.prototype.removeSelection = function (path) {
@@ -104,7 +118,7 @@ DirView.prototype.removeSelection = function (path) {
         if (this.selection[i] === path) {
             this.selection.splice(i, 1);
             this.columns[this.stack.length - 1].setSelection(this.selection);
-            this.fireEvent('selectionChanged', this.selection);
+            this.fire('selectionChanged', this.selection);
             break;
         }
     }
@@ -282,6 +296,15 @@ function DirFile(column, data) {
             this.column.dirView.setSelection(this.path);
         }
         return false;
+    };
+    this.elem.ondblclick = () => {
+        this.column.dirView.open(this.path);
+    };
+    this.elem.ondragstart = (e) => {
+        var download = 'application/octet-stream:' + encodeURIComponent(this.name) + ':'
+                + location.origin + TEXTSTEP.SERVER + '/download?path='
+                + encodeURIComponent(this.path);
+        e.dataTransfer.setData('DownloadURL', download);
     };
     this.updateElement();
 }
