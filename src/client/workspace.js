@@ -498,7 +498,8 @@ TEXTSTEP.init = function (root) {
         root.appendChild(menu);
         root.appendChild(dock);
         root.appendChild(main);
-        TEXTSTEP.run('test');
+        // TODO: find out what to run
+        TEXTSTEP.run(data.shell);
     });
 };
 

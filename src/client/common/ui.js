@@ -5,6 +5,10 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+import DirView from './dirview';
+
+export {DirView};
+
 export function elem(tag, attributes = {}, children = []) {
     var elem = document.createElement(tag);
     for (var k in attributes) {

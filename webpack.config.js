@@ -22,7 +22,8 @@ function app(name) {
                 {
                     test: /\.s?css$/,
                     use: ['style-loader', 'css-loader?url=false', 'sass-loader']
-                }
+                },
+                { test: /\.js$/, use: ['babel-loader'] }
             ]
         }
     };
@@ -56,7 +57,8 @@ function theme(name) {
                         fallback: 'style-loader',
                         use: ['css-loader?url=false', 'sass-loader']
                     })
-                }
+                },
+                { test: /\.js$/, use: ['babel-loader'] }
             ]
         },
         plugins: [
@@ -85,7 +87,8 @@ function icons(name) {
                         fallback: 'style-loader',
                         use: ['css-loader?url=false', 'sass-loader']
                     })
-                }
+                },
+                { test: /\.js$/, use: ['babel-loader'] }
             ]
         },
         plugins: [

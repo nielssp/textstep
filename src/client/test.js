@@ -7,6 +7,8 @@
 
 var ui = TEXTSTEP.ui;
 
+var dirView;
+
 function Property() {
     this.listeners = [];
     this.value = null;
@@ -46,6 +48,9 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     var frame = app.createFrame('Test');
 
     frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
+
+    dirView = new ui.DirView();
+    frame.appendChild(dirView.elem);
 
     frame.defineAction('alert', function () {
         frame.disableGroup('dialogs');
@@ -90,6 +95,7 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     app.onOpen = function (args) {
         if (!frame.isOpen) {
             frame.open();
+            dirView.cd('/content');
         } else if (!frame.hasFocus) {
             frame.requestFocus();
         }
