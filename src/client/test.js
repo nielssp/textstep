@@ -48,20 +48,29 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
 
     frame.defineAction('alert', function () {
-        frame.alert('Alert', 'Hello, World!');
-    });
+        frame.disableGroup('dialogs');
+        frame.alert('Alert', 'Hello, World!').finally(function () {
+            frame.enableGroup('dialogs');
+        });
+    }, ['dialogs']);
 
     frame.defineAction('confirm', function () {
+        frame.disableGroup('dialogs');
         frame.confirm('Confirm', 'Hello, World?', ['Delete', 'No', 'Cancel'], 'Delete').then(function (choice) {
             frame.alert('Choice:', choice);
-        });;
-    });
+        }).finally(function () {
+            frame.enableGroup('dialogs');
+        });
+    }, ['dialogs']);
 
     frame.defineAction('prompt', function () {
+        frame.disableGroup('dialogs');
         frame.prompt('Prompt', 'Hello, World?', 'default').then(function (choice) {
             frame.alert('Choice:', choice);
-        });;
-    });
+        }).finally(function () {
+            frame.enableGroup('dialogs');
+        });
+    }, ['dialogs']);
 
     frame.defineAction('terminal', function () {
         TEXTSTEP.run('terminal');

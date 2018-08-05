@@ -128,7 +128,13 @@ Frame.prototype.bindKey = function (key, action) {
 };
 
 Frame.prototype.defineAction = function (name, callback, groups) {
-    this.actions[name] = callback;
+    if (!this.actions.hasOwnProperty(name)) {
+        this.actions[name] = {
+            callback: null,
+            bindings: []
+        };
+    }
+    this.actions[name].callback = callback;
     if (typeof groups !== 'undefined') {
         groups.forEach(function (group) {
             if (!this.actionGroups.hasOwnProperty(group)) {
@@ -141,11 +147,28 @@ Frame.prototype.defineAction = function (name, callback, groups) {
 
 Frame.prototype.activate = function (name) {
     if (typeof name === 'string') {
-        this.actions[name].apply(this, [name]);
+        if (!this.actions.hasOwnProperty(name) || this.actions[name].callback === null) {
+            console.error('Undefined action: ' + name);
+        } else {
+            this.actions[name].callback.apply(this, [name]);
+        }
     } else {
         name.apply(this);
     }
 };
+
+Frame.prototype.bindAction = function (name, element) {
+    if (typeof name !== 'string') {
+        return;
+    }
+    if (!this.actions.hasOwnProperty(name)) {
+        this.actions[name] = {
+            callback: null,
+            bindings: []
+        };
+    }
+    this.actions[name].bindings.push(element);
+}
 
 Frame.prototype.isDialogOpen = function () {
     return this.dialogs.length > 0;
@@ -165,10 +188,11 @@ Frame.prototype.disableGroup = function (group) {
 
 Frame.prototype.enableAction = function (name) {
     if (typeof name === 'string') {
-        this.frame.find('[data-action="' + name + '"]').attr('disabled', false);
-        this.menus.forEach(function (menu) {
-            menu.frame.find('[data-action="' + name + '"]').attr('disabled', false);
-        });
+        if (this.actions.hasOwnProperty(name)) {
+            this.actions[name].bindings.forEach(function (element) {
+                element.disabled = false;
+            });
+        }
     } else {
         name.forEach(this.enableAction, this);
     }
@@ -176,10 +200,11 @@ Frame.prototype.enableAction = function (name) {
 
 Frame.prototype.disableAction = function (name) {
     if (typeof name === 'string') {
-        this.frame.find('[data-action="' + name + '"]').attr('disabled', true);
-        this.menus.forEach(function (menu) {
-            menu.frame.find('[data-action="' + name + '"]').attr('disabled', true);
-        });
+        if (this.actions.hasOwnProperty(name)) {
+            this.actions[name].bindings.forEach(function (element) {
+                element.disabled = true;
+            });
+        }
     } else {
         name.forEach(this.disableAction, this);
     }

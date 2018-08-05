@@ -26,13 +26,11 @@ Menu.prototype.setTitle = function (title) {
 
 Menu.prototype.addItem = function (label, action) {
     var button = ui.elem('button', {}, [label]);
-    if (typeof action === 'string') {
-        button.setAttribute('data-action', action);
-    }
     var frame = this.parentFrame;
     button.onclick = function () {
         frame.activate(action);
     };
+    frame.bindAction(action, button);
     var item = ui.elem('li', {}, [button]);
     for (var key in frame.keyMap) {
         if (frame.keyMap.hasOwnProperty(key) && frame.keyMap[key] === action) {

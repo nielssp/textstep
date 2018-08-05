@@ -447,7 +447,7 @@ function workspaceMenuAction(action) {
 }
 
 function createWorkspaceMenu() {
-    var menu = new Menu({activate: workspaceMenuAction}, 'Workspace');
+    var menu = new Menu({activate: workspaceMenuAction, bindAction: function () {}}, 'Workspace');
     menu.addItem('Files', 'files');
     menu.addItem('Terminal', 'terminal');
     menu.addItem('Switch user', 'switch-user');
