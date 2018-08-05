@@ -28,7 +28,8 @@ TEXTSTEP.config = new Config(function (keys) {
 });
 
 var root = document.body;
-var menu = createMainMenu();
+var workspaceMenu = createWorkspaceMenu();
+var menu = ui.elem('aside', {id: 'menu'}, [workspaceMenu.elem]);
 var dock = ui.elem('div', {id: 'dock'});
 var main = ui.elem('main');
 var loginFrame = null;
@@ -110,7 +111,7 @@ TEXTSTEP.post = function (action, data = null, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'post', data, responseType);
 };
 
-TEXTSTEP.requestLogin = function() {
+TEXTSTEP.requestLogin = function(overlay = false) {
     return new Promise(function (resolve, reject) {
         if (loginFrame === null) {
             loginFrame = new Frame('Log in');
@@ -137,6 +138,11 @@ TEXTSTEP.requestLogin = function() {
             loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.elem]);
             loginFrame.elem.style.display = '';
             root.appendChild(loginFrame.overlayElem);
+        }
+        if (overlay) {
+            loginFrame.overlayElem.className = 'login-overlay-dark';
+        } else {
+            loginFrame.overlayElem.className = '';
         }
         loginFrame.overlayElem.style.display = 'block';
         loginFrame.formElem.username.disabled = false;
@@ -418,23 +424,35 @@ TEXTSTEP.getTasks = function () {
     return Object.values(apps);
 };
 
-function createMainMenu() {
-    var list = ui.elem('ul');
-    var logout = ui.elem('button', {}, ['Log out']);
-    logout.onclick = function () {
-        TEXTSTEP.post('logout').then(function () {
-            location.reload();
-        });
-    };
-    list.appendChild(ui.elem('li', {}, [logout]));
-    return ui.elem('aside', {id: 'menu'}, [
-        ui.elem('div', {id: 'workspace-menu'}, [
-            ui.elem('header', {}, ['Workspace']),
-            ui.elem('nav', {}, [
-                list
-            ])
-        ])
-    ]);
+function workspaceMenuAction(action) {
+    switch (action) {
+        case 'files':
+            TEXTSTEP.run('files');
+            break;
+        case 'terminal':
+            TEXTSTEP.run('terminal');
+            break;
+        case 'switch-user':
+            TEXTSTEP.post('logout').then(function () {
+                TEXTSTEP.requestLogin(true).then(function () {
+                });
+            });
+            break;
+        case 'logout':
+            TEXTSTEP.post('logout').then(function () {
+                location.reload();
+            });
+            break;
+    }
+}
+
+function createWorkspaceMenu() {
+    var menu = new Menu({activate: workspaceMenuAction}, 'Workspace');
+    menu.addItem('Files', 'files');
+    menu.addItem('Terminal', 'terminal');
+    menu.addItem('Switch user', 'switch-user');
+    menu.addItem('Log out', 'logout');
+    return menu;
 }
 
 window.onkeydown = function (e) {
@@ -475,10 +493,11 @@ window.onbeforeunload = function (event) {
 
 TEXTSTEP.init = function (root) {
     TEXTSTEP.get('who-am-i', {}, 'json').then(function (data) {
+        workspaceMenu.setTitle('Workspace (' + data.username + ')');
+        workspaceMenu.header.appendChild(ui.elem('span', {'class': 'version'}, data.version));
         root.appendChild(menu);
         root.appendChild(dock);
         root.appendChild(main);
-        ui.byId('workspace-menu').style.display = 'block';
         TEXTSTEP.run('test');
     });
 };

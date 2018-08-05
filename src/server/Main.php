@@ -92,7 +92,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\Download');
         $this->m->router->match('api/download/*', 'snippet:Api\Download');
         $this->m->router->auto('snippet:Api\Thumbnail');
-        $this->m->router->auto('snippet:Api\Load');
         $this->m->router->auto('snippet:Api\MakeDir');
         $this->m->router->auto('snippet:Api\MakeFile');
         $this->m->router->auto('snippet:Api\Mount');

@@ -19,12 +19,17 @@ export default function Menu(parentFrame, title) {
     this.header.textContent = title;
 }
 
+Menu.prototype.setTitle = function (title) {
+    this.title = title;
+    this.header.textContent = title;
+};
+
 Menu.prototype.addItem = function (label, action) {
     var button = ui.elem('button', {}, [label]);
     if (typeof action === 'string') {
         button.setAttribute('data-action', action);
     }
-    let frame = this.parentFrame;
+    var frame = this.parentFrame;
     button.onclick = function () {
         frame.activate(action);
     };

@@ -16,7 +16,9 @@ class WhoAmI extends \Blogstep\AuthenticatedSnippet
         $user = $this->m->auth->user;
         return $this->json([
             'username' => $user->getName(),
-            'home' => $user->getHome()->getPath()
+            'home' => $user->getHome()->getPath(),
+            'shell' => 'files',
+            'version' => \Blogstep\Main::VERSION
         ]);
     }
 }
