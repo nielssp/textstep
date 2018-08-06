@@ -247,6 +247,25 @@ DirColumn.prototype.reload = function () {
         if (data.type === 'directory' && typeof data.files !== 'undefined') {
             self.files = {};
             self.list = [];
+            data.files.sort(function(a, b) {
+                // TODO: optional sorting of directories before files
+                if ((a.type === 'directory') !== (b.type === 'directory')) {
+                    if (a.type === 'directory') {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                }
+                var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+                var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+                if (nameA < nameB) {
+                    return -1;
+                } else if (nameA > nameB) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
             for (var i = 0; i < data.files.length; i++) {
                 var file = new DirFile(self, data.files[i]);
                 self.list.push(file);

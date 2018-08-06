@@ -88,6 +88,7 @@ TEXTSTEP.initApp('files', function (app) {
 
     frame.defineAction('go-up', () => dirView.goUp(), ['nav']);
     frame.defineAction('root', () => dirView.cd('/'), ['nav']);
+    frame.defineAction('reload', () => dirView.reload(), ['nav']);
 
     frame.defineAction('new-file', newFile, ['dir']);
 
@@ -97,7 +98,8 @@ TEXTSTEP.initApp('files', function (app) {
     var toolbar = frame.createToolbar();
     toolbar.createGroup()
       .addItem('Go up', 'go-up', 'go-up')
-      .addItem('Go to root', 'go-home', 'root');
+      .addItem('Go to root', 'go-home', 'root')
+      .addItem('Reload', 'reload', 'reload');
 
     toolbar.addSeparator();
 
