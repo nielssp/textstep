@@ -9,7 +9,15 @@ export function serializeQuery(query) {
     var pairs = [];
     for (var key in query) {
         if(query.hasOwnProperty(key)) {
-            pairs.push(encodeURIComponent(key) + "=" + encodeURIComponent(query[key]));
+            var encodedKey = encodeURIComponent(key);
+            var value = query[key];
+            if (Array.isArray(value)) {
+                for (var i = 0; i < value.length; i++) {
+                    pairs.push(encodedKey + "[]=" + encodeURIComponent(value[i]));
+                }
+            } else {
+                pairs.push(encodedKey + "=" + encodeURIComponent(value));
+            }
         }
     }
     return pairs.join('&');

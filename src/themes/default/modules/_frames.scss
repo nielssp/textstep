@@ -50,19 +50,19 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 border-color: #fff;
             }
             &[data-action="close"] {
-                background-image: url(../img/close2.png);
+                background-image: url(close2.png);
                 background-repeat: no-repeat;
                 background-position: center center;
                 &:active {
-                background-image: url(../img/close1.png);
+                background-image: url(close1.png);
                 }
             }
             &[data-action="toggle-menu"] {
-                background-image: url(../img/menu2.png);
+                background-image: url(menu2.png);
                 background-repeat: no-repeat;
                 background-position: center center;
                 &:active {
-                background-image: url(../img/menu1.png);
+                background-image: url(menu1.png);
                 }
             }
         }

@@ -38,7 +38,8 @@ DirView.prototype.fire = function (eventType, eventData) {
     }
 };
 
-DirView.prototype.refresh = function () {
+DirView.prototype.reload = function () {
+    this.columns[this.stack.length - 1].reload();
 };
 
 DirView.prototype.cd = function (path) {
@@ -122,6 +123,12 @@ DirView.prototype.removeSelection = function (path) {
             break;
         }
     }
+};
+
+DirView.prototype.clearSelection = function () {
+    this.selection = [];
+    this.columns[this.stack.length - 1].setSelection(this.selection);
+    this.fire('selectionChanged', this.selection);
 };
 
 DirView.prototype.updateColumns = function () {
@@ -229,27 +236,36 @@ DirColumn.prototype.setSelection = function (paths) {
     }
 };
 
+DirColumn.prototype.reload = function () {
+    var self = this;
+    if (this.files !== null) {
+        this.listElem.innerHTML = '';
+        this.files = null;
+        this.list = null;
+    }
+    TEXTSTEP.get('list-files', {path: this.path}).then(function (data) {
+        if (data.type === 'directory' && typeof data.files !== 'undefined') {
+            self.files = {};
+            self.list = [];
+            for (var i = 0; i < data.files.length; i++) {
+                var file = new DirFile(self, data.files[i]);
+                self.list.push(file);
+                self.files[file.path] = file;
+                self.listElem.appendChild(file.elem);
+            }
+            for (var i = 0; i < self.selection.length; i++) {
+                if (self.files.hasOwnProperty(self.selection[i])) {
+                    self.files[self.selection[i]].setSelected(true);
+                }
+            }
+        }
+    });
+};
+
 DirColumn.prototype.show = function () {
     this.elem.style.display = 'block';
     if (this.files === null && this.path !== null) {
-        var self = this;
-        TEXTSTEP.get('list-files', {path: this.path}).then(function (data) {
-            if (data.type === 'directory' && typeof data.files !== 'undefined') {
-                self.files = {};
-                self.list = [];
-                for (var i = 0; i < data.files.length; i++) {
-                    var file = new DirFile(self, data.files[i]);
-                    self.list.push(file);
-                    self.files[file.path] = file;
-                    self.listElem.appendChild(file.elem);
-                }
-                for (var i = 0; i < self.selection.length; i++) {
-                    if (self.files.hasOwnProperty(self.selection[i])) {
-                        self.files[self.selection[i]].setSelected(true);
-                    }
-                }
-            }
-        });
+        this.reload();
     }
 };
 
@@ -278,17 +294,23 @@ function DirFile(column, data) {
                 this.column.dirView.setSelection(this.path);
             } else {
                 var other = this.column.selection[this.column.selection.length - 1];
-                var between = false;
-                this.column.list.forEach(function (file) {
-                    if (file.path === this.path || file.path === other) {
-                        between = !between;
-                    } else if (!between) {
-                        return;
-                    }
-                    if (!file.selected) {
+                if (this.path === other) {
+                    if (!this.selected) {
                         this.column.dirView.addSelection(file.path);
                     }
-                }, this);
+                } else {
+                    var between = false;
+                    this.column.list.forEach(function (file) {
+                        if (file.path === this.path || file.path === other) {
+                            between = !between;
+                        } else if (!between) {
+                            return;
+                        }
+                        if (!file.selected) {
+                            this.column.dirView.addSelection(file.path);
+                        }
+                    }, this);
+                }
             }
         } else if (this.type === 'directory') {
             this.column.dirView.cd(this.path);

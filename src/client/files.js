@@ -12,6 +12,69 @@ var self;
 var frame;
 var dirView;
 
+function newFile() {
+    frame.prompt('New file', 'Enter filename:').then(function (name) {
+        if (name !== null) {
+            if (name === '') {
+                frame.alert('New file', 'Invalid name');
+                return;
+            }
+            var path = dirView.cwd;
+            if (path !== '/') {
+                path += '/';
+            }
+            path += name;
+            TEXTSTEP.post('make-file', {path: path}).then(function (data) {
+                dirView.setSelection(path);
+                dirView.reload();
+            });
+        }
+    });
+}
+
+function rename() {
+    if (dirView.selection.length !== 1) {
+        alert('Cannot rename multiple files');
+        return;
+    }
+    var path = dirView.selection[0];
+    
+    frame.prompt('Rename', 'Enter filename:', paths.fileName(path)).then(function (name) {
+        if (name !== null) {
+            if (name === '') {
+                self.alert('Rename', 'Invalid name');
+                return;
+            }
+            var destination = paths.convert(name, paths.dirName(path));
+            TEXTSTEP.post('move', { path: path, destination: destination }).then(function (data) {
+                dirView.setSelection(destination);
+                dirView.reload();
+            });
+        }
+    });
+}
+
+function trash() {
+    var confirmation;
+    var data = {};
+    if (dirView.selection.length === 1) {
+        confirmation = 'Permanently delete "' + dirView.selection[0] + '"?';
+        data.path = dirView.selection[0];
+    } else {
+        confirmation = 'Permanently delete the ' + dirView.selection.length + ' selected files?';
+        data.paths = dirView.selection;
+    }
+    frame.confirm('Files', confirmation, ['Delete', 'Cancel'], 'Delete').then(function (choice) {
+        if (choice === 'Delete') {
+            TEXTSTEP.post('delete', data).then(function (data) {
+                dirView.clearSelection();
+                dirView.reload();
+            });
+        }
+    });
+}
+
+
 TEXTSTEP.initApp('files', function (app) {
     self = app;
 
@@ -23,8 +86,30 @@ TEXTSTEP.initApp('files', function (app) {
     dirView = new ui.DirView();
     frame.appendChild(dirView.elem);
 
-    frame.createToolbar()
-      .addItem('Up', 'go-up', 'up');
+    frame.defineAction('go-up', () => dirView.goUp(), ['nav']);
+    frame.defineAction('root', () => dirView.cd('/'), ['nav']);
+
+    frame.defineAction('new-file', newFile, ['dir']);
+
+    frame.defineAction('rename', rename, ['selection']);
+    frame.defineAction('trash', trash, ['selection']);
+
+    var toolbar = frame.createToolbar();
+    toolbar.createGroup()
+      .addItem('Go up', 'go-up', 'go-up')
+      .addItem('Go to root', 'go-home', 'root');
+
+    toolbar.addSeparator();
+
+    toolbar.createGroup()
+      .addItem('New file', 'edit-new-file', 'new-file');
+
+    toolbar.addSeparator();
+
+    toolbar.createGroup()
+      .addItem('Rename', 'edit-rename', 'rename')
+      .addItem('Delete seleciton', 'edit-trash', 'trash');
+
     /*
     frame.defineAction('back', back, ['nav']);
     frame.defineAction('foreward', forward, ['nav']);
