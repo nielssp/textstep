@@ -30,8 +30,8 @@ TEXTSTEP.config = new Config(function (keys) {
 var root = document.body;
 var workspaceMenu = createWorkspaceMenu();
 var menu = ui.elem('aside', {id: 'menu'}, [workspaceMenu.elem]);
-var dock = ui.elem('div', {id: 'dock'});
 var main = ui.elem('main');
+var dock = ui.elem('div', {id: 'dock'});
 var loginFrame = null;
 
 var apps = {};
@@ -42,7 +42,7 @@ var focus = null;
 
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
-TEXTSTEP.TIMEOUT = 10000;
+TEXTSTEP.LOAD_TIMEOUT = 10000;
 
 TEXTSTEP.getToken = function () {
     return cookies.get('csrf_token');
@@ -302,7 +302,7 @@ function loadApp(name) {
                         reject(name + ': Timeout');
                     }
                 }
-            }, TEXTSTEP.TIMEOUT);
+            }, TEXTSTEP.LOAD_TIMEOUT);
             root.appendChild(apps[name].scriptElem);
         }
     });
@@ -342,7 +342,7 @@ function loadLib(name) {
                         reject(name + ': Timeout');
                     }
                 }
-            }, TEXTSTEP.TIMEOUT);
+            }, TEXTSTEP.LOAD_TIMEOUT);
             root.appendChild(libs[name].scriptElem);
         }
     });
@@ -411,7 +411,9 @@ TEXTSTEP.focusFrame = function (frame) {
     if (frame.isOpen) {
         if (focus !== null) {
             focus.loseFocus();
-            focus.hide();
+            if (!frame.isFloating) {
+                focus.hide();
+            }
         }
         focus = frame;
         focus.show();
@@ -422,6 +424,10 @@ TEXTSTEP.focusFrame = function (frame) {
 
 TEXTSTEP.getTasks = function () {
     return Object.values(apps);
+};
+
+TEXTSTEP.getContainerSize = function () {
+    return main.getBoundingClientRect();
 };
 
 function workspaceMenuAction(action) {
@@ -461,6 +467,24 @@ window.onkeydown = function (e) {
     }
 };
 
+window.onmousedown = function (e) {
+    if (focus !== null) {
+        focus.mouseDown(e);
+    }
+};
+
+window.onmouseup = function (e) {
+    if (focus !== null) {
+        focus.mouseUp(e);
+    }
+};
+
+window.onmousemove = function (e) {
+    if (focus !== null) {
+        focus.mouseMove(e);
+    }
+};
+
 window.onresize = function () {
     for (var frame in frames) {
         if (frames.hasOwnProperty(frame)) {
@@ -496,10 +520,19 @@ TEXTSTEP.init = function (root) {
         workspaceMenu.setTitle('Workspace (' + data.username + ')');
         workspaceMenu.header.appendChild(ui.elem('span', {'class': 'version'}, data.version));
         root.appendChild(menu);
-        root.appendChild(dock);
         root.appendChild(main);
+        root.appendChild(dock);
         // TODO: find out what to run
-        TEXTSTEP.run(data.shell);
+        if (location.hash.length > 1) {
+            var start = location.hash.slice(1);
+            TEXTSTEP.run(start).catch(function (error) {
+                alert('Could not start application: ' + start + ': ' + error);
+            });
+        } else {
+            TEXTSTEP.run(data.shell).catch(function (error) {
+                alert('Could not start application: ' + data.shell + ': ' + error);
+            });
+        }
     });
 };
 

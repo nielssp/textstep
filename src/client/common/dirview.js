@@ -6,10 +6,10 @@
  */
 
 import * as ui from './ui';
+import * as util from './util';
 import * as paths from './paths';
 
 export default function DirView() {
-    this.eventHandlers = {};
     this.columns = [];
     this.currentColumn = null;
     this.cwd = null;
@@ -23,20 +23,7 @@ export default function DirView() {
     this.elem = ui.elem('div', {'class': 'files-columns'});
 }
 
-DirView.prototype.on = function (eventType, handler) {
-    if (!this.eventHandlers.hasOwnProperty(eventType)) {
-        this.eventHandlers[eventType] = [];
-    }
-    this.eventHandlers[eventType].push(handler);
-};
-
-DirView.prototype.fire = function (eventType, eventData) {
-    if (this.eventHandlers.hasOwnProperty(eventType)) {
-        this.eventHandlers[eventType].forEach(function (handler) {
-            handler(eventData);
-        });
-    }
-};
+util.eventify(DirView.prototype);
 
 DirView.prototype.reload = function () {
     this.columns[this.stack.length - 1].reload();

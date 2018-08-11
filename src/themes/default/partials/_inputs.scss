@@ -19,10 +19,6 @@ $inputs: 'input[type=text], input[type=email], input[type=password], input[type=
         outline-offset: 0;
     }
 
-    &:hover {
-        background-color: darken($contentBg, 5%);
-    }
-
     &[disabled] {
         background-color: $frameBg;
     }

@@ -22,3 +22,26 @@ export function serializeQuery(query) {
     }
     return pairs.join('&');
 }
+
+export function eventify(prototype) {
+    prototype.on = function (eventType, handler) {
+        if (!this.hasOwnProperty('eventHandlers')) {
+            this.eventHandlers = {};
+        }
+        if (!this.eventHandlers.hasOwnProperty(eventType)) {
+            this.eventHandlers[eventType] = [];
+        }
+        this.eventHandlers[eventType].push(handler);
+    };
+
+    prototype.fire = function (eventType, eventData) {
+        if (!this.hasOwnProperty('eventHandlers')) {
+            return;
+        }
+        if (this.eventHandlers.hasOwnProperty(eventType)) {
+            this.eventHandlers[eventType].forEach(function (handler) {
+                handler(eventData);
+            });
+        }
+    };
+}

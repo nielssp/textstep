@@ -6,6 +6,7 @@
  */
 
 import * as ui from './ui';
+import DirView from './dirview';
 
 export default function Dialog(parent) {
     this.deferred = null;
@@ -16,6 +17,8 @@ export default function Dialog(parent) {
     this.bodyElem = ui.elem('form', {'class': 'frame-body'}, []);
     this.frameElem = ui.elem('div', {'class': 'frame'}, [this.headElem, this.bodyElem]);
     this.overlayElem = ui.elem('div', {'class': 'dialog-overlay'}, [this.frameElem]);
+
+    this.onOpen = null;
 };
 
 Dialog.prototype.setTitle = function (title) {
@@ -30,6 +33,9 @@ Dialog.prototype.open = function () {
             reject: reject
         };
         self.parent.appendChild(self.overlayElem);
+        if (self.onOpen !== null) {
+            self.onOpen();
+        }
     });
 };
 
@@ -138,4 +144,15 @@ Dialog.prompt = function (parent, title, message, value = '') {
         input.setSelectionRange(0, value.length)
     }
     return promise;
+};
+
+Dialog.file = function (parent, title) {
+    var dialog = new Dialog(parent);
+    dialog.setTitle(title);
+    var dirView = new DirView();
+    dialog.bodyElem.appendChild(dirView.elem);
+    dialog.bodyElem.style.width = '400px';
+    dialog.bodyElem.style.height = '300px';
+    dialog.onOpen = () => dirView.cd('/');
+    return dialog.open();
 };

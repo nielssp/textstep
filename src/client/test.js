@@ -9,48 +9,49 @@ var ui = TEXTSTEP.ui;
 
 var dirView;
 
-function Property() {
-    this.listeners = [];
-    this.value = null;
+class Property {
+    constructor() {
+        this.listeners = [];
+        this.value = null;
+    }
+
+    bind(element) {
+        if (element.is('input')) {
+            var property = this;
+            element.val(this.value);
+            element.on('keydown keyup', function () {
+                property.set($(this).val());
+            });
+            this.change(function (value) {
+                element.val(value);
+            });
+        }
+    };
+
+    change(callback) {
+        this.listeners.push(callback);
+    };
+
+    set(value) {
+        this.value = value;
+        for (var i = 0; i < this.listeners.length; i++) {
+            this.listeners[i].apply(this, [value]);
+        }
+    };
+
+    get() {
+        return this.value;
+    };
+
 }
-
-Property.prototype.bind = function (element) {
-    if (element.is('input')) {
-        var property = this;
-        element.val(this.value);
-        element.on('keydown keyup', function () {
-            property.set($(this).val());
-        });
-        this.change(function (value) {
-            element.val(value);
-        });
-    }
-};
-
-Property.prototype.change = function (callback) {
-    this.listeners.push(callback);
-};
-
-Property.prototype.set = function (value) {
-    this.value = value;
-    for (var i = 0; i < this.listeners.length; i++) {
-        this.listeners[i].apply(this, [value]);
-    }
-};
-
-Property.prototype.get = function () {
-    return this.value;
-};
 
 TEXTSTEP.initApp('test', ['libtest'], function (app) {
     app.require('libtest').test();
 
     var frame = app.createFrame('Test');
+    frame.setFloating(true);
 
     frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
-
-    dirView = new ui.DirView();
-    frame.appendChild(dirView.elem);
 
     frame.defineAction('alert', function () {
         frame.disableGroup('dialogs');
@@ -77,6 +78,15 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
         });
     }, ['dialogs']);
 
+    frame.defineAction('file', function () {
+        frame.disableGroup('dialogs');
+        frame.file('Select file').then(function (choice) {
+            frame.alert('Choice:', choice);
+        }).finally(function () {
+            frame.enableGroup('dialogs');
+        });
+    }, ['dialogs']);
+
     frame.defineAction('terminal', function () {
         TEXTSTEP.run('terminal');
     });
@@ -85,17 +95,22 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     frame.bindKey('a-c', 'confirm');
     frame.bindKey('a-p', 'prompt');
     frame.bindKey('a-t', 'terminal');
+    frame.bindKey('a-f', 'file');
 
     var menu = frame.addMenu('Test menu');
     menu.addItem('Alert', 'alert');
     menu.addItem('Confirm', 'confirm');
     menu.addItem('Prompt', 'prompt');
+    menu.addItem('File', 'file');
     menu.addItem('Open terminal', 'terminal');
+
+    frame.onClose = function () {
+        app.close();
+    };
 
     app.onOpen = function (args) {
         if (!frame.isOpen) {
             frame.open();
-            dirView.cd('/content');
         } else if (!frame.hasFocus) {
             frame.requestFocus();
         }

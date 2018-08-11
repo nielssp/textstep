@@ -6,6 +6,7 @@
  */
 
 import * as ui from './ui';
+import * as util from './util';
 import Menu from './menu';
 import ToolFrame from './toolframe';
 import Toolbar from './toolbar';
@@ -16,7 +17,14 @@ export default function Frame(title) {
     this.title = title;
     this.isOpen = false;
     this.isVisible = false;
+    this.isFloating = false;
     this.hasFocus = false;
+    this.drag = null;
+
+    this.x = 0;
+    this.y = 0;
+    this.width = 0;
+    this.height = 0;
 
     this.titleElem = ui.elem('div', {'class': 'frame-title'}, [this.title]);
     this.headElem = ui.elem('div', {'class': 'frame-head'}, [this.titleElem]);
@@ -45,7 +53,38 @@ export default function Frame(title) {
     this.onResize = null;
 
     this.elem.style.display = 'none';
+
+    this.titleElem.onmousedown = (e) => {
+        e.preventDefault();
+        var rect = this.elem.getBoundingClientRect();
+        this.drag = {
+            x: e.clientX - rect.x,
+            y: e.clientY - rect.y
+        };
+        this.updateElem();
+    };
+
+    this.elem.onclick = () => this.requestFocus();
+
+    var closeButton = ui.elem('a', {'data-action': 'close'});
+    closeButton.onclick = () => this.close();
+    this.headElem.appendChild(ui.elem('div', {'class': 'frame-actions'}, [closeButton]));
 }
+
+util.eventify(Frame.prototype);
+
+Frame.prototype.updateElem = function () {
+    this.elem.className = 'frame';
+    if (this.isFloating) {
+        this.elem.className += ' frame-floating';
+    }
+    if (this.hasFocus) {
+        this.elem.className += ' frame-focus';
+    }
+    if (this.drag !== null) {
+        this.elem.className += ' frame-dragging';
+    }
+};
 
 Frame.prototype.addMenu = function (title) {
     var menu = new Menu(this, title);
@@ -65,6 +104,11 @@ Frame.prototype.createToolbar = function () {
     return toolbar;
 };
 
+Frame.prototype.setFloating = function (floating) {
+    this.isFloating = floating;
+    this.updateElem();
+};
+
 Frame.prototype.alert = function (title, message) {
     if (!this.isOpen) {
         throw 'Frame not open';
@@ -78,6 +122,10 @@ Frame.prototype.confirm = function (title, message, choices, defaultChoice) {
 
 Frame.prototype.prompt = function (title, message, value) {
     return Dialog.prompt(this.bodyElem, title, message, value);
+};
+
+Frame.prototype.file = function (title) {
+    return Dialog.file(this.bodyElem, title);
 };
 
 Frame.prototype.keydown = function (e) {
@@ -227,6 +275,9 @@ Frame.prototype.open = function () {
         return;
     }
     TEXTSTEP.openFrame(this);
+    var rect = this.elem.getBoundingClientRect();
+    this.width = rect.width;
+    this.height = rect.height;
     if (this.isOpen) {
         if (this.onOpen !== null) {
             this.onOpen();
@@ -290,6 +341,7 @@ Frame.prototype.requestFocus = function () {
 
 Frame.prototype.receiveFocus = function () {
     this.hasFocus = true;
+    this.updateElem();
     if (this.onFocus !== null) {
         this.onFocus();
     }
@@ -297,14 +349,45 @@ Frame.prototype.receiveFocus = function () {
 
 Frame.prototype.loseFocus = function () {
     this.hasFocus = false;
+    this.updateElem();
     if (this.onBlur !== null) {
         this.onBlur();
     }
 };
 
 Frame.prototype.resized = function () {
+    var rect = this.elem.getBoundingClientRect();
+    this.width = rect.width;
+    this.height = rect.height;
     if (this.onResize !== null) {
         this.onResize();
+    }
+};
+
+Frame.prototype.mouseDown = function (e) {
+
+};
+
+Frame.prototype.mouseMove = function (e) {
+    if (this.drag !== null) {
+        if (this.isFloating) {
+            var container = TEXTSTEP.getContainerSize();
+            var maxX = container.width - this.width;
+            var maxY = container.height - this.height;
+            var x = e.clientX - container.x - this.drag.x;
+            var y = e.clientY - container.y - this.drag.y;
+            this.x = Math.min(maxX, Math.max(0, x));
+            this.y = Math.min(maxY, Math.max(0, y));
+            this.elem.style.left = this.x + 'px';
+            this.elem.style.top = this.y + 'px';
+        }
+    }
+};
+
+Frame.prototype.mouseUp = function (e) {
+    if (this.drag !== null) {
+        this.drag = null;
+        this.updateElem();
     }
 };
 
