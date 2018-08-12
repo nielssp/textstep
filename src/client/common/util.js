@@ -23,6 +23,24 @@ export function serializeQuery(query) {
     return pairs.join('&');
 }
 
+export function eventManager() {
+    var em = function (eventType, handler) {
+        if (!em.eventHandlers.hasOwnProperty(eventType)) {
+            em.eventHandlers[eventType] = [];
+        }
+        em.eventHandlers[eventType].push(handler);
+    };
+    em.eventHandlers = {};
+    em.fire = function (eventType, eventData) {
+        if (em.eventHandlers.hasOwnProperty(eventType)) {
+            em.eventHandlers[eventType].forEach(function (handler) {
+                handler(eventData);
+            });
+        }
+    };
+    return em;
+}
+
 export function eventify(prototype) {
     prototype.on = function (eventType, handler) {
         if (!this.hasOwnProperty('eventHandlers')) {
