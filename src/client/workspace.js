@@ -136,6 +136,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
             ]);
             loginFrame.contentElem.appendChild(loginFrame.formElem);
             loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.elem]);
+            loginFrame.receiveFocus();
             loginFrame.elem.style.display = '';
             root.appendChild(loginFrame.overlayElem);
         }
