@@ -49,7 +49,6 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     app.require('libtest').test();
 
     var frame = app.createFrame('Test');
-    frame.setFloating(true);
 
     frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
 

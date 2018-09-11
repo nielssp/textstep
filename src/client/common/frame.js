@@ -17,9 +17,7 @@ export default function Frame(title) {
     this.title = title;
     this.isOpen = false;
     this.isVisible = false;
-    this.isFloating = false;
     this.hasFocus = false;
-    this.drag = null;
 
     this.x = 0;
     this.y = 0;
@@ -54,16 +52,6 @@ export default function Frame(title) {
 
     this.elem.style.display = 'none';
 
-    this.titleElem.onmousedown = (e) => {
-        e.preventDefault();
-        var rect = this.elem.getBoundingClientRect();
-        this.drag = {
-            x: e.clientX - rect.x,
-            y: e.clientY - rect.y
-        };
-        this.updateElem();
-    };
-
     this.elem.onclick = () => this.requestFocus();
 
     var closeButton = ui.elem('a', {'data-action': 'close'});
@@ -75,14 +63,8 @@ util.eventify(Frame.prototype);
 
 Frame.prototype.updateElem = function () {
     this.elem.className = 'frame';
-    if (this.isFloating) {
-        this.elem.className += ' frame-floating';
-    }
     if (this.hasFocus) {
         this.elem.className += ' frame-focus';
-    }
-    if (this.drag !== null) {
-        this.elem.className += ' frame-dragging';
     }
 };
 
@@ -102,11 +84,6 @@ Frame.prototype.createToolbar = function () {
     var toolbar = new Toolbar(this);
     this.bodyElem.insertBefore(toolbar.elem, this.contentElem);
     return toolbar;
-};
-
-Frame.prototype.setFloating = function (floating) {
-    this.isFloating = floating;
-    this.updateElem();
 };
 
 Frame.prototype.alert = function (title, message) {
@@ -369,26 +346,9 @@ Frame.prototype.mouseDown = function (e) {
 };
 
 Frame.prototype.mouseMove = function (e) {
-    if (this.drag !== null) {
-        if (this.isFloating) {
-            var container = TEXTSTEP.getContainerSize();
-            var maxX = container.width - this.width;
-            var maxY = container.height - this.height;
-            var x = e.clientX - container.x - this.drag.x;
-            var y = e.clientY - container.y - this.drag.y;
-            this.x = Math.min(maxX, Math.max(0, x));
-            this.y = Math.min(maxY, Math.max(0, y));
-            this.elem.style.left = this.x + 'px';
-            this.elem.style.top = this.y + 'px';
-        }
-    }
 };
 
 Frame.prototype.mouseUp = function (e) {
-    if (this.drag !== null) {
-        this.drag = null;
-        this.updateElem();
-    }
 };
 
 Frame.prototype.appendChild = function (element) {

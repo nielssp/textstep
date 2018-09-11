@@ -154,5 +154,25 @@ Dialog.file = function (parent, title) {
     dialog.bodyElem.style.width = '400px';
     dialog.bodyElem.style.height = '300px';
     dialog.onOpen = () => dirView.cd('/');
+    var okButton = ui.elem('button', {}, ['OK']);
+    okButton.onclick = function () {
+        dialog.close(dirView.selection);
+    };
+    okButton.onkeydown = function (e) {
+        if (e.key === 'Escape') {
+            dialog.close(null);
+        }
+    };
+    var cancelButton = ui.elem('button', {}, ['Cancel']);
+    cancelButton.onclick = function () {
+        dialog.close(null);
+    };
+    cancelButton.onkeydown = function (e) {
+        if (e.key === 'Escape') {
+            dialog.close(null);
+        }
+    };
+    var footer = ui.elem('div', {'class': 'frame-footer frame-footer-buttons'}, [okButton, ' ', cancelButton]);
+    dialog.bodyElem.appendChild(footer);
     return dialog.open();
 };

@@ -64,10 +64,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         }
     }
 
-    &.frame-floating {
-        position: absolute;
-    }
-
     &.frame-focus {
         z-index: 1000;
         box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
