@@ -23,6 +23,26 @@ export function serializeQuery(query) {
     return pairs.join('&');
 }
 
+export function unserializeQuery(query) {
+    var pairs = query.replace(/^\?/, '').split('&');
+    var object = {};
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        if (pair.length == 2) {
+            if (pair[0].endsWith('[]')) {
+                var key = decodeURIComponent(pair[0].replace(/\[\]$/, ''));
+                if (!object.hasOwnProperty(key)) {
+                    object[key] = [];
+                }
+                object[key].push(decodeURIComponent(pair[1]));
+            } else {
+                object[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+            }
+        }
+    }
+    return object;
+}
+
 export function eventManager() {
     var em = function (eventType, handler) {
         if (!em.eventHandlers.hasOwnProperty(eventType)) {

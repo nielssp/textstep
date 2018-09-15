@@ -112,6 +112,10 @@ TEXTSTEP.initApp('files', function (app) {
       .addItem('Rename', 'edit-rename', 'rename')
       .addItem('Delete seleciton', 'edit-trash', 'trash');
 
+    dirView.on('fileOpen', function (path) {
+        TEXTSTEP.open(path);
+    });
+
     /*
     frame.defineAction('back', back, ['nav']);
     frame.defineAction('foreward', forward, ['nav']);

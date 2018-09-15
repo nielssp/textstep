@@ -18,6 +18,7 @@ export default function Frame(title) {
     this.isOpen = false;
     this.isVisible = false;
     this.hasFocus = false;
+    this.className = '';
 
     this.x = 0;
     this.y = 0;
@@ -66,6 +67,7 @@ Frame.prototype.updateElem = function () {
     if (this.hasFocus) {
         this.elem.className += ' frame-focus';
     }
+    this.elem.className += ' ' + this.className;
 };
 
 Frame.prototype.addMenu = function (title) {

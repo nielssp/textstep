@@ -246,6 +246,27 @@ TEXTSTEP.initLib = function (name, dependencies, init) {
     });
 };
 
+TEXTSTEP.open = function (path) {
+    var fileName = paths.fileName(path);
+    if (fileName.match(/\.md/i)) {
+        TEXTSTEP.run('write', {path: path});
+    } else if (fileName.match(/\.webm/i)) {
+        TEXTSTEP.run('play', {path: path});
+    } else if (fileName.match(/\.(?:jpe?g|png|gif|ico)/i)) {
+        TEXTSTEP.run('view', {path: path});
+    } else if (fileName.match(/\.(?:php|log|json|html|css|js|sass|scss)/i)) {
+        TEXTSTEP.run('code', {path: path});
+    } else {
+        TEXTSTEP.get('list-files', {path: path}).then(function (data) {
+            if (data.type === 'directory') {
+                TEXTSTEP.run('files', {path: path});
+            } else {
+                TEXTSTEP.run('code', {path: path});
+            }
+        });
+    }
+}
+
 TEXTSTEP.run = function (name, args) {
     return new Promise(function (resolve, reject) {
         args = args || {};
@@ -523,10 +544,13 @@ TEXTSTEP.init = function (root) {
         root.appendChild(menu);
         root.appendChild(main);
         root.appendChild(dock);
-        // TODO: find out what to run
         if (location.hash.length > 1) {
-            var start = location.hash.slice(1);
-            TEXTSTEP.run(start).catch(function (error) {
+            var start = location.hash.slice(1).split('?');
+            var args = {};
+            if (start.length > 1) {
+                args = util.unserializeQuery(start[1]);
+            }
+            TEXTSTEP.run(start[0], args).catch(function (error) {
                 alert('Could not start application: ' + start + ': ' + error);
             });
         } else {

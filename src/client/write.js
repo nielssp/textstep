@@ -156,7 +156,7 @@ function reopen(args) {
     }
 }
 
-function close(app, action) {
+function close(action) {
     var unsaved = null;
     if (action !== 'confirm') {
         for (var path in buffers) {
@@ -182,6 +182,7 @@ function close(app, action) {
         simplemde = null;
         buffers = [];
         bufferPanel.innerHTML = '';
+        self.close();
         return true;
     }
 }
@@ -261,7 +262,7 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
     app.dockFrame.appendChild(TEXTSTEP.getIcon('editor', 32));
 
     frame = self.createFrame('Code');
-    frame.elem.className += ' editor-frame';
+    frame.className += ' editor-frame';
     frame.bodyElem.className += ' libedit-simplemde';
 
     textarea = ui.elem('textarea');

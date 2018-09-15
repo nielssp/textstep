@@ -148,6 +148,7 @@ function close() {
     codemirror = null;
     buffers = [];
     bufferPanel.innerHTML = '';
+    self.close();
     return true;
 }
 
@@ -211,7 +212,7 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     app.dockFrame.appendChild(TEXTSTEP.getIcon('code-editor', 32));
 
     frame = self.createFrame('Code');
-    frame.elem.className += ' editor-frame';
+    frame.className += ' editor-frame';
     frame.bodyElem.className += ' libedit-codemirror';
 
     textarea = ui.elem('textarea');
