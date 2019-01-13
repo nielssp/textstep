@@ -9,7 +9,7 @@ namespace Blogstep;
 /**
  * BlogSTEP module collection.
  * @property \Jivoo\Http\Route\AssetScheme $assets
- * @property \Jivoo\View\View $view
+ * @property View $view
  * @property \Jivoo\Log\Logger $logger
  * @property Route\SnippetScheme $snippets
  * @property Main $main
@@ -30,7 +30,7 @@ class Modules extends \Jivoo\Modules
 {
     protected $types = [
         'assets' => 'Jivoo\Http\Route\AssetScheme',
-        'view' => 'Jivoo\View\View',
+        'view' => 'Blogstep\View',
         'logger' => 'Jivoo\Log\Logger',
         'snippets' => 'Blogstep\Route\SnippetScheme',
         'main' => 'Blogstep\Main',

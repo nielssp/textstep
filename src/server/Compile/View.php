@@ -8,7 +8,7 @@ namespace Blogstep\Compile;
 /**
  * Description of View
  */
-class View extends \Jivoo\View\View
+class View extends \Blogstep\View
 {
     private $siteMap;
 

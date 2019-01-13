@@ -13,8 +13,8 @@ class Workspace extends \Blogstep\Snippet
     
     public function get()
     {
-        $this->viewData['run'] = \Jivoo\View\Html::h(implode('/', $this->routeParameters));
-        $this->viewData['args'] = \Jivoo\View\Html::h(\Jivoo\Json::encode($this->request->query));
+        $this->viewData['run'] = \Blogstep\Html::h(implode('/', $this->routeParameters));
+        $this->viewData['args'] = \Blogstep\Html::h(\Jivoo\Json::encode($this->request->query));
         return $this->render();
     }
 }

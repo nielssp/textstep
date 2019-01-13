@@ -64,7 +64,7 @@ abstract class Snippet
         $this->m->required('assets', 'Jivoo\Http\Route\AssetScheme');
         $this->m->required('router', 'Jivoo\Http\Router');
         $this->m->required('token', 'Jivoo\Http\Token');
-        $this->m->required('view', 'Jivoo\View\View');
+        $this->m->required('view', 'Blogstep\View');
         $this->m->required('snippets', 'Blogstep\Route\SnippetScheme');
 
         $this->init();
