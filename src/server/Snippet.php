@@ -54,6 +54,11 @@ abstract class Snippet
     protected $response = null;
 
     /**
+     * @var bool
+     */
+    protected $csrfCheck = false;
+
+    /**
      * Construct snippet.
      *
      * @param Modules $m Module collection.
@@ -184,6 +189,8 @@ abstract class Snippet
         $this->response = $response;
         $this->routeParameters = $parameters;
         $this->parameterValues = array();
+        $this->m->auth->token = new TokenAuthentication($this->request);
+        $this->m->auth->authenticate(null);
         foreach ($this->parameters as $offset => $name) {
             if (isset($parameters[$name])) {
                 $this->parameterValues[$name] = $parameters[$name];
@@ -268,12 +275,14 @@ abstract class Snippet
         if (! in_array($this->request->getMethod(), ['POST', 'PATCH', 'PUT', 'DELETE'])) {
             return false;
         }
-        if (!$this->request->hasHeader('X-Csrf-Token')) {
+        if ($this->csrfCheck) {
+          if (!$this->request->hasHeader('X-Csrf-Token')) {
             return false;
-        }
-        $token = $this->request->getHeaderLine('X-Csrf-Token');
-        if ($this->m->token->__toString() !== $token) {
+          }
+          $token = $this->request->getHeaderLine('X-Csrf-Token');
+          if ($this->m->token->__toString() !== $token) {
             return false;
+          }
         }
         if (!isset($key)) {
             return true;

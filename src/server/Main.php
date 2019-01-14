@@ -173,9 +173,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
 
         $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
-        $this->m->auth->session = new \Jivoo\Security\Authentication\SessionAuthentication($this->m->session);
-        $this->m->auth->cookie = new \Jivoo\Security\Authentication\CookieAuthentication($this->m->cookies);
-        $this->m->auth->authenticate(null);
 
         if (php_sapi_name() === 'cli') {
             // Open shell if running from CLI

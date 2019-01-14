@@ -10,17 +10,11 @@ class Login extends \Blogstep\Snippet
     
     public function post(array $data)
     {
-        if ($this->m->auth->isLoggedIn()) {
-            return $this->ok();
-        }
         $this->m->auth->form = new \Jivoo\Security\Authentication\FormAuthentication();
         if ($this->m->auth->authenticate($data)) {
-            if (isset($data['remember'])) {
-                $this->m->auth->cookie->create();
-            } else {
-                $this->m->auth->session->create();
-            }
-            return $this->ok();
+            return $this->json([
+              'session_id' => $this->m->users->createSession($this->m->auth->user, time() + 36000)
+            ]);
         } else {
             return $this->error('Invalid username or password', \Jivoo\Http\Message\Status::FORBIDDEN);
         }

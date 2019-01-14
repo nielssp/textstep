@@ -38,15 +38,13 @@ var apps = {};
 var libs = {};
 var frames = {};
 
+var sessionId = null;
+
 var focus = null;
 
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
 TEXTSTEP.LOAD_TIMEOUT = 10000;
-
-TEXTSTEP.getToken = function () {
-    return cookies.get('csrf_token');
-};
 
 TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
     return new Promise(function (resolve, reject) {
@@ -55,8 +53,9 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
         if (responseType !== null) {
             xhr.responseType = responseType;
         }
-        var token = TEXTSTEP.getToken();
-        xhr.setRequestHeader('X-Csrf-Token', token);
+        if (sessionId !== null) {
+            xhr.setRequestHeader('X-Auth-Token', sessionId);
+        }
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.onload = function () {
@@ -74,10 +73,7 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                 }
                 resolve(response);
             } else {
-                var newToken = TEXTSTEP.getToken();
-                if (newToken !== token && xhr.status === 400) {
-                    TEXTSTEP.ajax(url, method, data, responseType).then(resolve, reject);
-                } else if (xhr.status === 401) {
+                if (xhr.status === 401) {
                     TEXTSTEP.requestLogin().then(
                         () => TEXTSTEP.ajax(url, method, data, responseType).then(resolve, reject),
                         reject
@@ -96,6 +92,22 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
     });
 };
 
+TEXTSTEP.url = function (action, data = null) {
+    if (data === null) {
+        data = {};
+    }
+    if (sessionId !== null) {
+        data.access_token = sessionId;
+    }
+    var query = util.serializeQuery(data);
+    if (action.indexOf('?') < 0) {
+        action += '?' + query;
+    } else {
+        action += '&' + query;
+    }
+    return TEXTSTEP.SERVER + '/' + action;
+};
+
 TEXTSTEP.get = function (action, data = null, responseType = null) {
     if (data !== null) {
         var query = util.serializeQuery(data);
@@ -107,6 +119,7 @@ TEXTSTEP.get = function (action, data = null, responseType = null) {
     }
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'get', null, responseType);
 };
+
 TEXTSTEP.post = function (action, data = null, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'post', data, responseType);
 };
@@ -159,7 +172,8 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                 password: loginFrame.formElem.password.value,
                 remember: loginFrame.formElem.remember.checked ? 'remember' : null
             };
-            TEXTSTEP.post('login', data).then(function () {
+            TEXTSTEP.post('login', data).then(function (data) {
+                sessionId = data.session_id;
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
                 loginFrame.formElem.remember.disabled = false;
@@ -310,7 +324,7 @@ function loadApp(name) {
             };
             dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
-            var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/apps/' + name + '.app/main.js';
+            var scriptSrc = TEXTSTEP.url('download', {path: '/dist/apps/' + name + '.app/main.js'});
             apps[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
             apps[name].scriptElem.onerror = function () {
                 dock.removeChild(apps[name].dockFrame);
@@ -350,7 +364,7 @@ function loadLib(name) {
         } else {
             libs[name] = new Lib(name);
             libs[name].deferred = {promise: promise, resolve: resolve, reject: reject};
-            var scriptSrc = TEXTSTEP.SERVER + '/download?path=/dist/lib/' + name + '.js';
+            var scriptSrc = TEXTSTEP.url('download', {path: '/dist/lib/' + name + '.js'});
             libs[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
             libs[name].scriptElem.onerror = function () {
                 root.removeChild(script);
@@ -382,7 +396,7 @@ function unloadLib(name) {
 TEXTSTEP.getIcon = function (name, size = 32) {
     // TODO: onerror
     return ui.elem('img', {
-        src: TEXTSTEP.SERVER + '/download?path=/dist/icons/default/' + size + '/' + name + '.png',
+        src: TEXTSTEP.url('download', {path: '/dist/icons/default/' + size + '/' + name + '.png'}),
         width: size,
         height: size
     });
