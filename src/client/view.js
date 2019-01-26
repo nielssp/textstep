@@ -38,6 +38,11 @@ TEXTSTEP.initApp('view', function (app) {
     app.onOpen = function (args) {
         if (!frame.isOpen) {
             frame.open();
+        } else {
+            frame.requestFocus();
+            if (!args.hasOwnProperty('path')) {
+                return;
+            }
         }
         if (viewer !== null) {
             viewer.destroy();

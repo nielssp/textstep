@@ -14,8 +14,8 @@ class Upload extends \Blogstep\AuthenticatedSnippet
     public function post(array $data)
     {
         $path = '';
-        if (isset($this->request->query['path'])) {
-            $path = $this->request->query['path'];
+        if (isset($data['path'])) {
+            $path = $data['path'];
         }
         $fs = $this->m->files->get($path);
         if (!$fs->isWritable()) {

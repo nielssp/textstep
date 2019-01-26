@@ -16,7 +16,7 @@ function newFile() {
     frame.prompt('New file', 'Enter filename:').then(function (name) {
         if (name !== null) {
             if (name === '') {
-                frame.alert('New file', 'Invalid name');
+                frame.alert('Invalid name', 'The filename cannot be empty');
                 return;
             }
             var path = dirView.cwd;
@@ -32,9 +32,28 @@ function newFile() {
     });
 }
 
+function download() {
+    for (var i = 0; i < dirView.selection.length; i++) {
+        var path = dirView.selection[i];
+        var name = paths.fileName(path);
+        var iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = TEXTSTEP.url('download/' + encodeURIComponent(name), {
+            force: true,
+            path: path
+        });
+        iframe.onload = () => {
+            // TODO: this is never called...
+            console.log('download finished');
+            iframe.remove();
+        };
+        document.body.appendChild(iframe);
+    }
+}
+
 function rename() {
     if (dirView.selection.length !== 1) {
-        alert('Cannot rename multiple files');
+        frame.alert('Multiple files selected', 'It is not possible to rename multiple files');
         return;
     }
     var path = dirView.selection[0];
@@ -42,7 +61,7 @@ function rename() {
     frame.prompt('Rename', 'Enter filename:', paths.fileName(path)).then(function (name) {
         if (name !== null) {
             if (name === '') {
-                self.alert('Rename', 'Invalid name');
+                frame.alert('Invalid name', 'The filename cannot be empty');
                 return;
             }
             var destination = paths.convert(name, paths.dirName(path));
@@ -91,7 +110,9 @@ TEXTSTEP.initApp('files', function (app) {
     frame.defineAction('reload', () => dirView.reload(), ['nav']);
 
     frame.defineAction('new-file', newFile, ['dir']);
+    frame.defineAction('upload', () => dirView.upload(), ['dir']);
 
+    frame.defineAction('download', download, ['selection']);
     frame.defineAction('rename', rename, ['selection']);
     frame.defineAction('trash', trash, ['selection']);
 
@@ -105,15 +126,30 @@ TEXTSTEP.initApp('files', function (app) {
 
     toolbar.createGroup()
       .addItem('New file', 'edit-new-file', 'new-file');
+    toolbar.createGroup()
+      .addItem('Upload file', 'edit-upload', 'upload');
 
     toolbar.addSeparator();
 
     toolbar.createGroup()
+      .addItem('Download', 'edit-copy', 'download')
       .addItem('Rename', 'edit-rename', 'rename')
       .addItem('Delete seleciton', 'edit-trash', 'trash');
 
     dirView.on('fileOpen', function (path) {
         TEXTSTEP.open(path);
+    });
+
+    dirView.on('cwdChanged', function (path) {
+        self.setArgs({path: path});
+    });
+
+    dirView.on('selectionChanged', function (selection) {
+        if (selection.length > 0) {
+            frame.enableGroup('selection');
+        } else {
+            frame.disableGroup('selection');
+        }
     });
 
     /*
@@ -184,11 +220,17 @@ TEXTSTEP.initApp('files', function (app) {
     self.onOpen = function (args) {
         if (!frame.isOpen) {
             frame.open();
-            dirView.cd('/content');
+            var path = '/';
+            if (args.hasOwnProperty('path')) {
+                path = args['path'];
+            }
+            dirView.cd(path);
         } else {
             frame.requestFocus();
             if (args.hasOwnProperty('path')) {
-                reopen(args);
+                dirView.cd(args['path']);
+            } else {
+                self.setArgs({path: dirView.cwd});
             }
         }
     };

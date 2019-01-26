@@ -253,14 +253,14 @@ class File implements \IteratorAggregate, HasRoute
         return strpos($mode, 'w') !== false;
     }
 
-    public function getBrief()
+    public function getBrief($iso8601 = false)
     {
         return [
             'name' => $this->getName(),
             'path' => $this->getPath(),
             'type' => $this->getType(),
-            'modified' => $this->getModified(),
-            'created' => $this->getCreated(),
+            'modified' => $iso8601 ? date('c', $this->getModified()) : $this->getModified(),
+            'created' => $iso8601 ? date('c', $this->getCreated()) : $this->getCreated(),
             'owner' => $this->getOwner(),
             'group' => $this->getGroup(),
             'mode' => $this->getMode(),
@@ -271,12 +271,12 @@ class File implements \IteratorAggregate, HasRoute
         ];
     }
 
-    public function getDetailed()
+    public function getDetailed($iso8601 = false)
     {
-        $brief = $this->getBrief();
+        $brief = $this->getBrief($iso8601);
         $brief['files'] = [];
         foreach ($this as $file) {
-            $brief['files'][] = $file->getBrief();
+            $brief['files'][] = $file->getBrief($iso8601);
         }
         return $brief;
     }

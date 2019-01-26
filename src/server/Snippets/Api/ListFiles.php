@@ -19,8 +19,8 @@ class ListFiles extends \Blogstep\AuthenticatedSnippet
         }
         $fs = $this->m->files->get($path);
         if ($fs->isReadable()) {
-            return $this->json($fs->getDetailed());
+            return $this->json($fs->getDetailed(true));
         }
-        return $this->json($fs->getBrief());
+        return $this->json($fs->getBrief(true));
     }
 }

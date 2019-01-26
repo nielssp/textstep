@@ -69,7 +69,7 @@ App.prototype.init = function () {
 App.prototype.open = function (args) {
     if (this.state !== 'initialized' && this.state !== 'running') {
         console.error(this.name + ': open: unexpected state:', this.state);
-        return;
+        throw 'unexpected state: ' + this.state;
     }
     this.state = 'opening';
     if (this.onOpen !== null) {

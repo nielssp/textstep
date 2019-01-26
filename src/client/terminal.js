@@ -50,10 +50,9 @@ var commands = {
         exec('list-files?path=' + cwd, {}, function (data) {
             if (typeof data.files !== 'undefined') {
                 data.files.forEach(function (file) {
-                    var line = file.modeString;
-                    line += ' \t' + file.owner;
+                    var line = file.owner;
                     line += ' \t' + file.group;
-                    var date = new Date(file.modified * 1000);
+                    var date = new Date(file.modified);
                     line += ' \t' + date.getFullYear();
                     line += ' ' + months[date.getMonth()];
                     line += ' ' + date.getDate();
@@ -230,8 +229,12 @@ TEXTSTEP.initApp('terminal', function (app) {
     frame.appendChild(terminal);
     
     frame.onFocus = function () {
-        terminal.focus();
+        if (!terminal.readOnly) {
+            terminal.focus();
+        }
     };
+
+    frame.onClose = () => app.close();
 
     app.dockFrame.innerHTML = '';
     app.dockFrame.appendChild(TEXTSTEP.getIcon('terminal', 32));

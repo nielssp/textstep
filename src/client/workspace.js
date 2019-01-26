@@ -56,7 +56,6 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
         if (sessionId !== null) {
             xhr.setRequestHeader('X-Auth-Token', sessionId);
         }
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.onload = function () {
             if (xhr.status === 200) {
@@ -85,7 +84,12 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
         };
         xhr.onerror = () => reject(xhr);
         if (data !== null) {
-            xhr.send(util.serializeQuery(data));
+            if (data instanceof FormData) {
+                xhr.send(data);
+            } else {
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                xhr.send(util.serializeQuery(data));
+            }
         } else {
             xhr.send();
         }
@@ -170,10 +174,13 @@ TEXTSTEP.requestLogin = function(overlay = false) {
             var data = {
                 username: loginFrame.formElem.username.value,
                 password: loginFrame.formElem.password.value,
-                remember: loginFrame.formElem.remember.checked ? 'remember' : null
             };
             TEXTSTEP.post('login', data).then(function (data) {
                 sessionId = data.session_id;
+                if (loginFrame.formElem.remember.checked) {
+                    cookies.set('textstep_session', sessionId, {expires: 365});
+                    // TODO: extend session lifetime in backend
+                }
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
                 loginFrame.formElem.remember.disabled = false;
@@ -270,6 +277,8 @@ TEXTSTEP.open = function (path) {
         TEXTSTEP.run('view', {path: path});
     } else if (fileName.match(/\.(?:php|log|json|html|css|js|sass|scss)/i)) {
         TEXTSTEP.run('code', {path: path});
+    } else if (fileName.match(/\.app/i)) {
+        TEXTSTEP.run(fileName.replace(/\.app/i, ''));
     } else {
         TEXTSTEP.get('list-files', {path: path}).then(function (data) {
             if (data.type === 'directory') {
@@ -317,10 +326,18 @@ function loadApp(name) {
                 ui.elem('label', {}, [name])
             ]);
             apps[name].dockFrame.onmousedown = function (e) {
+                if (e.button === 1) {
+                    if (apps.hasOwnProperty(name)) {
+                        apps[name].close();
+                    }
+                }
                 e.preventDefault();
             };
             apps[name].dockFrame.onclick = function (e) {
-                TEXTSTEP.run(name);
+                TEXTSTEP.run(name).catch((e) => {
+                    console.error('Could not restore ' + name + ': ' + e);
+                    unloadApp(name);
+                });
             };
             dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
@@ -551,10 +568,28 @@ window.onbeforeunload = function (event) {
     }
 };
 
+function requestAuthenticatedUser() {
+    if (cookies.get().hasOwnProperty('textstep_session')) {
+        sessionId = cookies.get('textstep_session');
+    }
+    return new Promise((resolve, reject) => {
+        function handleResult(user) {
+            if (user === null) {
+                TEXTSTEP.requestLogin().then(
+                    () => TEXTSTEP.get('who-am-i', {}, 'json').then(handleResult, reject)
+                );
+            } else {
+                resolve(user);
+            }
+        };
+        TEXTSTEP.get('who-am-i', {}, 'json').then(handleResult, reject);
+    });
+}
+
 TEXTSTEP.init = function (root) {
-    TEXTSTEP.get('who-am-i', {}, 'json').then(function (data) {
-        workspaceMenu.setTitle('Workspace (' + data.username + ')');
-        workspaceMenu.header.appendChild(ui.elem('span', {'class': 'version'}, data.version));
+    requestAuthenticatedUser().then(user => {
+        workspaceMenu.setTitle('Workspace (' + user.username + ')');
+        workspaceMenu.header.appendChild(ui.elem('span', {'class': 'version'}, user.version));
         root.appendChild(menu);
         root.appendChild(main);
         root.appendChild(dock);
@@ -568,8 +603,8 @@ TEXTSTEP.init = function (root) {
                 alert('Could not start application: ' + start + ': ' + error);
             });
         } else {
-            TEXTSTEP.run(data.shell).catch(function (error) {
-                alert('Could not start application: ' + data.shell + ': ' + error);
+            TEXTSTEP.run(user.shell).catch(function (error) {
+                alert('Could not start application: ' + user.shell + ': ' + error);
             });
         }
     });

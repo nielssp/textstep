@@ -8,11 +8,15 @@ namespace Blogstep\Snippets\Api;
 /**
  * Current user information.
  */
-class WhoAmI extends \Blogstep\AuthenticatedSnippet
+class WhoAmI extends \Blogstep\Snippet
 {
     
     public function get()
     {
+        if (! $this->m->auth->isLoggedIn()) {
+            return $this->json(null);
+        }
+        $this->m->files->setAuthentication($this->m->auth->user);
         $user = $this->m->auth->user;
         return $this->json([
             'username' => $user->getName(),

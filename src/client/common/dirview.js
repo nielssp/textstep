@@ -68,6 +68,33 @@ DirView.prototype.open = function (path) {
     this.fire('fileOpen', path);
 };
 
+DirView.prototype.upload = function () {
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.style.display = 'none';
+    document.body.appendChild(fileInput);
+    fileInput.click();
+    fileInput.onchange = () => {
+        var files = fileInput.files;
+        var data = new FormData();
+        data.append('path', this.cwd);
+        for (var i = 0; i < files.length; i++) {
+            data.append('file' + i, files[i]);
+            /*addFile($column, {
+                name: files[i].name,
+                path: $column.data('path') + '/' + files[i].name,
+                type: 'uploading'
+            });*/
+        }
+        TEXTSTEP.post('upload',  data).then(() => {
+            this.reload();
+        }).finally(() => {
+            fileInput.outerHTML = '';
+        });
+        return false;
+    };
+};
+
 DirView.prototype.setSelection = function (path) {
     var dir = paths.dirName(path);
     if (this.cwd !== dir) {
