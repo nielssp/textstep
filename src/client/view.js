@@ -1,62 +1,54 @@
 /*
- * BlogSTEP 
+ * TEXTSTEP 
  * Copyright (c) 2017 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var $ = require('jquery');
-var paths = require('./common/paths');
+var paths = TEXTSTEP.paths;
+var ui = TEXTSTEP.ui;
 
-require('viewerjs/dist/viewer.min.css');
+require('./view.scss');
 
 var Viewer = require('viewerjs');
 
-BLOGSTEP.init('viewer', function (app) {
-    var $viewer = app.frame.find('#viewer');
+TEXTSTEP.initApp('view', function (app) {
+    app.dockFrame.innerHTML = '';
+    app.dockFrame.appendChild(TEXTSTEP.getIcon('generic-image', 32));
+
+    var frame = app.createFrame('View');
+    var imageList = document.createElement('div');
+    imageList.className = 'image-list';
+    frame.bodyElem.className += ' viewapp-viewerjs';
+    frame.appendChild(imageList);
+    
+    var menu = frame.addMenu('View');
+    menu.addItem('Close', 'close');
+
     var viewer = null;
     var first = true;
     
-    var menu = app.addMenu('Viewer');
-    menu.addItem('Close', 'close');
-    
-    app.onOpen = function (app, args) {
-        app.setTitle(args.path + ' – Viewer');
-        first = true;
-        BLOGSTEP.get('list-files', { path: paths.dirName(args.path) }).done(function (data) {
-            for (var i = 0; i < data.files.length; i++) {
-                if (data.files[i].name.match(/\.(?:jpe?g|png|gif|ico)/i)) {
-                    var $img = $('<img/>');
-                    $img.attr('src', BLOGSTEP.PATH + '/api/download?path=' + data.files[i].path);
-                    $img.attr('alt', data.files[i].name);
-                    $img.data('path', data.files[i].path);
-                    if (data.files[i].path === args.path) {
-                        $img.addClass('active');
-                    }
-                    $viewer.append($img);
-                }
-            }
-            
-            viewer = new Viewer($viewer[0], {
-                inline: true,
-                viewed: function (e) {
-                    if (first) {
-                        viewer.view($viewer.children('.active').index());
-                        first = false;
-                        e.stopPropagation();
-                        return false;
-                    }
-                    $viewer.find('img.active').removeClass('active');
-                    var $image = $(e.detail.originalImage);
-                    $image.addClass('active');
-                    app.setTitle($image.data('path') + ' – Viewer');
-                }
-            });
-        });
-    };
-    
-    app.onClose = function (app) {
+    frame.onClose = function (action) {
         viewer.destroy();
-        $viewer.empty();
+        viewer = null;
+        imageList.innerHTML = '';
+        app.close();
+    };
+
+    app.onOpen = function (args) {
+        if (!frame.isOpen) {
+            frame.open();
+        }
+        if (viewer !== null) {
+            viewer.destroy();
+            imageList.innerHTML = '';
+        }
+        frame.setTitle(args.path + ' – View');
+        var img = document.createElement('img');
+        img.src = TEXTSTEP.url('download', {path: args.path});
+        imageList.appendChild(img);
+        viewer = new Viewer(imageList, {
+            inline: true
+        });
     };
 });

@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: TSS API
+  version: "0.9.0-oas3"
+  description: ''
+components:
+  securitySchemes:
+    SessionId:
+      type: apiKey
+      in: header
+      name: X-Auth-Token
+servers:
+  - url: http://localhost/blogstep/index.php/api
+security:
+  - SessionId: []
+paths:
+  /login:
+    post:
+      description: log in
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+  /who-am-i:
+    get:
+      description: Retrieve username and home directory of current user
+      responses:
+        200:
+          description: List of files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The username
+                  home:
+                    type: string
+                    description: Absolute path to user's home directory
+                  shell:
+                    type: string
+                    description: The name of the shell application
+                  version:
+                    type: string
+                    description: Version string
+  /list-files:
+    get:
+      description: List files
+      parameters: 
+        - name: path
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: List of files
+  /download/{name}:
+    get:
+      description: Download file
+      parameters: 
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: File contents

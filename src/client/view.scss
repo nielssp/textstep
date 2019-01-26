@@ -1,0 +1,16 @@
+/*
+ * TEXTSTEP 
+ * Copyright (c) 2019 Niels Sonnich Poulsen (http://nielssp.dk)
+ * Licensed under the MIT license.
+ * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+ */
+
+.viewapp-viewerjs {
+    .frame-content {
+        background-color: #000;
+        .image-list {
+            display: none;
+        }
+    }
+    @import '~viewerjs/dist/viewer.min.css';
+}

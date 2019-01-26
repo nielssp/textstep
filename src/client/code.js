@@ -200,6 +200,14 @@ function newFile() {
     frame.alert('New file', 'not implemented');
 }
 
+function openFile() {
+    frame.file('Open file').then(function (choice) {
+        if (choice !== null && choice.length === 1) {
+            reopen({path: choice[0]});
+        }
+    });
+}
+
 function resizeView() {
     codemirror.refresh();
 }
@@ -224,11 +232,13 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
 
     frame.defineAction('save', saveFile);
     frame.defineAction('new', newFile);
+    frame.defineAction('open', openFile);
     frame.defineAction('close-buffer', closeBuffer);
     
     frame.bindKey('c-s', 'save');
     
     var menu = frame.addMenu('Code');
+    menu.addItem('Open', 'open');
     menu.addItem('New', 'new');
     menu.addItem('Save', 'save');
     menu.addItem('Close buffer', 'close-buffer');
