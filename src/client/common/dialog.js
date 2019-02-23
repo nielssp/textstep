@@ -7,6 +7,7 @@
 
 import * as ui from './ui';
 import DirView from './dirview';
+import Toolbar from './toolbar';
 
 export default function Dialog(parent) {
     this.deferred = null;
@@ -150,6 +151,12 @@ Dialog.file = function (parent, title) {
     var dialog = new Dialog(parent);
     dialog.setTitle(title);
     var dirView = new DirView();
+    var toolbar = new Toolbar();
+    toolbar.createGroup()
+      .addItem('Go up', 'go-up', () => dirView.goUp())
+      .addItem('Go to root', 'go-home', () => dirView.cd('/'))
+      .addItem('Reload', 'reload', () => dirView.reload());
+    dialog.bodyElem.appendChild(toolbar.elem);
     dialog.bodyElem.appendChild(dirView.elem);
     dialog.bodyElem.style.width = '400px';
     dialog.bodyElem.style.height = '300px';

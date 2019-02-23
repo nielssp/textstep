@@ -152,6 +152,9 @@ TEXTSTEP.initApp('files', function (app) {
         }
     });
 
+    frame.bindKey('F2', 'rename');
+    frame.bindKey('Delete', 'trash');
+
     /*
     frame.defineAction('back', back, ['nav']);
     frame.defineAction('foreward', forward, ['nav']);

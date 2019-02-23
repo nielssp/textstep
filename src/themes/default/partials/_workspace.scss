@@ -11,6 +11,8 @@ aside {
     margin: 10px 0 0 10px;
     overflow-y: auto;
     max-height: 100%;
+    flex-grow: 0;
+    flex-shrink: 0;
 
     header,
     .tool-frame > .tool-frame-head {
@@ -118,6 +120,8 @@ main {
     text-align: center;
     overflow-y: auto;
     max-height: 100%;
+    flex-grow: 0;
+    flex-shrink: 0;
     .dock-frame {
         position: relative;
         height: 64px;
@@ -219,28 +223,6 @@ main {
     }
     #dock {
         display: block;
-    }
-}
-
-#viewer, #player {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #000;
-    img {
-        display: none;
-    }
-}
-
-#player {
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    video {
-        max-width: 100%;
     }
 }
 

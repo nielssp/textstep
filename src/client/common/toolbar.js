@@ -7,7 +7,22 @@
 
 import * as ui from './ui';
 
+function ActionMap() {
+    this.actions = {};
+    this.actionGroups = {};
+}
+
+ActionMap.prototype.activate = function (action) {
+    action.apply(this);
+};
+
+ActionMap.prototype.bindAction = function (action, button) {
+};
+
 export default function Toolbar(frame) {
+    if (!frame) {
+        frame = new ActionMap();
+    }
     this.frame = frame;
     this.elem = ui.elem('div', {'class': 'frame-toolbar'});
 }

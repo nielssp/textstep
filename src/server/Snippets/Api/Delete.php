@@ -18,12 +18,12 @@ class Delete extends \Blogstep\AuthenticatedSnippet
         } elseif (isset($data['path'])) {
             $paths = [$data['path']];
         } else {
-            return $this->error('Expected data: path');
+            return $this->error('Expected data: path', \Jivoo\Http\Message\Status::BAD_REQUEST);
         }
         foreach ($paths as $path) {
             $fs = $this->m->files->get($path);
             if (!$fs->delete()) {
-                return $this->error('File could not be deleted');
+                return $this->error('File could not be deleted', \Jivoo\Http\Message\Status::BAD_REQUEST);
             }
         }
         return $this->ok();
