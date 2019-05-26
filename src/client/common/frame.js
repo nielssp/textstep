@@ -18,6 +18,7 @@ export default function Frame(title) {
     this.isOpen = false;
     this.isVisible = false;
     this.hasFocus = false;
+    this.wasResized = false;
     this.className = '';
 
     this.x = 0;
@@ -328,6 +329,10 @@ Frame.prototype.requestFocus = function () {
 Frame.prototype.receiveFocus = function () {
     this.hasFocus = true;
     this.updateElem();
+    if (this.wasResized) {
+        this.wasResized = false;
+        this.resized();
+    }
     if (this.onFocus !== null) {
         this.onFocus();
     }
@@ -342,6 +347,9 @@ Frame.prototype.loseFocus = function () {
 };
 
 Frame.prototype.resized = function () {
+    if (!this.hasFocus) {
+        this.wasResized = true;
+    }
     var rect = this.elem.getBoundingClientRect();
     this.width = rect.width;
     this.height = rect.height;
