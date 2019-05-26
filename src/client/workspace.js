@@ -15,6 +15,11 @@ import App from './common/app';
 import Lib from './common/lib';
 import Config from './Config';
 
+if (window.TEXTSTEP) {
+  alert('TEXTSTEP Workspace already loaded!');
+  throw 'Workspace already loaded';
+}
+
 window.TEXTSTEP = {};
 TEXTSTEP.cookies = cookies;
 TEXTSTEP.util = util;
@@ -180,6 +185,8 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                 if (loginFrame.formElem.remember.checked) {
                     cookies.set('textstep_session', sessionId, {expires: 365});
                     // TODO: extend session lifetime in backend
+                } else {
+                    cookies.set('textstep_session', sessionId);
                 }
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
@@ -483,6 +490,10 @@ TEXTSTEP.getContainerSize = function () {
     return main.getBoundingClientRect();
 };
 
+TEXTSTEP.toggleMenu = function () {
+  root.classList.toggle('show-menu');
+};
+
 function workspaceMenuAction(action) {
     switch (action) {
         case 'files':
@@ -566,6 +577,12 @@ window.onbeforeunload = function (event) {
             }
         }
     }
+};
+
+root.onclick = function (event) {
+  if (root.classList.contains('show-menu')) {
+    root.classList.toggle('show-menu');
+  }
 };
 
 function requestAuthenticatedUser() {

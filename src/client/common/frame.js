@@ -58,6 +58,13 @@ export default function Frame(title) {
     var closeButton = ui.elem('a', {'data-action': 'close'});
     closeButton.onclick = () => this.close();
     this.headElem.appendChild(ui.elem('div', {'class': 'frame-actions'}, [closeButton]));
+
+    var menuButton = ui.elem('a', {'data-action': 'toggle-menu'});
+    menuButton.onclick = e => {
+      e.stopPropagation();
+      TEXTSTEP.toggleMenu();
+    };
+    this.headElem.insertBefore(ui.elem('div', {'class': 'frame-actions'}, [menuButton]), this.headElem.children[0]);
 }
 
 util.eventify(Frame.prototype);
