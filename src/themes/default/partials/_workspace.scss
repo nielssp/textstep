@@ -192,6 +192,7 @@ main {
             box-shadow: 1px 0 5px #000000;
             display: block;
             position: fixed;
+            margin: 0;
             top: 0px;
             left: 0px;
             bottom: 0px;
@@ -208,6 +209,14 @@ main {
             right: 0px;
             bottom: 0px;
             z-index: 1000;
+        }
+    }
+    body.show-desktop {
+        aside {
+            display: block;
+        }
+        #dock {
+            display: block;
         }
     }
 }
@@ -237,12 +246,15 @@ main {
     left: 0px;
     right: 0px;
     bottom: 0px;
-    z-index: 1000;
+    z-index: 1001;
     &.login-overlay-dark {
         background-color: rgba(0, 0, 0, 0.7);
         & > .frame {
             box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
         }
+    }
+    & > .frame > .frame-head > .frame-actions {
+        display: none;
     }
 }
 

@@ -78,7 +78,7 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                 resolve(response);
             } else {
                 if (xhr.status === 401) {
-                    TEXTSTEP.requestLogin().then(
+                    TEXTSTEP.requestLogin(true).then(
                         () => TEXTSTEP.ajax(url, method, data, responseType).then(resolve, reject),
                         reject
                     );
@@ -451,7 +451,6 @@ TEXTSTEP.closeFrame = function (frame) {
         if (focus === frame) {
             focus.loseFocus();
             focus = null;
-            // TODO: focus next frame
         }
         frame.isOpen = false;
         main.removeChild(frame.elem);
@@ -463,6 +462,16 @@ TEXTSTEP.closeFrame = function (frame) {
             if (frame.toolFrames.hasOwnProperty(tool)) {
                 menu.removeChild(frame.toolFrames[tool].elem);
             }
+        }
+        if (!focus) {
+            // TODO: use stack of most recent frames
+            for (var id in frames) {
+                if (frames.hasOwnProperty(id)) {
+                    TEXTSTEP.focusFrame(frames[id]);
+                    return;
+                }
+            }
+            root.classList.add('show-desktop');
         }
     }
 };
@@ -479,6 +488,7 @@ TEXTSTEP.focusFrame = function (frame) {
         focus.show();
         focus.receiveFocus();
         document.title = frame.title;
+        root.classList.remove('show-desktop');
     }
 };
 

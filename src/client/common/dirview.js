@@ -315,6 +315,23 @@ function DirFile(column, data) {
     this.selected = false;
 
     this.elem = ui.elem('a', {'draggable': true, 'href': '#'}, [this.name]);
+    this.elem.addEventListener('touchend', e => {
+        e.preventDefault();
+        if (this.column.dirView.touchSelectMode) {
+            if (this.selected) {
+                this.column.dirView.removeSelection(this.path);
+            } else {
+                this.column.dirView.addSelection(this.path);
+            }
+        } else {
+            this.column.dirView.open(this.path);
+        }
+    });
+    ui.onLongPress(this.elem, e => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.column.dirView.touchSelectMode = true;
+    });
     this.elem.onclick = (e) => {
         if (e.ctrlKey) {
             if (this.selected) {
