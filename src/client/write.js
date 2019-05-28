@@ -99,7 +99,7 @@ function open(args) {
         previewRender: function (text) {
             var html = SimpleMDE.prototype.markdown(text);
             return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
-                return 'src="' + TEXTSTEP.SERVER + '/download?path=' + encodeURIComponent(paths.convert(url, current.cwd)) + '"';
+                return 'src="' + TEXTSTEP.url('download', {path: paths.convert(url, current.cwd)}) + '"';
             });
         },
         toolbar: [
@@ -156,35 +156,36 @@ function reopen(args) {
     }
 }
 
-function close(action) {
+function canClose() {
     var unsaved = null;
-    if (action !== 'confirm') {
-        for (var path in buffers) {
-            if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
-                unsaved = path;
-                break;
-            }
+    for (var path in buffers) {
+        if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
+            unsaved = path;
+            break;
         }
     }
-    if (unsaved !== null) {
-        frame.confirm('Write', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').then(function (choice) {
+    if (unsaved) {
+        return frame.confirm('Write', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').then(function (choice) {
             if (choice === 'Close without saving') {
-                self.close('confirm');
+                return true;
             } else {
                 if (current === null || !current.unsaved) {
                     openBuffer(unsaved);
                 }
+                return false;
             }
         });
-        return false;
     } else {
-        simplemde.toTextArea();
-        simplemde = null;
-        buffers = [];
-        bufferPanel.innerHTML = '';
-        self.close();
-        return true;
+        return Promise.resolve(true);
     }
+}
+
+function close() {
+    simplemde.toTextArea();
+    simplemde = null;
+    buffers = [];
+    bufferPanel.innerHTML = '';
+    self.close();
 }
 
 function saveFile() {
@@ -284,6 +285,7 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
 
+    frame.canClose = canClose;
     frame.onClose = close;
     frame.onResize = resizeView;
     frame.isUnsaved = isUnsaved;

@@ -43,6 +43,8 @@ export default function Frame(title) {
 
     this.isUnsaved = null;
 
+    this.canClose = () => Promise.resolve(true);
+
     this.onOpen = null;
     this.onClose = null;
     this.onShow = null;
@@ -276,12 +278,16 @@ Frame.prototype.close = function () {
     if (!this.isOpen) {
         return;
     }
-    TEXTSTEP.closeFrame(this);
-    if (!this.isOpen) {
-        if (this.onClose !== null) {
-            this.onClose();
+    this.canClose().then(close => {
+        if (close) {
+            TEXTSTEP.closeFrame(this);
+            if (!this.isOpen) {
+                if (this.onClose !== null) {
+                    this.onClose();
+                }
+            }
         }
-    }
+    });
 };
 
 Frame.prototype.show = function () {
