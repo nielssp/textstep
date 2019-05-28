@@ -2,6 +2,14 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+const jsRule = {
+    test: /\.js$/,
+    loader: 'babel-loader',
+    options: {
+        presets: ['@babel/preset-env'],
+    }
+};
+
 function app(name) {
     var entry = {};
     entry['apps/' + name + '.app'] = './' + name;
@@ -23,7 +31,7 @@ function app(name) {
                     test: /\.s?css$/,
                     use: ['style-loader', 'css-loader?url=false', 'sass-loader']
                 },
-                { test: /\.js$/, use: ['babel-loader'] }
+                jsRule
             ]
         }
     };
@@ -58,7 +66,7 @@ function theme(name) {
                         use: ['css-loader?url=false', 'sass-loader']
                     })
                 },
-                { test: /\.js$/, use: ['babel-loader'] }
+                jsRule
             ]
         },
         plugins: [
@@ -88,7 +96,7 @@ function icons(name) {
                         use: ['css-loader?url=false', 'sass-loader']
                     })
                 },
-                { test: /\.js$/, use: ['babel-loader'] }
+                jsRule
             ]
         },
         plugins: [
