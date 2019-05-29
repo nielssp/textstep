@@ -156,7 +156,7 @@ function reopen(args) {
     }
 }
 
-function canClose() {
+function confirmClose() {
     var unsaved = null;
     for (var path in buffers) {
         if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
@@ -189,50 +189,48 @@ function close() {
 }
 
 function saveFile() {
-    return new Promise(function (resolve, reject) {
-        if (simplemde !== null && current !== null) {
-            var buffer = current;
-            TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
-                buffer.unsaved = false;
-                buffer.item.textContent = buffer.name;
-                if (current === buffer) {
-                    frame.setTitle(current.path + ' – Write');
-                    simplemde.clearAutosavedValue();
-                }
-                resolve();
-            }).catch(reject);
-        } else {
-            resolve();
-        }
-    });
+    if (simplemde !== null && current !== null) {
+        let buffer = current;
+        return TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
+            buffer.unsaved = false;
+            buffer.item.textContent = buffer.name;
+            if (current === buffer) {
+                frame.setTitle(current.path + ' – Write');
+                simplemde.clearAutosavedValue();
+            }
+        });
+    } else {
+        return Promise.resolve();
+    }
 }
 
 function closeBuffer() {
     if (simplemde !== null && current !== null) {
-        var promise = new Promise(function (resolve, reject) {
-            if (current.unsaved) {
-                frame.confirm('Write', 'Do you want to save this buffer?', ['Yes', 'No', 'Cancel'], 'Yes').then(function (choice) {
+        let ok;
+        if (current.unsaved) {
+            ok = frame.confirm('Write', 'Do you want to save the buffer before closing?', ['Yes', 'No', 'Cancel'],
+                'Yes').then(choice => {
                     if (choice === 'Yes') {
-                        saveFile().then(resolve);
-                    } else if (choice === 'No') {
-                        resolve();
-                    }   
-                }).catch(reject);
-            } else {
-                resolve();
-            }
-        });
-        promise.then(function () {
-            delete buffers[current.path];
-            bufferPanel.removeChild(current.item);
-            current = null;
-            for (var path in buffers) {
-                if (buffers.hasOwnProperty(path)) {
-                    openBuffer(path);
+                        return saveFile().then(() => true);
+                    }
+                    return choice === 'No';
+                });
+        } else {
+            ok = Promise.resolve(true);
+        }
+        ok.then(close => {
+            if (close) {
+                delete buffers[current.path];
+                bufferPanel.removeChild(current.item);
+                current = null;
+                for (var path in buffers) {
+                    if (buffers.hasOwnProperty(path)) {
+                        openBuffer(path);
+                    }
                 }
-            }
-            if (current === null) {
-                self.close();
+                if (current === null) {
+                    self.close();
+                }
             }
         });
     }
@@ -285,7 +283,7 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
 
-    frame.canClose = canClose;
+    frame.confirmClose = confirmClose;
     frame.onClose = close;
     frame.onResize = resizeView;
     frame.isUnsaved = isUnsaved;

@@ -259,6 +259,7 @@ DirColumn.prototype.reload = function () {
     }
     TEXTSTEP.get('list-files', {path: this.path}).then(function (data) {
         if (data.type === 'directory' && typeof data.files !== 'undefined') {
+            self.listElem.innerHTML = '';
             self.files = {};
             self.list = [];
             data.files.sort(function(a, b) {

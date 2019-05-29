@@ -43,7 +43,7 @@ export default function Frame(title) {
 
     this.isUnsaved = null;
 
-    this.canClose = () => Promise.resolve(true);
+    this.confirmClose = () => Promise.resolve(true);
 
     this.onOpen = null;
     this.onClose = null;
@@ -278,7 +278,7 @@ Frame.prototype.close = function () {
     if (!this.isOpen) {
         return;
     }
-    this.canClose().then(close => {
+    this.confirmClose().then(close => {
         if (close) {
             TEXTSTEP.closeFrame(this);
             if (!this.isOpen) {

@@ -130,32 +130,37 @@ function reopen(args) {
     }
 }
 
-function close() {
+function confirmClose() {
     for (var path in buffers) {
         if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
-            var ok = confirm('One or more buffers contain unsaved changed.');
-            if (ok) {
-                break;
-            } else {
-                if (current === null || !current.unsaved) {
-                    openBuffer(path);
-                }
-                return false;
-            }
+
+            return frame.confirm('Code', 'One or more buffers contain unsaved changes.',
+                ['Close without saving', 'Cancel'], 'Cancel').then(choice => {
+                    if (choice === 'Close without saving') {
+                        return true;
+                    }
+                    if (current === null || !current.unsaved) {
+                        openBuffer(path);
+                    }
+                    return false;
+                });
         }
     }
+    return Promise.resolve(true);
+}
+
+function close() {
     codemirror.toTextArea();
     codemirror = null;
     buffers = [];
     bufferPanel.innerHTML = '';
     self.close();
-    return true;
 }
 
 function saveFile() {
     if (codemirror !== null && current !== null) {
-        var buffer = current;
-        TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
+        let buffer = current;
+        return TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
             buffer.unsaved = false;
             buffer.item.textContent = buffer.name;
             if (current === buffer) {
@@ -163,27 +168,38 @@ function saveFile() {
             }
         });
     }
+    return Promise.reject('Editor not initialized');
 }
 
 function closeBuffer() {
     if (codemirror !== null && current !== null) {
-        var ok = true;
+        let ok;
         if (current.unsaved) {
-            ok = confirm('The buffer contains unsaved changed.');
+            ok = frame.confirm('Code', 'Do you want to save the buffer before closing?',
+                ['Yes', 'No', 'Cancel'], 'Yes').then(choice => {
+                    if (choice === 'Yes') {
+                        return saveFile().then(() => true);
+                    }
+                    return choice === 'No';
+                });
+        } else {
+            ok = Promise.resolve(true);
         }
-        if (ok) {
-            delete(buffers[current.path]);
-            bufferPanel.removeChild(current.item);
-            current = null;
-            for (var path in buffers) {
-                if (buffers.hasOwnProperty(path)) {
-                    openBuffer(path);
+        ok.then(close => {
+            if (close) {
+                delete(buffers[current.path]);
+                bufferPanel.removeChild(current.item);
+                current = null;
+                for (var path in buffers) {
+                    if (buffers.hasOwnProperty(path)) {
+                        openBuffer(path);
+                    }
+                }
+                if (current === null) {
+                    self.close();
                 }
             }
-            if (current === null) {
-                self.close();
-            }
-        }
+        });
     }
 }
 
@@ -244,6 +260,7 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
     
+    frame.confirmClose = confirmClose;
     frame.onClose = close;
     frame.onResize = resizeView;
     frame.isUnsaved = isUnsaved;
