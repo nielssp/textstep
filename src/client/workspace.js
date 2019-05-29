@@ -340,8 +340,16 @@ function loadApp(name) {
             ]);
             apps[name].dockFrame.onmousedown = function (e) {
                 if (e.button === 1) {
-                    if (apps.hasOwnProperty(name)) {
-                        apps[name].close();
+                    if (apps.hasOwnProperty(name) && apps[name].state === 'running') {
+                        var frame = apps[name].getUnsavedFrame();
+                        if (frame !== null) {
+                            if (!frame.hasFocus) {
+                                frame.requestFocus();
+                                frame.close();
+                            }
+                        } else {
+                            apps[name].close();
+                        }
                     }
                 }
                 e.preventDefault();
