@@ -5,18 +5,18 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+import './build.scss';
+
 var paths = TEXTSTEP.paths;
 var ui = TEXTSTEP.ui;
 
 var self = null;
 var frame = null;
 var progressBar = null;
-var tatusHistory = null;
+var statusHistory = null;
 var preview = null;
 
 var doCancel = false;
-
-require('./build.scss');
 
 function build(target) {
     target = target.replace(/^build-/, '');

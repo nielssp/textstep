@@ -68,6 +68,8 @@ export default function Frame(title) {
       TEXTSTEP.toggleMenu();
     };
     this.headElem.insertBefore(ui.elem('div', {'class': 'frame-actions'}, [menuButton]), this.headElem.children[0]);
+
+    this.defineAction('close', () => this.close());
 }
 
 util.eventify(Frame.prototype);

@@ -5,10 +5,10 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+import './play.scss';
+
 var paths = TEXTSTEP.paths;
 var ui = TEXTSTEP.ui;
-
-require('./play.scss');
 
 TEXTSTEP.initApp('play', function (app) {
     app.dockFrame.innerHTML = '';
@@ -24,10 +24,12 @@ TEXTSTEP.initApp('play', function (app) {
     menu.addItem('Close', 'close');
 
     var paused = false;
+    var path = null;
 
     frame.onClose = function () {
         videoContainer.innerHTML = '';
         video = null;
+        app.close();
     };
 
     frame.onHide = function () {
@@ -47,6 +49,7 @@ TEXTSTEP.initApp('play', function (app) {
         } else {
             frame.requestFocus();
             if (!args.hasOwnProperty('path')) {
+                app.setArgs({path: path});
                 return;
             }
         }
@@ -57,7 +60,9 @@ TEXTSTEP.initApp('play', function (app) {
         video.autoplay = true;
         video.controls = true;
         video.loop = true;
-        video.src = TEXTSTEP.url('download', {path: args.path});
+        path = args.path;
+        video.src = TEXTSTEP.url('download', {path: path});
+        app.setArgs({path: path});
         videoContainer.appendChild(video);
     };
 });

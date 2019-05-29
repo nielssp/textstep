@@ -315,7 +315,10 @@ function DirFile(column, data) {
     this.type = data.type;
     this.selected = false;
 
-    this.elem = ui.elem('a', {'draggable': true, 'href': '#'}, [this.name]);
+    this.elem = ui.elem('a', {
+        'draggable': true,
+        'href': TEXTSTEP.url('download/' + this.name, {path: this.path, force: true})
+    }, [this.name]);
     this.elem.addEventListener('touchend', e => {
         e.preventDefault();
         if (this.column.dirView.touchSelectMode) {

@@ -27,6 +27,7 @@ TEXTSTEP.initApp('view', function (app) {
 
     var viewer = null;
     var first = true;
+    var path = null;
     
     frame.onClose = function (action) {
         viewer.destroy();
@@ -41,6 +42,7 @@ TEXTSTEP.initApp('view', function (app) {
         } else {
             frame.requestFocus();
             if (!args.hasOwnProperty('path')) {
+                app.setArgs({path: path});
                 return;
             }
         }
@@ -55,5 +57,7 @@ TEXTSTEP.initApp('view', function (app) {
         viewer = new Viewer(imageList, {
             inline: true
         });
+        path = args.path;
+        app.setArgs({path: path});
     };
 });
