@@ -82,6 +82,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->error('snippet:NotFound');
         $this->m->router->match('app/**', 'snippet:Workspace');
 
+        $this->m->router->match('manifest.json', 'snippet:Manifest');
         $this->m->router->auto('snippet:Api\Login');
         $this->m->router->auto('snippet:Api\Logout');
         $this->m->router->auto('snippet:Api\ListFiles');
