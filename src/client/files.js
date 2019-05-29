@@ -220,6 +220,8 @@ TEXTSTEP.initApp('files', function (app) {
         dirView.updateColumns();
     };
 
+    frame.onClose = () => self.close();
+
     self.onOpen = function (args) {
         if (!frame.isOpen) {
             frame.open();

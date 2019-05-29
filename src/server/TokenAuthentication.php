@@ -65,6 +65,10 @@ class TokenAuthentication implements \Jivoo\Security\Authentication
         return null;
     }
 
+    public function getSessionId() {
+        return $this->sessionId;
+    }
+
     /**
      * {@inheritdoc}
      */

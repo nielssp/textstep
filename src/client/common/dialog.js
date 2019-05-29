@@ -16,6 +16,7 @@ export default function Dialog(parent) {
     this.titleElem = ui.elem('div', {'class': 'frame-title'}, []);
     this.headElem = ui.elem('div', {'class': 'frame-head'}, [this.titleElem]);
     this.bodyElem = ui.elem('form', {'class': 'frame-body'}, []);
+    this.bodyElem.onsubmit = () => false;
     this.frameElem = ui.elem('div', {'class': 'frame'}, [this.headElem, this.bodyElem]);
     this.overlayElem = ui.elem('div', {'class': 'dialog-overlay'}, [this.frameElem]);
 

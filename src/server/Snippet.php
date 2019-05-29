@@ -53,10 +53,7 @@ abstract class Snippet
      */
     protected $response = null;
 
-    /**
-     * @var bool
-     */
-    protected $csrfCheck = false;
+    protected $tokenAuthentication = null;
 
     /**
      * Construct snippet.
@@ -68,7 +65,6 @@ abstract class Snippet
         $this->m = $m;
         $this->m->required('assets', 'Jivoo\Http\Route\AssetScheme');
         $this->m->required('router', 'Jivoo\Http\Router');
-        $this->m->required('token', 'Jivoo\Http\Token');
         $this->m->required('view', 'Blogstep\View');
         $this->m->required('snippets', 'Blogstep\Route\SnippetScheme');
 
@@ -189,7 +185,8 @@ abstract class Snippet
         $this->response = $response;
         $this->routeParameters = $parameters;
         $this->parameterValues = array();
-        $this->m->auth->token = new TokenAuthentication($this->request);
+        $this->tokenAuthentication = new TokenAuthentication($this->request);
+        $this->m->auth->token = $this->tokenAuthentication;
         $this->m->auth->authenticate(null);
         foreach ($this->parameters as $offset => $name) {
             if (isset($parameters[$name])) {
@@ -199,12 +196,6 @@ abstract class Snippet
             } else {
                 $this->parameterValues[$name] = null;
             }
-        }
-        $token = $this->m->token->__toString();
-        $this->viewData['token'] = $token;
-        if (!isset($this->m->cookies['csrf_token']) or $this->m->cookies['csrf_token']->get() !== $token) {
-            $this->m->cookies['csrf_token'] = $token;
-            $this->m->cookies['csrf_token']->setHttpOnly(false);
         }
         try {
             $before = $this->before();
@@ -274,15 +265,6 @@ abstract class Snippet
     {
         if (! in_array($this->request->getMethod(), ['POST', 'PATCH', 'PUT', 'DELETE'])) {
             return false;
-        }
-        if ($this->csrfCheck) {
-          if (!$this->request->hasHeader('X-Csrf-Token')) {
-            return false;
-          }
-          $token = $this->request->getHeaderLine('X-Csrf-Token');
-          if ($this->m->token->__toString() !== $token) {
-            return false;
-          }
         }
         if (!isset($key)) {
             return true;

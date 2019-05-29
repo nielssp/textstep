@@ -1,29 +1,31 @@
 /*
- * BlogSTEP 
+ * TEXTSTEP 
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var paths = require('./common/paths');
-var ui = require('./common/ui');
+var paths = TEXTSTEP.paths;
+var ui = TEXTSTEP.ui;
 
 var self = null;
-
+var frame = null;
 var progressBar = null;
-var $statusHistory = null;
+var tatusHistory = null;
 var preview = null;
 
 var doCancel = false;
 
+require('./build.scss');
+
 function build(target) {
     target = target.replace(/^build-/, '');
     doCancel = false;
-    self.disableAction('build-all');
-    self.enableAction('cancel');
+    frame.disableGroup('build');
+    frame.enableAction('cancel');
     var start = performance.now();
     ui.setProgress(progressBar, 0, 'Building...');
-    $statusHistory.val('');
+    statusHistory.innerHTML = '';
 
     var progress = 0;
     var status = 'Building...';
@@ -38,7 +40,7 @@ function build(target) {
         ui.setProgress(progressBar, progress, status);
         var t = (performance.now() - start) / 1000;
         var line = t.toFixed(3) + ': ' + status;
-        $statusHistory.val(line + "\n" + $statusHistory.val());
+        statusHistory.textContent = line + '\n' + statusHistory.textContent;
     };
 
 
@@ -47,7 +49,7 @@ function build(target) {
         request.open('POST', url, true);
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        BLOGSTEP.addToken(request);
+        TEXTSTEP.prepareRequest(request);
 
         request.onreadystatechange = function () {
             if (this.readyState === 3 || this.readyState === 4) {
@@ -67,7 +69,7 @@ function build(target) {
             return;
         }
         var received = 0;
-        post(BLOGSTEP.PATH + '/api/build', function (text, state, status) {
+        post(TEXTSTEP.SERVER + '/build', function (text, state, status) {
             var events = text.split(/[\n\r]/);
             for (var i = received; i < events.length; i++) {
                 var matches = events[i].match(/^([a-zA-Z]+): *(.*)$/);
@@ -79,8 +81,8 @@ function build(target) {
                         case 'done':
                             updateProgress(100);
                             done = true;
-                            self.enableAction('build-all');
-                            self.disableAction('cancel');
+                            frame.enableGroup('build');
+                            frame.disableAction('cancel');
                             preview.contentWindow.location.reload();
                             return;
                         case 'error':
@@ -109,45 +111,61 @@ function build(target) {
 
 function cancel() {
     doCancel = true;
-    BLOGSTEP.post('delete', {path: '/build/.build'}).always(function () {
-        self.enableAction('build-all');
-        self.disableAction('cancel');
+    TEXTSTEP.post('delete', {path: '/build/.build'}).finally(function () {
+        frame.enableGroup('build');
+        frame.disableAction('cancel');
     });
 }
 
 function clean() {
     doCancel = true;
-    BLOGSTEP.post('delete', {path: '/build', recursive: true});
+    TEXTSTEP.post('delete', {path: '/build', recursive: true});
 }
 
 
-BLOGSTEP.init('builder', function (app) {
+TEXTSTEP.initApp('build', [], function (app) {
     self = app;
 
-    progressBar = app.frame.find('.build-progress')[0];
-    $statusHistory = app.frame.find('.build-status-history');
-    preview = app.frame.find('.build-preview')[0];
-    preview.src = BLOGSTEP.PATH + '/api/preview';
+    frame = self.createFrame('Build');
+    frame.contentElem.className += ' frame-content-flex Build-app';
 
-    app.defineAction('build-all', build);
-    app.defineAction('build-content', build);
-    app.defineAction('build-template', build);
-    app.defineAction('build-assemble', build);
-    app.defineAction('build-install', build);
-    app.defineAction('cancel', cancel);
-    app.defineAction('clean', clean);
+    progressBar = ui.progressBar(0, 'Ready to build');
+    frame.appendChild(progressBar);
 
-    var menu = app.addMenu('Builder');
-    menu.addItem('Build', 'build-all');
-    menu.addItem('Preview', function () {
-        preview.src = BLOGSTEP.PATH + '/api/preview';
-    });
-    menu.addItem('Cancel', 'cancel');
-    menu.addItem('Clean', 'clean');
-    menu.addItem('Close', 'close');
+    statusHistory = ui.elem('textarea', { readonly: true, class: 'build-status-history' });
+    frame.appendChild(statusHistory);
 
-    app.onOpen = function (app, args) {
-        app.enableAction('build-all');
-        app.disableAction('cancel');
+    preview = ui.elem('iframe', { class: 'build-preview' });
+    preview.src = TEXTSTEP.url('preview');
+    frame.appendChild(preview);
+
+    frame.defineAction('build-all', build, ['build']);
+    frame.defineAction('build-content', build, ['build']);
+    frame.defineAction('build-template', build, ['build']);
+    frame.defineAction('build-assemble', build, ['build']);
+    frame.defineAction('build-install', build, ['build']);
+    frame.defineAction('cancel', cancel);
+    frame.defineAction('clean', clean);
+
+    let toolbar = frame.createToolbar();
+    toolbar.addItem('Build all', null, 'build-all');
+    toolbar.addItem('Compile content', null, 'build-content');
+    toolbar.addItem('Compile templates', null, 'build-template');
+    toolbar.addItem('Assemble ', null, 'build-assemble');
+    toolbar.addItem('Install ', null, 'build-install');
+    toolbar.addItem('Cancel ', null, 'cancel');
+    toolbar.addItem('Clean ', null, 'clean');
+
+    frame.onClose = () => self.close();
+
+    self.onOpen = function (app, args) {
+        if (!frame.isOpen) {
+            frame.open();
+        } else {
+            frame.requestFocus();
+        }
+        self.setArgs({});
+        frame.enableGroup('build');
+        frame.disableAction('cancel');
     };
 });

@@ -135,7 +135,16 @@ export var onLongPress = function(el, callback) {
     });
 };
 
-export var setProgress = function(el, progress, status) {
+export function progressBar(progress, status) {
+    let el = elem('div', { 'class': 'progress' }, [
+        elem('div', {'class': 'progress-bar'}),
+        elem('div', {'class': 'label'}),
+    ]);
+    setProgress(el, progress, status);
+    return el;
+}
+
+export function setProgress(el, progress, status) {
     var bar = el.children[0];
     var label = el.children[1];
     progress = Math.floor(progress);
@@ -149,5 +158,5 @@ export var setProgress = function(el, progress, status) {
     if (typeof status !== 'undefined') {
         label.innerText = status;
     }
-};
+}
 

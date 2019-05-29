@@ -165,7 +165,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $session = new \Jivoo\Store\PhpSessionStore();
         $session->name = 'blogstep_session_id';
         $this->m->session = new \Jivoo\Store\Session($session);
-        $this->m->token = \Jivoo\Http\Token::create($this->m->session);
 
         // Initialize authentication system
         $this->m->users = new UserModel($this->m->files, $this->p('system'));

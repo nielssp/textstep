@@ -54,7 +54,7 @@ class Preview extends AuthenticatedSnippet
 
         $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
 
-        $view = new PreviewView($assembler);
+        $view = new PreviewView($assembler, $this->tokenAuthentication->getSessionId());
         $view->addTemplateDir($destination->get('site')->getHostPath());
         $view->addTemplateDir($destination->get('/site')->getHostPath());
         $node = $siteMap->get($path);
@@ -90,6 +90,14 @@ class Preview extends AuthenticatedSnippet
 
 class PreviewView extends \Blogstep\Compile\View
 {
+    private $token;
+
+    public function __construct($assembler, $token)
+    {
+        parent::__construct($assembler);
+        $this->token = $token;
+    }
+
     public function link($link = null, $absolute = false)
     {
         if (!isset($link)) {
@@ -105,6 +113,6 @@ class PreviewView extends \Blogstep\Compile\View
         if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
             $link = preg_replace('/\/index.html$/', '', $link);
         }
-        return 'preview?path=' . ltrim($link, '/');
+        return 'preview?path=' . ltrim($link, '/') . '&access_token=' . $this->token;
     }
 }

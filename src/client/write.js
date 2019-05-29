@@ -165,15 +165,11 @@ function confirmClose() {
         }
     }
     if (unsaved) {
+        if (current === null || !current.unsaved) {
+            openBuffer(unsaved);
+        }
         return frame.confirm('Write', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').then(function (choice) {
-            if (choice === 'Close without saving') {
-                return true;
-            } else {
-                if (current === null || !current.unsaved) {
-                    openBuffer(unsaved);
-                }
-                return false;
-            }
+            return choice === 'Close without saving';
         });
     } else {
         return Promise.resolve(true);
@@ -296,6 +292,8 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
             frame.requestFocus();
             if (args.hasOwnProperty('path')) {
                 reopen(args);
+            } else {
+                self.setArgs({path: current.path});
             }
         }
     };

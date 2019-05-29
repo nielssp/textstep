@@ -28,8 +28,12 @@ export default function Toolbar(frame) {
 }
 
 Toolbar.prototype.addItem = function (label, icon, action) {
-    var icon = ui.elem('span', {'class': 'icon icon-' + icon});
-    var button = ui.elem('button', {title: label}, [icon]);
+    var button = ui.elem('button', {title: label});
+    if (icon) {
+        button.appendChild(ui.elem('span', {'class': 'icon icon-' + icon}));
+    } else {
+        button.textContent = label;
+    }
     button.onclick = () => {
         this.frame.activate(action);
     };

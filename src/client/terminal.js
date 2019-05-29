@@ -247,10 +247,12 @@ TEXTSTEP.initApp('terminal', function (app) {
                 if (typeof args.path === 'string') {
                     cwd = args.path;
                 }
+                self.setArgs({path: cwd});
             });
             frame.open();
         } else {
             frame.requestFocus();
+            self.setArgs({path: cwd});
         }
     };
 

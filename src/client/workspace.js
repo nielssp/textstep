@@ -51,6 +51,12 @@ TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
 TEXTSTEP.LOAD_TIMEOUT = 10000;
 
+TEXTSTEP.prepareRequest = function(xhr) {
+    if (sessionId !== null) {
+        xhr.setRequestHeader('X-Auth-Token', sessionId);
+    }
+};
+
 TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
@@ -615,7 +621,7 @@ function requestAuthenticatedUser() {
 
 TEXTSTEP.init = function (root) {
     requestAuthenticatedUser().then(user => {
-        workspaceMenu.setTitle('Workspace (' + user.username + ')');
+        workspaceMenu.setTitle('Workspace for ' + user.username + '');
         workspaceMenu.header.appendChild(ui.elem('span', {'class': 'version'}, user.version));
         root.appendChild(menu);
         root.appendChild(main);

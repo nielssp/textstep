@@ -133,16 +133,12 @@ function reopen(args) {
 function confirmClose() {
     for (var path in buffers) {
         if (buffers.hasOwnProperty(path) && buffers[path].unsaved) {
-
+            if (current === null || !current.unsaved) {
+                openBuffer(path);
+            }
             return frame.confirm('Code', 'One or more buffers contain unsaved changes.',
                 ['Close without saving', 'Cancel'], 'Cancel').then(choice => {
-                    if (choice === 'Close without saving') {
-                        return true;
-                    }
-                    if (current === null || !current.unsaved) {
-                        openBuffer(path);
-                    }
-                    return false;
+                    return choice === 'Close without saving';
                 });
         }
     }
@@ -273,6 +269,8 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
             frame.requestFocus();
             if (args.hasOwnProperty('path')) {
                 reopen(args);
+            } else {
+                self.setArgs({path: current.path});
             }
         }
     };
