@@ -119,6 +119,7 @@ module.exports = [
     app('control-panel'),
     app('terminal'),
     app('test'),
+    app('clock'),
     lib('libedit'),
     lib('libtest'),
     theme('default'),

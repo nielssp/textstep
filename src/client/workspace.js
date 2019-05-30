@@ -310,6 +310,7 @@ TEXTSTEP.open = function (path) {
 }
 
 TEXTSTEP.run = function (name, args) {
+    console.log('run', name, args);
     return new Promise(function (resolve, reject) {
         args = args || {};
         if (apps.hasOwnProperty(name)) {
@@ -647,20 +648,27 @@ TEXTSTEP.init = function (root) {
         root.appendChild(menu);
         root.appendChild(main);
         root.appendChild(dock);
+        let start = user.shell;
+        let args = {};
         if (location.hash.length > 1) {
-            var start = location.hash.slice(1).split('?');
-            var args = {};
-            if (start.length > 1) {
-                args = util.unserializeQuery(start[1]);
+            let appAndArgs = location.hash.slice(1).split('?');
+            start = appAndArgs[0];
+            if (appAndArgs.length > 1) {
+                args = util.unserializeQuery(appAndArgs[1]);
             }
-            TEXTSTEP.run(start[0], args).catch(function (error) {
+        }
+        TEXTSTEP.get('download', { path: user.home + '/autostart.json' }, 'json').then(data => {
+            if (!Array.isArray(data)) {
+                return;
+            }
+            return Promise.all(data.map(name => TEXTSTEP.run(name)));
+        }, error => {
+            console.log(error);
+        }).finally(() => {
+            TEXTSTEP.run(start, args).catch(function (error) {
                 alert('Could not start application: ' + start + ': ' + error);
             });
-        } else {
-            TEXTSTEP.run(user.shell).catch(function (error) {
-                alert('Could not start application: ' + user.shell + ': ' + error);
-            });
-        }
+        });
     });
 };
 
