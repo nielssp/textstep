@@ -5,12 +5,13 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var paths = TEXTSTEP.paths;
-var ui = TEXTSTEP.ui;
+const paths = TEXTSTEP.paths;
+const ui = TEXTSTEP.ui;
 
-var self;
-var frame;
-var dirView;
+let self;
+let frame;
+let dirView;
+let clipboard = null;
 
 function newFile() {
     frame.prompt('New file', 'Enter filename:').then(function (name) {
@@ -27,7 +28,27 @@ function newFile() {
             TEXTSTEP.post('make-file', {path: path}).then(function (data) {
                 dirView.setSelection(path);
                 dirView.reload();
-            });
+            }, error => frame.alert('Error', error.response));
+        }
+    });
+}
+
+function newFolder() {
+    frame.prompt('New directory', 'Enter name of folder:').then(function (name) {
+        if (name !== null) {
+            if (name === '') {
+                frame.alert('Invalid name', 'The name cannot be empty');
+                return;
+            }
+            var path = dirView.cwd;
+            if (path !== '/') {
+                path += '/';
+            }
+            path += name;
+            TEXTSTEP.post('make-dir', {path: path}).then(function (data) {
+                dirView.reload();
+                dirView.cd(path);
+            }, error => frame.alert('Error', error.response));
         }
     });
 }
@@ -49,6 +70,56 @@ function download() {
         };
         document.body.appendChild(iframe);
     }
+}
+
+function cut() {
+    if (dirView.selection.length === 0) {
+        return;
+    }
+    let paths = [];
+    dirView.selection.forEach(path => paths.push(path));
+    clipboard = {
+        copy: false,
+        paths: paths
+    };
+    frame.enableAction('paste');
+}
+
+function copy() {
+    if (dirView.selection.length === 0) {
+        return;
+    }
+    let paths = [];
+    dirView.selection.forEach(path => paths.push(path));
+    clipboard = {
+        copy: true,
+        paths: paths
+    };
+    frame.enableAction('paste');
+}
+
+function paste() {
+    if (!clipboard || !clipboard.paths.length) {
+        return;
+    }
+    let action = clipboard;
+    let data = {};
+    if (clipboard.paths.length === 1) {
+        data.path = clipboard.paths[0];
+        data.destination = paths.convert(paths.fileName(data.path), dirView.cwd);
+    } else {
+        data.paths = {};
+        clipboard.paths.forEach(path => {
+            data.paths[path] = paths.convert(paths.fileName(path), dirView.cwd);
+        });
+    }
+    TEXTSTEP.post(clipboard.copy ? 'copy' : 'move', data).then(() => {
+        if (action === clipboard && !action.copy) {
+            clipboard = null;
+            frame.disableAction('paste');
+        }
+        dirView.reload();
+    }, error => frame.alert('Error', error));
 }
 
 function rename() {
@@ -110,9 +181,13 @@ TEXTSTEP.initApp('files', function (app) {
     frame.defineAction('reload', () => dirView.reload(), ['nav']);
 
     frame.defineAction('new-file', newFile, ['dir']);
+    frame.defineAction('new-folder', newFolder, ['dir']);
     frame.defineAction('upload', () => dirView.upload(), ['dir']);
-
     frame.defineAction('download', download, ['selection']);
+
+    frame.defineAction('cut', cut, ['selection']);
+    frame.defineAction('copy', copy, ['selection']);
+    frame.defineAction('paste', paste);
     frame.defineAction('rename', rename, ['selection']);
     frame.defineAction('trash', trash, ['selection']);
 
@@ -127,14 +202,21 @@ TEXTSTEP.initApp('files', function (app) {
     toolbar.createGroup()
       .addItem('New file', 'edit-new-file', 'new-file');
     toolbar.createGroup()
-      .addItem('Upload file', 'edit-upload', 'upload');
+      .addItem('New folder', 'edit-new-folder', 'new-folder');
+    toolbar.createGroup()
+      .addItem('Upload file', 'edit-upload', 'upload')
+      .addItem('Download', 'edit-download', 'download');
 
     toolbar.addSeparator();
 
     toolbar.createGroup()
-      .addItem('Download', 'edit-copy', 'download')
+      .addItem('Cut', 'edit-cut', 'cut')
+      .addItem('Copy', 'edit-copy', 'copy')
+      .addItem('Paste', 'edit-paste', 'paste')
       .addItem('Rename', 'edit-rename', 'rename')
       .addItem('Delete seleciton', 'edit-trash', 'trash');
+
+    frame.disableAction('paste');
 
     dirView.on('fileOpen', function (path) {
         TEXTSTEP.open(path);

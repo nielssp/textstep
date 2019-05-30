@@ -317,7 +317,7 @@ function DirFile(column, data) {
 
     this.elem = ui.elem('a', {
         'draggable': true,
-        'href': TEXTSTEP.url('download/' + this.name, {path: this.path, force: true})
+        'href': TEXTSTEP.url('download/' + this.name, {path: this.path})
     }, [this.name]);
     this.elem.addEventListener('touchend', e => {
         e.preventDefault();

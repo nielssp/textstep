@@ -54,8 +54,10 @@ TEXTSTEP.initApp('view', function (app) {
         var img = document.createElement('img');
         img.src = TEXTSTEP.url('download', {path: args.path});
         imageList.appendChild(img);
+        // TODO: navbar:true, but use thumbnails instead if possible
         viewer = new Viewer(imageList, {
-            inline: true
+            inline: true,
+            navbar: false
         });
         path = args.path;
         app.setArgs({path: path});
