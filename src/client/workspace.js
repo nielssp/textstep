@@ -140,7 +140,10 @@ TEXTSTEP.post = function (action, data = null, responseType = null) {
 };
 
 TEXTSTEP.requestLogin = function(overlay = false) {
-    return new Promise(function (resolve, reject) {
+    if (loginFrame && loginFrame.promise) {
+        return loginFrame.promise;
+    }
+    let promise = new Promise(function (resolve, reject) {
         if (loginFrame === null) {
             loginFrame = new Frame('Log in');
             loginFrame.formElem = ui.elem('form', {method: 'post', id: 'login'}, [
@@ -200,6 +203,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                 loginFrame.overlayElem.style.display = 'none';
                 loginFrame.formElem.password.value = '';
                 loginFrame.formElem.onsubmit = null;
+                loginFrame.promise = null;
                 resolve();
             }, function () {
                 ui.shake(loginFrame.elem);
@@ -213,6 +217,8 @@ TEXTSTEP.requestLogin = function(overlay = false) {
             return false;
         };
     });
+    loginFrame.promise = promise;
+    return promise;
 };
 
 TEXTSTEP.initApp = function (name, dependencies, init) {
@@ -515,7 +521,12 @@ TEXTSTEP.getContainerSize = function () {
 };
 
 TEXTSTEP.toggleMenu = function () {
-  root.classList.toggle('show-menu');
+    root.classList.toggle('show-menu');
+};
+
+TEXTSTEP.setBackgroundColor = function (color) {
+    root.style.backgroundColor = color;
+    document.querySelector('meta[name="theme-color"]').content = color;
 };
 
 function workspaceMenuAction(action) {

@@ -167,6 +167,34 @@ function saveFile() {
     return Promise.reject('Editor not initialized');
 }
 
+function reloadFile() {
+    if (codemirror !== null && current !== null) {
+        let buffer = current;
+        let promise;
+        if (buffer.unsaved) {
+            promise = frame.confirm('Code', 'The buffer contains unsaved changes.',
+                ['Reload without saving', 'Cancel'], 'Cancel').then(choice => {
+                    return choice === 'Reload without saving';
+                });
+        } else {
+            promise = Promise.resolve(true);
+        }
+        promise.then(ok => {
+            if (ok) {
+                TEXTSTEP.get('download', {path: buffer.path}, 'text').then(data => {
+                    buffer.unsaved = false;
+                    buffer.item.textContent = buffer.name;
+                    buffer.data = data;
+                    if (current === buffer) {
+                        openBuffer(buffer.path);
+                    }
+                });
+            }
+        });
+    }
+}
+
+
 function closeBuffer() {
     if (codemirror !== null && current !== null) {
         let ok;
@@ -245,6 +273,7 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     frame.defineAction('save', saveFile);
     frame.defineAction('new', newFile);
     frame.defineAction('open', openFile);
+    frame.defineAction('reload', reloadFile);
     frame.defineAction('close-buffer', closeBuffer);
     
     frame.bindKey('c-s', 'save');
@@ -253,6 +282,7 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     menu.addItem('Open', 'open');
     menu.addItem('New', 'new');
     menu.addItem('Save', 'save');
+    menu.addItem('Reload', 'reload');
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
     

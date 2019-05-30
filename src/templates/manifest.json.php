@@ -26,6 +26,8 @@
       "density": "4.0"
     }
   ],
+  "background_color": "#AEAAAE",
+  "theme_color": "#515171",
   "start_url": "<?php echo $this->link('snippet:Workspace'); ?>",
   "display": "standalone"
 }
