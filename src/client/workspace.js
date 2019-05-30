@@ -13,7 +13,7 @@ import Frame from './common/frame';
 import Menu from './common/menu';
 import App from './common/app';
 import Lib from './common/lib';
-import Config from './Config';
+import Config from './common/config';
 
 if (window.TEXTSTEP) {
   alert('TEXTSTEP Workspace already loaded!');
@@ -532,10 +532,10 @@ TEXTSTEP.setBackgroundColor = function (color) {
 function workspaceMenuAction(action) {
     switch (action) {
         case 'files':
-            TEXTSTEP.run('files');
-            break;
+        case 'build':
         case 'terminal':
-            TEXTSTEP.run('terminal');
+        case 'control-panel':
+            TEXTSTEP.run(action);
             break;
         case 'switch-user':
             TEXTSTEP.post('logout').then(function () {
@@ -554,7 +554,9 @@ function workspaceMenuAction(action) {
 function createWorkspaceMenu() {
     var menu = new Menu({activate: workspaceMenuAction, bindAction: function () {}}, 'Workspace');
     menu.addItem('Files', 'files');
+    menu.addItem('Build', 'build');
     menu.addItem('Terminal', 'terminal');
+    menu.addItem('Control panel', 'control-panel');
     menu.addItem('Switch user', 'switch-user');
     menu.addItem('Log out', 'logout');
     return menu;

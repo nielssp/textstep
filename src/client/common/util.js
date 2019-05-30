@@ -13,10 +13,16 @@ export function serializeQuery(query) {
             var value = query[key];
             if (Array.isArray(value)) {
                 for (var i = 0; i < value.length; i++) {
-                    pairs.push(encodedKey + "[]=" + encodeURIComponent(value[i]));
+                    pairs.push(encodedKey + '[]=' + encodeURIComponent(value[i]));
+                }
+            } else if (typeof value === 'object' && value !== null) {
+                for (var vKey in value) {
+                    if (value.hasOwnProperty(vKey)) {
+                        pairs.push(encodedKey + '[' + encodeURIComponent(vKey) + ']=' + encodeURIComponent(value[vKey]));
+                    }
                 }
             } else {
-                pairs.push(encodedKey + "=" + encodeURIComponent(value));
+                pairs.push(encodedKey + '=' + encodeURIComponent(value));
             }
         }
     }

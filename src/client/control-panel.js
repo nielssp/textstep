@@ -5,54 +5,53 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
+const ui = TEXTSTEP.ui;
 
-var self;
-
-function switchPage(page) {
-    self.frame.find('.control-panel-page').removeClass('active');
-    self.frame.find('.control-panel-' + page).addClass('active');
-    self.frame.find('.frame-iconbar button').removeClass('active');
-    self.frame.find('.frame-iconbar button[data-action="' + page + '"]').addClass('active');
+function input(key, type = 'text') {
+    let elem = ui.elem('input', {type: type});
+    TEXTSTEP.config.get(key).bind(elem);
+    return elem;
 }
 
-
-function open(app, args) {
-    BLOGSTEP.config.update();
+function field(label, key, type = 'text') {
+    return ui.elem('div', {className: 'field'}, [
+        ui.elem('label', {}, [label]),
+        input(key, type)
+    ])
 }
 
-function save() {
-    BLOGSTEP.config.commit();
-}
+TEXTSTEP.initApp('control-panel', [], function (app) {
+    let frame = app.createFrame('Control panel');
 
-function cancel() {
-    BLOGSTEP.config.update();
-}
+    app.dockFrame.innerHTML = '';
+    app.dockFrame.appendChild(TEXTSTEP.getIcon('control-panel', 32));
 
-BLOGSTEP.init('control-panel', function (app) {
-    self = app;
+    frame.appendChild(field('Title', 'system.config.title'));
+    frame.appendChild(field('Subtitle', 'system.config.subtitle'));
+    frame.appendChild(field('Description', 'system.config.description'));
+    frame.appendChild(field('Copyright', 'system.config.copyright'));
 
-    app.defineAction('site', switchPage);
-    app.defineAction('users', switchPage);
-    app.defineAction('personalization', switchPage);
-    app.defineAction('system', switchPage);
-    app.defineAction('about', switchPage);
-    
-    app.defineAction('save', save);
-    app.defineAction('cancel', cancel);
-    
-    var menu = app.addMenu('Control panel');
-    menu.addItem('Site', 'site');
-    menu.addItem('Users and groups', 'users');
-    menu.addItem('Personalization', 'personalization');
-    menu.addItem('System', 'system');
-    menu.addItem('About BLOGSTEP', 'about');
-    menu.addItem('Close', 'close');
-    
-    self.frame.find('[data-binding]').each(function () {
-        BLOGSTEP.config.get($(this).data('binding')).bind($(this));
+    frame.defineAction('save', () => {
+        TEXTSTEP.config.commit();
+    });
+    frame.defineAction('reload', () => {
+        TEXTSTEP.config.update();
     });
     
-    self.onOpen = open;
+    let menu = frame.addMenu('Control panel');
+    menu.addItem('Save', 'save');
+    menu.addItem('Reload', 'reload');
+    menu.addItem('Close', 'close');
+
+    frame.onClose = () => app.close();
     
-    switchPage('site');
+    app.onOpen = args => {
+        if (!frame.isOpen) {
+            frame.open();
+            TEXTSTEP.config.update();
+        } else {
+            frame.requestFocus();
+        }
+        app.setArgs({});
+    };
 });

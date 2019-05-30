@@ -39,14 +39,13 @@ Config.prototype.update = function () {
             keys.push(key);
         }
     }
-    var config = this;
-    this.getter(keys).done(function (data) {
+    this.getter(keys).then(data => {
         for (var key in data) {
-            if (!config.data.hasOwnProperty(key)) {
-                config.data[key] = new Property();
+            if (!this.data.hasOwnProperty(key)) {
+                this.data[key] = new Property();
             }
-            config.data[key].set(data[key]);
-            config.data[key].dirty = false;
+            this.data[key].set(data[key]);
+            this.data[key].dirty = false;
         }
     });
 };
@@ -58,10 +57,9 @@ Config.prototype.commit = function () {
             data[key] = this.data[key].get();
         }
     }
-    var config = this;
-    this.setter(data).done(function (result) {
+    this.setter(data).then(result => {
         for (var i = 0; i < result.length; i++) {
-            config.data[result[i]].dirty = false;
+            this.data[result[i]].dirty = false;
         }
     });
 };
@@ -74,15 +72,11 @@ function Property() {
 }
 
 Property.prototype.bind = function (element) {
-    if (element.is('input')) {
-        var property = this;
-        element.val(this.value);
-        element.on('keydown keyup', function () {
-            property.set(element.val());
-        });
-        this.change(function (value) {
-            element.val(value);
-        });
+    if (element.tagName === 'INPUT') {
+        element.value = this.value;
+        element.onkeydown = () => this.set(element.value);
+        element.onkeyup = () => this.set(element.value);
+        this.change(value => element.value = value);
     }
 };
 
