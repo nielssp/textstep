@@ -1,14 +1,18 @@
 openapi: 3.0.0
 info:
-  title: TSS API
-  version: "0.9.0-oas3"
+  title: TEXTSTEP API
+  version: "0.9.0"
   description: ''
 components:
   securitySchemes:
-    SessionId:
+    AuthTokenHeader:
       type: apiKey
       in: header
       name: X-Auth-Token
+    AuthTokenQuery:
+      type: apiKey
+      in: query
+      name: auth_token
   schemas:
     File:
       type: object
@@ -68,7 +72,8 @@ components:
 servers:
   - url: http://localhost/blogstep/index.php/api
 security:
-  - SessionId: []
+  - AuthTokenHeader: []
+  - AuthTokenQuery: []
 paths:
   /login:
     post:
