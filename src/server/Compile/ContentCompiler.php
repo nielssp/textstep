@@ -57,7 +57,7 @@ class ContentCompiler
 
     private function parseHtml($html, \Blogstep\Files\File $htmlFile)
     {
-        $dom = new \SimpleHtmlDom\simple_html_dom();
+        $dom = new \simple_html_dom();
         $dom->load($html, true, false);
         if (!$dom) {
           throw new \Blogstep\RuntimeException('Could not parse HTML: ' . $htmlFile()->getPath());
@@ -65,7 +65,7 @@ class ContentCompiler
         return $dom;
     }
 
-    private function extractMetadataBlock(\SimpleHtmlDom\simple_html_dom $dom)
+    private function extractMetadataBlock(\simple_html_dom $dom)
     {
         $data = [];
         $matches = [];
@@ -83,7 +83,7 @@ class ContentCompiler
 
     private function getBrief($html)
     {
-        $dom = new \SimpleHtmlDom\simple_html_dom();
+        $dom = new \simple_html_dom();
         $dom->load($html, true, false);
         $break = $dom->find('.break', 0);
         if (isset($break)) {
@@ -98,7 +98,7 @@ class ContentCompiler
 
     private function removeTitle($html)
     {
-        $dom = new \SimpleHtmlDom\simple_html_dom();
+        $dom = new \simple_html_dom();
         $dom->load($html, true, false);
         $title = $dom->find('h1', 0);
         if (isset($title)) {
@@ -116,7 +116,7 @@ class ContentCompiler
         return '<?bs ' . $tag . ' ' . implode('&', $pairs) . ' ?>';
     }
 
-    private function copyAssets(\Blogstep\Files\File $source, \SimpleHtmlDom\simple_html_dom $dom)
+    private function copyAssets(\Blogstep\Files\File $source, \simple_html_dom $dom)
     {
         foreach ($this->urlAttributes as $attribute) {
             foreach ($dom->find('[' . $attribute . ']') as $element) {

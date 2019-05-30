@@ -10,7 +10,7 @@ use Blogstep\Compile\View;
 use Blogstep\Compile\ContentCompiler;
 use Blogstep\Compile\Filter;
 use Blogstep\Files\File;
-use SimpleHtmlDom\simple_html_dom;
+use \simple_html_dom;
 use Jivoo\Store\Document;
 
 $filter = new Filter();

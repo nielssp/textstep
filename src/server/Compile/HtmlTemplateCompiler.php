@@ -13,8 +13,8 @@ use Jivoo\View\Compile\PhpNode;
 use Jivoo\View\Compile\TemplateNode;
 use Jivoo\View\Compile\TextNode;
 use Jivoo\View\InvalidTemplateException;
-use SimpleHtmlDom\simple_html_dom;
-use SimpleHtmlDom\simple_html_dom_node;
+use \simple_html_dom;
+use \simple_html_dom_node;
 
 /**
  * Converts HTML templates to PHP templates.

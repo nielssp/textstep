@@ -2,6 +2,7 @@
   "name": "textstep",
   "scripts": {
     "build": "webpack",
+    "build:prod": "webpack -p",
     "watch": "webpack --watch"
   },
   "dependencies": {

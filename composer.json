@@ -13,9 +13,6 @@
   "autoload": {
     "psr-4": {
       "Blogstep\\": "src/server/"
-    },
-    "psr-0": {
-      "simple_html_dom": "src/server/vendor/"
     }
   },
   "autoload-dev": {
@@ -27,6 +24,7 @@
     "jivoo/core": "^1.2",
     "jivoo/http": "^1.5.2",
     "jivoo/security": "dev-master",
+    "jivoo/view": "^1.0.1",
     "erusev/parsedown": "^1.6",
     "badcow/lorem-ipsum": "^1.1",
     "matthiasmullie/minify": "^1.3"
