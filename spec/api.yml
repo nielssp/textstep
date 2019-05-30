@@ -9,6 +9,62 @@ components:
       type: apiKey
       in: header
       name: X-Auth-Token
+  schemas:
+    File:
+      type: object
+      properties:
+        name:
+          type: string
+          description: File name
+          example: my-file.md
+        path:
+          type: string
+          description: Absolute file path
+          example: /home/user/my-file.md
+        type:
+          type: string
+          description: File extension or 'directory'
+        modified:
+          type: string
+          format: date-time
+        created:
+          type: string
+          format: date-time
+        owner:
+          type: string
+          description: Name of user that owns the file
+        group:
+          type: string
+          description: Name of group that owns the file
+        mode:
+          type: array
+          description: Read/write access for owner/group/all
+          minItems: 3
+          maxItems: 3
+          items:
+            type: string
+            pattern: "^r?w?$"
+        modeString:
+          type: string
+          pattern: "^r?w?,r?w?,r?w?$"
+        read:
+          type: boolean
+          description: Whether the current user has read access to the file
+        write:
+          type: boolean
+          description: Whether the current user has write access to the file
+        size:
+          type: integer
+          description: Size of file in number of bytes
+    ExtendedFile:
+      allOf:
+        - $ref: '#/components/schemas/File'
+        - type: object
+          properties:
+            files:
+              type: array
+              items:
+                $ref: '#/components/schemas/File'
 servers:
   - url: http://localhost/blogstep/index.php/api
 security:
@@ -16,7 +72,8 @@ security:
 paths:
   /login:
     post:
-      description: log in
+      description: Log in
+      tags: [user]
       security: []
       requestBody:
         required: true
@@ -42,9 +99,17 @@ paths:
                 properties:
                   session_id:
                     type: string
+  /logout:
+    post:
+      description: Invalidates the session
+      tags: [user]
+      responses:
+        200:
+          description: Session deleted.
   /who-am-i:
     get:
       description: Retrieve username and home directory of current user
+      tags: [user]
       responses:
         200:
           description: List of files
@@ -68,6 +133,7 @@ paths:
   /list-files:
     get:
       description: List files
+      tags: [files]
       parameters: 
         - name: path
           in: query
@@ -75,10 +141,269 @@ paths:
             type: string
       responses:
         200:
-          description: List of files
+          description: A file object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedFile'
+  /make-file:
+    post:
+      description: Create a file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+      responses:
+        200:
+          description: A file object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedFile'
+  /make-dir:
+    post:
+      description: Create a directory
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+      responses:
+        200:
+          description: A file object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendedFile'
+  /change-mode:
+    post:
+      description: Change permissions for file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+                mode:
+                  type: string
+                recursive:
+                  type: boolean
+      responses:
+        200:
+          description: Mode changed
+  /change-owner:
+    post:
+      description: Change owner of file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+                owner:
+                  type: string
+                recursive:
+                  type: boolean
+      responses:
+        200:
+          description: Owner changed
+  /change-group:
+    post:
+      description: Change group of file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+                group:
+                  type: string
+                recursive:
+                  type: boolean
+      responses:
+        200:
+          description: Group changed
+  /write:
+    post:
+      description: Replace contents of file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+                - data
+              properties:
+                path:
+                  type: string
+                data:
+                  type: string
+      responses:
+        200:
+          description: File written
+  /append:
+    post:
+      description: Append content to a file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+                - data
+              properties:
+                path:
+                  type: string
+                data:
+                  type: string
+      responses:
+        200:
+          description: File written
+  /copy:
+    post:
+      description: Copy a file or directory
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                paths:
+                  type: object
+                path:
+                  type: string
+                destination:
+                  type: string
+      responses:
+        200:
+          description: File copied
+  /move:
+    post:
+      description: Move a file or directory
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                paths:
+                  type: object
+                path:
+                  type: string
+                destination:
+                  type: string
+      responses:
+        200:
+          description: File moved
+  /delete:
+    post:
+      description: Delete a file
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                paths:
+                  type: array
+                  items:
+                    type: string
+                path:
+                  type: string
+      responses:
+        200:
+          description: File deleted
+  /upload:
+    post:
+      description: Upload file
+      tags: [files]
+      parameters: 
+        - in: query
+          name: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  description: Path of destination directory
+                file:
+                  type: array
+                  description: Files
+                  items:
+                    format: binary
+      responses:
+        200:
+          description: File uploaded
+        403:
+          description: User is not authorized to upload files to the directory
+  /download:
+    get:
+      description: Download file
+      tags: [files]
+      parameters: 
+        - in: query
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: File contents
   /download/{name}:
     get:
       description: Download file
+      tags: [files]
       parameters: 
         - in: path
           name: name
@@ -93,3 +418,129 @@ paths:
       responses:
         200:
           description: File contents
+  /thumbnail:
+    get:
+      description: Get a file thumbnail
+      tags: [files]
+      parameters: 
+        - name: path
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: A thumbnail
+  /get-conf:
+    get:
+      description: Get configuration
+      tags: [configuration]
+      parameters: 
+        - in: query
+          name: key
+          schema:
+            type: string
+        - in: query
+          name: keys
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        200:
+          description: Configuration
+  /set-conf:
+    post:
+      description: Set configuration
+      tags: [configuration]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+      responses:
+        200:
+          description: List of keys successfully changed
+  /mount:
+    post:
+      description: Mount host file system
+      tags: [system]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+                - target
+              properties:
+                path:
+                  type: string
+                target:
+                  type: string
+      responses:
+        200:
+          description: File system mounted
+  /unmount:
+    post:
+      description: Unmount file system
+      tags: [system]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+      responses:
+        200:
+          description: File system mounted
+  /build:
+    post:
+      description: Generate site
+      tags: [static site generation]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                target:
+                  type: string
+                  enum:
+                    - all
+                    - content
+                    - template
+                    - assemble
+                    - install
+      responses:
+        200:
+          description: File deleted
+  /preview:
+    get:
+      description: Preview site
+      tags: [static site generation]
+      security: []
+      parameters: 
+        - in: query
+          name: access_token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Generated content for node
