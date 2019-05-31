@@ -105,6 +105,13 @@ Menu.prototype.positionAtPointer = function (x, y) {
 
 Menu.prototype.contextOpen = function (clickEvent, atPointer = true, root = true) {
     if (this.isFloating) {
+        if (atPointer) {
+            if (this.activeSubmenu) {
+                this.activeSubmenu.close();
+                this.activeSubmenu = null;
+            }
+            this.positionAtPointer(clickEvent.pageX, clickEvent.pageY);
+        }
         return;
     }
     clickEvent.stopPropagation();
@@ -126,6 +133,7 @@ Menu.prototype.close = function () {
     if (this.isFloating) {
         if (this.activeSubmenu) {
             this.activeSubmenu.close();
+            this.activeSubmenu = null;
         }
         document.body.removeChild(this.elem);
         this.isFloating = false;
