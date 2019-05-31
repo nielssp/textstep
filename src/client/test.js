@@ -5,9 +5,10 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var ui = TEXTSTEP.ui;
+const ui = TEXTSTEP.ui;
+const Menu = TEXTSTEP.Menu;
 
-var dirView;
+let dirView;
 
 class Property {
     constructor() {
@@ -51,6 +52,25 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     var frame = app.createFrame('Test');
 
     frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
+
+    var buttonMenu = new Menu(frame, 'Context menu');
+    buttonMenu.addItem('Alert', 'alert');
+    buttonMenu.addSubmenu('Submenu')
+      .addItem('Foo', () => {})
+      .addItem('Bar', () => {})
+      .addSubmenu('Submenu')
+          .addItem('Baz', () => {});
+    var button1 = ui.elem('button', {}, ['Open context menu']);
+    button1.onclick = e => buttonMenu.contextOpen(e);
+    frame.appendChild(button1);
+    var button2 = ui.elem('button', {}, ['Open button menu']);
+    button2.onclick = e => buttonMenu.contextOpen(e, false);
+    frame.appendChild(button2);
+
+    frame.elem.oncontextmenu = e => {
+        e.preventDefault();
+        buttonMenu.contextOpen(e);
+    };
 
     frame.defineAction('alert', function () {
         frame.disableGroup('dialogs');
@@ -99,7 +119,18 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     var menu = frame.addMenu('Test menu');
     menu.addItem('Alert', 'alert');
     menu.addItem('Confirm', 'confirm');
+    menu.addSubmenu('A submenu')
+      .addItem('Test 1', () => {})
+      .addItem('Test 2', () => {})
+      .addItem('Test 3', () => {})
+      .addItem('Test 4', () => {});
     menu.addItem('Prompt', 'prompt');
+    menu.addSubmenu('A submenu')
+      .addItem('Test 1', () => {})
+      .addItem('Test 2', () => {})
+      .addItem('Test 3', () => {})
+      .addSubmenu('Test 4')
+          .addItem('Test 5', () => {});
     menu.addItem('File', 'file');
     menu.addItem('Open terminal', 'terminal');
 
@@ -113,6 +144,7 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
         } else if (!frame.hasFocus) {
             frame.requestFocus();
         }
+        app.setArgs({});
     };
 });
 

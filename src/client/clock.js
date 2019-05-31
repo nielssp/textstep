@@ -37,5 +37,6 @@ TEXTSTEP.initApp('clock', [], function (app) {
     }, 1000);
 
     app.close = () => {
+        clearInterval(interval);
     };
 });

@@ -25,6 +25,7 @@ TEXTSTEP.cookies = cookies;
 TEXTSTEP.util = util;
 TEXTSTEP.ui = ui;
 TEXTSTEP.paths = paths;
+TEXTSTEP.Menu = Menu;
 
 TEXTSTEP.config = new Config(function (keys) {
     return TEXTSTEP.get('get-conf', { keys: keys });
@@ -46,6 +47,8 @@ var frames = {};
 var sessionId = null;
 
 var focus = null;
+
+var floatingMenu = null;
 
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
@@ -513,6 +516,20 @@ TEXTSTEP.focusFrame = function (frame) {
     }
 };
 
+TEXTSTEP.openFloatingMenu = function (menu) {
+    if (floatingMenu) {
+        floatingMenu.close();
+    }
+    floatingMenu = menu;
+};
+
+TEXTSTEP.closeFloatingMenu = function () {
+    if (floatingMenu) {
+        floatingMenu.close();
+        floatingMenu = null;
+    }
+};
+
 TEXTSTEP.getTasks = function () {
     return Object.values(apps);
 };
@@ -618,9 +635,10 @@ window.onbeforeunload = function (event) {
 };
 
 root.onclick = function (event) {
-  if (root.classList.contains('show-menu')) {
-    root.classList.toggle('show-menu');
-  }
+    TEXTSTEP.closeFloatingMenu();
+    if (root.classList.contains('show-menu')) {
+        root.classList.toggle('show-menu');
+    }
 };
 
 function requestAuthenticatedUser() {
