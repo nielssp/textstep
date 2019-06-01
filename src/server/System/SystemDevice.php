@@ -80,42 +80,42 @@ class SystemDevice implements Device {
 
     public function delete($path)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function copy($source, $destination)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function move($source, $destination)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function copyFromDevice(Device $device, $source, $destination)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function moveFromDevice(Device $device, $source, $destination)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function moveUploadedFile(UploadedFile $file, $destination)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function createDirectory($path)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function createFile($path)
     {
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function getContents($path)
@@ -131,7 +131,11 @@ class SystemDevice implements Device {
     {
         if (isset($this->files[$path])) {
             $this->files[$path]->setUser($this->user);
-            $this->files[$path]->updateDocuments(Json::decode($data));
+            try {
+                $this->files[$path]->updateDocuments(Json::decode($data));
+            } catch (\Jivoo\JsonException $e) {
+                throw new FileException(FileException::SYNTAX_ERROR, $e->getMessage());
+            }
         }
     }
 
@@ -141,7 +145,7 @@ class SystemDevice implements Device {
             $this->files[$path]->setUser($this->user);
             return new \Jivoo\Http\Message\StringStream($this->getContents($path), false);
         }
-        throw new FileException('Not allowed');
+        throw new FileException(FileException::NOT_ALLOWED, 'Not allowed');
     }
 
     public function openStorage($path, $writeMode)

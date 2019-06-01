@@ -156,6 +156,9 @@ TEXTSTEP.initApp('build', [], function (app) {
     toolbar.addItem('Cancel ', null, 'cancel');
     toolbar.addItem('Clean ', null, 'clean');
 
+    let menu = frame.addMenu('Build');
+    menu.addItem('Reload preview', () => preview.src = TEXTSTEP.url('preview'));
+
     frame.onClose = () => self.close();
 
     self.onOpen = function (app, args) {

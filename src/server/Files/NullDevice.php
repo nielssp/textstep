@@ -20,17 +20,17 @@ class NullDevice implements Device
 
     public function getSize($path)
     {
-        throw new FileException('Null device not readable', FileException::NOT_READABLE);
+        throw new FileException(FileException::NOT_READABLE, 'Null device is not readable');
     }
 
     public function getModified($path)
     {
-        throw new FileException('Null device not readable', FileException::NOT_READABLE);
+        throw new FileException(FileException::NOT_READABLE, 'Null device is not readable');
     }
 
     public function getCreated($path)
     {
-        throw new FileException('Null device not readable', FileException::NOT_READABLE);
+        throw new FileException(FileException::NOT_READABLE, 'Null device is not readable');
     }
 
     public function isReadable($path)
@@ -55,61 +55,61 @@ class NullDevice implements Device
 
     public function delete($path)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function copy($source, $destination)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function move($source, $destination)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function copyFromDevice(Device $device, $source, $destination)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function moveFromDevice(Device $device, $source, $destination)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function moveUploadedFile(UploadedFile $file, $destination)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function createDirectory($path)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function createFile($path)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function getContents($path)
     {
-        throw new FileException('Null device not readable', FileException::NOT_READABLE);
+        throw new FileException(FileException::NOT_READABLE, 'Null device is not readable');
     }
 
     public function putContents($path, $data)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function open($path, $mode)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 
     public function openStorage($path, $writeMode)
     {
-        throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
+        throw new FileException(FileException::NOT_WRITABLE, 'Null device is not writable');
     }
 }

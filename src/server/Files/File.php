@@ -8,7 +8,6 @@ namespace Blogstep\Files;
 use Jivoo\Assume;
 use Jivoo\Http\Message\UploadedFile;
 use Jivoo\Http\Route\HasRoute;
-use Jivoo\I18n\I18n;
 use Jivoo\InvalidArgumentException;
 use Jivoo\Utilities;
 
@@ -83,8 +82,8 @@ class File implements \IteratorAggregate, HasRoute
     {
         if (!$this->isSystem()) {
             throw new FileException(
-                I18n::get('Not allowed to mount'),
-                FileException::AUTH_ERROR
+                FileException::NOT_ALLOWED,
+                'Not allowed to mount'
             );
         }
         $this->device = $device;
@@ -100,7 +99,7 @@ class File implements \IteratorAggregate, HasRoute
     {
         if (!($this->device instanceof HostDevice)) {
             // TODO:
-            throw new FileException('Operation not supported');
+            throw new FileException(FileException::NOT_SUPPORTED, 'Operation not supported');
         }
         return $this->device->getHostPath($this->devicePath);
     }
@@ -223,8 +222,9 @@ class File implements \IteratorAggregate, HasRoute
     {
         if (!$this->isReadable()) {
             throw new FileException(
-                I18n::get('File is not readable: %1', $this->getPath()),
-                FileException::NOT_READABLE
+                FileException::NOT_READABLE,
+                'File is not readable: {path}',
+                ['path' => $this->getPath()]
             );
         }
     }
@@ -233,8 +233,9 @@ class File implements \IteratorAggregate, HasRoute
     {
         if (!$this->isWritable()) {
             throw new FileException(
-                I18n::get('File is not writable: %1', $this->getPath()),
-                FileException::NOT_WRITABLE
+                FileException::NOT_WRITABLE,
+                'File is not writable: {path}',
+                ['path' => $this->getPath()]
             );
         }
     }
@@ -394,8 +395,9 @@ class File implements \IteratorAggregate, HasRoute
         if ($this->isDirectory()) {
             if ($destination->isInside($this)) {
                 throw new FileException(
-                    I18n::get('Cannot copy directory into itself: %1', $this->getPath()),
-                    FileException::DESTINATION_INSIDE_SOURCE
+                    FileException::DEST_INSIDE_SRC,
+                    'Cannot copy directory into itself: {path}',
+                    ['path' => $this->getPath()]
                 );
             }
             $destination->makeDirectory();
@@ -412,18 +414,21 @@ class File implements \IteratorAggregate, HasRoute
             if (!$result) {
                 if ($destination->exists()) {
                     throw new FileException(
-                        I18n::get('Destination exists: %1', $destination->getPath()),
-                        FileException::DESTINATION_EXISTS
+                        FileException::DEST_EXISTS,
+                        'Destination exists: {path}',
+                        ['path' => $destination->getPath()]
                     );
                 } elseif (!$destination->getParent()->isDirectory()) {
                     throw new FileException(
-                        I18n::get('Destination is not a directory: %1', $destination->getParent()->getPath()),
-                        FileException::NOT_A_DIRECTORY
+                        FileException::NOT_A_DIRECTORY,
+                        'Destination is not a directory: {path}',
+                        ['path' => $destination->getParent()->getPath()]
                     );
                 }
                 throw new FileException(
-                    I18n::get('Could not copy to destination: %1', $destination->getPath()),
-                    FileException::COPY_ERROR
+                    FileException::COPY_FAILED,
+                    'Could not copy file to destination: {path}',
+                    ['path' => $destination->getPath()]
                 );
             }
         }
@@ -438,8 +443,9 @@ class File implements \IteratorAggregate, HasRoute
         if ($this->isDirectory()) {
             if ($destination->isInside($this)) {
                 throw new FileException(
-                    I18n::get('Cannot move directory into itself: %1', $this->getPath()),
-                    FileException::DESTINATION_INSIDE_SOURCE
+                    FileException::DEST_INSIDE_SRC,
+                    'Cannot move directory into itself: {path}',
+                    ['path' => $this->getPath()]
                 );
             }
             $destination->makeDirectory();
@@ -461,18 +467,21 @@ class File implements \IteratorAggregate, HasRoute
         }
         if ($destination->exists()) {
             throw new FileException(
-                I18n::get('Destination exists: %1', $destination->getPath()),
-                FileException::DESTINATION_EXISTS
+                FileException::DEST_EXISTS,
+                'Destination exists: {path}',
+                ['path' => $destination->getPath()]
             );
         } elseif (!$destination->getParent()->isDirectory()) {
             throw new FileException(
-                I18n::get('Destination is not a directory: %1', $destination->getParent()->getPath()),
-                FileException::NOT_A_DIRECTORY
+                FileException::NOT_A_DIRECTORY,
+                'Destination is not a directory: {path}',
+                ['path' => $destination->getParent()->getPath()]
             );
         }
         throw new FileException(
-            I18n::get('Could not move to destination: %1', $destination->getPath()),
-            FileException::MOVE_ERROR
+            FileException::MOVE_ERROR,
+            'Could not move file to destination: {path}',
+            ['path' => $destination->getPath()]
         );
     }
 
@@ -608,30 +617,35 @@ class File implements \IteratorAggregate, HasRoute
             if ($this->isDirectory()) {
                     if (!$this->exists()) {
                         throw new FileException(
-                            I18n::get('Directory does not exist: %1', $this->getPath()),
-                            FileException::NOT_FOUND
+                            FileException::NOT_FOUND,
+                            'Directory does not exist: {path}',
+                            ['path' => $this->getPath()]
                         );
                     }
                     if (iterator_count($this->getIterator()) > 0) {
                         throw new FileException(
-                            I18n::get('Directory is not empty: %1', $this->getPath()),
-                            FileException::NOT_EMPTY
+                            FileException::NOT_EMPTY,
+                            'Directory is not empty: {path}',
+                            ['path' => $this->getPath()]
                         );
                     }
                     throw new FileException(
-                        I18n::get('Could not delete directory: %1', $this->getPath()),
-                        FileException::DELETE_ERROR
+                        FileException::DELETE_FAILED,
+                        'Could not delete directory: {path}',
+                        ['path' => $this->getPath()]
                     );
             } else {
                 if (!$this->exists()) {
                     throw new FileException(
-                        I18n::get('File does not exist: %1', $this->getPath()),
-                        FileException::NOT_FOUND
+                        FileException::NOT_FOUND,
+                        'File does not exist: {path}',
+                        ['path' => $this->getPath()]
                     );
                 }
                 throw new FileException(
-                    I18n::get('Could not delete file: %1', $this->getPath()),
-                    FileException::DELETE_ERROR
+                    FileException::DELETE_FAILED,
+                    'Could not delete file: {path}',
+                    ['path' => $this->getPath()]
                 );
             }
         }

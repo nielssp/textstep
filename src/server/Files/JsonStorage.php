@@ -24,7 +24,9 @@ class JsonStorage implements Storage {
         $this->file = $file;
         $this->handle = @fopen($file, $writeMode ? 'c+' : 'r');
         if (! $this->handle) {
-            throw new FileException('Could not open file');
+            throw new FileException(
+                FileException::READ_FAILED,
+                'Could not read file');
         }
         flock($this->handle, $writeMode ? LOCK_EX : LOCK_SH);
         $this->writeMode = $writeMode;
@@ -47,7 +49,7 @@ class JsonStorage implements Storage {
     {
         if (! $this->data) {
             if (! isset($this->handle)) {
-                throw new FileException('Invalid handle');
+                throw new \BadMethodCallException('Invalid handle');
             }
             $content = fread($this->handle, filesize($this->file));
             try {
@@ -72,7 +74,7 @@ class JsonStorage implements Storage {
     public function updateDocuments($documents)
     {
         if (! $this->writeMode) {
-            throw new FileException('Invalid mode');
+            throw new \BadMethodCallException('Invalid mode');
         }
         $this->data = $documents;
         $this->dirty = true;
@@ -81,7 +83,7 @@ class JsonStorage implements Storage {
     public function createDocument($key, $document)
     {
         if (! $this->writeMode) {
-            throw new FileException('Invalid mode');
+            throw new \BadMethodCallException('Invalid mode');
         }
         if (! $this->data) {
             $this->getDocuments();

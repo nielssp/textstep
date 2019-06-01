@@ -121,7 +121,7 @@ class UserModel implements \Jivoo\Security\UserModel
             $document['group'] = $data['group'];
         }
         if (isset($data['groups']) and is_array($data['groups'])) {
-            $document['groups'] = array_diff(array_unique(array_map('strval', $data['groups'])), [$document['group']]);
+            $document['groups'] = array_diff(array_unique(array_map('strval', array_values($data['groups']))), [$document['group']]);
         }
     }
 
@@ -176,23 +176,6 @@ class UserModel implements \Jivoo\Security\UserModel
         $groups = $this->getGroups();
         if (isset($groups[$group])) {
             return $groups[$group];
-        }
-        return null;
-    }
-    
-    /**
-     * @deprecated since version 0.2.0
-     */
-    public function findGroup($name)
-    {
-        if ($name === 'system') {
-            return $this->systemGroup;
-        }
-        $groups = $this->getGroups();
-        foreach ($groups as $group) {
-            if ($group->getName() === $name) {
-                return $group;
-            }
         }
         return null;
     }

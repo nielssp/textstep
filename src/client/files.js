@@ -28,7 +28,7 @@ function newFile() {
             TEXTSTEP.post('make-file', {path: path}).then(function (data) {
                 dirView.setSelection(path);
                 dirView.reload();
-            }, error => frame.alert('Error', error.response));
+            }, error => frame.alert('Error', error.message));
         }
     });
 }
@@ -48,7 +48,7 @@ function newFolder() {
             TEXTSTEP.post('make-dir', {path: path}).then(function (data) {
                 dirView.reload();
                 dirView.cd(path);
-            }, error => frame.alert('Error', error.response));
+            }, error => frame.alert('Error', error.message));
         }
     });
 }
@@ -119,7 +119,7 @@ function paste() {
             frame.disableAction('paste');
         }
         dirView.reload();
-    }, error => frame.alert('Error', error));
+    }, error => frame.alert('Error', error.message));
 }
 
 function rename() {
@@ -139,7 +139,7 @@ function rename() {
             TEXTSTEP.post('move', { path: path, destination: destination }).then(function (data) {
                 dirView.setSelection(destination);
                 dirView.reload();
-            });
+            }, error => frame.alert('Error', error.message));
         }
     });
 }
@@ -159,7 +159,7 @@ function trash() {
             TEXTSTEP.post('delete', data).then(function (data) {
                 dirView.clearSelection();
                 dirView.reload();
-            });
+            }, error => frame.alert('Error', error.message));
         }
     });
 }
@@ -219,7 +219,7 @@ TEXTSTEP.initApp('files', function (app) {
     frame.disableAction('paste');
 
     dirView.on('fileOpen', function (path) {
-        TEXTSTEP.open(path);
+        TEXTSTEP.open(path).catch(() => frame.alert('Error', 'File could not be opened'));
     });
 
     dirView.on('cwdChanged', function (path) {

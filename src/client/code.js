@@ -46,7 +46,7 @@ function createBuffer(path) {
             openBuffer(path);
         }
     }, error => {
-        frame.alert('Error', 'File could not be opened');
+        frame.alert('Error', error.message);
         buffer.data = '';
         if (current === buffer) {
             openBuffer(path);
@@ -169,6 +169,9 @@ function saveFile() {
             if (current === buffer) {
                 frame.setTitle(current.path + ' – Code');
             }
+        }, error => {
+            frame.alert('Save failed', 'The file could not be saved: ' + error.message)
+            return Promise.reject();
         });
     }
     return Promise.reject('Editor not initialized');

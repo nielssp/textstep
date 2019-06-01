@@ -12,16 +12,48 @@ use Blogstep\RuntimeException;
  */
 class FileException extends RuntimeException
 {
-    const AUTH_ERROR = 100;
-    const NOT_READABLE = 101;
-    const NOT_WRITABLE = 102;
-    
-    const COPY_ERROR = 200;
-    const MOVE_ERROR = 201;
-    const DELETE_ERROR = 202;
-    const DESTINATION_EXISTS = 203;
-    const NOT_FOUND = 204;
-    const NOT_A_DIRECTORY = 205;
-    const NOT_EMPTY = 206;
-    const DESTINATION_INSIDE_SOURCE = 207;
+    const NOT_ALLOWED = 'NOT_ALLOWED';
+    const NOT_SUPPORTED = 'NOT_SUPPORTED';
+    const NOT_READABLE = 'NOT_READABLE';
+    const NOT_WRITABLE = 'NOT_WRITABLE';
+    const DEST_INSIDE_SRC = 'DEST_INSIDE_SRC';
+    const DEST_EXISTS = 'DEST_EXISTS';
+    const NOT_A_DIRECTORY = 'NOT_A_DIRECTORY';
+    const COPY_FAILED = 'COPY_FAILED';
+    const MOVE_FAILED = 'MOVE_FAILED';
+    const NOT_FOUND = 'NOT_FOUND';
+    const NOT_EMPTY = 'NOT_EMPTY';
+    const DELETE_FAILED = 'DELETE_FAILED';
+    const READ_FAILED = 'READ_FAILED';
+    const SYNTAX_ERROR = 'SYNTAX_ERROR';
+
+    protected $errorType;
+
+    protected $context;
+
+    public function __construct($errorType, $message, array $context = [])
+    {
+        parent::__construct(\Jivoo\Log\Logger::interpolate($message, $context));
+        $this->errorType = $errorType;
+        $this->context = $context;
+    }
+
+    public function getErrorType()
+    {
+        return $this->errorType;
+    }
+
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    public function toArray()
+    {
+        return [
+            'errorType' => $this->getErrorType(),
+            'message' => $this->getMessage(),
+            'context' => $this->getContext(),
+        ];
+    }
 }

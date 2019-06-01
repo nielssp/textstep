@@ -92,7 +92,15 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                         reject
                     );
                 } else {
-                    reject(xhr);
+                    try {
+                        reject(JSON.parse(xhr.response));
+                    } catch (e) {
+                        reject({
+                            errorType: 'UNSPECIFIED',
+                            message: xhr.response,
+                            context: {}
+                        });
+                    }
                 }
             }
         };
@@ -300,21 +308,21 @@ TEXTSTEP.initLib = function (name, dependencies, init) {
 TEXTSTEP.open = function (path) {
     var fileName = paths.fileName(path);
     if (fileName.match(/\.md/i)) {
-        TEXTSTEP.run('write', {path: path});
+        return TEXTSTEP.run('write', {path: path});
     } else if (fileName.match(/\.webm/i)) {
-        TEXTSTEP.run('play', {path: path});
+        return TEXTSTEP.run('play', {path: path});
     } else if (fileName.match(/\.(?:jpe?g|png|gif|ico)/i)) {
-        TEXTSTEP.run('view', {path: path});
+        return TEXTSTEP.run('view', {path: path});
     } else if (fileName.match(/\.(?:php|log|json|html|css|js|sass|scss)/i)) {
-        TEXTSTEP.run('code', {path: path});
+        return TEXTSTEP.run('code', {path: path});
     } else if (fileName.match(/\.app/i)) {
-        TEXTSTEP.run(fileName.replace(/\.app/i, ''));
+        return TEXTSTEP.run(fileName.replace(/\.app/i, ''));
     } else {
-        TEXTSTEP.get('list-files', {path: path}).then(function (data) {
+        return TEXTSTEP.get('list-files', {path: path}).then(function (data) {
             if (data.type === 'directory') {
-                TEXTSTEP.run('files', {path: path});
+                return TEXTSTEP.run('files', {path: path});
             } else {
-                TEXTSTEP.run('code', {path: path});
+                return TEXTSTEP.run('code', {path: path});
             }
         });
     }
