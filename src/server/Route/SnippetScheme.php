@@ -31,7 +31,7 @@ class SnippetScheme implements \Jivoo\Http\Route\Scheme
     public function getSnippet($name)
     {
         \Jivoo\Assume::isSubclassOf($name, 'Blogstep\Snippet');
-        return new $name($this->m);
+        return new $name($this->m, $this);
     }
     
     public function fromArray(array $route)

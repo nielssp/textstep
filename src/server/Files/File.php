@@ -54,6 +54,11 @@ class File implements \IteratorAggregate, HasRoute
     private $cache = [];
 
     /**
+     * @var string[]
+     */
+    private $virtual = [];
+
+    /**
      * @var bool
      */
     private $valid = true;
@@ -64,6 +69,14 @@ class File implements \IteratorAggregate, HasRoute
         $this->path = $path;
         $this->type = $type;
         $this->parent = $this;
+    }
+
+    private function addVirtual($name)
+    {
+        $this->virtual[$name] = $name;
+        if ($this->parent !== $this) {
+            $this->parent->addVirtual($this->getName());
+        }
     }
 
     public function mount(Device $device)
@@ -78,6 +91,9 @@ class File implements \IteratorAggregate, HasRoute
         $this->devicePath = '/';
         $this->cache = [];
         $this->type = 'directory';
+        if ($this->parent !== $this) {
+            $this->parent->addVirtual($this->getName());
+        }
     }
 
     public function getHostPath()
@@ -97,11 +113,16 @@ class File implements \IteratorAggregate, HasRoute
             $names = $this->device->scan($this->devicePath);
         }
         $files = [];
+        foreach ($this->virtual as $name) {
+            $files[] = $this->get($name);
+        }
         foreach ($names as $name) {
             if ($name == '.' or $name == '..') {
                 continue;
             }
-            $files[] = $this->get($name);
+            if (!isset($this->virtual[$name])) {
+                $files[] = $this->get($name);
+            }
         }
         return new \ArrayIterator($files);
     }
@@ -564,6 +585,15 @@ class File implements \IteratorAggregate, HasRoute
                 throw new InvalidArgumentException('undefined file mode: ' . $mode);
         }
         return $this->device->open($this->devicePath, $mode);
+    }
+
+    public function openStorage($writeMode = false)
+    {
+        $this->assumeReadable();
+        if ($writeMode) {
+            $this->assumeWritable();
+        }
+        return $this->device->openStorage($this->devicePath, $writeMode, $this->system->user);
     }
 
     public function delete($recursive = true)

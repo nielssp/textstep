@@ -91,11 +91,11 @@ Menu.prototype.positionAtButton = function (button) {
 
 Menu.prototype.positionAtPointer = function (x, y) {
     let rect = this.elem.getBoundingClientRect();
-    x += 5;
+    x += 1;
     if (rect.width + x > document.body.clientWidth) {
         x = document.body.clientWidth - rect.width;
     }
-    y += 5;
+    y += 1;
     if (rect.height + y > document.body.clientHeight) {
         y = document.body.clientHeight - rect.height;
     }

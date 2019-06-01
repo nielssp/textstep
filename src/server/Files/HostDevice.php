@@ -7,6 +7,7 @@ namespace Blogstep\Files;
 
 use Jivoo\Http\Message\PhpStream;
 use Jivoo\Http\Message\UploadedFile;
+use Blogstep\User;
 
 /**
  * Host file system.
@@ -176,5 +177,10 @@ class HostDevice implements Device
     public function open($path, $mode)
     {
         return new PhpStream($this->rootPath . $path, $mode);
+    }
+
+    public function openStorage($path, $writeMode, User $user = null)
+    {
+        return new JsonStorage($this->rootPath . $path, $writeMode);
     }
 }

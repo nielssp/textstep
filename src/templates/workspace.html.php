@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="<?php echo $this->link('snippet:Manifest'); ?>" />
+<link rel="manifest" href="<?php echo $this->link('snippet:Snippets\Manifest'); ?>" />
 <?php echo $this->block('meta'); ?>
 <link rel="shortcut icon" href="<?php echo $this->link('asset:themes/default/icon.ico'); ?>" />
 <link rel="apple-touch-icon" href="<?php echo $this->link('asset:themes/default/icon-57.png'); ?>" />

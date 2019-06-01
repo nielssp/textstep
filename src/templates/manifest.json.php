@@ -28,6 +28,6 @@
   ],
   "background_color": "#AEAAAE",
   "theme_color": "#515171",
-  "start_url": "<?php echo $this->link('snippet:Workspace'); ?>",
+  "start_url": "<?php echo $this->link('snippet:Snippets\Workspace'); ?>",
   "display": "standalone"
 }

@@ -12,6 +12,6 @@ class NotFound extends \Blogstep\Snippet
 {
     public function get()
     {
-        return $this->render()->withStatus(\Jivoo\Http\Message\Status::NOT_FOUND);
+        return $this->render('not-found.html')->withStatus(\Jivoo\Http\Message\Status::NOT_FOUND);
     }
 }

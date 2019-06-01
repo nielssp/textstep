@@ -5,6 +5,8 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep;
 
+use Blogstep\Route\SnippetScheme;
+
 /**
  * A loadable snippet.
  */
@@ -15,6 +17,8 @@ abstract class Snippet
      * @var Modules Module collection.
      */
     protected $m;
+
+    protected $scheme;
 
     /**
      * @var string[] Names of parameters required by this snippet.
@@ -60,13 +64,14 @@ abstract class Snippet
      *
      * @param Modules $m Module collection.
      */
-    final public function __construct(Modules $m)
+    final public function __construct(Modules $m, SnippetScheme $scheme)
     {
         $this->m = $m;
         $this->m->required('assets', 'Jivoo\Http\Route\AssetScheme');
         $this->m->required('router', 'Jivoo\Http\Router');
         $this->m->required('view', 'Blogstep\View');
-        $this->m->required('snippets', 'Blogstep\Route\SnippetScheme');
+
+        $this->scheme = $scheme;
 
         $this->init();
     }
@@ -307,7 +312,7 @@ abstract class Snippet
         return $response->withStatus(\Jivoo\Http\Message\Status::OK);
     }
     
-    protected function error($message, $status = \Jivoo\Http\Message\Status::INTERNAL_SERVER_ERROR)
+    protected function error($message, $status = \Jivoo\Http\Message\Status::BAD_REQUEST)
     {
         if ($message instanceof \Exception) {
             if ($message instanceof RuntimeException) {
@@ -338,7 +343,7 @@ abstract class Snippet
     protected function render($templateName = null)
     {
         if (!isset($templateName)) {
-            $class = str_replace($this->m->snippets->getNamespace(), '', get_class($this));
+            $class = str_replace($this->scheme->getNamespace(), '', get_class($this));
             $type = 'html';
             if (strpos($class, '_') !== false and preg_match('/^(.*)_([a-z0-9]+)$/i', $class, $matches) === 1) {
                 $class = $matches[1];

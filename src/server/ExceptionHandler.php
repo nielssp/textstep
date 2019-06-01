@@ -37,7 +37,7 @@ class ExceptionHandler
         $this->m->required('server');
 
         // Precompute paths used for error handling
-        $logDir = $this->m->paths->p('system/log');
+        $logDir = $this->m->paths->p('var/log');
         if (Utilities::dirExists($logDir)) {
             $this->errorPaths['log'] = realpath($logDir);
         }

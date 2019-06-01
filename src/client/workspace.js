@@ -142,6 +142,14 @@ TEXTSTEP.post = function (action, data = null, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'post', data, responseType);
 };
 
+TEXTSTEP.put = function (action, data = null, responseType = null) {
+    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'put', data, responseType);
+};
+
+TEXTSTEP.delete = function (action, responseType = null) {
+    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'delete', null, responseType);
+};
+
 TEXTSTEP.requestLogin = function(overlay = false) {
     if (loginFrame && loginFrame.promise) {
         return loginFrame.promise;
@@ -575,8 +583,9 @@ function createWorkspaceMenu() {
     menu.addItem('Build', 'build');
     menu.addItem('Terminal', 'terminal');
     menu.addItem('Control panel', 'control-panel');
-    menu.addItem('Switch user', 'switch-user');
-    menu.addItem('Log out', 'logout');
+    menu.addSubmenu('Session')
+        .addItem('Switch user ', 'switch-user')
+        .addItem('Log out', 'logout');
     return menu;
 }
 

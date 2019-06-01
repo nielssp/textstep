@@ -45,6 +45,12 @@ function createBuffer(path) {
         if (current === buffer) {
             openBuffer(path);
         }
+    }, error => {
+        frame.alert('Error', 'File could not be opened');
+        buffer.data = '';
+        if (current === buffer) {
+            openBuffer(path);
+        }
     });
 }
 
@@ -103,7 +109,8 @@ function open(args) {
     frame.setTitle(path + ' (...) – Code');
     
     codemirror = CodeMirror.fromTextArea(textarea, {
-        lineNumbers: true
+        lineNumbers: true,
+        lineWrapping:  true, // TODO: config
     });
 
     codemirror.on('changes', function () {

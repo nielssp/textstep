@@ -26,7 +26,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
      */
     private $config;
 
-    public function __construct($distPath, $userPath)
+    public function __construct($distPath, $userPath, $systemPath)
     {
         \Jivoo\Log\ErrorHandler::getInstance()->register();
 
@@ -37,10 +37,12 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
         $distPath = \Jivoo\Utilities::convertPath($distPath);
         $userPath = \Jivoo\Utilities::convertPath($userPath);
+        $systemPath = \Jivoo\Utilities::convertPath($systemPath);
         $this->m->paths = new \Jivoo\Paths(getcwd(), $userPath);
         $this->m->paths->src = dirname(dirname(__FILE__));
         $this->m->paths->dist = $distPath;
         $this->m->paths->user = $userPath;
+        $this->m->paths->system = $systemPath;
 
         $this->m->cache = new \Jivoo\Cache\Cache();
 
@@ -73,14 +75,14 @@ class Main implements \Psr\Log\LoggerAwareInterface
     private function initRoutes()
     {
         $this->m->router->addScheme($this->m->assets);
-        $this->m->router->addScheme($this->m->snippets);
+        $this->m->router->addScheme(new Route\SnippetScheme($this->m, 'Blogstep'));
         $this->m->router->addScheme(new \Jivoo\Http\Route\UrlScheme());
         $this->m->router->addScheme(new \Jivoo\Http\Route\PathScheme());
 
         $this->m->router->match('assets/**', 'asset:');
-        $this->m->router->root('snippet:Workspace');
-        $this->m->router->error('snippet:NotFound');
-        $this->m->router->match('manifest.json', 'snippet:Manifest');
+        $this->m->router->root('snippet:Snippets\Workspace');
+        $this->m->router->error('snippet:Snippets\NotFound');
+        $this->m->router->match('manifest.json', 'snippet:Snippets\Manifest');
 
         $this->m->router->auto('snippet:Api\Login');
         $this->m->router->auto('snippet:Api\Logout');
@@ -108,6 +110,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\GetConf');
         $this->m->router->auto('snippet:Api\SetConf');
         $this->m->router->auto('snippet:Api\Preview');
+        $this->m->router->auto('snippet:Api\Storage');
     }
 
     public function p($ipath)
@@ -126,6 +129,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Mount file systems
         $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
 
+        $this->m->system = new System\SystemDevice();
+        $this->m->files->get('system')->mount($this->m->system);
+
         $sysConfig = $this->config->getSubconfig('system.config');
 
         // Set timezone (required by file logger)
@@ -142,28 +148,13 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
         // Add file logger
         if ($this->m->logger instanceof \Jivoo\Log\Logger) {
-            $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
-                $this->p('system/log/blogstep-' . date('Y-m-d') . '.log'),
-                $sysConfig->get('logLevel', \Psr\Log\LogLevel::WARNING)
-            ));
+            if ($this->m->paths->dirExists('var/log')) {
+                $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
+                    $this->p('var/log/system-' . date('Y-m-d') . '.log'),
+                    $sysConfig->get('logLevel', \Psr\Log\LogLevel::WARNING)
+                ));
+            }
         }
-
-        // Initialize cache system
-        if ($this->m->paths->dirExists('system/cache')) {
-            $this->m->cache->setDefaultProvider(function ($pool) {
-                $store = new \Jivoo\Store\SerializedStore($this->p('system/cache/' . $pool . '.s'));
-                if ($store->touch()) {
-                    return new \Jivoo\Cache\StorePool($store);
-                }
-                $this->m->logger->warning('Unable to access cache pool "{pool}" in {dir}', ['pool' => $pool, 'dir' => $this->p('system/cache')]);
-                return new \Jivoo\Cache\NullPool();
-            });
-        }
-
-        // Initialize session
-        $session = new \Jivoo\Store\PhpSessionStore();
-        $session->name = 'blogstep_session_id';
-        $this->m->session = new \Jivoo\Store\Session($session);
 
         // Initialize authentication system
         $this->m->users = new UserModel($this->m->files, $this->p('system'));
@@ -171,6 +162,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
 
         $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
+
+        $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
 
         if (php_sapi_name() === 'cli') {
             // Open shell if running from CLI
@@ -190,8 +183,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
                 $this->m->logger
             );
             $this->m->view->addTemplateDir($this->p('src/templates'));
-
-            $this->m->snippets = new Route\SnippetScheme($this->m, 'Blogstep\Snippets');
 
             // Initialize routes
             $this->initRoutes();
