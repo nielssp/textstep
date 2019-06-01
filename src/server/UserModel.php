@@ -41,6 +41,17 @@ class UserModel implements \Jivoo\Security\UserModel
         $this->system = new User('system', null, $fs->get('system'), 'system', []);
         $this->state = new StateMap($systemDir);
     }
+
+    private function createUserObject($user)
+    {
+        return new User(
+            $user['username'],
+            $user->get('hash', ''),
+            $this->fs->get($user->get('home', '/home/' . $user['username'])),
+            $user->get('group', ''),
+            $user->get('groups', [])
+        );
+    }
     
     public function getUsers()
     {
@@ -53,13 +64,7 @@ class UserModel implements \Jivoo\Security\UserModel
                     trigger_error('missing or incorrect name for user: ' . $name, E_USER_WARNING);
                     continue;
                 }
-                $this->users[$name] = new User(
-                    $user['username'],
-                    $user->get('hash', ''),
-                    $this->fs->get($user->get('home', '/home/' . $user['username'])),
-                    $user->get('group', ''),
-                    $user->get('groups', [])
-                );
+                $this->users[$name] = $this->createUserObject($user);
             }
             $state->close();
         }
@@ -102,6 +107,65 @@ class UserModel implements \Jivoo\Security\UserModel
             return $users[$user];
         }
         return null;
+    }
+
+    private function updateUserData($document, $data)
+    {
+        if (isset($data['password']) and is_string($data['password'])) {
+            $document['hash'] = Hash::hash($data['password']);
+        }
+        if (isset($data['home']) and is_string($data['home'])) {
+            $document['home'] = $data['home'];
+        }
+        if (isset($data['group']) and is_string($data['group'])) {
+            $document['group'] = $data['group'];
+        }
+        if (isset($data['groups']) and is_array($data['groups'])) {
+            $document['groups'] = array_diff(array_unique(array_map('strval', $data['groups'])), [$document['group']]);
+        }
+    }
+
+    public function createUser($name, array $data)
+    {
+        $state = $this->state->write('users');
+        if (!isset($state[$name])) {
+            $user = $state->getSubset($name);
+            $user['username'] = $name;
+            $user->setDefault('home', '/home/' . $name);
+            $user->setDefault('hash', '');
+            $user->setDefault('group', 'users');
+            $user->setDefault('groups', []);
+            $this->updateUserData($user, $data);
+            if (isset($this->users)) {
+                $this->users[$name] = $this->createUserObject($user);
+            }
+        }
+        $state->close();
+    }
+
+    public function updateUser($name, array $data)
+    {
+        $state = $this->state->write('users');
+        if (isset($state[$name])) {
+            $user = $state->getSubset($name);
+            $this->updateUserData($user, $data);
+            if (isset($this->users)) {
+                $this->users[$name] = $this->createUserObject($user);
+            }
+        }
+        $state->close();
+    }
+
+    public function deleteUser($name)
+    {
+        $state = $this->state->write('users');
+        if (isset($state[$name])) {
+            unset($state[$name]);
+            if (isset($this->users) and isset($this->users[$name])) {
+                unset($this->users[$name]);
+            }
+        }
+        $state->close();
     }
     
     public function getGroup($group)

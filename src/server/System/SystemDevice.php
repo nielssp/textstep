@@ -14,6 +14,13 @@ use Blogstep\User;
 class SystemDevice implements Device {
     private $files = [];
 
+    private $user = null;
+
+    public function setAuthentication(User $user = null)
+    {
+        $this->user = $user;
+    }
+
     public function addFile($path, SystemFile $file)
     {
         $this->files['/' . ltrim($path, '/')] = $file;
@@ -114,6 +121,7 @@ class SystemDevice implements Device {
     public function getContents($path)
     {
         if (isset($this->files[$path])) {
+            $this->files[$path]->setUser($this->user);
             return Json::prettyPrint($this->files[$path]->getDocuments());
         }
         return null;
@@ -122,6 +130,7 @@ class SystemDevice implements Device {
     public function putContents($path, $data)
     {
         if (isset($this->files[$path])) {
+            $this->files[$path]->setUser($this->user);
             $this->files[$path]->updateDocuments(Json::decode($data));
         }
     }
@@ -129,20 +138,18 @@ class SystemDevice implements Device {
     public function open($path, $mode)
     {
         if ($mode === 'rb') {
+            $this->files[$path]->setUser($this->user);
             return new \Jivoo\Http\Message\StringStream($this->getContents($path), false);
         }
         throw new FileException('Not allowed');
     }
 
-    public function openStorage($path, $writeMode, User $user = null)
+    public function openStorage($path, $writeMode)
     {
         if (! isset($this->files[$path])) {
             return null;
         }
-        $this->files[$path]->setUser($user);
-        if ($writeMode) {
-            $this->files[$path]->lock();
-        }
+        $this->files[$path]->setUser($this->user);
         return $this->files[$path];
     }
 }

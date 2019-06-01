@@ -6,7 +6,6 @@
 namespace Blogstep\Files;
 
 use Jivoo\Http\Message\UploadedFile;
-use Blogstep\User;
 
 /**
  * Null file system device.
@@ -109,7 +108,7 @@ class NullDevice implements Device
         throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
     }
 
-    public function openStorage($path, $writeMode, User $user = null)
+    public function openStorage($path, $writeMode)
     {
         throw new FileException('Null device not writable', FileException::NOT_WRITABLE);
     }

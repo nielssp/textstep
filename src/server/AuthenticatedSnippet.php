@@ -17,6 +17,7 @@ class AuthenticatedSnippet extends Snippet
           return $this->error('Not logged in', \Jivoo\Http\Message\Status::UNAUTHORIZED);
         }
         $this->m->files->setAuthentication($this->m->auth->user);
+        $this->m->system->setAuthentication($this->m->auth->user);
         $this->viewData['user'] = $this->m->auth->user;
     }
 }

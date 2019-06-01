@@ -7,17 +7,16 @@ namespace Blogstep\System;
 
 use Blogstep\UserModel;
 use Blogstep\SystemAcl;
+use Blogstep\User;
 
 class UserFile extends SystemFile {
 
     private $users;
 
-    private $acl;
-
     public function __construct(UserModel $users, SystemAcl $acl)
     {
+        parent::__construct($acl);
         $this->users = $users;
-        $this->acl = $acl;
     }
 
     public function getModified()
@@ -28,43 +27,69 @@ class UserFile extends SystemFile {
     {
     }
 
-    public function lock()
+    private function toDocument(User $user)
     {
-    }
-
-    public function unlock()
-    {
+        return [
+            'username' => $user->getName(),
+            'home' => $user->getHome()->getPath(),
+            'group' => $user->getPrimaryGroup(),
+            'groups' => $user->getGroups(),
+        ];
     }
 
     public function getDocuments()
     {
         $users = [];
-        foreach ($this->users->getUsers() as $user) {
-            $users[$user->getName()] = [
-                'username' => $user->getName(),
-                'home' => $user->getHome()->getPath()
-            ];
+        if ($this->check('users.view')) {
+            foreach ($this->users->getUsers() as $user) {
+                $users[$user->getName()] = $this->toDocument($user);
+            }
+        } else if ($this->check('users.self.view')) {
+            $users[$this->user->getName()] = $this->toDocument($this->user);
         }
         return $users;
     }
 
-    public function updateDocuments($documents)
-    {
-    }
-
     public function createDocument($key, $document)
     {
+        $checked = $this->checkDocument('users.create', $document);
+        if ($checked) {
+            $this->users->createUser($key, $checked);
+        }
     }
 
     public function getDocument($key)
     {
+        if ($this->check('users.view')) {
+            $user = $this->users->get($key);
+            if ($user) {
+                return $this->toDocument($user);
+            }
+        } else if ($this->check('users.self.view') and $key === $this->user->getName()) {
+            return $this->toDocument($this->user);
+        }
+        return null;
     }
 
     public function updateDocument($key, $document)
     {
+        $checked = $this->checkDocument('users.update', $document);
+        if ($checked) {
+            $this->users->updateUser($key, $checked);
+        } else if ($this->user and $key === $this->user->getName()) {
+            $checked = $this->checkDocument('users.self.update', $document);
+            if ($checked) {
+                $this->users->updateUser($key, $checked);
+            }
+        }
     }
 
     public function deleteDocument($key)
     {
+        if ($this->check('users.delete')) {
+            $this->users->deleteUser($key);
+        } else if ($this->check('users.self.delete') and $key === $this->user->getName()) {
+            $this->users->deleteUser($key);
+        }
     }
 }

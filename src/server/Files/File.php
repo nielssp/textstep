@@ -593,7 +593,7 @@ class File implements \IteratorAggregate, HasRoute
         if ($writeMode) {
             $this->assumeWritable();
         }
-        return $this->device->openStorage($this->devicePath, $writeMode, $this->system->user);
+        return $this->device->openStorage($this->devicePath, $writeMode);
     }
 
     public function delete($recursive = true)

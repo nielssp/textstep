@@ -6,7 +6,6 @@
 namespace Blogstep\Files;
 
 use Jivoo\Http\Message\UploadedFile;
-use Blogstep\User;
 
 /**
  * A file system device.
@@ -94,5 +93,5 @@ interface Device
 
     public function open($path, $mode);
 
-    public function openStorage($path, $writeMode, User $user = null);
+    public function openStorage($path, $writeMode);
 }
