@@ -67,15 +67,4 @@ class User
     {
         return $this->username === 'system' or $this->isMemberOf('system');
     }
-    
-    /**
-     *
-     * @return \Jivoo\Store\State
-     */
-    public function getSessions()
-    {
-        $file = new \Jivoo\Store\PhpStore($this->home->get('.sessions.php')->getHostPath());
-        $file->touch();
-        return new \Jivoo\Store\State($file);
-    }
 }

@@ -45,10 +45,23 @@ class Storage extends \Blogstep\AuthenticatedSnippet
 
     public function post($data)
     {
-        return $this->put($data);
+        if (!isset($this->request->query['path'])) {
+            return $this->error('Missing parameter: "path"');
+        }
+        if (!isset($this->request->query['key'])) {
+            return $this->error('Missing parameter: "key"');
+        }
+        $path = $this->request->query['path'];
+        $key = $this->request->query['key'];
+        $fs = $this->m->files->get($path);
+        $storage = $fs->openStorage(true);
+        $storage->createDocument($key, $data);
+        $document = $storage->getDocument($key);
+        $storage->close();
+        return $this->json($document);
     }
 
-    public function delete($data)
+    public function delete()
     {
         if (!isset($this->request->query['path'])) {
             return $this->error('Missing parameter: "path"');

@@ -24,7 +24,7 @@
 <link rel="logo" type="image/svg" href="<?php echo $this->link('asset:themes/default/logo.svg'); ?>" />
 <?php echo $this->resourceBlock("style"); ?>
 </head>
-<body data-server="<?php echo $this->link('path:api'); ?>" data-run="<?php echo $run; ?>" data-args="<?php echo $args; ?>">
+<body data-server="<?php echo $this->link('path:api'); ?>">
 <noscript>
             JavaScript is required.
 </noscript>

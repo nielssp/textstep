@@ -179,32 +179,77 @@ class UserModel implements \Jivoo\Security\UserModel
         }
         return null;
     }
+
+    private function createSessionObject($id, $doc)
+    {
+        return new Session(
+            $id,
+            $doc['username'],
+            $doc['validUntil'],
+            $doc['ip'],
+            $doc['userAgent']
+        );
+    }
+
+    public function getSessions(User $user = null)
+    {
+        $state = $this->state->read('sessions');
+        $sessions = [];
+        foreach ($state as $id => $doc) {
+            if (!is_array($doc)) {
+                continue;
+            }
+            if (isset($user) and $doc['username'] !== $user->getName()) {
+                continue;
+            }
+            $sessions[$id] = $this->createSessionObject($id, $doc);
+        }
+        $state->close();
+        return $sessions;
+    }
+
+    public function getSession($sessionId)
+    {
+        $state = $this->state->read('sessions');
+        $session = null;
+        if (isset($state[$sessionId])) {
+            $session = $this->createSessionObject($state[$sessionId]);
+        }
+        $state->close();
+        return $session;
+    }
     
     public function createSession($user, $validUntil)
     {
         Assume::isInstanceOf($user, 'Blogstep\User');
         $sessionId = Binary::base64Encode(Random::bytes(32), true);
-        $sessions = $user->getSessions();
-        $sessions[$sessionId] = $validUntil;
-        $sessions->close();
         $state = $this->state->write('sessions');
-        $state[$sessionId] = $user->getName();
+        $state[$sessionId] = [
+            'username' => $user->getName(),
+            'validUntil' => $validUntil,
+            'ip' => $_SERVER['REMOTE_ADDR'],
+            'userAgent' => $_SERVER['HTTP_USER_AGENT']
+        ];
         $state->close();
         return $sessionId;
     }
 
-    public function deleteSession($sessionId)
+    public function updateSession($sessionId, $data = [], User $user = null)
     {
         $state = $this->state->write('sessions');
-        $user = null;
-        if (isset($state[$sessionId])) {
-            $users = $this->getUsers();
-            if (isset($users[$state[$sessionId]])) {
-                $user = $users[$state[$sessionId]];
-                $sessions = $user->getSessions();
-                unset($sessions[$sessionId]);
-                $sessions->close();
+        if (isset($state[$sessionId]) and (!isset($user) or $user->getName() === $state[$sessionId]['username'])) {
+            $session = $state->getSubset($sessionId);
+            if (isset($data['validUntil'])) {
+                $session['validUntil'] = $data['validUntil'];
             }
+        }
+        $state->close();
+    }
+
+    public function deleteSession($sessionId, User $user = null)
+    {
+        $state = $this->state->write('sessions');
+        if (isset($state[$sessionId]) and (!isset($user) or $user->getName() === $state[$sessionId]['username'])) {
             unset($state[$sessionId]);
         }
         $state->close();
@@ -220,8 +265,7 @@ class UserModel implements \Jivoo\Security\UserModel
         Assume::isInstanceOf($user, 'Blogstep\User');
         if (Hash::verify($password, $user->getPassword())) {
             if (Hash::needsRehash($user->getPassword())) {
-                $newPassword = Hash::hash($password);
-                // TODO: save new password
+                $this->updateUser($user->getName(), ['password' => $password]);
             }
             return true;
         }
@@ -230,27 +274,14 @@ class UserModel implements \Jivoo\Security\UserModel
 
     public function openSession($sessionId)
     {
-        $state = $this->state->read('sessions');
+        $state = $this->state->write('sessions');
         $user = null;
         if (isset($state[$sessionId])) {
-            $users = $this->getUsers();
-            if (isset($users[$state[$sessionId]])) {
-                $user = $users[$state[$sessionId]];
-                try {
-                    $sessions = $user->getSessions();
-                    if (! isset($sessions[$sessionId])) {
-                        $user = null;
-                    } elseif ($sessions[$sessionId] < time()) {
-                        $user = null;
-                        unset($sessions[$sessionId]);
-                    }
-                    $sessions->close();
-                } catch (AccessException $e) {
-                   $user = null;
-                }
+            $session = $state[$sessionId];
+            if (isset($session['username']) and isset($session['validUntil']) and $session['validUntil'] > time()) {
+                $user = $this->getUser($session['username']);
             }
             if (! isset($user)) {
-                $state = $this->state->write('sessions');
                 unset($state[$sessionId]);
             }
         }
@@ -260,17 +291,6 @@ class UserModel implements \Jivoo\Security\UserModel
 
     public function renewSession($sessionId, $validUntil)
     {
-        $state = $this->state->read('sessions');
-        $user = null;
-        if (isset($state[$sessionId])) {
-            $users = $this->getUsers();
-            if (isset($users[$state[$sessionId]])) {
-                $user = $users[$state[$sessionId]];
-                $sessions = $user->getSessions();
-                $sessions[$sessionId] = $validUntil;
-                $sessions->close();
-            }
-        }
-        $state->close();
+        $this->updateSession($sessionId, ['validUntil' => $validUntil]);
     }
 }
