@@ -23,34 +23,11 @@ class ExceptionHandler
      */
     private $m;
 
-    /**
-     * @var string[]
-     */
-    private $errorPaths = [];
-
     public function __construct(Modules $m)
     {
         $this->m = $m;
         $this->m->required('logger');
-        $this->m->required('paths');
-        $this->m->required('main');
         $this->m->required('server');
-
-        // Precompute paths used for error handling
-        $logDir = $this->m->paths->p('var/log');
-        if (Utilities::dirExists($logDir)) {
-            $this->errorPaths['log'] = realpath($logDir);
-        }
-        $errorTemplate = $this->m->paths->p('src/templates/error/error.php');
-        if (!file_exists($errorTemplate)) {
-            throw new RuntimeException('Error template not found: ' . $errorTemplate);
-        }
-        $this->errorPaths['errorTemplate'] = realpath($errorTemplate);
-        $exceptionTemplate = $this->m->paths->p('src/templates/error/exception.php');
-        if (!file_exists($exceptionTemplate)) {
-            throw new RuntimeException('Exception template not found: ' . $errorTemplate);
-        }
-        $this->errorPaths['exceptionTemplate'] = realpath($exceptionTemplate);
     }
 
     /**
