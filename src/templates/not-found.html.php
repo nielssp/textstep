@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <?php $this->disableLayout(); ?><html>
-<head><?php $this->import('css/main.css'); ?>
+<head>
 <meta charset="UTF-8" />
-<title>BlogSTEP</title>
+<title>Not found</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<?php echo $this->block('meta'); ?>
-<?php echo $this->resourceBlock("style"); ?>
 </head>
 <body>
-<div class="frame" id="login-frame">
-<div class="frame-header">Not found</div>
-<div class="frame-content">
-                The requested file does not exist.
-</div>
-</div>
+  The requested resource does not exist.
+  <a href="<?php echo $this->link('path:/'); ?>">Go back</a>
 </body>
 </html>
