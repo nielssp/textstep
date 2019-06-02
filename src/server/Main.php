@@ -123,6 +123,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
         $this->m->router->auto('snippet:Api\Login');
         $this->m->router->auto('snippet:Api\Logout');
+        $this->m->router->auto('snippet:Api\File');
         $this->m->router->auto('snippet:Api\ListFiles');
         $this->m->router->auto('snippet:Api\Upload');
         $this->m->router->auto('snippet:Api\Build');

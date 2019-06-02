@@ -212,6 +212,9 @@ abstract class Snippet
             if ($this->request->isGet()) {
                 return $this->after($this->get());
             }
+            if ($this->request->isDelete()) {
+                return $this->after($this->delete());
+            }
             if ($this->jsonBody) {
                 $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
                 if ($contentType !== 'application/json') {
@@ -238,8 +241,6 @@ abstract class Snippet
                     return $this->after($this->put($data));
                 case 'PATCH':
                     return $this->after($this->patch($data));
-                case 'DELETE':
-                    return $this->after($this->delete());
             }
             return $this->after($this->invalid());
         } catch (RuntimeException $e) {
@@ -309,8 +310,41 @@ abstract class Snippet
     protected function ok($message = '')
     {
         $response = $this->response;
-        $response->getBody()->write($message);
-        return $response->withStatus(\Jivoo\Http\Message\Status::OK);
+        if ($message === '') {
+            return $response->withStatus(\Jivoo\Http\Message\Status::NO_CONTENT);
+        } else {
+            $response->getBody()->write($message);
+            return $response->withStatus(\Jivoo\Http\Message\Status::OK);
+        }
+    }
+
+    protected function getFlag($flag)
+    {
+        return isset($this->request->query[$flag]) and $this->request->query[$flag] === 'true';
+    }
+
+    protected function getRequestedFile()
+    {
+        if (isset($this->request->query['path'])) {
+            return $this->m->files->get($this->request->query['path']);
+        } else {
+            throw new RuntimeException('"path" expected');
+        }
+    }
+
+    protected function getRequestedFiles()
+    {
+        if (isset($this->request->query['paths']) and is_array($this->request->query['paths'])) {
+            $files = [];
+            foreach ($this->request->query['paths'] as $path) {
+                $files[] = $this->m->files->get($path);
+            }
+            return $files;
+        } else if (isset($this->request->query['path'])) {
+            return [$this->m->files->get($this->request->query['path'])];
+        } else {
+            throw new RuntimeException('"path" or "paths[]" expected');
+        }
     }
     
     protected function error($message, $status = \Jivoo\Http\Message\Status::BAD_REQUEST)
