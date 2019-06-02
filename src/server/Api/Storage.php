@@ -7,6 +7,8 @@ namespace Blogstep\Api;
 
 class Storage extends \Blogstep\AuthenticatedSnippet
 {
+    protected $jsonBody = true;
+
     public function get()
     {
         if (!isset($this->request->query['path'])) {

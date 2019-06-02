@@ -17,7 +17,7 @@ class SetConf extends \Blogstep\AuthenticatedSnippet
         if (isset($data['data']) and is_array($data['data'])) {
             $user = $this->m->files->getAuthentication();
             foreach ($data['data'] as $key => $value) {
-                if ($this->m->acl->check('config.set.' . $key, $user)) {
+                if ($this->m->acl->check('config.' . $key . '.update', $user)) {
                     $this->m->main->config->set($key, $value);
                     $result[] = $key;
                 }

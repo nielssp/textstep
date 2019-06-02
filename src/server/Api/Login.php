@@ -12,8 +12,10 @@ class Login extends \Blogstep\Snippet
     {
         $this->m->auth->form = new \Jivoo\Security\Authentication\FormAuthentication();
         if ($this->m->auth->authenticate($data)) {
+            $sessionId = $this->m->users->createSession($this->m->auth->user, time() + 36000);
+            $this->m->logger->info('User authenticated: {user}', ['user' => $this->m->auth->user->getName()]);
             return $this->json([
-              'session_id' => $this->m->users->createSession($this->m->auth->user, time() + 36000)
+              'session_id' => $sessionId
             ]);
         } else {
             return $this->error('Invalid username or password', \Jivoo\Http\Message\Status::FORBIDDEN);

@@ -22,7 +22,7 @@ class GetConf extends \Blogstep\AuthenticatedSnippet
         $result = [];
         $user = $this->m->files->getAuthentication();
         foreach ($keys as $key) {
-            if ($this->m->acl->check('config.get.' . $key, $user)) {
+            if ($this->m->acl->check('config.' . $key . '.view', $user)) {
                 $result[$key] = $this->m->main->config->get($key);
             } else {
                 $result[$key] = null;

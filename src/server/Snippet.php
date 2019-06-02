@@ -59,6 +59,8 @@ abstract class Snippet
 
     protected $tokenAuthentication = null;
 
+    protected $jsonBody = false;
+
     /**
      * Construct snippet.
      *
@@ -210,12 +212,19 @@ abstract class Snippet
             if ($this->request->isGet()) {
                 return $this->after($this->get());
             }
-            if (! $this->hasValidData($this->dataKey)) {
-                $this->m->logger->info('Invalid request token');
-                return $this->error('Invalid request token.', \Jivoo\Http\Message\Status::BAD_REQUEST);
-            }
-            if (isset($this->dataKey)) {
-                $data = $this->request->data[$this->dataKey];
+            if ($this->jsonBody) {
+                $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
+                if ($contentType !== 'application/json') {
+                    $this->m->logger->info('Invalid content type: {contentType}', ['contentType' => $contentType]);
+                    return $this->error('JSON expected', \Jivoo\Http\Message\Status::NOT_ACCEPTABLE);
+                }
+                try {
+                    $length = intval($this->request->getHeaderLine('Content-Length'));
+                    $data = \Jivoo\Json::decode($this->request->getBody()->read($length));
+                } catch (\Jivoo\JsonException $e) {
+                    $this->m->logger->info('Invalid body', ['exception' => $e]);
+                    return $this->error('Malformed JSON', \Jivoo\Http\Message\Status::NOT_ACCEPTABLE);
+                }
             } else {
                 $data = $this->request->data;
             }
@@ -265,18 +274,6 @@ abstract class Snippet
     protected function setStatus($httpStatus)
     {
         $this->response->status = $httpStatus;
-    }
-    
-    public function hasValidData($key = null)
-    {
-        if (! in_array($this->request->getMethod(), ['POST', 'PATCH', 'PUT', 'DELETE'])) {
-            return false;
-        }
-        if (!isset($key)) {
-            return true;
-        }
-        $data = $this->request->getParsedBody();
-        return isset($data[$key]);
     }
 
     /**

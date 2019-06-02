@@ -55,6 +55,14 @@ class SystemAcl
         $this->store->close();
     }
 
+    public function getRecords()
+    {
+        if (!isset($this->aclMap)) {
+            $this->loadMap();
+        }
+        return $this->aclMap;
+    }
+
     public function getRecord($key)
     {
         if (!isset($this->aclMap)) {
@@ -92,6 +100,26 @@ class SystemAcl
             $callback($file);
         }
     }
+
+    public function update($key, array $groups)
+    {
+        if (!isset($this->aclMap)) {
+            $this->loadMap();
+        }
+        if (!isset($this->aclMap[$key])) {
+            $this->aclMap[$key] = [];
+        }
+        foreach ($groups as $group) {
+            if (!in_array($group, $this->aclMap[$key])) {
+                $this->set($key, $group);
+            }
+        }
+        foreach ($this->aclMap[$key] as $group) {
+            if (!in_array($group, $groups)) {
+                $this->remove($key, $group);
+            }
+        }
+    }
     
     public function set($key, $group)
     {
@@ -122,6 +150,22 @@ class SystemAcl
                 $this->deletions[$key] = [];
             }
             $this->deletions[$key][] = $group;
+        }
+    }
+
+    public function removeAll($key)
+    {
+        if (!isset($this->aclMap)) {
+            $this->loadMap();
+        }
+        if (isset($this->aclMap[$key])) {
+            if (!isset($this->deletions[$key])) {
+                $this->deletions[$key] = $this->aclMap[$key];
+            } else {
+                $this->deletions[$key] = array_merge($this->deletions[$key], $this->aclMap[$key]);
+            }
+            $this->additions[$key] = [];
+            $this->aclMap[$key] = [];
         }
     }
 }

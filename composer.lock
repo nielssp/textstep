@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56d03a47b5b12e949288a5a83f3d23ea",
+    "content-hash": "eb5929d2d9c665d1c3f03dc814825581",
     "packages": [
         {
             "name": "badcow/lorem-ipsum",
@@ -206,16 +206,16 @@
         },
         {
             "name": "jivoo/http",
-            "version": "v1.5.2",
+            "version": "v1.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/http.git",
-                "reference": "3c1d8dba66978bc91fc2b324dd941e5da3b253bc"
+                "reference": "872a253d3bf51ee050ed076e09d249ef52c588d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/http/zipball/3c1d8dba66978bc91fc2b324dd941e5da3b253bc",
-                "reference": "3c1d8dba66978bc91fc2b324dd941e5da3b253bc",
+                "url": "https://api.github.com/repos/jivoo/http/zipball/872a253d3bf51ee050ed076e09d249ef52c588d9",
+                "reference": "872a253d3bf51ee050ed076e09d249ef52c588d9",
                 "shasum": ""
             },
             "require": {
@@ -254,7 +254,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2017-02-12T11:54:52+00:00"
+            "time": "2019-06-02T15:30:18+00:00"
         },
         {
             "name": "jivoo/security",
@@ -308,16 +308,16 @@
         },
         {
             "name": "jivoo/view",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/view.git",
-                "reference": "12e3bae9f1008b46103a50da3036d2ed675ee27d"
+                "reference": "3ec351037d07c1d20faf50b0708c046b68e585f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/12e3bae9f1008b46103a50da3036d2ed675ee27d",
-                "reference": "12e3bae9f1008b46103a50da3036d2ed675ee27d",
+                "url": "https://api.github.com/repos/jivoo/view/zipball/3ec351037d07c1d20faf50b0708c046b68e585f8",
+                "reference": "3ec351037d07c1d20faf50b0708c046b68e585f8",
                 "shasum": ""
             },
             "require": {
@@ -357,7 +357,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-05-30T13:34:40+00:00"
+            "time": "2019-05-30T13:39:14+00:00"
         },
         {
             "name": "matthiasmullie/minify",

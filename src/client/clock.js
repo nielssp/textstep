@@ -31,12 +31,21 @@ TEXTSTEP.initApp('clock', [], function (app) {
     app.dockFrame.style.justifyContent = 'center';
     app.dockFrame.appendChild(clock);
 
-    let interval = setInterval(() => {
-        let d = new Date();
-        clock.textContent = lead(d.getHours()) + ':' + lead(d.getMinutes());
-    }, 1000);
+    let interval = null;
 
-    app.close = () => {
-        clearInterval(interval);
+    app.onOpen = () => {
+        if (!interval) {
+            interval = setInterval(() => {
+                let d = new Date();
+                clock.textContent = lead(d.getHours()) + ':' + lead(d.getMinutes());
+            }, 1000);
+        }
+    };
+
+    app.onClose = () => {
+        if (interval) {
+            clearInterval(interval);
+            interval = null;
+        }
     };
 });

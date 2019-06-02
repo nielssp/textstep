@@ -120,6 +120,7 @@ module.exports = [
     app('terminal'),
     app('test'),
     app('clock'),
+    app('storage-client'),
     lib('libedit'),
     lib('libtest'),
     theme('default'),

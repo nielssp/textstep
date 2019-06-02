@@ -61,7 +61,7 @@ class UserFile extends SystemFile {
     public function getDocument($key)
     {
         if ($this->check('users.view')) {
-            $user = $this->users->get($key);
+            $user = $this->users->getUser($key);
             if ($user) {
                 return $this->toDocument($user);
             }
