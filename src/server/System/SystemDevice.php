@@ -133,6 +133,7 @@ class SystemDevice implements Device {
             $this->files[$path]->setUser($this->user);
             try {
                 $this->files[$path]->updateDocuments(Json::decode($data));
+                $this->files[$path]->close();
             } catch (\Jivoo\JsonException $e) {
                 throw new FileException(FileException::SYNTAX_ERROR, $e->getMessage());
             }

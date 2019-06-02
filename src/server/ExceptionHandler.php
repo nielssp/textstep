@@ -26,8 +26,8 @@ class ExceptionHandler
     public function __construct(Modules $m)
     {
         $this->m = $m;
+        $this->m->required('main');
         $this->m->required('logger');
-        $this->m->required('server');
     }
 
     /**
@@ -129,20 +129,14 @@ class ExceptionHandler
             Shell::dumpException($exception);
             exit;
         }
-        $response = new Response(Status::INTERNAL_SERVER_ERROR);
-        $response = $response->withHeader('Content-Type', 'text/plain');
+        header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: text/plain');
         if ($this->m->main->config['debug.showExceptions']) {
-            $body = $this->crashReport($exception);
+            echo $this->crashReport($exception);
         } else {
-            $body = 'Internal server error';
+            echo 'Internal server error';
         }
-        $response->getBody()->write($body);
-        try {
-          $this->m->server->serve($response);
-        } catch (\Exception $e) {
-            echo $response->getBody();
-            exit;
-        }
+        exit;
     }
 
     /**

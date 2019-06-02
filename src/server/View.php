@@ -95,19 +95,14 @@ class View implements LoggerAwareInterface
      *
      * @param AssetScheme $assets Assets.
      * @param Router $router Router.
-     * @param Document $config Configuration.
      * @param LoggerInterface $logger Logger.
      */
     public function __construct(
         AssetScheme $assets,
         Router $router,
-        Document $config = null,
         LoggerInterface $logger = null
     ) {
-        if (! isset($config)) {
-            $config = new Document();
-        }
-        $this->config = $config;
+        $this->config = new Document();
         
         if (! isset($logger)) {
             $logger = new NullLogger();

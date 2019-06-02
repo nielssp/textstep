@@ -69,7 +69,7 @@ class FileConfig extends Config
             $this->localRoot->commit();
         } else {
             $storage = $this->file->openStorage(true);
-            $this->data = $stroage->getDocuments();
+            $this->data = $storage->getDocuments();
             foreach ($this->changes as $key => $value) {
                 $storage->updateDocument($key, $value);
                 $this->data[$key] = $value;

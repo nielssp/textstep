@@ -23,14 +23,14 @@ abstract class SystemFile implements \Blogstep\Files\Storage {
     {
     }
 
-    public function setUser(User $user)
+    public function setUser(User $user = null)
     {
         $this->user = $user;
     }
 
     public function check($key)
     {
-        return isset($this->user) and $this->acl->check($key, $this->user);
+        return $this->acl->check($key, $this->user);
     }
 
     public function checkDocument($keyPrefix, array $document)
