@@ -216,14 +216,17 @@ abstract class Snippet
                 $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
                 if ($contentType !== 'application/json') {
                     $this->m->logger->info('Invalid content type: {contentType}', ['contentType' => $contentType]);
-                    return $this->error('JSON expected', \Jivoo\Http\Message\Status::NOT_ACCEPTABLE);
+                    return $this->error('JSON expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
                 }
                 try {
                     $length = intval($this->request->getHeaderLine('Content-Length'));
                     $data = \Jivoo\Json::decode($this->request->getBody()->read($length));
+                    if (!is_array($data)) {
+                        return $this->error('JSON object expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
+                    }
                 } catch (\Jivoo\JsonException $e) {
                     $this->m->logger->info('Invalid body', ['exception' => $e]);
-                    return $this->error('Malformed JSON', \Jivoo\Http\Message\Status::NOT_ACCEPTABLE);
+                    return $this->error('Malformed JSON', \Jivoo\Http\Message\Status::BAD_REQUEST);
                 }
             } else {
                 $data = $this->request->data;
@@ -350,17 +353,8 @@ abstract class Snippet
             $dirs = array_map(array('Jivoo\Utilities', 'camelCaseToDashes'), explode('\\', $class));
             $templateName = implode('/', $dirs) . '.' . $type;
         }
-        // TODO
         $this->response->getBody()->write($this->m->view->render($templateName, $this->viewData));
         return $this->response;
-//        $enableLayout = $this->enableLayout;
-//        $this->disableLayout();
-//        $this->response->template = $templateName;
-//        $this->response->data = $this->viewData;
-//        $this->response->withLayout = $enableLayout;
-//        $response = $this->response;
-//        $this->response = new ViewResponse(Http::OK, $this->view);
-//        return $response;
     }
     
     protected function json($object)

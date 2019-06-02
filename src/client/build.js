@@ -69,7 +69,7 @@ function build(target) {
             return;
         }
         var received = 0;
-        post(TEXTSTEP.SERVER + '/build', function (text, state, status) {
+        post(TEXTSTEP.SERVER + '/build', {}, function (text, state, status) {
             var events = text.split(/[\n\r]/);
             for (var i = received; i < events.length; i++) {
                 var matches = events[i].match(/^([a-zA-Z]+): *(.*)$/);
@@ -111,7 +111,7 @@ function build(target) {
 
 function cancel() {
     doCancel = true;
-    TEXTSTEP.post('delete', {path: '/build/.build'}).finally(function () {
+    TEXTSTEP.post('delete', {}, {path: '/build/.build'}).finally(function () {
         frame.enableGroup('build');
         frame.disableAction('cancel');
     });
@@ -119,7 +119,7 @@ function cancel() {
 
 function clean() {
     doCancel = true;
-    TEXTSTEP.post('delete', {path: '/build', recursive: true});
+    TEXTSTEP.post('delete', {}, {path: '/build', recursive: true});
 }
 
 

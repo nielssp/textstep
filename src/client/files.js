@@ -25,7 +25,7 @@ function newFile() {
                 path += '/';
             }
             path += name;
-            TEXTSTEP.post('make-file', {path: path}).then(function (data) {
+            TEXTSTEP.post('make-file', {}, {path: path}).then(function (data) {
                 dirView.setSelection(path);
                 dirView.reload();
             }, error => frame.alert('Error', error.message));
@@ -45,7 +45,7 @@ function newFolder() {
                 path += '/';
             }
             path += name;
-            TEXTSTEP.post('make-dir', {path: path}).then(function (data) {
+            TEXTSTEP.post('make-dir', {}, {path: path}).then(function (data) {
                 dirView.reload();
                 dirView.cd(path);
             }, error => frame.alert('Error', error.message));
@@ -113,7 +113,7 @@ function paste() {
             data.paths[path] = paths.convert(paths.fileName(path), dirView.cwd);
         });
     }
-    TEXTSTEP.post(clipboard.copy ? 'copy' : 'move', data).then(() => {
+    TEXTSTEP.post(clipboard.copy ? 'copy' : 'move', {}, data).then(() => {
         if (action === clipboard && !action.copy) {
             clipboard = null;
             frame.disableAction('paste');
@@ -136,7 +136,7 @@ function rename() {
                 return;
             }
             var destination = paths.convert(name, paths.dirName(path));
-            TEXTSTEP.post('move', { path: path, destination: destination }).then(function (data) {
+            TEXTSTEP.post('move', {}, { path: path, destination: destination }).then(function (data) {
                 dirView.setSelection(destination);
                 dirView.reload();
             }, error => frame.alert('Error', error.message));
@@ -156,7 +156,7 @@ function trash() {
     }
     frame.confirm('Files', confirmation, ['Delete', 'Cancel'], 'Delete').then(function (choice) {
         if (choice === 'Delete') {
-            TEXTSTEP.post('delete', data).then(function (data) {
+            TEXTSTEP.post('delete', {}, data).then(function (data) {
                 dirView.clearSelection();
                 dirView.reload();
             }, error => frame.alert('Error', error.message));

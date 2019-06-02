@@ -30,7 +30,7 @@ TEXTSTEP.Menu = Menu;
 TEXTSTEP.config = new Config(function (keys) {
     return TEXTSTEP.get('get-conf', { keys: keys });
 }, function (data) {
-    return TEXTSTEP.post('set-conf', { data: data });
+    return TEXTSTEP.post('set-conf', {}, { data: data });
 });
 
 var root = document.body;
@@ -115,6 +115,7 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
             if (data instanceof FormData) {
                 xhr.send(data);
             } else {
+                // TODO: use JSON instead
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
                 xhr.send(util.serializeQuery(data));
             }
@@ -124,44 +125,35 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
     });
 };
 
-TEXTSTEP.url = function (action, data = null) {
-    if (data === null) {
-        data = {};
+TEXTSTEP.url = function (action, query = {}, addToken = true) {
+    if (addToken && sessionId !== null) {
+        query.access_token = sessionId;
     }
-    if (sessionId !== null) {
-        data.access_token = sessionId;
-    }
-    var query = util.serializeQuery(data);
-    if (action.indexOf('?') < 0) {
-        action += '?' + query;
-    } else {
-        action += '&' + query;
+    let serialized = util.serializeQuery(query);
+    if (serialized !== '') {
+        if (action.indexOf('?') < 0) {
+            action += '?' + serialized;
+        } else {
+            action += '&' + serialized;
+        }
     }
     return TEXTSTEP.SERVER + '/' + action;
 };
 
-TEXTSTEP.get = function (action, data = null, responseType = null) {
-    if (data !== null) {
-        var query = util.serializeQuery(data);
-        if (action.indexOf('?') < 0) {
-            action += '?' + query;
-        } else {
-            action += '&' + query;
-        }
-    }
-    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'get', null, responseType);
+TEXTSTEP.get = function (action, query = {}, responseType = null) {
+    return TEXTSTEP.ajax(TEXTSTEP.url(action, query, false), 'get', null, responseType);
 };
 
-TEXTSTEP.post = function (action, data = null, responseType = null) {
-    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'post', data, responseType);
+TEXTSTEP.post = function (action, query = {}, data = null, responseType = null) {
+    return TEXTSTEP.ajax(TEXTSTEP.url(action, query, false), 'post', data, responseType);
 };
 
-TEXTSTEP.put = function (action, data = null, responseType = null) {
-    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'put', data, responseType);
+TEXTSTEP.put = function (action, query = {}, data = null, responseType = null) {
+    return TEXTSTEP.ajax(TEXTSTEP.url(action, query, false), 'put', data, responseType);
 };
 
-TEXTSTEP.delete = function (action, responseType = null) {
-    return TEXTSTEP.ajax(TEXTSTEP.SERVER + '/' + action, 'delete', null, responseType);
+TEXTSTEP.delete = function (action, query = {}, responseType = null) {
+    return TEXTSTEP.ajax(TEXTSTEP.url(action, query, false), 'delete', null, responseType);
 };
 
 TEXTSTEP.requestLogin = function(overlay = false) {
@@ -214,8 +206,8 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                 username: loginFrame.formElem.username.value,
                 password: loginFrame.formElem.password.value,
             };
-            TEXTSTEP.post('login', data).then(function (data) {
-                sessionId = data.session_id;
+            TEXTSTEP.post('login', {}, data).then(function (data) {
+                sessionId = data.sessionId;
                 if (loginFrame.formElem.remember.checked) {
                     cookies.set('textstep_session', sessionId, {expires: 365});
                     // TODO: extend session lifetime in backend

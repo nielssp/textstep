@@ -180,7 +180,7 @@ function readLine(callback)
 
 function exec(command, data, success)
 {
-    TEXTSTEP.post(command, data).then(success, function (xhr) {
+    TEXTSTEP.post(command, {}, data).then(success, function (xhr) {
         if (xhr.status === 404) {
             writeLine(xhr.status + ' ' + command + ': command not found');
         } else if (typeof xhr.responseJSON !== 'undefined') {

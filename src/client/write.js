@@ -187,7 +187,7 @@ function close() {
 function saveFile() {
     if (simplemde !== null && current !== null) {
         let buffer = current;
-        return TEXTSTEP.post('write', {path: buffer.path, data: buffer.data}).then(function () {
+        return TEXTSTEP.post('write', {}, {path: buffer.path, data: buffer.data}).then(function () {
             buffer.unsaved = false;
             buffer.item.textContent = buffer.name;
             if (current === buffer) {
