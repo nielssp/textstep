@@ -46,17 +46,52 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->paths->user = $userPath;
         $this->m->paths->system = $systemPath;
 
-        $this->m->cache = new \Jivoo\Cache\Cache();
-
         $this->m->files = new Files\FileSystem();
         $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
 
         $this->config = new Config\DirConfig($this->m->files);
 
-        $this->m->router = new BlogstepRouter();
-        $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
-        $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
-        $this->m->server->add(new \Jivoo\Http\EntityTag);
+        // Mount file systems
+        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
+
+        // Initialize and mount system device
+        $this->m->system = new System\SystemDevice();
+        $this->m->files->get('system')->mount($this->m->system);
+
+        // Initialize authentication system
+        $this->m->users = new UserModel($this->m->files, $this->p('system'));
+
+        $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
+
+        $this->m->system->addFile('log.json', new System\ConfigFile($this->p('system/log.php'), 'config.system', $this->m->acl));
+        $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
+        $this->m->system->addFile('sessions.json', new System\SessionFile($this->m->users, $this->m->acl));
+
+        $logConfig = $this->config->getSubconfig('system.log');
+
+        // Set timezone (required by file logger)
+        if (!isset($logConfig['timeZone'])) {
+            $defaultTimeZone = 'UTC';
+            \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
+                $defaultTimeZone = @date_default_timezone_get();
+            });
+            $logConfig['timeZone'] = $defaultTimeZone;
+        }
+        if (!date_default_timezone_set($logConfig['timeZone'])) {
+            date_default_timezone_set('UTC');
+        }
+
+        // Add file logger
+        if ($this->m->logger instanceof \Jivoo\Log\Logger) {
+            if ($this->m->paths->dirExists('var/log')) {
+                $format = $logConfig->get('fileSuffix', '-Y-m-d');
+                $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
+                    $this->p('var/log/system' . date($format) . '.log'),
+                    $logConfig->get('level', \Psr\Log\LogLevel::WARNING)
+                ));
+            }
+        }
+        $logConfig->commit();
     }
 
     public function __get($property)
@@ -124,56 +159,19 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Force output buffering so that error handlers can clear it.
         ob_start();
 
-        // Mount file systems
-        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
-
-        // Initialize and mount system device
-        $this->m->system = new System\SystemDevice();
-        $this->m->files->get('system')->mount($this->m->system);
-
-        // Initialize authentication system
-        $this->m->users = new UserModel($this->m->files, $this->p('system'));
-
-        $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
-
-        $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
-
-        $this->m->system->addFile('log.json', new System\ConfigFile($this->p('system/log.php'), 'config.system', $this->m->acl));
-        $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
-        $this->m->system->addFile('sessions.json', new System\SessionFile($this->m->users, $this->m->acl));
-
-        $logConfig = $this->config->getSubconfig('system.log');
-
-        // Set timezone (required by file logger)
-        if (!isset($logConfig['timeZone'])) {
-            $defaultTimeZone = 'UTC';
-            \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
-                $defaultTimeZone = @date_default_timezone_get();
-            });
-            $logConfig['timeZone'] = $defaultTimeZone;
-        }
-        if (!date_default_timezone_set($logConfig['timeZone'])) {
-            date_default_timezone_set('UTC');
-        }
-
-        // Add file logger
-        if ($this->m->logger instanceof \Jivoo\Log\Logger) {
-            if ($this->m->paths->dirExists('var/log')) {
-                $format = $logConfig->get('fileSuffix', '-Y-m-d');
-                $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
-                    $this->p('var/log/system' . date($format) . '.log'),
-                    $logConfig->get('level', \Psr\Log\LogLevel::WARNING)
-                ));
-            }
-        }
-        $logConfig->commit();
-
         if (php_sapi_name() === 'cli') {
             // Open shell if running from CLI
             $this->m->shell = new Shell($this->m);
             $this->m->shell->run();
         } else {
             // Otherwise prepare to handle a request
+
+            $this->m->router = new BlogstepRouter($this->m->logger);
+            $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
+            $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
+            $this->m->server->add(new \Jivoo\Http\EntityTag);
+
+            $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
 
             // Initialize assets
             $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('dist'), null, true);

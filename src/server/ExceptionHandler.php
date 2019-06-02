@@ -131,7 +131,7 @@ class ExceptionHandler
         }
         header('HTTP/1.1 500 Internal Server Error');
         header('Content-Type: text/plain');
-        if ($this->m->main->config['debug.showExceptions']) {
+        if ($this->m->main->config['system.log.showExceptions']) {
             echo $this->crashReport($exception);
         } else {
             echo 'Internal server error';
