@@ -10,12 +10,11 @@ use Blogstep\Compile\ContentCompiler;
 use Blogstep\Compile\Filter;
 use Blogstep\Compile\View;
 use Blogstep\Files\File;
-use \simple_html_dom;
 use Jivoo\Store\Document;
 
 $filter = new Filter();
 
-$filter->html = function (ContentCompiler $cc, File $file, Document $metadata, simple_html_dom $dom) {
+$filter->html = function (ContentCompiler $cc, File $file, Document $metadata, \simple_html_dom $dom) {
     $title = $dom->find('h1', 0);
     if (isset($title)) {
         $attr = $title->attr;

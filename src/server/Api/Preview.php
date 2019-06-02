@@ -52,7 +52,7 @@ class Preview extends AuthenticatedSnippet
 
         $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
 
-        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
+        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('site.site'));
 
         $view = new PreviewView($assembler, $this->tokenAuthentication->getSessionId());
         $view->addTemplateDir($destination->get('site')->getHostPath());

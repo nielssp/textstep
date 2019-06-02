@@ -28,6 +28,8 @@ class View extends \Blogstep\View
 
     private $filterSet;
 
+    private $timeZone;
+
     public function __construct(SiteAssembler $assembler)
     {
         parent::__construct(
@@ -44,8 +46,9 @@ class View extends \Blogstep\View
 
         $this->data->config = $assembler->getConfig()->getData();
         $this->data->content = $assembler->getContent();
+        $this->timeZone = new \DateTimeZone($assembler->getConfig()->get('timeZone', date_default_timezone_get()));
 
-        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter', 'embedResource'] as $f) {
+        foreach (['isCurrent', 'forceAbsoluteLinks', 'link', 'url', 'filter', 'embedResource', 'date'] as $f) {
             $this->addFunction($f, [$this, $f]);
         }
     }
@@ -183,6 +186,15 @@ class View extends \Blogstep\View
         $content = $this->filterSet->applyContentFilters($this, $content, $parameters);
         $content = $this->filterSet->applyDisplayTags($this, $content, $parameters);
         return $this->filterSet->applyDisplayFilters($this, $content, $parameters);
+    }
+
+    public function date($format, $timestamp = null)
+    {
+        $date = new \DateTime('now', $this->timeZone);
+        if ($timestamp) {
+            $date->setTimestamp($timestamp);
+        }
+        return $date->format($format);
     }
 
 

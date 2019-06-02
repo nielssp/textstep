@@ -18,7 +18,7 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
 {
     protected $namespace = 'bs';
 
-    protected $properties = ['data', 'path', 'as'];
+    protected $properties = ['data', 'path', 'as', 'timestamp'];
 
     private $context = [];
 
@@ -122,5 +122,34 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
     {
         $embedNode = new PhpNode('$this->embedResource("' . $node->tag . '", '  . PhpNode::expr($value)->code . ')');
         $node->replaceWith($embedNode);
+    }
+
+    /**
+     * Sets the datetime-attribute to the specified UNIX timestamp.
+     * @param HtmlNode $node Node.
+     * @param TemplateNode|null $value Macro parameter.
+     */
+    public function datetimeMacro(HtmlNode $node, TemplateNode $value)
+    {
+        $node->setAttribute('datetime', new PhpNode('$this->date(\'c\', ' . PhpNode::expr($value)->code . ')'));
+        $node->setProperty('bs:timestamp', $value);
+    }
+    
+    /**
+     * Formats a date set using the 'datetime'-macro.
+     * @param \Jivoo\View\Compile\HtmlNode $node Node.
+     * @param \Jivoo\View\Compile\TemplateNode $value Macro parameter.
+     */
+    public function dateformatMacro(HtmlNode $node, TemplateNode $value)
+    {
+        if ($node->hasProperty('bs:timestamp')) {
+            $time = PhpNode::expr($node->getProperty('bs:timestamp'));
+        } elseif ($node->hasAttribute('datetime')) {
+            $time = new PhpNode('strtotime(' . PhpNode::expr($node->getAttribute('datetime')) . ')');
+        } else {
+            throw new InvalidTemplateException('Missing datetime-attribute');
+        }
+        $phpNode = new PhpNode('$this->date(' . PhpNode::expr($value)->code . ', ' . $time->code . ')');
+        $node->clear()->append($phpNode);
     }
 }

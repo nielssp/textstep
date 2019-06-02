@@ -49,10 +49,13 @@ Dialog.prototype.close = function (result) {
     }
 };
 
-Dialog.alert = function (parent, title, message) {
+Dialog.alert = function (parent, title, message, details = null) {
     var dialog = new Dialog(parent);
     dialog.setTitle(title);
     var content = ui.elem('div', {'class': 'frame-content'}, ['' + message]);
+    if (details) {
+        content.appendChild(ui.elem('textarea', {}, [details]));
+    }
     var okButton = ui.elem('button', {}, ['OK']);
     okButton.onclick = function () {
         dialog.close();

@@ -58,7 +58,7 @@ class Build extends AuthenticatedSnippet
 
         $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
 
-        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('system.config'));
+        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('site.site'));
 
         $installer = new SiteInstaller($this->m->files->get('target'), $installMap);
         

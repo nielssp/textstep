@@ -170,7 +170,7 @@ function saveFile() {
                 frame.setTitle(current.path + ' – Code');
             }
         }, error => {
-            frame.alert('Save failed', 'The file could not be saved: ' + error.message)
+            frame.alert('Save failed', 'The file could not be saved: ' + error.message, error)
             return Promise.reject();
         });
     }

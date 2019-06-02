@@ -9,12 +9,11 @@
 use Blogstep\Compile\ContentCompiler;
 use Blogstep\Compile\Filter;
 use Blogstep\Files\File;
-use \simple_html_dom;
 use Jivoo\Store\Document;
 
 $filter = new Filter();
 
-$filter->html = function (ContentCompiler $cc, File $file, Document $metadata, simple_html_dom $dom) {
+$filter->html = function (ContentCompiler $cc, File $file, Document $metadata, \simple_html_dom $dom) {
     $toc = $dom->find('.toc', 0);
     if (isset($toc)) {
         $fragments = [];
@@ -70,7 +69,7 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, s
                 if (count($headings)) {
                     $nextLevel = intval($headings[0]->tag[1]);
                     if ($nextLevel > $level) {
-                        $sublist .= $f($f, $headings, $fragments, $number . '.');
+                        $sublist = $f($f, $headings, $fragments, $number . '.');
                         if ($nextLevel <= $listDepth) {
                             $output .= $sublist;
                         }

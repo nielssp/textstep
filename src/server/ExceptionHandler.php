@@ -54,25 +54,79 @@ class ExceptionHandler
     }
 
     /**
-     * Output an HTML crash report based on an exception.
+     * Output a crash report based on an exception.
      *
      * @param \Exception $exception Exception to create report for.
-     * @return string HTML document.
+     * @return string
      */
     public function crashReport($exception)
     {
-        if ($exception instanceof \ErrorException) {
-            $title = 'Fatal error (' . ErrorHandler::toString($exception->getSeverity()) . ')';
-        } else {
-            $title = 'Uncaught exception';
+        $report = '';
+        while (isset($exception)) {
+            if ($exception instanceof \ErrorException) {
+                $report .= 'Fatal error (' . ErrorHandler::toString($exception->getSeverity()) . ')';
+            } else {
+                $report .= 'Uncaught ' . get_class($exception);
+            }
+            $report .= sprintf(' in %s:%d: %s', $exception->getFile(), $exception->getLine(), $exception->getMessage());
+            $report .= PHP_EOL . 'Stack trace:' . PHP_EOL;
+            foreach ($exception->getTrace() as $call) {
+                $report .= '    ';
+                if (isset($call['file'])) {
+                    $report .= $call['file'];
+                    if (isset($call['line'])) {
+                        $report .= ':' . $call['line'];
+                    }
+                    $report .= ': ';
+                }
+                if (isset($call['class'])) {
+                    $report .= $call['class'] . '::';
+                }
+                if (isset($call['function'])) {
+                    $report .= $call['function'];
+                }
+                if (isset($call['args'])) {
+                    $report .= '(';
+                    foreach ($call['args'] as $j => $arg) {
+                        if ($j > 0) {
+                            $report .= ', ';
+                        }
+                        if (is_scalar($arg)) {
+                            $report .= substr(var_export($arg, true), 0, 15);
+                        } else if (is_object($arg)) {
+                            $report .= get_class($arg);
+                        } else if (is_array($arg)) {
+                            $report .= 'array(' . count($arg) . ')';
+                        } else {
+                            $report .= gettype($arg);
+                        }
+                    }
+                    $report .= ')';
+                }
+                $report .= PHP_EOL;
+            }
+            $exception = $exception->getPrevious();
+            if (isset($exception)) {
+                $report .= 'Caused by: ';
+            }
         }
-        $log = [];
-        if ($this->m->logger instanceof Logger) {
-            $log = $this->m->logger->getLog();
+        $report .= PHP_EOL . 'Log:' . PHP_EOL;
+        foreach ($this->m->logger->getLog() as $record) {
+            $seconds = (int) $record['time'];
+            $millis = floor(($record['time'] - $seconds) * 1000);
+            $report .= '    ';
+            $report .= date('Y-m-d H:i:s', $seconds) . sprintf('.%03d ', $millis) . date('P');
+            $report .= ' [' . $record['level'] . '] ';
+            $report .= \Jivoo\Log\Logger::interpolate($record['message'], $record['context']);
+            if (isset($record['file'])) {
+                $report .= ' in ' . $record['file'];
+                if (isset($record['line'])) {
+                    $report .= ':' . $record['line'];
+                }
+            }
+            $report .= PHP_EOL;
         }
-        ob_start();
-        include $this->errorPaths['exceptionTemplate'];
-        return ob_get_clean();
+        return $report;
     }
 
     /**
@@ -86,30 +140,6 @@ class ExceptionHandler
             'Uncaught exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(),
             ['exception' => $exception]
         );
-        if ($this->m->main->config['debug.createCrashReports']) {
-            $file = $exception->getFile();
-            $line = $exception->getLine();
-            $message = $exception->getMessage();
-            $hash = substr(md5($file . $line . $message), 0, 10);
-            $name = date('Y-m-d') . '_crash_' . $hash . '.html';
-            if (!isset($this->errorPaths['log'])) {
-                $this->m->logger->alert('Could not create crash report: Log directory is missing');
-            } elseif (!file_exists($this->errorPaths['log'] . '/' . $name)) {
-                $file = fopen($this->errorPaths['log'] . '/' . $name, 'w');
-                if ($file !== false) {
-                    $this->crashReport($exception);
-                    fwrite($file, $this->crashReport($exception));
-                    fclose($file);
-                    $this->m->logger->critical('A crash report has been generated: {name}', ['name' => $name]);
-                } else {
-                    $hash = null;
-                    $this->m->logger->alert('Failed to create crash report: {name}', ['name' => $name]);
-                }
-            }
-            if (!$this->m->main->config['debug.showReference']) {
-                $hash = null;
-            }
-        }
         if (headers_sent()) {
             echo 'Uncaught exception: ' . $exception->getMessage();
             exit;
@@ -123,15 +153,13 @@ class ExceptionHandler
             exit;
         }
         $response = new Response(Status::INTERNAL_SERVER_ERROR);
-        $response = $response->withHeader('Content-Type', 'text/html');
+        $response = $response->withHeader('Content-Type', 'text/plain');
         if ($this->m->main->config['debug.showExceptions']) {
             $body = $this->crashReport($exception);
-            $response->getBody()->write($body);
         } else {
-            ob_start();
-            include $this->errorPaths['errorTemplate'];
-            $response->getBody()->write(ob_get_clean());
+            $body = 'Internal server error';
         }
+        $response->getBody()->write($body);
         try {
           $this->m->server->serve($response);
         } catch (\Exception $e) {

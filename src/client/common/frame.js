@@ -100,11 +100,15 @@ Frame.prototype.createToolbar = function () {
     return toolbar;
 };
 
-Frame.prototype.alert = function (title, message) {
+Frame.prototype.alert = function (title, message, error = {}) {
     if (!this.isOpen) {
         throw 'Frame not open';
     }
-    return Dialog.alert(this.bodyElem, title, message);
+    let details = null;
+    if (error.context && error.context.details) {
+        details = error.context.details;
+    }
+    return Dialog.alert(this.bodyElem, title, message, details);
 };
 
 Frame.prototype.confirm = function (title, message, choices, defaultChoice) {

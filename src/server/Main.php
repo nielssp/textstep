@@ -149,8 +149,9 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Add file logger
         if ($this->m->logger instanceof \Jivoo\Log\Logger) {
             if ($this->m->paths->dirExists('var/log')) {
+                $format = $sysConfig->get('logSuffix', '-Y-m-d');
                 $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
-                    $this->p('var/log/system-' . date('Y-m-d') . '.log'),
+                    $this->p('var/log/system' . date($format) . '.log'),
                     $sysConfig->get('logLevel', \Psr\Log\LogLevel::WARNING)
                 ));
             }

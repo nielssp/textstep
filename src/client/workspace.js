@@ -91,6 +91,12 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                         () => TEXTSTEP.ajax(url, method, data, responseType).then(resolve, reject),
                         reject
                     );
+                } else if (xhr.status >= 500) {
+                    reject({
+                        errorType: 'SERVER_ERROR',
+                        message: 'Internal server error',
+                        context: { details: xhr.response }
+                    });
                 } else {
                     try {
                         reject(JSON.parse(xhr.response));

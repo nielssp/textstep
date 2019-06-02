@@ -10,12 +10,11 @@ use Blogstep\Compile\View;
 use Blogstep\Compile\ContentCompiler;
 use Blogstep\Compile\Filter;
 use Blogstep\Files\File;
-use \simple_html_dom;
 use Jivoo\Store\Document;
 
 $filter = new Filter();
 
-$filter->html = function (ContentCompiler $cc, File $file, Document $metadata, simple_html_dom $dom) {
+$filter->html = function (ContentCompiler $cc, File $file, Document $metadata, \simple_html_dom $dom) {
     $break = $dom->find('.break', 0);
     if (isset($break)) {
         $break->outertext = '<?bs brief ?>';

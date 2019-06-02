@@ -26,10 +26,11 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     app.dockFrame.innerHTML = '';
     app.dockFrame.appendChild(TEXTSTEP.getIcon('control-panel', 32));
 
-    frame.appendChild(field('Title', 'system.config.title'));
-    frame.appendChild(field('Subtitle', 'system.config.subtitle'));
-    frame.appendChild(field('Description', 'system.config.description'));
-    frame.appendChild(field('Copyright', 'system.config.copyright'));
+    frame.appendChild(field('Title', 'site.site.title'));
+    frame.appendChild(field('Subtitle', 'site.site.subtitle'));
+    frame.appendChild(field('Description', 'site.site.description'));
+    frame.appendChild(field('Copyright', 'site.site.copyright'));
+    frame.appendChild(field('Time zone', 'site.site.timeZone'));
 
     frame.defineAction('save', () => {
         TEXTSTEP.config.commit();

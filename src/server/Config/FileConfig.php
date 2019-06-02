@@ -57,15 +57,9 @@ class FileConfig extends Config
             $this->localRoot->update();
         } else {
             $this->data = [];
-            if ($this->file->getType() === 'php') {
-                // TODO: getRealPath deprecated
-                $store = new \Jivoo\Store\PhpStore($this->file->getHostPath());
-            } else {
-                $store = new \Jivoo\Store\JsonStore($this->file->getHostPath());
-            }
-            $store->open(false);
-            $this->data = $store->read();
-            $store->close();
+            $storage = $this->file->openStorage(false);
+            $this->data = $storage->getDocuments();
+            $storage->close();
         }
     }
     
@@ -74,20 +68,14 @@ class FileConfig extends Config
         if ($this->localRoot !== $this) {
             $this->localRoot->commit();
         } else {
-            if ($this->file->getType() === 'php') {
-                // TODO: getRealPath deprecated
-                $store = new \Jivoo\Store\PhpStore($this->file->getHostPath());
-            } else {
-                $store = new \Jivoo\Store\JsonStore($this->file->getHostPath());
-            }
-            $store->open(true);
-            $this->data = $store->read();
+            $storage = $this->file->openStorage(true);
+            $this->data = $stroage->getDocuments();
             foreach ($this->changes as $key => $value) {
+                $storage->updateDocument($key, $value);
                 $this->data[$key] = $value;
             }
-            $store->write($this->data);
             $this->changes = [];
-            $store->close();
+            $storage->close();
         }
     }
 
