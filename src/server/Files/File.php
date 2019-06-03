@@ -191,12 +191,31 @@ class File implements \IteratorAggregate, HasRoute
         return true;
     }
 
-    public function resetPermissions()
+    public function setPermissions(array $permissions, $recursive = false)
+    {
+        if (!$this->system->acl->check($this->path, 'grant', $this->system->user)) {
+            return false;
+        }
+        $this->system->acl->revokeAll($this->path);
+        $this->system->acl->grantAll($this->path, $permissions);
+        if ($recursive) {
+            foreach ($this as $file) {
+                $file->resetPermissions(true);
+            }
+        }
+    }
+
+    public function resetPermissions($recursive = false)
     {
         if (!$this->system->acl->check($this->path, 'grant', $this->system->user)) {
             return false;
         }
         $this->system->acl->reset($this->path);
+        if ($recursive) {
+            foreach ($this as $file) {
+                $file->resetPermissions(true);
+            }
+        }
         return true;
     }
 

@@ -195,72 +195,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ExtendedFile'
-  /change-mode:
-    post:
-      description: Change permissions for file
-      tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-                - path
-              properties:
-                path:
-                  type: string
-                mode:
-                  type: string
-                recursive:
-                  type: boolean
-      responses:
-        200:
-          description: Mode changed
-  /change-owner:
-    post:
-      description: Change owner of file
-      tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-                - path
-              properties:
-                path:
-                  type: string
-                owner:
-                  type: string
-                recursive:
-                  type: boolean
-      responses:
-        200:
-          description: Owner changed
-  /change-group:
-    post:
-      description: Change group of file
-      tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-                - path
-              properties:
-                path:
-                  type: string
-                group:
-                  type: string
-                recursive:
-                  type: boolean
-      responses:
-        200:
-          description: Group changed
   /write:
     post:
       description: Replace contents of file
@@ -435,40 +369,6 @@ paths:
       responses:
         200:
           description: A thumbnail
-  /get-conf:
-    get:
-      description: Get configuration
-      tags: [configuration]
-      parameters: 
-        - in: query
-          name: key
-          schema:
-            type: string
-        - in: query
-          name: keys
-          schema:
-            type: array
-            items:
-              type: string
-      responses:
-        200:
-          description: Configuration
-  /set-conf:
-    post:
-      description: Set configuration
-      tags: [configuration]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                data:
-                  type: object
-      responses:
-        200:
-          description: List of keys successfully changed
   /mount:
     post:
       description: Mount host file system

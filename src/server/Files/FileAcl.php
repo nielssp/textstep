@@ -74,7 +74,7 @@ class FileAcl
         }
         return count(array_intersect($user->getGroups(), $record[$capability])) > 0;
     }
-    
+
     public function grant(array $path, $capability, $group)
     {
         if (!isset($this->aclMap)) {
@@ -94,6 +94,42 @@ class FileAcl
         $this->aclMap[$recordKey] = $record;
         $this->changes[$recordKey] = $this->aclMap[$recordKey];
     }
+
+    public function grantAll(array $path, array $permissions)
+    {
+        if (!isset($this->aclMap)) {
+            $this->loadMap();
+        }
+        $record = $this->getRecord($path);
+        $modified = false;
+        foreach ($permissions as $capability => $groups) {
+            if (!is_array($groups)) {
+                continue;
+            }
+            if (!isset($record[$capability])) {
+                $record[$capability] = [];
+            }
+            foreach ($groups as $group) {
+                if (!is_string($group)) {
+                    continue;
+                }
+                if (!in_array($group, $record[$capability], true)) {
+                    $record[$capability][] = $group;
+                    $modified = true;
+                }
+            }
+        }
+        if (!$modified) {
+            return;
+        }
+        $recordKey = implode('/', $path);
+        if (isset($this->deletions[$recordKey])) {
+            unset($this->deletions[$recordKey]);
+        }
+        $this->aclMap[$recordKey] = $record;
+        $this->changes[$recordKey] = $this->aclMap[$recordKey];
+    }
+
 
     public function revoke(array $path, $capability, $group)
     {

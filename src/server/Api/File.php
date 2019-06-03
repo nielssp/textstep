@@ -48,7 +48,9 @@ class File extends \Blogstep\AuthenticatedSnippet
     {
         $file = $this->getRequestedFile();
         $recursive = isset($data['recursive']) && $data['recursive'] == 'true';
-        // TODO
+        if (isset($data['permissions']) and is_array($data['permissions'])) {
+            $file->setPermissions($data['permissions'], $recursive);
+        }
         return $this->json($file->getBrief(true));
     }
 
