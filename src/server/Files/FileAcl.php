@@ -57,38 +57,75 @@ class FileAcl
                 return $this->aclMap[$key];
             }
             if (count($path) == 0) {
-                return null;
+                return [];
             }
             array_pop($path);
         }
     }
-    
-    public function get(array $path, $key, $default = null)
+
+    public function check(array $path, $capability, \Blogstep\User $user = null)
     {
-        $record = $this->getRecord($path);
-        if (isset($record)) {
-            return isset($record[$key]) ? $record[$key] : $default;
+        if (!isset($user) or $user->isSystem()) {
+            return true;
         }
-        return $default;
+        $record = $this->getRecord($path);
+        if (!isset($record[$capability])) {
+            return false;
+        }
+        return count(array_intersect($user->getGroups(), $record[$capability])) > 0;
     }
     
-    public function set(array $path, $key, $value)
+    public function grant(array $path, $capability, $group)
+    {
+        if (!isset($this->aclMap)) {
+            $this->loadMap();
+        }
+        $record = $this->getRecord($path);
+        if (!isset($record[$capability])) {
+            $record[$capability] = [];
+        } else if (in_array($group, $record[$capability])) {
+            return;
+        }
+        $record[$capability][] = $group;
+        $recordKey = implode('/', $path);
+        if (isset($this->deletions[$recordKey])) {
+            unset($this->deletions[$recordKey]);
+        }
+        $this->aclMap[$recordKey] = $record;
+        $this->changes[$recordKey] = $this->aclMap[$recordKey];
+    }
+
+    public function revoke(array $path, $capability, $group)
+    {
+        if (!isset($this->aclMap)) {
+            $this->loadMap();
+        }
+        $record = $this->getRecord($path);
+        if (isset($record[$capability]) and in_array($group, $record[$capability])) {
+            $record[$capability] = array_diff($record[$capability], [$group]);
+            $recordKey = implode('/', $path);
+            if (isset($this->deletions[$recordKey])) {
+                unset($this->deletions[$recordKey]);
+            }
+            $this->aclMap[$recordKey] = $record;
+            $this->changed[$recordKey] = $this->aclMap[$recordKey];
+        }
+    }
+
+    public function revokeAll(array $path)
     {
         if (!isset($this->aclMap)) {
             $this->loadMap();
         }
         $recordKey = implode('/', $path);
-        if (!isset($this->aclMap[$recordKey])) {
-            $this->aclMap[$recordKey] = [];
-        }
         if (isset($this->deletions[$recordKey])) {
             unset($this->deletions[$recordKey]);
         }
-        $this->aclMap[$recordKey][$key] = $value;
-        $this->changes[$recordKey] = $this->aclMap[$recordKey];
+        $this->aclMap[$recordKey] = [];
+        $this->changed[$recordKey] = $this->aclMap[$recordKey];
     }
     
-    public function remove(array $path)
+    public function reset(array $path)
     {
         if (!isset($this->aclMap)) {
             $this->loadMap();

@@ -11,15 +11,22 @@ namespace Blogstep\Api;
 class Setup extends \Blogstep\AuthenticatedSnippet
 {
     
-    private function createOwnedDir(\Blogstep\Files\File $dir, \Blogstep\User $user, \Blogstep\Group $group, $mode)
+    private function createOwnedDir(\Blogstep\Files\File $dir, \Blogstep\Group $group, $read, $write, $grant)
     {
         try {
             if (!$dir->exists()) {
                 $dir->makeDirectory();
             }
-            $dir->set('owner', $user->getName());
-            $dir->set('group', $group->getName());
-            $dir->setModeString($mode);
+            $dir->revokeAll();
+            if ($read) {
+                $dir->grant('read', $group->getName());
+            }
+            if ($write) {
+                $dir->grant('write', $group->getName());
+            }
+            if ($grant) {
+                $dir->grant('grant', $group->getName());
+            }
         } catch (\Blogstep\Files\FileException $e) {
         }
     }
@@ -35,18 +42,18 @@ class Setup extends \Blogstep\AuthenticatedSnippet
         $systemUser = $this->m->users->getUser('system');
         $systemGroup = $this->m->users->getGroup('system');
         $user = $this->m->auth->user;
-        $this->createOwnedDir($fs, $user, $userGroup, 'rwr-r-');
-        $this->createOwnedDir($fs->get('build'), $user, $userGroup, 'rwrwr-');
-        $this->createOwnedDir($fs->get('content'), $user, $userGroup, 'rwrwr-');
-        $this->createOwnedDir($fs->get('site'), $user, $userGroup, 'rwrwr-');
-        $this->createOwnedDir($fs->get('home'), $user, $userGroup, 'rwr-r-', false);
-        $this->createOwnedDir($fs->get('system'), $systemUser, $systemGroup, 'rwrw--');
+        $this->createOwnedDir($fs, $userGroup, true, false, false);
+        $this->createOwnedDir($fs->get('build'), $userGroup, true, true, true);
+        $this->createOwnedDir($fs->get('content'), $userGroup, true, true, true);
+        $this->createOwnedDir($fs->get('site'), $userGroup, true, true, true);
+        $this->createOwnedDir($fs->get('home'), $userGroup, true, false, false);
+        $this->createOwnedDir($fs->get('system'), $userGroup, true, true, false);
         foreach ($this->m->users->getUsers() as $user) {
-            $group = $this->m->users->getGroup($user->getPrimaryGroup());
+            $group = $this->m->users->getGroup($user->getName());
             if (!isset($group)) {
-                $group = $userGroup;
+                $group = $this->m->users->createGroup($user->getName());
             }
-            $this->createOwnedDir($user->getHome(), $user, $group, 'rw----');
+            $this->createOwnedDir($user->getHome(), $group, true, true, true);
         }
         
         return $this->ok();

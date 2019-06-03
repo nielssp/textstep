@@ -75,7 +75,7 @@ class SystemDevice implements Device {
 
     public function exists($path)
     {
-        return isset($this->files[$path]);
+        return $path === '/' or isset($this->files[$path]);
     }
 
     public function delete($path)

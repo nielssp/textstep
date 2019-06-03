@@ -30,12 +30,12 @@ class File extends \Blogstep\AuthenticatedSnippet
         }
         $recursive = isset($data['recursive']) && $data['recursive'] == 'true';
         if ($type === 'file') {
-            if ($file->makeFile()) {
+            if ($file->makeFile($recursive)) {
                 return $this->json($file->getBrief());
             }
             return $this->error('File could not be created');
         } else if ($type === 'directory') {
-            if ($file->makeDirectory()) {
+            if ($file->makeDirectory($recursive)) {
                 return $this->json($file->getBrief());
             }
             return $this->error('Directory could not be created');
@@ -48,23 +48,7 @@ class File extends \Blogstep\AuthenticatedSnippet
     {
         $file = $this->getRequestedFile();
         $recursive = isset($data['recursive']) && $data['recursive'] == 'true';
-        if (isset($data['owner']) and !$file->set('owner', strval($data['owner']), $recursive)) {
-            return $this->error('Could not set owner');
-        }
-        if (isset($data['group']) and !$file->set('group', strval($data['group']), $recursive)) {
-            return $this->error('Could not set group');
-        }
-        if (isset($data['mode'])) {
-            if (is_numeric($data['mode'])) {
-                if (!$file->set('mode', intval($data['mode']), $recursive)) {
-                    return $this->error('Could not set mode');
-                }
-            } else {
-                if (!$file->setModeString(strval($data['mode']), $recursive)) {
-                    return $this->error('Could not set mode');
-                }
-            }
-        }
+        // TODO
         return $this->json($file->getBrief(true));
     }
 

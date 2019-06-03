@@ -159,63 +159,45 @@ class File implements \IteratorAggregate, HasRoute
         return ! isset($this->system->user) or $this->system->user->isSystem();
     }
 
-    public function set($key, $value)
+    public function getPermissions()
     {
-        $this->assumeWritable();
-        $this->system->acl->set($this->path, $key, $value);
+        return $this->system->acl->getRecord($this->path);
     }
 
-    public function getOwner()
+    public function grant($capability, $group)
     {
-        return $this->system->acl->get($this->path, 'owner', 'system');
-    }
-
-    public function getGroup()
-    {
-        return $this->system->acl->get($this->path, 'group', 'system');
-    }
-
-    public function getMode()
-    {
-        return $this->system->acl->get($this->path, 'mode', ['rw', 'r', '']);
-    }
-
-    public function getModeString()
-    {
-        $mode = $this->getMode();
-        return implode(',', $mode);
-    }
-
-    public function setModeString($str)
-    {
-        if (strpos($str, ',') !== false) {
-            $mode = explode(',', $str);
-            Assume::that(count($mode) == 3);
-            return $this->set('mode', $mode);
+        if (!$this->system->acl->check($this->path, 'grant', $this->system->user)) {
+            return false;
         }
-        $mode = ['', '', ''];
-        Assume::that(strlen($str) === 6);
-        for ($i = 0; $i < 6; $i++) {
-            if ($str[$i] !== '-') {
-                $mode[floor($i / 2)] .= ($i % 2 == 0) ? 'r' : 'w';
-            }
+        $this->system->acl->grant($this->path, $capability, $group);
+        return true;
+    }
+
+    public function revoke($capability, $group)
+    {
+        if (!$this->system->acl->check($this->path, 'grant', $this->system->user)) {
+            return false;
         }
-        return $this->set('mode', $mode);
+        $this->system->acl->revoke($this->path, $capability, $group);
+        return true;
     }
 
-    public function getUserMode()
+    public function revokeAll()
     {
-        return $this->getMode()[0];
+        if (!$this->system->acl->check($this->path, 'grant', $this->system->user)) {
+            return false;
+        }
+        $this->system->acl->revokeAll($this->path);
+        return true;
     }
 
-    public function getGroupMode()
+    public function resetPermissions()
     {
-        return $this->getMode()[1];
-    }
-
-    public function getAllMode()
-    {
-        return $this->getMode()[2];
+        if (!$this->system->acl->check($this->path, 'grant', $this->system->user)) {
+            return false;
+        }
+        $this->system->acl->reset($this->path);
+        return true;
     }
 
     private function assumeReadable()
@@ -245,14 +227,7 @@ class File implements \IteratorAggregate, HasRoute
         if ($this->isSystem()) {
             return $this->device->isReadable($this->devicePath);
         }
-        $mode = $this->getAllMode();
-        if ($this->system->user->isMemberOf($this->getGroup())) {
-            $mode .= $this->getGroupMode();
-        }
-        if ($this->system->user->getName() === $this->getOwner()) {
-            $mode .= $this->getUserMode();
-        }
-        return strpos($mode, 'r') !== false;
+        return $this->system->acl->check($this->path, 'read', $this->system->user);
     }
 
     public function isWritable()
@@ -265,14 +240,7 @@ class File implements \IteratorAggregate, HasRoute
             }
             return false;
         }
-        $mode = $this->getAllMode();
-        if ($this->system->user->isMemberOf($this->getGroup())) {
-            $mode .= $this->getGroupMode();
-        }
-        if ($this->system->user->getName() === $this->getOwner()) {
-            $mode .= $this->getUserMode();
-        }
-        return strpos($mode, 'w') !== false;
+        return $this->system->acl->check($this->path, 'write', $this->system->user);
     }
 
     public function getBrief($iso8601 = false)
@@ -283,10 +251,7 @@ class File implements \IteratorAggregate, HasRoute
             'type' => $this->getType(),
             'modified' => $iso8601 ? date('c', $this->getModified()) : $this->getModified(),
             'created' => $iso8601 ? date('c', $this->getCreated()) : $this->getCreated(),
-            'owner' => $this->getOwner(),
-            'group' => $this->getGroup(),
-            'mode' => $this->getMode(),
-            'modeString' => $this->getModeString(),
+            'permissions' => $this->getPermissions(),
             'read' => $this->isReadable(),
             'write' => $this->isWritable(),
             'size' => $this->getSize(),
@@ -326,7 +291,7 @@ class File implements \IteratorAggregate, HasRoute
                 if ($this->device->isDirectory($this->devicePath)) {
                     $this->type = 'directory';
                 } else {
-                    $this->type = Utilities::getFileExtension($this->getName());
+                    $this->type = 'file';
                 }
             }
         }
@@ -345,7 +310,7 @@ class File implements \IteratorAggregate, HasRoute
                 if ($this->device->isDirectory($this->devicePath)) {
                     $this->type = 'directory';
                 } else {
-                    $this->type = Utilities::getFileExtension($this->getName());
+                    $this->type = 'file';
                     return true;
                 }
             }

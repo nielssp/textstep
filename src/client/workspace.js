@@ -72,7 +72,7 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.onload = function () {
-            if (xhr.status === 200) {
+            if (xhr.status === 200 || xhr.status === 204) {
                 var response;
                 if (responseType === null) {
                     responseType = xhr.getResponseHeader('Content-Type').toLowerCase();
