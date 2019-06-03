@@ -24,6 +24,18 @@ var months = [
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ];
 
+function fileSize(bytes) {
+  if (bytes < 1024) {
+      return bytes;
+  } else if (bytes < 1024 * 1024) {
+      return (bytes / 1024).toString().substring(0, 4).replace(/\.$/, '') + 'K';
+  } else if (bytes < 1024 * 1024 * 1024) {
+      return (bytes / (1024 * 1024)).toString().substring(0, 4).replace(/\.$/, '') + 'M';
+  } else {
+      return (bytes / (1024 * 1024 * 1024)).toString().substring(0, 4).replace(/\.$/, '') + 'G';
+  }
+}
+
 var commands = {
     clear: function (args) {
         buffer = '';
@@ -51,7 +63,9 @@ var commands = {
             if (typeof data.files !== 'undefined') {
                 data.files.forEach(function (file) {
                     var line = file.owner;
-                    line += ' \t' + file.group;
+                    var line = file.read ? 'r' : '-';
+                    line += file.write ? 'w' : '-';
+                    line += ' \t' + fileSize(file.size);
                     var date = new Date(file.modified);
                     line += ' \t' + date.getFullYear();
                     line += ' ' + months[date.getMonth()];
