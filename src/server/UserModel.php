@@ -38,7 +38,7 @@ class UserModel implements \Jivoo\Security\UserModel
     {
         $this->fs = $fs;
         $this->systemGroup = new Group('system');
-        $this->system = new User('system', null, $fs->get('system'), 'system', []);
+        $this->system = new User('system', null, $fs->get('system'), ['system']);
         $this->state = new StateMap($systemDir);
     }
 
@@ -48,7 +48,6 @@ class UserModel implements \Jivoo\Security\UserModel
             $user['username'],
             $user->get('hash', ''),
             $this->fs->get($user->get('home', '/home/' . $user['username'])),
-            $user->get('group', ''),
             $user->get('groups', [])
         );
     }
@@ -117,11 +116,8 @@ class UserModel implements \Jivoo\Security\UserModel
         if (isset($data['home']) and is_string($data['home'])) {
             $document['home'] = $data['home'];
         }
-        if (isset($data['group']) and is_string($data['group'])) {
-            $document['group'] = $data['group'];
-        }
         if (isset($data['groups']) and is_array($data['groups'])) {
-            $document['groups'] = array_diff(array_unique(array_map('strval', array_values($data['groups']))), [$document['group']]);
+            $document['groups'] = array_unique(array_map('strval', array_values($data['groups'])));
         }
     }
 
@@ -133,8 +129,7 @@ class UserModel implements \Jivoo\Security\UserModel
             $user['username'] = $name;
             $user->setDefault('home', '/home/' . $name);
             $user->setDefault('hash', '');
-            $user->setDefault('group', 'users');
-            $user->setDefault('groups', []);
+            $user->setDefault('groups', ['users']);
             $this->updateUserData($user, $data);
             if (isset($this->users)) {
                 $this->users[$name] = $this->createUserObject($user);

@@ -33,10 +33,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m = new Modules();
         $this->m->main = $this;
 
-        $this->m->logger = \Jivoo\Log\ErrorHandler::getInstance()->getLogger();
-        $exceptionHandler = new ExceptionHandler($this->m);
-        $exceptionHandler->register();
-
         $distPath = \Jivoo\Utilities::convertPath($distPath);
         $userPath = \Jivoo\Utilities::convertPath($userPath);
         $systemPath = \Jivoo\Utilities::convertPath($systemPath);
@@ -46,53 +42,10 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->paths->user = $userPath;
         $this->m->paths->system = $systemPath;
 
-        $this->m->files = new Files\FileSystem();
-        $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
+        $this->config = new \Jivoo\Store\Document();
+        $this->config['log'] = new \Jivoo\Store\Config(new \Jivoo\Store\PhpStore($this->p('system/log.php')));
+        $this->config['log']->setDefault('showExceptions', false);
 
-        $this->config = new Config\DirConfig($this->m->files);
-
-        // Mount file systems
-        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
-
-        // Initialize and mount system device
-        $this->m->system = new System\SystemDevice();
-        $this->m->files->get('system')->mount($this->m->system);
-
-        // Initialize authentication system
-        $this->m->users = new UserModel($this->m->files, $this->p('system'));
-
-        $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
-
-        $this->m->system->addFile('log.json', new System\ConfigFile($this->p('system/log.php'), 'config.system', $this->m->acl));
-        $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
-        $this->m->system->addFile('sessions.json', new System\SessionFile($this->m->users, $this->m->acl));
-        $this->m->system->addFile('sysacl.json', new System\SysAclFile($this->m->acl));
-
-        $logConfig = $this->config->getSubconfig('system.log');
-
-        // Set timezone (required by file logger)
-        if (!isset($logConfig['timeZone'])) {
-            $defaultTimeZone = 'UTC';
-            \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
-                $defaultTimeZone = @date_default_timezone_get();
-            });
-            $logConfig['timeZone'] = $defaultTimeZone;
-        }
-        if (!date_default_timezone_set($logConfig['timeZone'])) {
-            date_default_timezone_set('UTC');
-        }
-
-        // Add file logger
-        if ($this->m->logger instanceof \Jivoo\Log\Logger) {
-            if ($this->m->paths->dirExists('var/log')) {
-                $format = $logConfig->get('fileSuffix', '-Y-m-d');
-                $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
-                    $this->p('var/log/system' . date($format) . '.log'),
-                    $logConfig->get('level', \Psr\Log\LogLevel::WARNING)
-                ));
-            }
-        }
-        $logConfig->commit();
     }
 
     public function __get($property)
@@ -145,8 +98,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Api\ChangeOwner');
         $this->m->router->auto('snippet:Api\WhoAmI');
         $this->m->router->auto('snippet:Api\Setup');
-        $this->m->router->auto('snippet:Api\GetConf');
-        $this->m->router->auto('snippet:Api\SetConf');
         $this->m->router->auto('snippet:Api\Preview');
         $this->m->router->auto('snippet:Api\Storage');
     }
@@ -160,6 +111,55 @@ class Main implements \Psr\Log\LoggerAwareInterface
     {
         // Force output buffering so that error handlers can clear it.
         ob_start();
+
+        $this->m->logger = \Jivoo\Log\ErrorHandler::getInstance()->getLogger();
+        $exceptionHandler = new ExceptionHandler($this->m);
+        $exceptionHandler->register();
+
+        $logConfig = $this->config['log'];
+        // Set timezone (required by file logger)
+        if (!isset($logConfig['timeZone'])) {
+            $defaultTimeZone = 'UTC';
+            \Jivoo\Log\ErrorHandler::detect(function () use ($defaultTimeZone) {
+                $defaultTimeZone = @date_default_timezone_get();
+            });
+            $logConfig['timeZone'] = $defaultTimeZone;
+        }
+        if (!date_default_timezone_set($logConfig['timeZone'])) {
+            date_default_timezone_set('UTC');
+        }
+
+        // Add file logger
+        if ($this->m->logger instanceof \Jivoo\Log\Logger) {
+            if ($this->m->paths->dirExists('var/log')) {
+                $format = $logConfig->get('fileSuffix', '-Y-m-d');
+                $this->m->logger->addHandler(new \Jivoo\Log\FileHandler(
+                    $this->p('var/log/system' . date($format) . '.log'),
+                    $logConfig->get('level', \Psr\Log\LogLevel::WARNING)
+                ));
+            }
+        }
+
+        $this->m->files = new Files\FileSystem();
+        $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
+
+        // Mount file systems
+        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
+
+        // Initialize and mount system device
+        $this->m->system = new System\SystemDevice();
+        $this->m->files->get('system')->mount($this->m->system);
+
+        // Initialize authentication system
+        $this->m->users = new UserModel($this->m->files, $this->p('system'));
+
+        $this->m->acl = new SystemAcl($this->p('system/sysacl.php'), $this->m->users);
+
+        // Create virtual system files
+        $this->m->system->addFile('log.json', new System\ConfigFile($this->p('system/log.php'), $logConfig, 'config.system', $this->m->acl));
+        $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
+        $this->m->system->addFile('sessions.json', new System\SessionFile($this->m->users, $this->m->acl));
+        $this->m->system->addFile('sysacl.json', new System\SysAclFile($this->m->acl));
 
         if (php_sapi_name() === 'cli') {
             // Open shell if running from CLI

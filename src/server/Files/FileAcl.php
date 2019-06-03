@@ -83,7 +83,7 @@ class FileAcl
         $record = $this->getRecord($path);
         if (!isset($record[$capability])) {
             $record[$capability] = [];
-        } else if (in_array($group, $record[$capability])) {
+        } else if (in_array($group, $record[$capability], true)) {
             return;
         }
         $record[$capability][] = $group;
@@ -101,7 +101,7 @@ class FileAcl
             $this->loadMap();
         }
         $record = $this->getRecord($path);
-        if (isset($record[$capability]) and in_array($group, $record[$capability])) {
+        if (isset($record[$capability]) and in_array($group, $record[$capability], true)) {
             $record[$capability] = array_diff($record[$capability], [$group]);
             $recordKey = implode('/', $path);
             if (isset($this->deletions[$recordKey])) {

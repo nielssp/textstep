@@ -19,18 +19,14 @@ class User
     
     private $home;
     
-    private $primaryGroup;
-    
     private $groups;
     
-    public function __construct($username, $hash, File $home, $primaryGroupId, array $groups)
+    public function __construct($username, $hash, File $home, array $groups)
     {
         $this->username = $username;
         $this->hash = $hash;
         $this->home = $home;
-        $this->primaryGroup = strval($primaryGroupId);
         $this->groups = array_map('strval', $groups);
-        $this->groups[] = $this->primaryGroup;
     }
     
     public function getName()
@@ -48,11 +44,6 @@ class User
         return $this->home;
     }
     
-    public function getPrimaryGroup()
-    {
-        return $this->primaryGroup;
-    }
-    
     public function getGroups()
     {
         return $this->groups;
@@ -60,7 +51,7 @@ class User
     
     public function isMemberOf($group)
     {
-        return $group === $this->primaryGroup or in_array($group, $this->groups, true);
+        return in_array($group, $this->groups, true);
     }
     
     public function isSystem()

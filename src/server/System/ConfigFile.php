@@ -5,22 +5,20 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\System;
 
+use Jivoo\Store\Config;
 use Blogstep\SystemAcl;
 
 class ConfigFile extends SystemFile {
 
     private $file;
-    private $store;
+    private $config;
     private $permission;
-    private $data = null;
-    private $modified = false;
 
-    public function __construct($file, $permission, SystemAcl $acl)
+    public function __construct($file, Config $config, $permission, SystemAcl $acl)
     {
         parent::__construct($acl);
         $this->file = $file;
-        $this->store = new \Jivoo\Store\PhpStore($file);
-        $this->store->touch();
+        $this->config = $config;
         $this->permission = $permission;
     }
 
@@ -34,35 +32,18 @@ class ConfigFile extends SystemFile {
         return filectime($this->file);
     }
 
-    private function open()
-    {
-        if (! isset($this->data)) {
-            $this->store->open(false);
-            $this->data = $this->store->read();
-            $this->store->close();
-            $this->modified = false;
-        }
-    }
 
     public function close()
     {
-        if (isset($this->data)) {
-            if ($this->modified) {
-                $this->store->open(true);
-                $this->store->write($this->data);
-                $this->store->close();
-            }
-            $this->data = null;
-        }
+        $this->config->save();
     }
 
     public function getDocuments()
     {
-        $this->open();
         $data = [];
-        foreach ($this->data as $key => $value) {
+        foreach ($this->config as $key => $value) {
             if ($this->check($this->permission . '.view.' . $key)) {
-                $data[$key] =$value;
+                $data[$key] = $value;
             }
         }
         return $data;
@@ -71,18 +52,15 @@ class ConfigFile extends SystemFile {
     public function createDocument($key, $document)
     {
         if ($this->check($this->permission . '.update.' . $key)) {
-            $this->open();
-            $this->data[$key] = $document;
-            $this->modified = true;
+            $this->config[$key] = $document;
         }
     }
 
     public function getDocument($key)
     {
         if ($this->check($this->permission . '.view.' . $key)) {
-            $this->open();
-            if (isset($this->data[$key])) {
-                return $this->data[$key];
+            if (isset($this->config[$key])) {
+                return $this->config[$key];
             }
         }
         return null;
@@ -91,19 +69,15 @@ class ConfigFile extends SystemFile {
     public function updateDocument($key, $document)
     {
         if ($this->check($this->permission . '.update.' . $key)) {
-            $this->open();
-            $this->data[$key] = $document;
-            $this->modified = true;
+            $this->config[$key] = $document;
         }
     }
 
     public function deleteDocument($key)
     {
         if ($this->check($this->permission . '.update.' . $key)) {
-            $this->open();
-            if (isset($this->data[$key])) {
-                unset($this->data[$key]);
-                $this->modified = true;
+            if (isset($this->config[$key])) {
+                unset($this->config[$key]);
             }
         }
     }
