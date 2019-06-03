@@ -32,7 +32,6 @@ class UserFile extends SystemFile {
         return [
             'username' => $user->getName(),
             'home' => $user->getHome()->getPath(),
-            'group' => $user->getPrimaryGroup(),
             'groups' => $user->getGroups(),
         ];
     }
