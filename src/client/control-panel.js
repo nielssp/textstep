@@ -6,37 +6,41 @@
  */
 
 const ui = TEXTSTEP.ui;
+const Config = TEXTSTEP.Config;
 
-function input(key, type = 'text') {
+function input(config, key, type = 'text') {
     let elem = ui.elem('input', {type: type});
-    TEXTSTEP.config.get(key).bind(elem);
+    config.get(key).bind(elem);
     return elem;
 }
 
-function field(label, key, type = 'text') {
+function field(label, config, key, type = 'text') {
     return ui.elem('div', {className: 'field'}, [
         ui.elem('label', {}, [label]),
-        input(key, type)
+        input(config, key, type)
     ])
 }
 
 TEXTSTEP.initApp('control-panel', [], function (app) {
     let frame = app.createFrame('Control panel');
 
+    let config = new Config(() => TEXTSTEP.get('content', {path: '/site/site.json'}), data =>
+        TEXTSTEP.put('content', {path: '/site/site.json'}, data));
+
     app.dockFrame.innerHTML = '';
     app.dockFrame.appendChild(TEXTSTEP.getIcon('control-panel', 32));
 
-    frame.appendChild(field('Title', 'site.site.title'));
-    frame.appendChild(field('Subtitle', 'site.site.subtitle'));
-    frame.appendChild(field('Description', 'site.site.description'));
-    frame.appendChild(field('Copyright', 'site.site.copyright'));
-    frame.appendChild(field('Time zone', 'site.site.timeZone'));
+    frame.appendChild(field('Title', config, 'title'));
+    frame.appendChild(field('Subtitle', config, 'subtitle'));
+    frame.appendChild(field('Description', config, 'description'));
+    frame.appendChild(field('Copyright', config, 'copyright'));
+    frame.appendChild(field('Time zone', config, 'timeZone'));
 
     frame.defineAction('save', () => {
-        TEXTSTEP.config.commit();
+        config.commit();
     });
     frame.defineAction('reload', () => {
-        TEXTSTEP.config.update();
+        config.update();
     });
     
     let menu = frame.addMenu('Control panel');
@@ -49,7 +53,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     app.onOpen = args => {
         if (!frame.isOpen) {
             frame.open();
-            TEXTSTEP.config.update();
+            config.update();
         } else {
             frame.requestFocus();
         }

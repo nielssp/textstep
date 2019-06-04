@@ -26,12 +26,7 @@ TEXTSTEP.util = util;
 TEXTSTEP.ui = ui;
 TEXTSTEP.paths = paths;
 TEXTSTEP.Menu = Menu;
-
-TEXTSTEP.config = new Config(function (keys) {
-    return TEXTSTEP.get('get-conf', { keys: keys });
-}, function (data) {
-    return TEXTSTEP.post('set-conf', {}, { data: data });
-});
+TEXTSTEP.Config = Config;
 
 var root = document.body;
 var workspaceMenu = createWorkspaceMenu();

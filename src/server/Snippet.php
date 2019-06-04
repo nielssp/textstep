@@ -61,6 +61,8 @@ abstract class Snippet
 
     protected $jsonBody = false;
 
+    protected $parseBody = true;
+
     /**
      * Construct snippet.
      *
@@ -220,7 +222,7 @@ abstract class Snippet
                 $this->m->logger->info('Invalid content type: {contentType}', ['contentType' => $contentType]);
                 return $this->error('JSON expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
             }
-            if ($contentType === 'application/json') {
+            if ($this->parseBody and $contentType === 'application/json') {
                 try {
                     $length = intval($this->request->getHeaderLine('Content-Length'));
                     $data = \Jivoo\Json::decode($this->request->getBody()->read($length));

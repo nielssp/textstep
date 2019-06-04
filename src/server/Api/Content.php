@@ -10,6 +10,7 @@ namespace Blogstep\Api;
  */
 class Content extends \Blogstep\AuthenticatedSnippet
 {
+    protected $parseBody = false;
     
     public function get()
     {
@@ -53,7 +54,7 @@ class Content extends \Blogstep\AuthenticatedSnippet
                 return $this->error('Could not upload file: ' . $src->name);
             }
         }
-        return $this->response;
+        return $this->ok();
     }
 
     public function put(array $data)
@@ -63,13 +64,13 @@ class Content extends \Blogstep\AuthenticatedSnippet
         $length = intval($this->request->getHeaderLine('Content-Length'));
         $data = $this->request->getBody()->read($length);
         $file->putContents($data);
-        return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
+        return $this->ok();
     }
 
     public function delete()
     {
         $file = $this->getRequestedFile();
         $file->putContents('');
-        return $this->response->withStatus(\Jivoo\Http\Message\Status::OK);
+        return $this->ok();
     }
 }
