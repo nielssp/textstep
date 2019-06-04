@@ -45,7 +45,7 @@ class Content extends \Blogstep\AuthenticatedSnippet
     {
         $file = $this->getRequestedFile();
         if (!$file->isWritable()) {
-            return $this->error('Not authorized', \Jivoo\Http\Message\Status::FORBIDDEN);
+            return $this->error('Permission denied', \Jivoo\Http\Message\Status::FORBIDDEN);
         }
         $files = $this->request->getUploadedFiles();
         foreach ($files as $src) {
@@ -63,7 +63,13 @@ class Content extends \Blogstep\AuthenticatedSnippet
         $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
         $length = intval($this->request->getHeaderLine('Content-Length'));
         $data = $this->request->getBody()->read($length);
-        $file->putContents($data);
+        if (isset($this->request->query['append']) and $this->request->query['append'] === 'true') {
+            $stream = $fs->openStream('ab');
+            $stream->write($data);
+            $stream->close();
+        } else {
+            $file->putContents($data);
+        }
         return $this->ok();
     }
 

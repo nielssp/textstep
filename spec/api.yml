@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: TEXTSTEP API
-  version: "0.9.0"
+  version: "0.10.0"
   description: ''
 components:
   securitySchemes:
@@ -13,7 +13,27 @@ components:
       type: apiKey
       in: query
       name: auth_token
+  parameters:
+    path:
+      name: path
+      in: query
+      required: true
+      description: File path
+      schema:
+        type: string
   schemas:
+    PermissionMap:
+      type: object
+      description: Access control list
+      example:
+        read: [root, users]
+        write: [root]
+        grant: [root]
+      additionalProperties:
+        type: array
+        description: List of groups
+        items:
+          type: string
     File:
       type: object
       properties:
@@ -27,39 +47,28 @@ components:
           example: /home/user/my-file.md
         type:
           type: string
-          description: File extension or 'directory'
+          description: Type of object
+          enum: [file, directory]
+        size:
+          type: integer
+          description: Size of file in bytes
+          example: 4096
         modified:
           type: string
           format: date-time
+          example: "2019-06-02T14:13:22+00:00"
         created:
           type: string
           format: date-time
-        owner:
-          type: string
-          description: Name of user that owns the file
-        group:
-          type: string
-          description: Name of group that owns the file
-        mode:
-          type: array
-          description: Read/write access for owner/group/all
-          minItems: 3
-          maxItems: 3
-          items:
-            type: string
-            pattern: "^r?w?$"
-        modeString:
-          type: string
-          pattern: "^r?w?,r?w?,r?w?$"
+          example: "2019-06-02T14:13:22+00:00"
+        permissions:
+          $ref: '#/components/schemas/PermissionMap'
         read:
           type: boolean
           description: Whether the current user has read access to the file
         write:
           type: boolean
           description: Whether the current user has write access to the file
-        size:
-          type: integer
-          description: Size of file in number of bytes
     ExtendedFile:
       allOf:
         - $ref: '#/components/schemas/File'
@@ -102,7 +111,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  session_id:
+                  sessionId:
                     type: string
   /logout:
     post:
@@ -135,108 +144,169 @@ paths:
                   version:
                     type: string
                     description: Version string
-  /list-files:
+  /file:
     get:
-      description: List files
+      description: List file attributes and directory content
+      tags: [files]
+      parameters: 
+        - $ref: '#/components/parameters/path'
+        - name: list
+          in: query
+          description: Whether to return extended file object containing list of files in directory.
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: A file object
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/File'
+                  - $ref: '#/components/schemas/ExtendedFile'
+    post:
+      description: Create file or directory
+      tags: [files]
+      parameters:
+        - $ref: '#/components/parameters/path'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - file
+                    - directory
+                recursive:
+                  type: boolean
+                  description: Whether to recursively create missing directories
+      responses:
+        200:
+          description: File attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+    put:
+      description: Update file attributes
+      tags: [files]
+      parameters:
+        - $ref: '#/components/parameters/path'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permissions:
+                  $ref: '#/components/schemas/PermissionMap'
+                recursive:
+                  type: boolean
+                  description: Whether to recursively update descendants
+      responses:
+        200:
+          description: File attributes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+    delete:
+      description: Delete files
       tags: [files]
       parameters: 
         - name: path
           in: query
           schema:
             type: string
+        - name: paths[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        204:
+          description: OK
+  /content:
+    get:
+      description: Get file contents
+      tags: [files]
+      parameters: 
+        - $ref: '#/components/parameters/path'
+        - name: force
+          in: query
+          description: If true, the Content-Disposition header of the response is set to "attachment"
+          schema:
+            type: boolean
       responses:
         200:
-          description: A file object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExtendedFile'
-  /make-file:
+          description: File contents
     post:
-      description: Create a file
+      description: Upload files
       tags: [files]
+      parameters: 
+        - $ref: '#/components/parameters/path'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: array
+                  description: Files
+                  items:
+                    format: binary
+      responses:
+        204:
+          description: File uploaded
+    put:
+      description: Replace contents of file or append content to the end of the file
+      tags: [files]
+      parameters: 
+        - $ref: '#/components/parameters/path'
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/octet-stream:
             schema:
-              type: object
-              required:
-                - path
-              properties:
-                path:
-                  type: string
+              type: string
+              format: binary
       responses:
-        200:
-          description: A file object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExtendedFile'
-  /make-dir:
-    post:
-      description: Create a directory
-      tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-                - path
-              properties:
-                path:
-                  type: string
-      responses:
-        200:
-          description: A file object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExtendedFile'
-  /write:
-    post:
-      description: Replace contents of file
-      tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-                - path
-                - data
-              properties:
-                path:
-                  type: string
-                data:
-                  type: string
-      responses:
-        200:
+        204:
           description: File written
-  /append:
-    post:
-      description: Append content to a file
+    delete:
+      description: Truncate file
       tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              required:
-                - path
-                - data
-              properties:
-                path:
-                  type: string
-                data:
-                  type: string
+      parameters: 
+        - $ref: '#/components/parameters/path'
+      responses:
+        204:
+          description: File truncated
+  /content/{name}:
+    get:
+      description: Get file contents
+      tags: [files]
+      parameters: 
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/path'
+        - name: force
+          in: query
+          description: If true, the Content-Disposition header of the response is set to "attachment"
+          schema:
+            type: boolean
       responses:
         200:
-          description: File written
+          description: File contents
   /copy:
     post:
       description: Copy a file or directory
@@ -277,86 +347,6 @@ paths:
       responses:
         200:
           description: File moved
-  /delete:
-    post:
-      description: Delete a file
-      tags: [files]
-      requestBody:
-        required: true
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                paths:
-                  type: array
-                  items:
-                    type: string
-                path:
-                  type: string
-      responses:
-        200:
-          description: File deleted
-  /upload:
-    post:
-      description: Upload file
-      tags: [files]
-      parameters: 
-        - in: query
-          name: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                path:
-                  type: string
-                  description: Path of destination directory
-                file:
-                  type: array
-                  description: Files
-                  items:
-                    format: binary
-      responses:
-        200:
-          description: File uploaded
-        403:
-          description: User is not authorized to upload files to the directory
-  /download:
-    get:
-      description: Download file
-      tags: [files]
-      parameters: 
-        - in: query
-          name: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: File contents
-  /download/{name}:
-    get:
-      description: Download file
-      tags: [files]
-      parameters: 
-        - in: path
-          name: name
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: File contents
   /thumbnail:
     get:
       description: Get a file thumbnail
@@ -369,6 +359,94 @@ paths:
       responses:
         200:
           description: A thumbnail
+  /storage:
+    get:
+      description: Get one or more documents from storage
+      tags: [files]
+      parameters: 
+        - $ref: '#/components/parameters/path'
+        - name: key
+          in: query
+          description: Document key
+          schema:
+            type: string
+      responses:
+        200:
+          description: The document associated with the key or a list of documents if no key was provided.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    post:
+      description: Add a document to storage
+      tags: [files]
+      parameters:
+        - $ref: '#/components/parameters/path'
+        - name: key
+          in: query
+          description: Document key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        200:
+          description: File attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    put:
+      description: Update a document in storage
+      tags: [files]
+      parameters:
+        - $ref: '#/components/parameters/path'
+        - name: key
+          in: query
+          description: Document key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        200:
+          description: File attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    delete:
+      description: Delete files
+      tags: [files]
+      parameters: 
+        - name: path
+          in: query
+          schema:
+            type: string
+        - name: paths[]
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        204:
+          description: OK
   /mount:
     post:
       description: Mount host file system
