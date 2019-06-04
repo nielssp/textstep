@@ -53,7 +53,7 @@ Config.prototype.update = function () {
 Config.prototype.commit = function () {
     var data = {};
     for (var key in this.data) {
-        if (this.data.hasOwnProperty(key) && this.data[key].dirty) {
+        if (this.data.hasOwnProperty(key)) {
             data[key] = this.data[key].get();
         }
     }

@@ -11,12 +11,8 @@ class Storage extends \Blogstep\AuthenticatedSnippet
 
     public function get()
     {
-        if (!isset($this->request->query['path'])) {
-            return $this->error('Missing parameter: "path"');
-        }
-        $path = $this->request->query['path'];
-        $fs = $this->m->files->get($path);
-        $storage = $fs->openStorage(false);
+        $file = $this->getRequestedFile();
+        $storage = $file->openStorage(false);
         if (isset($this->request->query['key'])) {
             $key = $this->request->query['key'];
             $document = $storage->getDocument($key);
@@ -29,16 +25,12 @@ class Storage extends \Blogstep\AuthenticatedSnippet
 
     public function put($data)
     {
-        if (!isset($this->request->query['path'])) {
-            return $this->error('Missing parameter: "path"');
-        }
+        $file = $this->getRequestedFile();
         if (!isset($this->request->query['key'])) {
             return $this->error('Missing parameter: "key"');
         }
-        $path = $this->request->query['path'];
         $key = $this->request->query['key'];
-        $fs = $this->m->files->get($path);
-        $storage = $fs->openStorage(true);
+        $storage = $file->openStorage(true);
         $storage->updateDocument($key, $data);
         $document = $storage->getDocument($key);
         $storage->close();
@@ -47,16 +39,12 @@ class Storage extends \Blogstep\AuthenticatedSnippet
 
     public function post($data)
     {
-        if (!isset($this->request->query['path'])) {
-            return $this->error('Missing parameter: "path"');
-        }
+        $file = $this->getRequestedFile();
         if (!isset($this->request->query['key'])) {
             return $this->error('Missing parameter: "key"');
         }
-        $path = $this->request->query['path'];
         $key = $this->request->query['key'];
-        $fs = $this->m->files->get($path);
-        $storage = $fs->openStorage(true);
+        $storage = $file->openStorage(true);
         $storage->createDocument($key, $data);
         $document = $storage->getDocument($key);
         $storage->close();
@@ -65,16 +53,12 @@ class Storage extends \Blogstep\AuthenticatedSnippet
 
     public function delete()
     {
-        if (!isset($this->request->query['path'])) {
-            return $this->error('Missing parameter: "path"');
-        }
+        $file = $this->getRequestedFile();
         if (!isset($this->request->query['key'])) {
             return $this->error('Missing parameter: "key"');
         }
-        $path = $this->request->query['path'];
         $key = $this->request->query['key'];
-        $fs = $this->m->files->get($path);
-        $storage = $fs->openStorage(true);
+        $storage = $file->openStorage(true);
         $storage->deleteDocument($key);
         $storage->close();
         return $this->ok();
