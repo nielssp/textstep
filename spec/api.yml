@@ -12,7 +12,7 @@ components:
     AuthTokenQuery:
       type: apiKey
       in: query
-      name: auth_token
+      name: access_token
   parameters:
     path:
       name: path
@@ -92,7 +92,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               required:
@@ -118,7 +118,7 @@ paths:
       description: Invalidates the session
       tags: [user]
       responses:
-        200:
+        204:
           description: Session deleted.
   /who-am-i:
     get:
@@ -270,6 +270,11 @@ paths:
       tags: [files]
       parameters: 
         - $ref: '#/components/parameters/path'
+        - name: append
+          in: query
+          description: If true, request body is appended to file
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
@@ -314,18 +319,25 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
                 paths:
                   type: object
+                  example:
+                    /source1: /destination1
+                    /source2: /destination2
+                  additionalProperties:
+                    type: string
                 path:
                   type: string
+                  example: /source
                 destination:
                   type: string
+                  example: destination
       responses:
-        200:
+        204:
           description: File copied
   /move:
     post:
@@ -334,28 +346,32 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
                 paths:
                   type: object
+                  example:
+                    /source1: /destination1
+                    /source2: /destination2
+                  additionalProperties:
+                    type: string
                 path:
                   type: string
+                  example: /source
                 destination:
                   type: string
+                  example: destination
       responses:
-        200:
+        204:
           description: File moved
   /thumbnail:
     get:
       description: Get a file thumbnail
       tags: [files]
       parameters: 
-        - name: path
-          in: query
-          schema:
-            type: string
+        - $ref: '#/components/parameters/path'
       responses:
         200:
           description: A thumbnail
@@ -454,7 +470,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               required:
@@ -475,7 +491,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               required:
@@ -493,7 +509,7 @@ paths:
       requestBody:
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
@@ -507,7 +523,7 @@ paths:
                     - install
       responses:
         200:
-          description: File deleted
+          description: Build status
   /preview:
     get:
       description: Preview site
