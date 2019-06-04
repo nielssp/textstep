@@ -76,27 +76,25 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
         $this->m->router->auto('snippet:Api\Login');
         $this->m->router->auto('snippet:Api\Logout');
+        $this->m->router->auto('snippet:Api\WhoAmI');
+
         $this->m->router->auto('snippet:Api\File');
-        $this->m->router->auto('snippet:Api\ListFiles');
-        $this->m->router->auto('snippet:Api\Upload');
-        $this->m->router->auto('snippet:Api\Build');
-        $this->m->router->auto('snippet:Api\GenerateTestContent');
-        $this->m->router->auto('snippet:Api\Download');
-        $this->m->router->match('api/download/*', 'snippet:Api\Download');
-        $this->m->router->auto('snippet:Api\Thumbnail');
-        $this->m->router->auto('snippet:Api\MakeDir');
-        $this->m->router->auto('snippet:Api\MakeFile');
-        $this->m->router->auto('snippet:Api\Mount');
-        $this->m->router->auto('snippet:Api\Unmount');
-        $this->m->router->auto('snippet:Api\Delete');
-        $this->m->router->auto('snippet:Api\Write');
+        $this->m->router->auto('snippet:Api\Content');
+        $this->m->router->match('api/content/*', 'snippet:Api\Content');
         $this->m->router->auto('snippet:Api\Append');
         $this->m->router->auto('snippet:Api\Copy');
         $this->m->router->auto('snippet:Api\Move');
-        $this->m->router->auto('snippet:Api\WhoAmI');
-        $this->m->router->auto('snippet:Api\Setup');
-        $this->m->router->auto('snippet:Api\Preview');
         $this->m->router->auto('snippet:Api\Storage');
+        $this->m->router->auto('snippet:Api\Thumbnail');
+
+        $this->m->router->auto('snippet:Api\Mount');
+        $this->m->router->auto('snippet:Api\Unmount');
+
+        $this->m->router->auto('snippet:Api\Build');
+        $this->m->router->auto('snippet:Api\Preview');
+
+        $this->m->router->auto('snippet:Api\Setup');
+        $this->m->router->auto('snippet:Api\GenerateTestContent');
     }
 
     public function p($ipath)

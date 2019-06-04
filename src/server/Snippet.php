@@ -215,12 +215,12 @@ abstract class Snippet
             if ($this->request->isDelete()) {
                 return $this->after($this->delete());
             }
-            if ($this->jsonBody) {
-                $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
-                if ($contentType !== 'application/json') {
-                    $this->m->logger->info('Invalid content type: {contentType}', ['contentType' => $contentType]);
-                    return $this->error('JSON expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
-                }
+            $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
+            if ($this->jsonBody and $contentType !== 'application/json') {
+                $this->m->logger->info('Invalid content type: {contentType}', ['contentType' => $contentType]);
+                return $this->error('JSON expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
+            }
+            if ($contentType === 'application/json') {
                 try {
                     $length = intval($this->request->getHeaderLine('Content-Length'));
                     $data = \Jivoo\Json::decode($this->request->getBody()->read($length));

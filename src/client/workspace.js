@@ -60,7 +60,22 @@ TEXTSTEP.prepareRequest = function(xhr) {
     }
 };
 
+TEXTSTEP.RequestData = function (data, type = 'application/json') {
+    this.data = data;
+    this.type = type;
+};
+
+TEXTSTEP.RequestData.prototype.serialize = function () {
+    if (this.type == 'application/json') {
+        return JSON.stringify(this.data);
+    }
+    return this.data;
+};
+
 TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
+    if (!(data instanceof TEXTSTEP.RequestData) && !(data instanceof FormData)) {
+        data = new TEXTSTEP.RequestData(data);
+    }
     return new Promise(function (resolve, reject) {
         var xhr = new XMLHttpRequest();
         xhr.open(method, url, true);
@@ -110,14 +125,19 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                 }
             }
         };
-        xhr.onerror = () => reject(xhr);
+        xhr.onerror = () => reject({
+            errorType: 'UNSPECIFIED',
+            message: xhr.response,
+            context: {}
+        });
         if (data !== null) {
             if (data instanceof FormData) {
                 xhr.send(data);
             } else {
-                // TODO: use JSON instead
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-                xhr.send(util.serializeQuery(data));
+                if (data.type) {
+                    xhr.setRequestHeader('Content-Type', data.type);
+                }
+                xhr.send(data.serialize());
             }
         } else {
             xhr.send();
@@ -316,7 +336,7 @@ TEXTSTEP.open = function (path) {
     } else if (fileName.match(/\.app/i)) {
         return TEXTSTEP.run(fileName.replace(/\.app/i, ''));
     } else {
-        return TEXTSTEP.get('list-files', {path: path}).then(function (data) {
+        return TEXTSTEP.get('file', {path: path}).then(function (data) {
             if (data.type === 'directory') {
                 return TEXTSTEP.run('files', {path: path});
             } else {
@@ -386,7 +406,7 @@ function loadApp(name) {
             };
             dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
-            var scriptSrc = TEXTSTEP.url('download', {path: '/dist/apps/' + name + '.app/main.js'});
+            var scriptSrc = TEXTSTEP.url('content', {path: '/dist/apps/' + name + '.app/main.js'});
             apps[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
             apps[name].scriptElem.onerror = function () {
                 dock.removeChild(apps[name].dockFrame);
@@ -426,7 +446,7 @@ function loadLib(name) {
         } else {
             libs[name] = new Lib(name);
             libs[name].deferred = {promise: promise, resolve: resolve, reject: reject};
-            var scriptSrc = TEXTSTEP.url('download', {path: '/dist/lib/' + name + '.js'});
+            var scriptSrc = TEXTSTEP.url('content', {path: '/dist/lib/' + name + '.js'});
             libs[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
             libs[name].scriptElem.onerror = function () {
                 root.removeChild(script);
@@ -458,7 +478,7 @@ function unloadLib(name) {
 TEXTSTEP.getIcon = function (name, size = 32) {
     // TODO: onerror
     return ui.elem('img', {
-        src: TEXTSTEP.url('download', {path: '/dist/icons/default/' + size + '/' + name + '.png'}),
+        src: TEXTSTEP.url('content', {path: '/dist/icons/default/' + size + '/' + name + '.png'}),
         width: size,
         height: size
     });
@@ -690,7 +710,7 @@ TEXTSTEP.init = function (root) {
                 args = util.unserializeQuery(appAndArgs[1]);
             }
         }
-        TEXTSTEP.get('download', { path: user.home + '/autostart.json' }, 'json').then(data => {
+        TEXTSTEP.get('content', { path: user.home + '/autostart.json' }, 'json').then(data => {
             if (!Array.isArray(data)) {
                 return;
             }

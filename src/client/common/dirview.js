@@ -77,7 +77,6 @@ DirView.prototype.upload = function () {
     fileInput.onchange = () => {
         var files = fileInput.files;
         var data = new FormData();
-        data.append('path', this.cwd);
         for (var i = 0; i < files.length; i++) {
             data.append('file' + i, files[i]);
             /*addFile($column, {
@@ -86,7 +85,7 @@ DirView.prototype.upload = function () {
                 type: 'uploading'
             });*/
         }
-        TEXTSTEP.post('upload',  data).then(() => {
+        TEXTSTEP.post('content', {path: this.cwd}, data).then(() => {
             this.reload();
         }).finally(() => {
             fileInput.outerHTML = '';
@@ -257,7 +256,7 @@ DirColumn.prototype.reload = function () {
         this.files = null;
         this.list = null;
     }
-    TEXTSTEP.get('list-files', {path: this.path}).then(function (data) {
+    TEXTSTEP.get('file', {path: this.path, list: true}).then(function (data) {
         if (data.type === 'directory' && typeof data.files !== 'undefined') {
             self.listElem.innerHTML = '';
             self.files = {};
@@ -317,7 +316,7 @@ function DirFile(column, data) {
 
     this.elem = ui.elem('a', {
         'draggable': true,
-        'href': TEXTSTEP.url('download/' + this.name, {path: this.path})
+        'href': TEXTSTEP.url('content/' + this.name, {path: this.path})
     }, [this.name]);
     this.elem.addEventListener('touchend', e => {
         e.preventDefault();
@@ -378,7 +377,7 @@ function DirFile(column, data) {
     };
     this.elem.ondragstart = (e) => {
         var download = 'application/octet-stream:' + encodeURIComponent(this.name) + ':'
-                + location.origin + TEXTSTEP.SERVER + '/download?path='
+                + location.origin + TEXTSTEP.SERVER + '/content?path='
                 + encodeURIComponent(this.path);
         e.dataTransfer.setData('DownloadURL', download);
     };

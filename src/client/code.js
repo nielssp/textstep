@@ -40,7 +40,7 @@ function createBuffer(path) {
     }
     current = buffer;
     current.item.className = 'file active';
-    TEXTSTEP.get('download', {path: path}, 'text').then(function (data) {
+    TEXTSTEP.get('content', {path: path}, 'text').then(function (data) {
         buffer.data = data;
         if (current === buffer) {
             openBuffer(path);
@@ -163,7 +163,7 @@ function close() {
 function saveFile() {
     if (codemirror !== null && current !== null) {
         let buffer = current;
-        return TEXTSTEP.post('write', {}, {path: buffer.path, data: buffer.data}).then(function () {
+        return TEXTSTEP.put('content', {path: buffer.path}, new TEXTSTEP.RequestData(buffer.data, 'text/plain')).then(function () {
             buffer.unsaved = false;
             buffer.item.textContent = buffer.name;
             if (current === buffer) {
@@ -191,7 +191,7 @@ function reloadFile() {
         }
         promise.then(ok => {
             if (ok) {
-                TEXTSTEP.get('download', {path: buffer.path}, 'text').then(data => {
+                TEXTSTEP.get('content', {path: buffer.path}, 'text/plain').then(data => {
                     buffer.unsaved = false;
                     buffer.item.textContent = buffer.name;
                     buffer.data = data;

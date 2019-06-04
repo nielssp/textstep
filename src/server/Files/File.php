@@ -639,7 +639,7 @@ class File implements \IteratorAggregate, HasRoute
 
     protected function invalidate()
     {
-        $this->system->acl->remove($this->path);
+        $this->system->acl->reset($this->path);
         $this->valid = false;
         $parent = $this->getParent();
         $name = $this->getName();

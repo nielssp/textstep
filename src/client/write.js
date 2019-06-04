@@ -41,7 +41,7 @@ function createBuffer(path) {
     }
     current = buffer;
     current.item.className = 'file file-md active';
-    TEXTSTEP.get('download', {path: path}, 'text').then(function (data) {
+    TEXTSTEP.get('content', {path: path}, 'text').then(function (data) {
         buffer.data = data;
         if (current === buffer) {
             openBuffer(path);
@@ -99,7 +99,7 @@ function open(args) {
         previewRender: function (text) {
             var html = SimpleMDE.prototype.markdown(text);
             return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
-                return 'src="' + TEXTSTEP.url('download', {path: paths.convert(url, current.cwd)}) + '"';
+                return 'src="' + TEXTSTEP.url('content', {path: paths.convert(url, current.cwd)}) + '"';
             });
         },
         toolbar: [
@@ -187,7 +187,7 @@ function close() {
 function saveFile() {
     if (simplemde !== null && current !== null) {
         let buffer = current;
-        return TEXTSTEP.post('write', {}, {path: buffer.path, data: buffer.data}).then(function () {
+        return TEXTSTEP.put('content', {path: buffer.path}, new TEXTSTEP.RequestData(buffer.data, 'text/plain')).then(function () {
             buffer.unsaved = false;
             buffer.item.textContent = buffer.name;
             if (current === buffer) {

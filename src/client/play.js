@@ -61,7 +61,7 @@ TEXTSTEP.initApp('play', function (app) {
         video.controls = true;
         video.loop = true;
         path = args.path;
-        video.src = TEXTSTEP.url('download', {path: path});
+        video.src = TEXTSTEP.url('content', {path: path});
         app.setArgs({path: path});
         videoContainer.appendChild(video);
     };

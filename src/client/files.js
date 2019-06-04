@@ -25,7 +25,7 @@ function newFile() {
                 path += '/';
             }
             path += name;
-            TEXTSTEP.post('make-file', {}, {path: path}).then(function (data) {
+            TEXTSTEP.post('file', {path: path}, {type: 'file'}).then(function (data) {
                 dirView.setSelection(path);
                 dirView.reload();
             }, error => frame.alert('Error', error.message));
@@ -45,7 +45,7 @@ function newFolder() {
                 path += '/';
             }
             path += name;
-            TEXTSTEP.post('make-dir', {}, {path: path}).then(function (data) {
+            TEXTSTEP.post('file', {path: path}, {type: 'directory'}).then(function (data) {
                 dirView.reload();
                 dirView.cd(path);
             }, error => frame.alert('Error', error.message));
@@ -59,7 +59,7 @@ function download() {
         var name = paths.fileName(path);
         var iframe = document.createElement('iframe');
         iframe.style.display = 'none';
-        iframe.src = TEXTSTEP.url('download/' + encodeURIComponent(name), {
+        iframe.src = TEXTSTEP.url('content/' + encodeURIComponent(name), {
             force: true,
             path: path
         });
@@ -156,7 +156,7 @@ function trash() {
     }
     frame.confirm('Files', confirmation, ['Delete', 'Cancel'], 'Delete').then(function (choice) {
         if (choice === 'Delete') {
-            TEXTSTEP.post('delete', {}, data).then(function (data) {
+            TEXTSTEP.delete('file', data).then(function (data) {
                 dirView.clearSelection();
                 dirView.reload();
             }, error => frame.alert('Error', error.message));

@@ -44,7 +44,7 @@ var commands = {
     },
     cd: function (args) {
         var nwd = convertPath(args);
-        exec('list-files?path=' + nwd, {}, function (data) {
+        execGet('file', {path: nwd}, function (data) {
             if (data.type === 'directory') {
                 cwd = nwd;
                 frame.setTitle(cwd + ' – Terminal');
@@ -59,7 +59,7 @@ var commands = {
         prompt();
     },
     ls: function (args) {
-        exec('list-files?path=' + cwd, {}, function (data) {
+        execGet('file', {path: cwd, list: true}, function (data) {
             if (typeof data.files !== 'undefined') {
                 data.files.forEach(function (file) {
                     var line = file.owner;
@@ -80,29 +80,29 @@ var commands = {
         });
     },
     touch: function (args) {
-        exec('make-file', {path: convertPath(args)}, function (data) {
+        execPut('file', {path: convertPath(args)}, {type: 'file'}, function (data) {
         });
     },
     mkdir: function (args) {
-        exec('make-dir', {path: convertPath(args)}, function (data) {
+        execPut('file', {path: convertPath(args)}, {type: 'directory'}, function (data) {
         });
     },
     rm: function (args) {
-        exec('delete', {path: convertPath(args)}, function (data) {
+        execDelete('file', {path: convertPath(args)}, function (data) {
         });
     },
     cp: function (args) {
         args = args.split(' ');
-        exec('copy', {path: convertPath(args[0]), destination: convertPath(args[1])}, function (data) {
+        execPost('copy', {}, {path: convertPath(args[0]), destination: convertPath(args[1])}, function (data) {
         });
     },
     mv: function (args) {
         args = args.split(' ');
-        exec('move', {path: convertPath(args[0]), destination: convertPath(args[1])}, function (data) {
+        execPost('move', {}, {path: convertPath(args[0]), destination: convertPath(args[1])}, function (data) {
         });
     },
     cat: function (args) {
-        exec('download?path=' + convertPath(args), {}, function (data) {
+        execGet('content', {path: convertPath(args)}, function (data) {
             writeLine(data);
         });
     },
@@ -192,18 +192,34 @@ function readLine(callback)
     readCallback = callback;
 }
 
-function exec(command, data, success)
+function execGet(command, query, success)
 {
-    TEXTSTEP.post(command, {}, data).then(success, function (xhr) {
-        if (xhr.status === 404) {
-            writeLine(xhr.status + ' ' + command + ': command not found');
-        } else if (typeof xhr.responseJSON !== 'undefined') {
-            writeLine(xhr.status + '(' + xhr.responseJSON.code + ') ' + xhr.responseJSON.message);
-        } else {
-            writeLine(xhr.status + ' ' + xhr.statusText + ': ' + xhr.responseText);
-        }
+    TEXTSTEP.get(command, query).then(success, function (error) {
+        writeLine(error.message);
     }).finally(prompt);
 }
+
+function execPut(command, query, data, success)
+{
+    TEXTSTEP.put(command, query, data).then(success, function (error) {
+        writeLine(error.message);
+    }).finally(prompt);
+}
+
+function execPost(command, query, data, success)
+{
+    TEXTSTEP.post(command, query, data).then(success, function (error) {
+        writeLine(error.message);
+    }).finally(prompt);
+}
+
+function execDelete(command, query, data, success)
+{
+    TEXTSTEP.delete(command, query, data).then(success, function (error) {
+        writeLine(error.message);
+    }).finally(prompt);
+}
+
 
 function prompt()
 {
@@ -256,7 +272,7 @@ TEXTSTEP.initApp('terminal', function (app) {
     app.onOpen = function (args) {
         if (!frame.isOpen) {
             buffer = '';
-            exec('who-am-i', {}, function (data) {
+            execGet('who-am-i', {}, function (data) {
                 user = data;
                 if (typeof args.path === 'string') {
                     cwd = args.path;
