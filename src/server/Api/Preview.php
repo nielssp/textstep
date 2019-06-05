@@ -54,7 +54,7 @@ class Preview extends AuthenticatedSnippet
 
         $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('site.site'));
 
-        $view = new PreviewView($assembler, $this->tokenAuthentication->getSessionId());
+        $view = new PreviewView($assembler, $this->sessionId);
         $view->addTemplateDir($destination->get('site')->getHostPath());
         $view->addTemplateDir($destination->get('/site')->getHostPath());
         $node = $siteMap->get($path);

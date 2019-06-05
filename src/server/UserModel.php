@@ -9,14 +9,13 @@ use Blogstep\Files\File;
 use Jivoo\Assume;
 use Jivoo\Binary;
 use Jivoo\Random;
-use Jivoo\Security\Hash;
 use Jivoo\Store\AccessException;
 use Jivoo\Store\StateMap;
 
 /**
  * Description of UserModel
  */
-class UserModel implements \Jivoo\Security\UserModel
+class UserModel
 {
     
     private $fs;
@@ -111,7 +110,7 @@ class UserModel implements \Jivoo\Security\UserModel
     private function updateUserData($document, $data)
     {
         if (isset($data['password']) and is_string($data['password'])) {
-            $document['hash'] = Hash::hash($data['password']);
+            $document['hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
         }
         if (isset($data['home']) and is_string($data['home'])) {
             $document['home'] = $data['home'];
@@ -250,16 +249,10 @@ class UserModel implements \Jivoo\Security\UserModel
         $state->close();
     }
 
-    public function findUser(array $data)
+    public function verifyPassword(User $user, $password)
     {
-        return $this->getUser($data['username']);
-    }
-
-    public function verifyPassword($user, $password)
-    {
-        Assume::isInstanceOf($user, 'Blogstep\User');
-        if (Hash::verify($password, $user->getPassword())) {
-            if (Hash::needsRehash($user->getPassword())) {
+        if (password_verify($password, $user->getPassword())) {
+            if (password_needs_rehash($user->getPassword(), PASSWORD_DEFAULT)) {
                 $this->updateUser($user->getName(), ['password' => $password]);
             }
             return true;

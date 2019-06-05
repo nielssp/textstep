@@ -41,7 +41,7 @@ class Setup extends \Blogstep\AuthenticatedSnippet
         }
         $systemUser = $this->m->users->getUser('system');
         $systemGroup = $this->m->users->getGroup('system');
-        $user = $this->m->auth->user;
+        $user = $this->user;
         $this->createOwnedDir($fs, $userGroup, true, false, false);
         $this->createOwnedDir($fs->get('build'), $userGroup, true, true, true);
         $this->createOwnedDir($fs->get('content'), $userGroup, true, true, true);

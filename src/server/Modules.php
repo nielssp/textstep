@@ -18,7 +18,6 @@ namespace Blogstep;
  * @property \Jivoo\Http\Token $token
  * @property Files\FileSystem $files
  * @property Files\MountHandler $mounts
- * @property \Jivoo\Security\Auth $auth
  * @property UserModel $users
  * @property SystemAcl $acl
  * @property System\SystemDevice $system
@@ -36,7 +35,6 @@ class Modules extends \Jivoo\Modules
         'token' => 'Jivoo\Http\Token',
         'files' => 'Blogstep\Files\FileSystem',
         'mounts' => 'Blogstep\Files\MountHandler',
-        'auth' => 'Jivoo\Security\Auth',
         'users' => 'Blogstep\UserModel',
         'acl' => 'Blogstep\SystemAcl',
         'system' => 'Blogstep\System\SystemDevice',

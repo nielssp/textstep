@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb5929d2d9c665d1c3f03dc814825581",
+    "content-hash": "cd34e63e6205ea4f2ec70036e9511d7e",
     "packages": [
         {
             "name": "badcow/lorem-ipsum",
@@ -206,16 +206,16 @@
         },
         {
             "name": "jivoo/http",
-            "version": "v1.5.3",
+            "version": "v1.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jivoo/http.git",
-                "reference": "872a253d3bf51ee050ed076e09d249ef52c588d9"
+                "reference": "f39df786fc08c4117e637e79db715a86e57e1538"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/http/zipball/872a253d3bf51ee050ed076e09d249ef52c588d9",
-                "reference": "872a253d3bf51ee050ed076e09d249ef52c588d9",
+                "url": "https://api.github.com/repos/jivoo/http/zipball/f39df786fc08c4117e637e79db715a86e57e1538",
+                "reference": "f39df786fc08c4117e637e79db715a86e57e1538",
                 "shasum": ""
             },
             "require": {
@@ -254,57 +254,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2019-06-02T15:30:18+00:00"
-        },
-        {
-            "name": "jivoo/security",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jivoo/security.git",
-                "reference": "9d895d7ed7b0cb7862984251db6c3a9bccae3fb5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/security/zipball/9d895d7ed7b0cb7862984251db6c3a9bccae3fb5",
-                "reference": "9d895d7ed7b0cb7862984251db6c3a9bccae3fb5",
-                "shasum": ""
-            },
-            "require": {
-                "composer/semver": "^1.2",
-                "jivoo/core": "^1.0",
-                "jivoo/http": "^1.0",
-                "php": ">=5.4.0",
-                "psr/log": "1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.0",
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Jivoo\\Security\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Niels Sonnich Poulsen",
-                    "email": "niels@nielssp.dk",
-                    "homepage": "http://nielssp.dk",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Jivoo authentication, authorization, and access control library.",
-            "homepage": "http://nielssp.dk",
-            "keywords": [
-                "framework"
-            ],
-            "time": "2017-02-11T09:23:34+00:00"
+            "time": "2019-06-05T15:24:41+00:00"
         },
         {
             "name": "jivoo/view",
@@ -1912,9 +1862,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "jivoo/security": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

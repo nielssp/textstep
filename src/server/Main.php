@@ -74,8 +74,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->error('snippet:Snippets\NotFound');
         $this->m->router->match('manifest.json', 'snippet:Snippets\Manifest');
 
-        $this->m->router->auto('snippet:Api\Login');
-        $this->m->router->auto('snippet:Api\Logout');
+        $this->m->router->auto('snippet:Api\Session');
         $this->m->router->auto('snippet:Api\WhoAmI');
 
         $this->m->router->auto('snippet:Api\File');
@@ -166,8 +165,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
             $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
             $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
             $this->m->server->add(new \Jivoo\Http\EntityTag);
-
-            $this->m->auth = new \Jivoo\Security\Auth($this->m->users);
 
             // Initialize assets
             $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('dist'), null, true);

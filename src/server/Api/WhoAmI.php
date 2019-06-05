@@ -8,19 +8,19 @@ namespace Blogstep\Api;
 /**
  * Current user information.
  */
-class WhoAmI extends \Blogstep\Snippet
+class WhoAmI extends \Blogstep\AuthenticatedSnippet
 {
+
+    protected function unauthorizedError($error)
+    {
+        return $this->json(null);
+    }
     
     public function get()
     {
-        if (! $this->m->auth->isLoggedIn()) {
-            return $this->json(null);
-        }
-        $this->m->files->setAuthentication($this->m->auth->user);
-        $user = $this->m->auth->user;
         return $this->json([
-            'username' => $user->getName(),
-            'home' => $user->getHome()->getPath(),
+            'username' => $this->user->getName(),
+            'home' => $this->user->getHome()->getPath(),
             'shell' => 'files',
             'version' => \Blogstep\Main::VERSION
         ]);

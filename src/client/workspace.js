@@ -221,7 +221,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                 username: loginFrame.formElem.username.value,
                 password: loginFrame.formElem.password.value,
             };
-            TEXTSTEP.post('login', {}, data).then(function (data) {
+            TEXTSTEP.post('session', {}, data).then(function (data) {
                 sessionId = data.sessionId;
                 if (loginFrame.formElem.remember.checked) {
                     cookies.set('textstep_session', sessionId, {expires: 365});
@@ -585,13 +585,13 @@ function workspaceMenuAction(action) {
             TEXTSTEP.run(action);
             break;
         case 'switch-user':
-            TEXTSTEP.post('logout').then(function () {
+            TEXTSTEP.delete('session').then(function () {
                 TEXTSTEP.requestLogin(true).then(function () {
                 });
             });
             break;
         case 'logout':
-            TEXTSTEP.post('logout').then(function () {
+            TEXTSTEP.delete('session').then(function () {
                 location.reload();
             });
             break;

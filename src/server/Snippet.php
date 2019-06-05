@@ -57,8 +57,6 @@ abstract class Snippet
      */
     protected $response = null;
 
-    protected $tokenAuthentication = null;
-
     protected $jsonBody = false;
 
     protected $parseBody = true;
@@ -194,9 +192,6 @@ abstract class Snippet
         $this->response = $response;
         $this->routeParameters = $parameters;
         $this->parameterValues = array();
-        $this->tokenAuthentication = new TokenAuthentication($this->request);
-        $this->m->auth->token = $this->tokenAuthentication;
-        $this->m->auth->authenticate(null);
         foreach ($this->parameters as $offset => $name) {
             if (isset($parameters[$name])) {
                 $this->parameterValues[$name] = $parameters[$name];

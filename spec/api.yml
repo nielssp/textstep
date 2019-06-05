@@ -84,7 +84,7 @@ security:
   - AuthTokenHeader: []
   - AuthTokenQuery: []
 paths:
-  /login:
+  /session:
     post:
       description: Log in
       tags: [user]
@@ -105,7 +105,7 @@ paths:
                   type: string
       responses:
         200:
-          description: Logged in
+          description: Session created
           content:
             application/json:
               schema:
@@ -113,8 +113,7 @@ paths:
                 properties:
                   sessionId:
                     type: string
-  /logout:
-    post:
+    delete:
       description: Invalidates the session
       tags: [user]
       responses:
