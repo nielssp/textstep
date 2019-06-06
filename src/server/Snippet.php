@@ -209,6 +209,13 @@ abstract class Snippet
             if ($this->request->isGet()) {
                 return $this->after($this->get());
             }
+            if ($this->request->method === 'HEAD') {
+                $respsonse = $this->get();
+                if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
+                  $response = $response->withBody(new \Jivoo\Http\Message\StringStream(''));
+                }
+                return $this->after($response);
+            }
             if ($this->request->isDelete()) {
                 return $this->after($this->delete());
             }
@@ -239,7 +246,7 @@ abstract class Snippet
                 case 'PATCH':
                     return $this->after($this->patch($data));
             }
-            return $this->after($this->invalid());
+            return $this->after($this->methodNotAllowed());
         } catch (RuntimeException $e) {
             $this->m->logger->warning($e->getMessage(), ['exception' => $e]);
             return $this->error($e);
@@ -356,7 +363,7 @@ abstract class Snippet
         $response->getBody()->write($message);
         return $response->withStatus($status);
     }
-    
+
     protected function methodNotAllowed()
     {
         $response = $this->response;

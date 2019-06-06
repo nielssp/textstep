@@ -48,7 +48,10 @@ class Content extends \Blogstep\AuthenticatedSnippet
             return $this->error('Permission denied', \Jivoo\Http\Message\Status::FORBIDDEN);
         }
         $files = $this->request->getUploadedFiles();
-        foreach ($files as $src) {
+        if (!isset($files['files']) or !is_array($files['files'])) {
+            return $this->error('Missing data: "files[]"');
+        }
+        foreach ($files['files'] as $src) {
             $target = $file->get($src->name);
             if (!$target->moveHere($src)) {
                 return $this->error('Could not upload file: ' . $src->name);

@@ -256,10 +256,10 @@ paths:
             schema:
               type: object
               properties:
-                file:
+                files[]:
                   type: array
-                  description: Files
                   items:
+                    type: string
                     format: binary
       responses:
         204:

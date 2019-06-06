@@ -671,6 +671,20 @@ root.onclick = function (event) {
     }
 };
 
+root.ondragenter = function (e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'none';
+};
+
+root.ondragleave = function (e) {
+    e.preventDefault();
+};
+
+root.ondragover = function (e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'none';
+};
+
 function requestAuthenticatedUser() {
     if (cookies.get().hasOwnProperty('textstep_session')) {
         sessionId = cookies.get('textstep_session');

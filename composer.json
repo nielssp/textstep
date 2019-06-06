@@ -19,7 +19,7 @@
     "psr-4": {"Blogstep\\": "tests/"}
   },
   "require": {
-    "php": ">=5.4.0",
+    "php": ">=5.5.0",
     "composer/semver": "^1.2",
     "jivoo/core": "^1.2",
     "jivoo/http": "^1.5.4",

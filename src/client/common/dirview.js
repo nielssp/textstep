@@ -78,12 +78,7 @@ DirView.prototype.upload = function () {
         var files = fileInput.files;
         var data = new FormData();
         for (var i = 0; i < files.length; i++) {
-            data.append('file' + i, files[i]);
-            /*addFile($column, {
-                name: files[i].name,
-                path: $column.data('path') + '/' + files[i].name,
-                type: 'uploading'
-            });*/
+            data.append('files[]', files[i]);
         }
         TEXTSTEP.post('content', {path: this.cwd}, data).then(() => {
             this.reload();
@@ -214,21 +209,47 @@ function DirColumn(dirView, path) {
     this.files = null;
     this.selection = [];
 
-    this.elem.addEventListener('dragenter', function () {
-        // TODO
+    this.elem.addEventListener('dragenter', e => {
+        if (this.files !== null) {
+            e.dataTransfer.dropEffect = 'copy';
+            e.stopPropagation();
+            this.elem.classList.add('accept');
+        }
     });
 
-    this.elem.addEventListener('dragleave', function () {
-        // TODO
+    this.elem.addEventListener('dragleave', e => {
+        this.elem.classList.remove('accept');
     });
 
-    this.elem.addEventListener('dragover', function () {
-        // TODO
+    this.elem.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (this.files !== null) {
+            e.dataTransfer.dropEffect = 'copy';
+            e.stopPropagation();
+            this.elem.classList.add('accept');
+        }
     });
 
-    this.elem.addEventListener('drop', function () {
-        // TODO
+    this.elem.addEventListener('dragend', e => {
+        e.preventDefault();
     });
+
+    this.elem.addEventListener('drop', e => {
+        e.preventDefault();
+        this.elem.classList.remove('accept');
+        if (this.files === null) {
+            return;
+        }
+        let files = e.dataTransfer.files;
+        let data = new FormData();
+        for (var i = 0; i < files.length; i++) {
+            data.append('files[]', files[i]);
+        }
+        TEXTSTEP.post('content', {path: this.path}, data).then(() => {
+            this.reload();
+        }); // TODO: frame.alert() on error
+    });
+
 }
 
 DirColumn.prototype.setSelection = function (paths) {
