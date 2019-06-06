@@ -210,7 +210,7 @@ function DirColumn(dirView, path) {
     this.selection = [];
 
     this.elem.addEventListener('dragenter', e => {
-        if (this.files !== null) {
+        if (this.files !== null && e.dataTransfer.files.length) {
             e.dataTransfer.dropEffect = 'copy';
             e.stopPropagation();
             this.elem.classList.add('accept');
@@ -223,7 +223,7 @@ function DirColumn(dirView, path) {
 
     this.elem.addEventListener('dragover', e => {
         e.preventDefault();
-        if (this.files !== null) {
+        if (this.files !== null && e.dataTransfer.files.length) {
             e.dataTransfer.dropEffect = 'copy';
             e.stopPropagation();
             this.elem.classList.add('accept');
@@ -241,6 +241,9 @@ function DirColumn(dirView, path) {
             return;
         }
         let files = e.dataTransfer.files;
+        if (!files.length) {
+            return;
+        }
         let data = new FormData();
         for (var i = 0; i < files.length; i++) {
             data.append('files[]', files[i]);
@@ -271,17 +274,16 @@ DirColumn.prototype.setSelection = function (paths) {
 };
 
 DirColumn.prototype.reload = function () {
-    var self = this;
     if (this.files !== null) {
         this.listElem.innerHTML = '';
         this.files = null;
         this.list = null;
     }
-    TEXTSTEP.get('file', {path: this.path, list: true}).then(function (data) {
+    TEXTSTEP.get('file', {path: this.path, list: true}).then(data => {
         if (data.type === 'directory' && typeof data.files !== 'undefined') {
-            self.listElem.innerHTML = '';
-            self.files = {};
-            self.list = [];
+            this.listElem.innerHTML = '';
+            this.files = {};
+            this.list = [];
             data.files.sort(function(a, b) {
                 // TODO: optional sorting of directories before files
                 if ((a.type === 'directory') !== (b.type === 'directory')) {
@@ -302,14 +304,14 @@ DirColumn.prototype.reload = function () {
                 }
             });
             for (var i = 0; i < data.files.length; i++) {
-                var file = new DirFile(self, data.files[i]);
-                self.list.push(file);
-                self.files[file.path] = file;
-                self.listElem.appendChild(file.elem);
+                var file = new DirFile(this, data.files[i]);
+                this.list.push(file);
+                this.files[file.path] = file;
+                this.listElem.appendChild(file.elem);
             }
-            for (var i = 0; i < self.selection.length; i++) {
-                if (self.files.hasOwnProperty(self.selection[i])) {
-                    self.files[self.selection[i]].setSelected(true);
+            for (var i = 0; i < this.selection.length; i++) {
+                if (this.files.hasOwnProperty(this.selection[i])) {
+                    this.files[this.selection[i]].setSelected(true);
                 }
             }
         }
