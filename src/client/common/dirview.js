@@ -25,8 +25,16 @@ export default function DirView() {
 
 util.eventify(DirView.prototype);
 
-DirView.prototype.reload = function () {
-    this.columns[this.stack.length - 1].reload();
+DirView.prototype.reload = function (paths = null) {
+    if (!paths) {
+        this.columns[this.stack.length - 1].reload();
+    } else {
+        this.columns.forEach(column => {
+            if (paths.indexOf(column.path) >= 0) {
+                column.reload();
+            }
+        });
+    }
 };
 
 DirView.prototype.cd = function (path) {
@@ -210,11 +218,7 @@ function DirColumn(dirView, path) {
     this.selection = [];
 
     this.elem.addEventListener('dragenter', e => {
-        if (this.files !== null && e.dataTransfer.files.length) {
-            e.dataTransfer.dropEffect = 'copy';
-            e.stopPropagation();
-            this.elem.classList.add('accept');
-        }
+        e.stopPropagation();
     });
 
     this.elem.addEventListener('dragleave', e => {
@@ -223,8 +227,13 @@ function DirColumn(dirView, path) {
 
     this.elem.addEventListener('dragover', e => {
         e.preventDefault();
-        if (this.files !== null && e.dataTransfer.files.length) {
-            e.dataTransfer.dropEffect = 'copy';
+        let type = e.dataTransfer.types.find(t => t === 'Files' || t === 'application/x-textstep-path');
+        if (this.files !== null && type) {
+            if (type === 'Files' || e.ctrlKey) {
+                e.dataTransfer.dropEffect = 'copy';
+            } else {
+                e.dataTransfer.dropEffect = 'move';
+            }
             e.stopPropagation();
             this.elem.classList.add('accept');
         }
@@ -240,19 +249,27 @@ function DirColumn(dirView, path) {
         if (this.files === null) {
             return;
         }
-        let files = e.dataTransfer.files;
-        if (!files.length) {
-            return;
+        let type = e.dataTransfer.types.find(t => t === 'Files' || t === 'application/x-textstep-path');
+        if (type === 'Files') {
+            let files = e.dataTransfer.files;
+            if (!files.length) {
+                return;
+            }
+            let data = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                data.append('files[]', files[i]);
+            }
+            TEXTSTEP.post('content', {path: this.path}, data).then(() => {
+                this.reload();
+            }); // TODO: frame.alert() on error
+        } else if (type === 'application/x-textstep-path') {
+            let path = e.dataTransfer.getData('application/x-textstep-path');
+            TEXTSTEP.post(e.ctrlKey ? 'copy' : 'move', {}, {
+                path: path,
+                destination: paths.convert(paths.fileName(path), this.path)
+            }).then(() => this.dirView.reload([paths.dirName(path), this.path]));
         }
-        let data = new FormData();
-        for (var i = 0; i < files.length; i++) {
-            data.append('files[]', files[i]);
-        }
-        TEXTSTEP.post('content', {path: this.path}, data).then(() => {
-            this.reload();
-        }); // TODO: frame.alert() on error
     });
-
 }
 
 DirColumn.prototype.setSelection = function (paths) {
@@ -400,9 +417,10 @@ function DirFile(column, data) {
     };
     this.elem.ondragstart = (e) => {
         var download = 'application/octet-stream:' + encodeURIComponent(this.name) + ':'
-                + location.origin + TEXTSTEP.SERVER + '/content?path='
-                + encodeURIComponent(this.path);
+                + location.origin + TEXTSTEP.url('content', {path: this.path});
         e.dataTransfer.setData('DownloadURL', download);
+        e.dataTransfer.setData('application/x-textstep-path', this.path);
+        e.dataTransfer.effectAllowed = 'copyMove';
     };
     this.updateElement();
 }
