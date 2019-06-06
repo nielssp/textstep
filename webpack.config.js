@@ -121,6 +121,7 @@ module.exports = [
     app('test'),
     app('clock'),
     app('storage-client'),
+    app('session-manager'),
     lib('libedit'),
     lib('libtest'),
     theme('default'),

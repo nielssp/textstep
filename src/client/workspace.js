@@ -5,7 +5,6 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-import * as cookies from 'js-cookie';
 import * as ui from './common/ui';
 import * as util from './common/util';
 import * as paths from './common/paths';
@@ -21,7 +20,6 @@ if (window.TEXTSTEP) {
 }
 
 window.TEXTSTEP = {};
-TEXTSTEP.cookies = cookies;
 TEXTSTEP.util = util;
 TEXTSTEP.ui = ui;
 TEXTSTEP.paths = paths;
@@ -224,10 +222,16 @@ TEXTSTEP.requestLogin = function(overlay = false) {
             TEXTSTEP.post('session', {}, data).then(function (data) {
                 sessionId = data.sessionId;
                 if (loginFrame.formElem.remember.checked) {
-                    cookies.set('textstep_session', sessionId, {expires: 365});
-                    // TODO: extend session lifetime in backend
+                    sessionStorage.removeItem('textstepSessionId');
+                    localStorage.setItem('textstepSessionId', sessionId);
+                    let validUntil = new Date();
+                    validUntil.setFullYear(validUntil.getFullYear() + 1);
+                    TEXTSTEP.put('storage', {path: '/system/sessions.json', key: sessionId}, {
+                        validUntil: validUntil
+                    }).catch(error => console.error('Could not extend session', error));
                 } else {
-                    cookies.set('textstep_session', sessionId);
+                    localStorage.removeItem('textstepSessionId');
+                    sessionStorage.setItem('textstepSessionId', sessionId);
                 }
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
@@ -592,6 +596,9 @@ function workspaceMenuAction(action) {
             break;
         case 'logout':
             TEXTSTEP.delete('session').then(function () {
+                localStorage.removeItem('textstepSessionId');
+                sessionStorage.removeItem('textstepSessionId');
+                sessionId = null;
                 location.reload();
             });
             break;
@@ -686,8 +693,9 @@ root.ondragover = function (e) {
 };
 
 function requestAuthenticatedUser() {
-    if (cookies.get().hasOwnProperty('textstep_session')) {
-        sessionId = cookies.get('textstep_session');
+    sessionId = sessionStorage.getItem('textstepSessionId');
+    if (!sessionId) {
+        sessionId = localStorage.getItem('textstepSessionId');
     }
     return new Promise((resolve, reject) => {
         function handleResult(user) {

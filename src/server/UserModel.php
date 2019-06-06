@@ -207,7 +207,7 @@ class UserModel
         $state = $this->state->read('sessions');
         $session = null;
         if (isset($state[$sessionId])) {
-            $session = $this->createSessionObject($state[$sessionId]);
+            $session = $this->createSessionObject($sessionId, $state[$sessionId]);
         }
         $state->close();
         return $session;
