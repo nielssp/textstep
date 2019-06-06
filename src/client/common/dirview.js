@@ -427,7 +427,11 @@ function DirFile(column, data) {
 
 DirFile.prototype.updateElement = function () {
     this.elem.className = 'file';
-    this.elem.className += ' file-' + this.type;
+    if (this.type === 'directory') {
+        this.elem.className += ' file-directory';
+    } else {
+        this.elem.className += ' file-' + this.name.replace(/^.*?(?:\.([^.]+))?$/, '$1');
+    }
     if (this.selected) {
         this.elem.className += ' active';
     }
