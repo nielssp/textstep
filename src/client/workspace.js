@@ -80,7 +80,7 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
         }
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         xhr.onload = function () {
-            if (xhr.status === 200 || xhr.status === 204) {
+            if (xhr.status === 200) {
                 var response;
                 if (responseType === null) {
                     responseType = xhr.getResponseHeader('Content-Type').toLowerCase();
@@ -93,28 +93,28 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                     response = xhr.response;
                 }
                 resolve(response);
+            } else if (xhr.status === 204) {
+                resolve('');
+            } else if (xhr.status === 401) {
+                TEXTSTEP.requestLogin(true).then(
+                    () => TEXTSTEP.ajax(url, method, data, responseType).then(resolve, reject),
+                    reject
+                );
+            } else if (xhr.status >= 500) {
+                reject({
+                    errorType: 'SERVER_ERROR',
+                    message: 'Internal server error',
+                    context: { details: xhr.response }
+                });
             } else {
-                if (xhr.status === 401) {
-                    TEXTSTEP.requestLogin(true).then(
-                        () => TEXTSTEP.ajax(url, method, data, responseType).then(resolve, reject),
-                        reject
-                    );
-                } else if (xhr.status >= 500) {
+                try {
+                    reject(JSON.parse(xhr.response));
+                } catch (e) {
                     reject({
-                        errorType: 'SERVER_ERROR',
-                        message: 'Internal server error',
-                        context: { details: xhr.response }
+                        errorType: 'UNSPECIFIED',
+                        message: xhr.response,
+                        context: {}
                     });
-                } else {
-                    try {
-                        reject(JSON.parse(xhr.response));
-                    } catch (e) {
-                        reject({
-                            errorType: 'UNSPECIFIED',
-                            message: xhr.response,
-                            context: {}
-                        });
-                    }
                 }
             }
         };
@@ -176,6 +176,9 @@ TEXTSTEP.requestLogin = function(overlay = false) {
     let promise = new Promise(function (resolve, reject) {
         if (loginFrame === null) {
             loginFrame = new Frame('Log in');
+            loginFrame.capsLockWarning = ui.elem('div', {'class': 'caps-lock-warning'}, [
+                'Caps Lock appears to be on'
+            ]),
             loginFrame.formElem = ui.elem('form', {method: 'post', id: 'login'}, [
                 ui.elem('div', {'class': 'field'}, [
                     ui.elem('label', {'for': 'login-username'}, ['Username']),
@@ -185,6 +188,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                     ui.elem('label', {'for': 'login-password'}, ['Password']),
                     ui.elem('input', {type: 'password', name: 'password', id: 'login-password'})
                 ]),
+                loginFrame.capsLockWarning,
                 ui.elem('div', {'class': 'field remember'}, [
                     ui.elem('input', {type: 'checkbox', name: 'remember', value: 'remember', id: 'login-remember'}),
                     ui.elem('label', {'for': 'login-remember'}, ['Remember'])
@@ -195,6 +199,13 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                     ])
                 ]),
             ]);
+            loginFrame.formElem.password.onkeydown = e => {
+                if (loginFrame.capsLockWarning.style.display === 'block' && e.key === 'CapsLock') {
+                    loginFrame.capsLockWarning.style.display = 'none';
+                } else if (e.key === e.key.toUpperCase() && !e.shiftKey) {
+                    loginFrame.capsLockWarning.style.display = 'block';
+                }
+            };
             loginFrame.contentElem.appendChild(loginFrame.formElem);
             loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.elem]);
             loginFrame.receiveFocus();
@@ -206,6 +217,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
         } else {
             loginFrame.overlayElem.className = '';
         }
+        loginFrame.capsLockWarning.style.display = 'none';
         loginFrame.overlayElem.style.display = 'block';
         loginFrame.formElem.username.disabled = false;
         loginFrame.formElem.password.disabled = false;

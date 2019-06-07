@@ -89,6 +89,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         text-align: left;
     }
 
+    .caps-lock-warning {
+        text-align: center;
+        font-size: 0.90em;
+        font-weight: 600;
+        margin-bottom: 8px;
+        margin-top: -6px;
+        display: none;
+    }
+
     .remember {
         float: left;
         width: auto;
