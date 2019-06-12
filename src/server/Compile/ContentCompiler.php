@@ -142,7 +142,8 @@ class ContentCompiler
             }
             return;
         }
-        $handler = $this->handler->getHandler($file->getType());
+        $type = preg_replace('/^.*?(?:\.([^.]+))?$/', '\\1', $file->getName());
+        $handler = $this->handler->getHandler($type);
         if (!isset($handler)) {
             return;
         }

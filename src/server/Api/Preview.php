@@ -52,7 +52,9 @@ class Preview extends AuthenticatedSnippet
 
         $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
 
-        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $this->m->main->config->getSubconfig('site.site'));
+        $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
+
+        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $config);
 
         $view = new PreviewView($assembler, $this->sessionId);
         $view->addTemplateDir($destination->get('site')->getHostPath());

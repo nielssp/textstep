@@ -50,7 +50,7 @@ class SiteAssembler
     
     private $router;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $installMap, SiteMap $siteMap, Content\ContentTree $contentTree, FilterSet $filterSet, \Blogstep\Config\Config $config)
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $installMap, SiteMap $siteMap, Content\ContentTree $contentTree, FilterSet $filterSet, \Jivoo\Store\Config $config)
     {
         $this->buildDir = $buildDir;
         $this->installMap = $installMap;

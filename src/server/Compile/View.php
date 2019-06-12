@@ -44,7 +44,7 @@ class View extends \Blogstep\View
         $this->siteMap = $assembler->getSiteMap();
         $this->addTemplateDir($assembler->getBuildDir()->get('/site')->getHostPath());
 
-        $this->data->config = $assembler->getConfig()->getData();
+        $this->data->config = $assembler->getConfig()->toArray();
         $this->data->content = $assembler->getContent();
         $this->timeZone = new \DateTimeZone($assembler->getConfig()->get('timeZone', date_default_timezone_get()));
 
