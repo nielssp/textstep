@@ -26,11 +26,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     & > .files-panel {
         width: 100%;
     }
-    &:after {
-        content: ' ';
-        display: block;
-        clear: left;
-    }
 }
 
 .files-panel {

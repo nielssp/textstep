@@ -202,7 +202,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
             loginFrame.formElem.password.onkeydown = e => {
                 if (loginFrame.capsLockWarning.style.display === 'block' && e.key === 'CapsLock') {
                     loginFrame.capsLockWarning.style.display = 'none';
-                } else if (e.key === e.key.toUpperCase() && !e.shiftKey) {
+                } else if (e.key === e.key.toUpperCase() && e.key !== e.key.toLowerCase() && !e.shiftKey) {
                     loginFrame.capsLockWarning.style.display = 'block';
                 }
             };

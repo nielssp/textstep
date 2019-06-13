@@ -1,5 +1,5 @@
 /* 
- * BlogSTEP
+ * TEXTSTEP
  * Copyright (c) 2017 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
@@ -8,68 +8,89 @@
 const ui = TEXTSTEP.ui;
 const Menu = TEXTSTEP.Menu;
 
-let dirView;
-
-class Property {
-    constructor() {
-        this.listeners = [];
-        this.value = null;
-    }
-
-    bind(element) {
-        if (element.is('input')) {
-            var property = this;
-            element.val(this.value);
-            element.on('keydown keyup', function () {
-                property.set($(this).val());
-            });
-            this.change(function (value) {
-                element.val(value);
-            });
-        }
-    };
-
-    change(callback) {
-        this.listeners.push(callback);
-    };
-
-    set(value) {
-        this.value = value;
-        for (var i = 0; i < this.listeners.length; i++) {
-            this.listeners[i].apply(this, [value]);
-        }
-    };
-
-    get() {
-        return this.value;
-    };
-
+function ListView(model) {
+    this.listElem = ui.elem('div', {'class': 'ts-list-view-items'});
+    this.elem = ui.elem('div', {'class': 'ts-list-view'}, [this.listElem]);
 }
+
+ListView.prototype.add = function (label) {
+    let elem = ui.elem('a', {'class': 'ts-list-view-item'}, [label]);
+    this.listElem.appendChild(elem);
+    return elem;
+};
+
+function StackColumn() {
+    this.elem = ui.elem('div', {'class': 'ts-stack-column'});
+}
+
+StackColumn.prototype.appendChild = function (child, options) {
+    if (options) {
+        if (options.grow) {
+            child.style.flexGrow = options.grow;
+        }
+        if (options.align) {
+            child.style.alignSelf = options.align;
+        }
+        if (options.justify) {
+            child.style.justifySelf = options.justify;
+        }
+    }
+    this.elem.appendChild(child);
+};
+
+function StackRow() {
+    this.elem = ui.elem('div', {'class': 'ts-stack-row'});
+}
+
+Object.assign(StackRow.prototype, StackColumn.prototype);
+
+function ScrollPanel() {
+    this.innerElem = ui.elem('div', {'class': 'ts-scroll-panel-inner'});
+    this.elem = ui.elem('div', {'class': 'ts-scroll-panel'}, [this.innerElem]);
+}
+
+ScrollPanel.prototype.appendChild = function (child) {
+    this.innerElem.appendChild(child);
+};
 
 TEXTSTEP.initApp('test', ['libtest'], function (app) {
     app.require('libtest').test();
 
     var frame = app.createFrame('Test');
+    frame.contentElem.className += ' frame-content-flex';
 
-    frame.appendChild(ui.elem('div', {}, ['Hello, World!']));
+    let stackPanel = new StackRow();
+    stackPanel.elem.style.flexGrow = '1';
+    frame.appendChild(stackPanel.elem);
 
-    var buttonMenu = new Menu(frame, 'Context menu');
-    buttonMenu.addItem('Alert', 'alert');
-    buttonMenu.addSubmenu('Submenu')
-      .addItem('Foo', () => {})
-      .addItem('Bar', () => {})
-      .addSubmenu('Submenu')
-          .addItem('Baz', () => {});
-    var button1 = ui.elem('button', {}, ['Open context menu']);
-    button1.onclick = e => buttonMenu.contextOpen(e);
-    frame.appendChild(button1);
-    var button2 = ui.elem('button', {}, ['Open button menu']);
-    button2.onclick = e => buttonMenu.contextOpen(e, false);
-    frame.appendChild(button2);
+    let listView = new ListView();
 
+    listView.elem.style.width = '200px';
+    listView.add('foo');
+    listView.add('bar');
+    listView.add('baz');
+
+    stackPanel.appendChild(listView.elem);
+
+    let panel = new ScrollPanel();
+    panel.appendChild(ui.elem('div', {}, ['Test']));
+
+    let column = new StackColumn();
+    column.appendChild(ui.elem('div', {}, ['test']));
+    column.appendChild(panel.elem, {grow: 1});
+
+    stackPanel.appendChild(column.elem, {grow: 1});
+
+    var contextMenu = new Menu(frame, 'Context menu');
+    contextMenu.addItem('Alert', 'alert');
+    contextMenu.addSubmenu('Submenu')
+        .addItem('Foo', () => {})
+        .addItem('Bar', () => {})
+        .addSubmenu('Submenu')
+            .addItem('Baz', () => {});
     frame.elem.oncontextmenu = e => {
         e.preventDefault();
-        buttonMenu.contextOpen(e);
+        contextMenu.contextOpen(e);
     };
 
     frame.defineAction('alert', function () {
@@ -147,85 +168,3 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
         app.setArgs({});
     };
 });
-
-/*
-BLOGSTEP.init('test', function (app) {
-    app.defineAction('test', function () {
-        app.frame.find('.header-path').text('activated');
-        app.disableAction('test');
-        setTimeout(function () {
-            app.enableAction('test');
-        }, 5000);
-    });
-    
-    app.defineAction('test-alert', function () {
-        app.alert('Alert', 'This is an alert!');
-    });
-    
-    app.defineAction('test-confirm', function () {
-        app.confirm('Confirm', 'Delete everything???', ['Delete it', 'No', 'Cancel'], 'Delete it').done(function (choice) {
-            app.alert('Choice', choice);
-        });
-    });
-    
-    app.defineAction('test-prompt', function () {
-        app.prompt('Prompt', 'Foo bar:', 'baz').done(function (choice) {
-            app.alert('Choice', choice);
-        });
-    });
-    
-    app.bindKey('c-a', 'test');
-    
-    var menu = app.addMenu('Test menu');
-    menu.addItem('Test', 'test');
-    menu.addItem('Open terminal', function () {
-        BLOGSTEP.run('terminal');
-    });
-    menu.addItem('Open file', function () {
-        BLOGSTEP.run('editor', { path: '/content/pages/things.md' });
-    });
-    menu.addItem('Who am I', function () {
-        BLOGSTEP.get('who-am-i').done(function (data) {
-            alert('you are ' + data.username);
-        });
-    });
-    menu.addItem('File selection', function () {
-        var $overlay = $('<div class="dialog-overlay">');
-        
-        app.body.append($overlay);
-        
-        var $dialog = $('<div class="frame">');
-        $('<div class="frame-head">')
-            .append($('<div class="frame-title">').text('Confirm'))
-            .appendTo($dialog);
-        var $body = $('<div class="frame-body">').appendTo($dialog);
-        $('<div class="frame-content">').text('Delete all files in all directories?').appendTo($body);
-        var $footer = $('<div class="frame-footer frame-footer-buttons">').appendTo($body);
-        $('<button>').text('OK').click(function () {
-            $dialog.detach();
-            $overlay.detach();
-        }).appendTo($footer);
-        $dialog.appendTo($overlay);
-        
-//        BLOGSTEP.selectFile().done(function (data) {
-//            alert('you selected ' + data.path);
-//        });
-    });
-    
-    var prop = new Property();
-    prop.bind(app.frame.find('.textbox-1'));
-    prop.bind(app.frame.find('.textbox-2'));
-    prop.set('foo');
-    
-    app.onOpen = function (app, args) {
-        app.frame.find('.header-path').text('opened');
-    };
-    
-    app.onResume = function (app, args) {
-        app.frame.find('.header-path').text('resumed');
-    };
-    
-    app.onResize = function () {
-        app.frame.find('.header-path').text('resized');
-    };
-});*/
