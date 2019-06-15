@@ -24,7 +24,8 @@ function build(target) {
     frame.disableGroup('build');
     frame.enableAction('cancel');
     var start = performance.now();
-    ui.setProgress(progressBar, 0, 'Building...');
+    progressBar.progress = 0;
+    progressBar.status = 'Building...';
     statusHistory.innerHTML = '';
 
     var progress = 0;
@@ -32,12 +33,14 @@ function build(target) {
 
     var updateProgress = function (pct) {
         progress = pct;
-        ui.setProgress(progressBar, progress, status);
+        progressBar.progress = progress;
+        progressBar.status = status;
     };
 
     var updateStatus = function (message, error) {
         status = message;
-        ui.setProgress(progressBar, progress, status);
+        progressBar.progress = progress;
+        progressBar.status = status;
         var t = (performance.now() - start) / 1000;
         var line = t.toFixed(3) + ': ' + status;
         statusHistory.textContent = line + '\n' + statusHistory.textContent;
@@ -129,8 +132,10 @@ TEXTSTEP.initApp('build', [], function (app) {
     frame = self.createFrame('Build');
     frame.contentElem.className += ' frame-content-flex Build-app';
 
-    progressBar = ui.progressBar(0, 'Ready to build');
-    frame.appendChild(progressBar);
+    progressBar = new ui.ProgressBar();
+    progressBar.progress = 0;
+    progressBar.status = 'Ready to build';
+    frame.appendChild(progressBar.outer);
 
     statusHistory = ui.elem('textarea', { readonly: true, class: 'build-status-history' });
     frame.appendChild(statusHistory);

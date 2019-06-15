@@ -141,7 +141,7 @@ export class Component {
     }
 
     get width() {
-        return this.outer.style.width;
+        return this.outer.getBoundingClientRect().width;
     }
 
     set width(width) {
@@ -149,11 +149,35 @@ export class Component {
     }
 
     get height() {
-        return this.outer.style.height;
+        return this.outer.getBoundingClientRect().height;
     }
 
     set height(height) {
         this.outer.style.height = height;
+    }
+
+    set minWidth(width) {
+        this.outer.style.minWidth = width;
+    }
+
+    set maxWidth(width) {
+        this.outer.style.maxWidth = width;
+    }
+
+    set minHeight(height) {
+        this.outer.style.minHeight = height;
+    }
+
+    set maxHeight(height) {
+        this.outer.style.maxHeight = height;
+    }
+
+    get visible() {
+        return this.outer.style.display !== 'none';
+    }
+
+    set visible(visible) {
+        this.outer.style.display = visible ? '' : 'none';
     }
 }
 
@@ -204,12 +228,23 @@ export class ListView extends Container {
         this.inner = elem('div', {'class': 'ts-list-view-items'});
         this.outer.className = 'ts-list-view';
         this.outer.appendChild(this.inner);
+        this.onselect = () => {};
     }
 
     add(label) {
         let item = elem('a', {'class': 'ts-list-view-item'}, [label]);
+        item.onclick = () => this.onselect(item);
         this.inner.appendChild(item);
         return item;
+    }
+    
+    select(item) {
+        for (let i = 0; i < this.inner.children.length; i++) {
+            this.inner.children[i].classList.remove('active');
+        }
+        if (item) {
+            item.classList.add('active');
+        }
     }
 
 }
@@ -225,20 +260,21 @@ export class ScrollPanel extends Container {
 
 export class ProgressBar extends Component {
     constructor() {
+        super();
         this.bar = elem('div', {'class': 'ts-progress-bar'});
         this.label = elem('div', {'class': 'ts-progress-label'});
         this.outer = elem('div', { 'class': 'ts-progress' }, [
-            bar,
-            label,
+            this.bar,
+            this.label,
         ]);
     }
 
     set progress(progress) {
         progress = Math.floor(progress);
         if (progress >= 100) {
-            this.bar.className = 'ts-progress ts-progress-success';
+            this.outer.className = 'ts-progress ts-progress-success';
         } else {
-            this.bar.className = 'ts-progress ts-progress-active';
+            this.outer.className = 'ts-progress ts-progress-active';
         }
         this.bar.style.width = progress + '%';
         this.bar.innerText = progress + '%';
@@ -248,29 +284,3 @@ export class ProgressBar extends Component {
         this.label.innerText = status;
     }
 }
-
-export function progressBar(progress, status) {
-    let el = elem('div', { 'class': 'progress' }, [
-        elem('div', {'class': 'progress-bar'}),
-        elem('div', {'class': 'label'}),
-    ]);
-    setProgress(el, progress, status);
-    return el;
-}
-
-export function setProgress(el, progress, status) {
-    var bar = el.children[0];
-    var label = el.children[1];
-    progress = Math.floor(progress);
-    if (progress >= 100) {
-        el.className = 'progress success';
-    } else {
-        el.className = 'progress active';
-    }
-    bar.style.width = progress + '%';
-    bar.innerText = progress + '%';
-    if (typeof status !== 'undefined') {
-        label.innerText = status;
-    }
-}
-
