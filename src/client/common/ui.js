@@ -124,16 +124,130 @@ export var onLongPress = function(el, callback) {
         touching = false;
     };
     
-    el.addEventListener('touchstart', start);
-    el.addEventListener('touchend', end);
-    el.addEventListener('touchcancel', end);
-    el.addEventListener('touchmove', end);
+    el.addEventListener('touchstart', start, {passive: true});
+    el.addEventListener('touchend', end, {passive: true});
+    el.addEventListener('touchcancel', end, {passive: true});
+    el.addEventListener('touchmove', end, {passive: true});
     el.addEventListener('contextmenu', function (e) {
         if (touching) {
             return callback(e);
         }
     });
 };
+
+export class Component {
+    constructor() {
+        this.outer = elem('div');
+    }
+
+    get width() {
+        return this.outer.style.width;
+    }
+
+    set width(width) {
+        this.outer.style.width = width;
+    }
+
+    get height() {
+        return this.outer.style.height;
+    }
+
+    set height(height) {
+        this.outer.style.height = height;
+    }
+}
+
+export class Container extends Component {
+    constructor() {
+        super();
+        this.inner = this.outer;
+    }
+
+    append(child, properties = {}) {
+        if (child instanceof Component) {
+            child = child.outer;
+        }
+        if (properties.hasOwnProperty('grow')) {
+            child.style.flexGrow = properties.grow;
+        }
+        this.inner.appendChild(child);
+    }
+
+    remove(child) {
+        if (child instanceof Component) {
+            this.inner.removeChild(child.outer);
+        } else {
+            this.inner.removeChild(child);
+        }
+    }
+}
+
+export class StackPanel extends Container {
+    constructor(direction = 'column') {
+        super();
+        this.outer.className = 'ts-stack-panel';
+        this.outer.style.flexDirection = direction;
+    }
+
+    get direction() {
+        return this.outer.style.flexDirection;
+    }
+
+    set direction(direction) {
+        this.outer.style.flexDirection = direction;
+    }
+}
+
+export class ListView extends Container {
+    constructor() {
+        super();
+        this.inner = elem('div', {'class': 'ts-list-view-items'});
+        this.outer.className = 'ts-list-view';
+        this.outer.appendChild(this.inner);
+    }
+
+    add(label) {
+        let item = elem('a', {'class': 'ts-list-view-item'}, [label]);
+        this.inner.appendChild(item);
+        return item;
+    }
+
+}
+
+export class ScrollPanel extends Container {
+    constructor() {
+        super();
+        this.inner = elem('div', {'class': 'ts-scroll-panel-inner'});
+        this.outer.className = 'ts-scroll-panel';
+        this.outer.appendChild(this.inner);
+    }
+}
+
+export class ProgressBar extends Component {
+    constructor() {
+        this.bar = elem('div', {'class': 'ts-progress-bar'});
+        this.label = elem('div', {'class': 'ts-progress-label'});
+        this.outer = elem('div', { 'class': 'ts-progress' }, [
+            bar,
+            label,
+        ]);
+    }
+
+    set progress(progress) {
+        progress = Math.floor(progress);
+        if (progress >= 100) {
+            this.bar.className = 'ts-progress ts-progress-success';
+        } else {
+            this.bar.className = 'ts-progress ts-progress-active';
+        }
+        this.bar.style.width = progress + '%';
+        this.bar.innerText = progress + '%';
+    }
+
+    set status(status) {
+        this.label.innerText = status;
+    }
+}
 
 export function progressBar(progress, status) {
     let el = elem('div', { 'class': 'progress' }, [

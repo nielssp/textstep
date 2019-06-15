@@ -8,78 +8,33 @@
 const ui = TEXTSTEP.ui;
 const Menu = TEXTSTEP.Menu;
 
-function ListView(model) {
-    this.listElem = ui.elem('div', {'class': 'ts-list-view-items'});
-    this.elem = ui.elem('div', {'class': 'ts-list-view'}, [this.listElem]);
-}
-
-ListView.prototype.add = function (label) {
-    let elem = ui.elem('a', {'class': 'ts-list-view-item'}, [label]);
-    this.listElem.appendChild(elem);
-    return elem;
-};
-
-function StackColumn() {
-    this.elem = ui.elem('div', {'class': 'ts-stack-column'});
-}
-
-StackColumn.prototype.appendChild = function (child, options) {
-    if (options) {
-        if (options.grow) {
-            child.style.flexGrow = options.grow;
-        }
-        if (options.align) {
-            child.style.alignSelf = options.align;
-        }
-        if (options.justify) {
-            child.style.justifySelf = options.justify;
-        }
-    }
-    this.elem.appendChild(child);
-};
-
-function StackRow() {
-    this.elem = ui.elem('div', {'class': 'ts-stack-row'});
-}
-
-Object.assign(StackRow.prototype, StackColumn.prototype);
-
-function ScrollPanel() {
-    this.innerElem = ui.elem('div', {'class': 'ts-scroll-panel-inner'});
-    this.elem = ui.elem('div', {'class': 'ts-scroll-panel'}, [this.innerElem]);
-}
-
-ScrollPanel.prototype.appendChild = function (child) {
-    this.innerElem.appendChild(child);
-};
-
 TEXTSTEP.initApp('test', ['libtest'], function (app) {
     app.require('libtest').test();
 
     var frame = app.createFrame('Test');
     frame.contentElem.className += ' frame-content-flex';
 
-    let stackPanel = new StackRow();
-    stackPanel.elem.style.flexGrow = '1';
-    frame.appendChild(stackPanel.elem);
+    let stackPanel = new ui.StackPanel('row');
+    stackPanel.outer.style.flexGrow = '1';
+    frame.appendChild(stackPanel.outer);
 
-    let listView = new ListView();
+    let listView = new ui.ListView();
 
-    listView.elem.style.width = '200px';
+    listView.width = '200px';
     listView.add('foo');
     listView.add('bar');
     listView.add('baz');
 
-    stackPanel.appendChild(listView.elem);
+    stackPanel.append(listView);
 
-    let panel = new ScrollPanel();
-    panel.appendChild(ui.elem('div', {}, ['Test']));
+    let panel = new ui.ScrollPanel();
+    panel.append(ui.elem('div', {}, ['Test']));
 
-    let column = new StackColumn();
-    column.appendChild(ui.elem('div', {}, ['test']));
-    column.appendChild(panel.elem, {grow: 1});
+    let column = new ui.StackPanel();
+    column.append(ui.elem('div', {}, ['test']));
+    column.append(panel, {grow: 1});
 
-    stackPanel.appendChild(column.elem, {grow: 1});
+    stackPanel.append(column, {grow: 1});
 
     var contextMenu = new Menu(frame, 'Context menu');
     contextMenu.addItem('Alert', 'alert');

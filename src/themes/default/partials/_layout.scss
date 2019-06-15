@@ -1,0 +1,77 @@
+/*
+TEXTSTEP 
+Copyright (c) 2019 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+
+
+.ts-stack-panel {
+    display: flex;
+}
+
+.ts-list-view {
+    border: 1px solid #555;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    & > .ts-list-view-items {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-left: 1px solid #000;
+        border-top: 1px solid #000;
+        margin: 0;
+        overflow-y: scroll;
+    }
+}
+
+.ts-list-view-item {
+    display: block;
+    padding: 8px 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: auto;
+    text-align: left;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+
+    @media screen and (min-width: $sm) {
+        padding: 1px 5px;
+    }
+}
+
+a.ts-list-view-item {
+    &:hover, &:active {
+        background-color: rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+    }
+    &.active {
+        background-color: #fff;
+    }
+    &:focus, &.match {
+        outline: 1px solid #000;
+    }
+}
+
+.ts-scroll-panel {
+    border: 1px solid #555;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    position: relative;
+    & > .ts-scroll-panel-inner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-left: 1px solid #000;
+        border-top: 1px solid #000;
+        margin: 0;
+        overflow-y: scroll;
+    }
+}
+

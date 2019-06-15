@@ -1,5 +1,5 @@
 /*
-BlogSTEP 
+TEXTSTEP 
 Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
@@ -7,27 +7,98 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 
 .frame {
-    @include frame;
+    text-align: left;
+    border: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
     & > &-head {
-        @include frame-head;
-        background-color: #333;
-    }
-    & > &-body {
-        @include frame-body;
-        & > .frame-toolbar {
-            @include frame-toolbar;
-            & ~ .frame-content {
-                padding-top: 0;
+        background: var(--inactive-titlebar-bg);
+        color: var(--inactive-titlebar-fg);
+        font-weight: bold;
+        font-size: 0.9em;
+        border: 1px solid #A2A2A2;
+        border-right: 1px solid #4F4F4F;
+        border-bottom: 1px solid #4F4F4F;
+        position: relative;
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: flex;
+
+        & > .frame-actions {
+            font-size: 0.8em;
+            padding: 1px 1px 1px 0;
+            a {
+                display: block;
+                height: 100%;
+                width: 19px;
+                padding: 0;
+                margin: 0 0 0 1px;
+                background-color: #000;
+                color: #fff;
+                text-align: center;
+                padding: 0;
+                font-weight: bold;
+                font-size: 0.9em;
+                border: 1px solid #A2A2A2;
+                border-right: 1px solid #4F4F4F;
+                border-bottom: 1px solid #4F4F4F;
+                position: relative;
+                &:active {
+                    background-color: #fff;
+                    border-color: #fff;
+                }
+                &[data-action="close"] {
+                    background-image: url(close2.png);
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    &:active {
+                        background-image: url(close1.png);
+                    }
+                }
+                &[data-action="toggle-menu"] {
+                    background-image: url(menu2.png);
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    &:active {
+                        background-image: url(menu1.png);
+                    }
+                }
             }
         }
+        & > .frame-title {
+            flex-grow: 1;
+            padding: 2px 6px;
+            text-align: center;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: default;
+        }
+    }
+    & > &-body {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        flex-grow: 1;
+        background-color: var(--inactive-frame-bg);
+        color: var(--inactive-frame-fg);
+        border-top: 1px solid #000;
+        margin: 0;
+
+        & > .frame-toolbar,
         & > .frame-iconbar {
-            @include frame-toolbar;
+            padding: 6px;
+            flex-grow: 0;
             & ~ .frame-content {
                 padding-top: 0;
             }
         }
         & > .frame-content {
-            @include frame-content;
+            padding: 6px;
+            flex-grow: 1;
+            position: relative;
 
             overflow-y: auto;
 
@@ -37,7 +108,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             }
         }
         & > .frame-footer {
-            @include frame-footer;
+            padding: 6px;
 
             &-buttons {
                 text-align: right;
@@ -67,8 +138,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &.frame-focus {
         z-index: 1000;
         box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
-        .frame-head {
-            background-color: #000;
+        & > .frame-head {
+            background: var(--active-titlebar-bg);
+            color: var(--active-titlebar-fg);
+        }
+        & > .frame-body {
+            background: var(--active-frame-bg);
+            color: var(--active-frame-fg);
         }
     }
 
@@ -106,79 +182,3 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         margin-bottom: 0;
     }
 }
-
-.ts-stack-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.ts-stack-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.ts-list-view {
-    border: 1px solid #555;
-    border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
-    position: relative;
-    & > .ts-list-view-items {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-left: 1px solid #000;
-        border-top: 1px solid #000;
-        margin: 0;
-        overflow-y: scroll;
-    }
-}
-
-.ts-list-view-item {
-    display: block;
-    padding: 8px 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: auto;
-    text-align: left;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-
-    @media screen and (min-width: $sm) {
-        padding: 1px 5px;
-    }
-}
-
-a.ts-list-view-item {
-    &:hover, &:active {
-        background-color: rgba(255, 255, 255, 0.3);
-        text-decoration: none;
-    }
-    &.active {
-        background-color: #fff;
-    }
-    &:focus, &.match {
-        outline: 1px solid #000;
-    }
-}
-
-.ts-scroll-panel {
-    border: 1px solid #555;
-    border-right: 1px solid #fff;
-    border-bottom: 1px solid #fff;
-    position: relative;
-    & > .ts-scroll-panel-inner {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-left: 1px solid #000;
-        border-top: 1px solid #000;
-        margin: 0;
-        overflow-y: scroll;
-    }
-}
-

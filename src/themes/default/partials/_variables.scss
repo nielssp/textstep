@@ -1,0 +1,29 @@
+/*
+TEXTSTEP 
+Copyright (c) 2019 Niels Sonnich Poulsen (http://nielssp.dk)
+Licensed under the MIT license.
+See the LICENSE file or http://opensource.org/licenses/MIT for more information.
+*/
+
+:root {
+    --default-font: 'Open Sans', sans-serif;
+
+    --desktop-bg: #515171;
+    --desktop-fg: #000000;
+
+    --active-frame-bg: #aeaaae;
+    --active-frame-fg: #000000;
+
+    --inactive-frame-bg: var(--active-frame-bg);
+    --inactive-frame-fg: var(--active-frame-fg);
+
+    --active-titlebar-bg: #000000;
+    --active-titlebar-fg: #ffffff;
+
+    --inactive-titlebar-bg: var(--inactive-frame-bg);
+    --inactive-titlebar-fg: var(--inactive-frame-fg);
+
+    --outer-gaps: 10px;
+    --inner-gaps: 10px;
+    --frame-padding: 5px;
+}

@@ -1,12 +1,14 @@
 /*
-BlogSTEP 
+TEXTSTEP 
 Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 Licensed under the MIT license.
 See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 @import 'partials/base';
+@import 'partials/variables';
 
 @import 'partials/root';
+@import 'partials/layout';
 @import 'partials/typography';
 @import 'partials/buttons';
 @import 'partials/inputs';
