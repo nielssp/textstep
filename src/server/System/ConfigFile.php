@@ -38,13 +38,16 @@ class ConfigFile extends SystemFile {
         $this->config->save();
     }
 
-    public function getDocuments()
+    public function getDocuments($filter = null)
     {
         $data = [];
         foreach ($this->config as $key => $value) {
             if ($this->check($this->permission . '.view.' . $key)) {
                 $data[$key] = $value;
             }
+        }
+        if (isset($filter)) {
+            return $this->applyFilter($data, $filter);
         }
         return $data;
     }

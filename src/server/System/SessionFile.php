@@ -38,7 +38,7 @@ class SessionFile extends SystemFile {
         ];
     }
 
-    public function getDocuments()
+    public function getDocuments($filter = null)
     {
         $sessions = [];
         if ($this->check('sessions.view')) {
@@ -49,6 +49,9 @@ class SessionFile extends SystemFile {
             foreach ($this->users->getSessions($this->user) as $session) {
                 $sessions[$session->id] = $this->toDocument($session);
             }
+        }
+        if (isset($filter)) {
+            return $this->applyFilter($sessions, $filter);
         }
         return $sessions;
     }

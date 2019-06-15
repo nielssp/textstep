@@ -385,6 +385,14 @@ paths:
           description: Document key
           schema:
             type: string
+        - name: filter
+          in: query
+          description: Optional filter
+          style: deepObject
+          schema:
+            type: object
+            additionalProperties:
+              type: string
       responses:
         200:
           description: The document associated with the key or a list of documents if no key was provided.
@@ -446,19 +454,16 @@ paths:
                 type: object
                 additionalProperties: true
     delete:
-      description: Delete files
+      description: Delete document
       tags: [files]
       parameters: 
-        - name: path
+        - $ref: '#/components/parameters/path'
+        - name: key
           in: query
+          description: Document key
+          required: true
           schema:
             type: string
-        - name: paths[]
-          in: query
-          schema:
-            type: array
-            items:
-              type: string
       responses:
         204:
           description: OK

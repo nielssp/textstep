@@ -11,7 +11,7 @@ namespace Blogstep\Files;
 interface Storage {
     public function close();
 
-    public function getDocuments();
+    public function getDocuments($filter = null);
 
     public function updateDocuments($documents);
 

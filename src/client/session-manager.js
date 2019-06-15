@@ -39,7 +39,7 @@ TEXTSTEP.initApp('session-manager', [], app => {
     app.onOpen = args => {
         if (!frame.isOpen) {
             frame.open();
-            TEXTSTEP.get('storage', {path: '/system/sessions.json'}).then(result => {
+            TEXTSTEP.get('storage', {path: '/system/sessions.json', 'filter[username]': TEXTSTEP.user.username}).then(result => {
                 list.innerHTML = '';
                 sessions = result;
                 for (let sessionId in sessions) {

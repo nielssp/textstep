@@ -47,6 +47,8 @@ TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
 TEXTSTEP.LOAD_TIMEOUT = 10000;
 
+TEXTSTEP.user = null;
+
 TEXTSTEP.prepareRequest = function(xhr) {
     if (sessionId !== null) {
         xhr.setRequestHeader('X-Auth-Token', sessionId);
@@ -725,6 +727,7 @@ function requestAuthenticatedUser() {
 
 TEXTSTEP.init = function (root) {
     requestAuthenticatedUser().then(user => {
+        TEXTSTEP.user = user;
         workspaceMenu.setTitle('Workspace for ' + user.username + '');
         workspaceMenu.header.appendChild(ui.elem('span', {'class': 'version'}, user.version));
         root.appendChild(menu);

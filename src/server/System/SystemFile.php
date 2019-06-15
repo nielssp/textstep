@@ -70,4 +70,24 @@ abstract class SystemFile implements \Blogstep\Files\Storage {
             }
         }
     }
+
+    protected function applyFilter(array $unfiltered, array $filter) {
+        $data = [];
+        foreach ($unfiltered as $key => $document) {
+            if (!is_array($document)) {
+                continue;
+            }
+            $match = true;
+            foreach ($filter as $field => $value) {
+                if (!array_key_exists($field, $document) or $value != $document[$field]) {
+                    $match = false;
+                    break;
+                }
+            }
+            if ($match) {
+                $data[$key] = $document;
+            }
+        }
+        return $data;
+    }
 }

@@ -22,10 +22,14 @@ class SysAclFile extends SystemFile {
     {
     }
 
-    public function getDocuments()
+    public function getDocuments($filter = null)
     {
         if ($this->check('sysacl.view')) {
-            return $this->acl->getRecords();
+            $data = $this->acl->getRecords();
+            if (isset($filter)) {
+                return $this->applyFilter($data, $filter);
+            }
+            return $data;
         }
         return [];
     }

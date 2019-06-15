@@ -45,7 +45,7 @@ class JsonStorage implements Storage {
         $this->handle = null;
     }
 
-    public function getDocuments()
+    public function getDocuments($filter = null)
     {
         if (! $this->data) {
             if (! isset($this->handle)) {
@@ -58,6 +58,25 @@ class JsonStorage implements Storage {
                 // TODO log;
                 $this->data = [];
             }
+        }
+        if (isset($filter) {
+            $data = [];
+            foreach ($this->data as $key => $document) {
+                if (!is_array($document)) {
+                    continue;
+                }
+                $match = true;
+                foreach ($filter as $field => $value) {
+                    if (!array_key_exists($field, $document) or $value != $document[$field]) {
+                        $match = false;
+                        break;
+                    }
+                }
+                if ($match) {
+                    $data[$key] = $document;
+                }
+            }
+            return $data;
         }
         return $this->data;
     }

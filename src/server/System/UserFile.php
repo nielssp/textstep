@@ -36,7 +36,7 @@ class UserFile extends SystemFile {
         ];
     }
 
-    public function getDocuments()
+    public function getDocuments($filter = null)
     {
         $users = [];
         if ($this->check('users.view')) {
@@ -45,6 +45,9 @@ class UserFile extends SystemFile {
             }
         } else if ($this->check('users.self.view')) {
             $users[$this->user->getName()] = $this->toDocument($this->user);
+        }
+        if (isset($filter)) {
+            return $this->applyFilter($users, $filter);
         }
         return $users;
     }
