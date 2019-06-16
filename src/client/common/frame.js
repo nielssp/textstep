@@ -27,8 +27,6 @@ export class Frame extends Container {
 
         this.x = 0;
         this.y = 0;
-        this.width = 0;
-        this.height = 0;
 
         this.titleElem = ui.elem('div', {'class': 'frame-title'}, [this.title]);
         this.headElem = ui.elem('div', {'class': 'frame-head'}, [this.titleElem]);
@@ -187,9 +185,6 @@ export class Frame extends Container {
             return;
         }
         TEXTSTEP.openFrame(this);
-        var rect = this.outer.getBoundingClientRect();
-        this.width = rect.width;
-        this.height = rect.height;
         if (this.isOpen) {
             if (this.onOpen !== null) {
                 this.onOpen();
@@ -279,9 +274,6 @@ export class Frame extends Container {
         if (!this.hasFocus) {
             this.wasResized = true;
         }
-        var rect = this.outer.getBoundingClientRect();
-        this.width = rect.width;
-        this.height = rect.height;
         if (this.onResize !== null) {
             this.onResize();
         }

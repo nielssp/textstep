@@ -81,6 +81,12 @@ export class Container extends Component {
         if (properties.hasOwnProperty('grow')) {
             child.style.flexGrow = properties.grow;
         }
+        if (properties.hasOwnProperty('align')) {
+            child.style.alignSelf = properties.align;
+        }
+        if (properties.hasOwnProperty('justify')) {
+            child.style.justifySelf = properties.justify;
+        }
         this.inner.appendChild(child);
     }
 

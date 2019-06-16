@@ -153,6 +153,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
         $this->m->system->addFile('sessions.json', new System\SessionFile($this->m->users, $this->m->acl));
         $this->m->system->addFile('sysacl.json', new System\SysAclFile($this->m->acl));
+        $this->m->system->addFile('timezones.json', new System\TimeZoneFile($this->m->acl));
 
         if (php_sapi_name() === 'cli') {
             // Open shell if running from CLI

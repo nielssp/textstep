@@ -10,7 +10,14 @@ const Config = TEXTSTEP.Config;
 
 function input(config, key, type = 'text') {
     let elem = ui.elem('input', {type: type});
+    elem.style.maxWidth = '200px';
     config.get(key).bind(elem);
+    return elem;
+}
+
+function label(label) {
+    let elem = ui.elem('label', {}, [label]);
+    elem.style.alignSelf = 'center';
     return elem;
 }
 
@@ -30,11 +37,75 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     app.dockFrame.innerHTML = '';
     app.dockFrame.appendChild(TEXTSTEP.getIcon('control-panel', 32));
 
-    frame.appendChild(field('Title', config, 'title'));
-    frame.appendChild(field('Subtitle', config, 'subtitle'));
-    frame.appendChild(field('Description', config, 'description'));
-    frame.appendChild(field('Copyright', config, 'copyright'));
-    frame.appendChild(field('Time zone', config, 'timeZone'));
+    let pageContainer = new ui.StackRow();
+    pageContainer.padding();
+    frame.append(pageContainer, {grow: 1});
+
+    let pageList = new ui.ListView();
+    pageList.width = '200px';
+    pageList.add('Site');
+    pageContainer.append(pageList);
+    pageList.onselect = item => {
+        pageList.select(item);
+        if (!main.visible) {
+            main.visible = true;
+            pageList.visible = false;
+        }
+    };
+
+    let main = new ui.StackColumn();
+    pageContainer.append(main, {grow: 1});
+
+    let mainToolbar = new ui.Toolbar(); 
+    mainToolbar.padding('bottom');
+    mainToolbar.addItem('Back', 'go-back', () => {
+        if (!pageList.visible) {
+            main.visible = false;
+            pageList.visible = true;
+        }
+    });
+    main.append(mainToolbar);
+
+    let mainContent = new ui.StackColumn();
+    mainContent.padding('right', 'bottom', 'left');
+    main.append(mainContent, {grow: 1});
+
+    let adjustContent = () => {
+        pageList.visible = true;
+        if (pageContainer.width < 400) {
+            main.visible = false;
+            mainToolbar.visible = true;
+            pageList.width = '100%';
+        } else {
+            main.visible = true;
+            mainToolbar.visible = false;
+            pageList.width = '200px';
+        }
+    };
+
+    frame.onResize = adjustContent;
+
+    let grid = ui.elem('div');
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'min-content auto';
+    grid.style.gridColumnGap = 'var(--frame-padding)';
+    grid.style.gridRowGap = 'var(--frame-padding)';
+    mainContent.append(grid, {align: 'center'});
+
+    grid.append(label('Title:'));
+    grid.append(input(config, 'title'));
+
+    grid.append(label('Subtitle:'));
+    grid.append(input(config, 'subtitle'));
+
+    grid.append(label('Description:'));
+    grid.append(input(config, 'description'));
+
+    grid.append(label('Copyright:'));
+    grid.append(input(config, 'copyright'));
+
+    grid.append(label('Time zone:'));
+    grid.append(input(config, 'timeZone'));
 
     frame.defineAction('save', () => {
         config.commit();
@@ -53,6 +124,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     app.onOpen = args => {
         if (!frame.isOpen) {
             frame.open();
+            adjustContent();
             config.update();
         } else {
             frame.requestFocus();
