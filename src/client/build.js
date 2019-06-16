@@ -130,7 +130,8 @@ TEXTSTEP.initApp('build', [], function (app) {
     self = app;
 
     frame = self.createFrame('Build');
-    frame.contentElem.className += ' frame-content-flex Build-app';
+    frame.padding();
+    frame.inner.classList.add('Build-app');
 
     progressBar = new ui.ProgressBar();
     progressBar.progress = 0;

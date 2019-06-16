@@ -172,8 +172,8 @@ TEXTSTEP.initApp('files', function (app) {
     app.dockFrame.appendChild(TEXTSTEP.getIcon('files', 32));
 
     frame = self.createFrame('Files');
-    frame.contentElem.className += ' frame-content-flex';
-    dirView = new ui.DirView();
+    frame.padding();
+    dirView = new ui.DirView(frame);
     frame.appendChild(dirView.elem);
 
     frame.defineAction('go-up', () => dirView.goUp(), ['nav']);
@@ -192,6 +192,7 @@ TEXTSTEP.initApp('files', function (app) {
     frame.defineAction('trash', trash, ['selection']);
 
     var toolbar = frame.createToolbar();
+    toolbar.padding('bottom');
     toolbar.createGroup()
       .addItem('Go up', 'go-up', 'go-up')
       .addItem('Go to root', 'go-home', 'root')

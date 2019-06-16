@@ -6,9 +6,10 @@
  */
 
 import * as ui from './ui';
+import {CommandMap} from './command';
 
-export default function Menu(parentFrame, title) {
-    this.parentFrame = parentFrame;
+export default function Menu(title, commands = new CommandMap()) {
+    this.commands = commands;
     this.title = title;
     this.header = ui.elem('header');
     this.itemList = ui.elem('ul');
@@ -29,21 +30,14 @@ Menu.prototype.setTitle = function (title) {
 
 Menu.prototype.addItem = function (label, action) {
     let button = ui.elem('button', {}, [label]);
-    if (this.parentFrame) {
-        button.onclick = () => {
-            this.parentFrame.activate(action);
-            TEXTSTEP.closeFloatingMenu();
-        };
-        this.parentFrame.bindAction(action, button);
-        for (let key in this.parentFrame.keyMap) {
-            if (this.parentFrame.keyMap.hasOwnProperty(key) && this.parentFrame.keyMap[key] === action) {
-                button.appendChild(ui.elem('span', {'class': 'shortcut'}, [key]));
-            }
-        }
-    } else {
-        button.onclick = () => {
-            action();
-            TEXTSTEP.closeFloatingMenu();
+    button.onclick = () => {
+        this.commands.activate(action);
+        TEXTSTEP.closeFloatingMenu();
+    };
+    this.commands.bindElement(button, action);
+    for (let key in this.commands.keys) {
+        if (this.commands.keys.hasOwnProperty(key) && this.commands.keys[key] === action) {
+            button.appendChild(ui.elem('span', {'class': 'shortcut'}, [key]));
         }
     }
     let item = ui.elem('li', {}, [button]);
@@ -52,7 +46,7 @@ Menu.prototype.addItem = function (label, action) {
 };
 
 Menu.prototype.addSubmenu = function (label) {
-    let menu = new Menu(this.parentFrame, label);
+    let menu = new Menu(label, this.commands);
     menu.parent = this;
     let button = ui.elem('button', {'class': 'submenu'}, [label]);
     button.onclick = e => this.openSubmenu(menu, e);

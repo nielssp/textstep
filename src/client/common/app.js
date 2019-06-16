@@ -6,7 +6,7 @@
  */
 
 import * as util from './util';
-import Frame from './frame';
+import {Frame} from './frame';
 
 var skipHistory = false;
 var previousTitle = null;

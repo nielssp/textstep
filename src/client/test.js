@@ -12,11 +12,10 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     app.require('libtest').test();
 
     var frame = app.createFrame('Test');
-    frame.contentElem.className += ' frame-content-flex';
 
-    let stackPanel = new ui.StackPanel('row');
-    stackPanel.outer.style.flexGrow = '1';
-    frame.appendChild(stackPanel.outer);
+    let stackPanel = new ui.StackRow();
+    stackPanel.padding();
+    frame.appendChild(stackPanel, {grow: 1});
 
     let listView = new ui.ListView();
 
@@ -25,19 +24,23 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
     listView.add('bar');
     listView.add('baz');
 
-
     stackPanel.append(listView);
 
     let text = ui.elem('div', {}, ['select item']);
     let panel = new ui.ScrollPanel();
     panel.append(text);
 
-    let column = new ui.StackPanel();
-    let toolBar = new ui.StackPanel('row');
-    let backButton = ui.elem('button', {}, ['Back']);
-    toolBar.visible = false;
-    toolBar.append(backButton);
-    column.append(toolBar);
+    let column = new ui.StackColumn();
+    let toolbar = new ui.Toolbar();
+    toolbar.padding('bottom');
+    toolbar.addItem('Back', 'go-back', () => {
+        if (!listView.visible) {
+            column.visible = false;
+            listView.visible = true;
+        }
+    });
+    toolbar.visible = false;
+    column.append(toolbar);
     column.append(panel, {grow: 1});
 
     stackPanel.append(column, {grow: 1});
@@ -51,36 +54,29 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
         }
     };
 
-    backButton.onclick = () => {
-        if (!listView.visible) {
-            column.visible = false;
-            listView.visible = true;
-        }
-    };
-
     let adjustContent = () => {
         listView.visible = true;
         if (stackPanel.width < 400) {
             column.visible = false;
-            toolBar.visible = true;
+            toolbar.visible = true;
             listView.width = '100%';
         } else {
             column.visible = true;
-            toolBar.visible = false;
+            toolbar.visible = false;
             listView.width = '200px';
         }
     };
 
     frame.onResize = adjustContent;
 
-    var contextMenu = new Menu(frame, 'Context menu');
+    var contextMenu = new Menu('Context menu', frame.commands);
     contextMenu.addItem('Alert', 'alert');
     contextMenu.addSubmenu('Submenu')
         .addItem('Foo', () => {})
         .addItem('Bar', () => {})
         .addSubmenu('Submenu')
             .addItem('Baz', () => {});
-    frame.elem.oncontextmenu = e => {
+    frame.inner.oncontextmenu = e => {
         e.preventDefault();
         contextMenu.contextOpen(e);
     };

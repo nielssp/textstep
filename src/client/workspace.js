@@ -8,7 +8,7 @@
 import * as ui from './common/ui';
 import * as util from './common/util';
 import * as paths from './common/paths';
-import Frame from './common/frame';
+import {Frame} from './common/frame';
 import Menu from './common/menu';
 import App from './common/app';
 import Lib from './common/lib';
@@ -208,10 +208,10 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                     loginFrame.capsLockWarning.style.display = 'block';
                 }
             };
-            loginFrame.contentElem.appendChild(loginFrame.formElem);
-            loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.elem]);
+            loginFrame.appendChild(loginFrame.formElem);
+            loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.outer]);
             loginFrame.receiveFocus();
-            loginFrame.elem.style.display = '';
+            loginFrame.outer.style.display = '';
             root.appendChild(loginFrame.overlayElem);
         }
         if (overlay) {
@@ -256,7 +256,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
                 loginFrame.promise = null;
                 resolve();
             }, function () {
-                ui.shake(loginFrame.elem);
+                ui.shake(loginFrame.outer);
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
                 loginFrame.formElem.remember.disabled = false;
@@ -503,7 +503,7 @@ TEXTSTEP.openFrame = function (frame) {
     if (!frame.isOpen) {
         frame.id = nextFrameId++;
         frames[frame.id] = frame;
-        main.appendChild(frame.elem);
+        main.appendChild(frame.outer);
         for (var tool in frame.toolFrames) {
             if (frame.toolFrames.hasOwnProperty(tool)) {
                 menu.insertBefore(frame.toolFrames[tool].elem, menu.childNodes[0]);
@@ -524,7 +524,7 @@ TEXTSTEP.closeFrame = function (frame) {
             focus = null;
         }
         frame.isOpen = false;
-        main.removeChild(frame.elem);
+        main.removeChild(frame.outer);
         delete frames[frame.id];
         for (var i = 0; i < frame.menus.length; i++) {
             menu.removeChild(frame.menus[i].elem);
@@ -594,33 +594,27 @@ TEXTSTEP.setBackgroundColor = function (color) {
     document.querySelector('meta[name="theme-color"]').content = color;
 };
 
-function workspaceMenuAction(action) {
-    switch (action) {
-        case 'files':
-        case 'build':
-        case 'terminal':
-        case 'control-panel':
-            TEXTSTEP.run(action);
-            break;
-        case 'switch-user':
-            TEXTSTEP.delete('session').then(function () {
-                TEXTSTEP.requestLogin(true).then(function () {
-                });
-            });
-            break;
-        case 'logout':
-            TEXTSTEP.delete('session').then(function () {
-                localStorage.removeItem('textstepSessionId');
-                sessionStorage.removeItem('textstepSessionId');
-                sessionId = null;
-                location.reload();
-            });
-            break;
-    }
-}
-
 function createWorkspaceMenu() {
-    var menu = new Menu({activate: workspaceMenuAction, bindAction: function () {}}, 'Workspace');
+    var menu = new Menu('Workspace');
+    let runCommand = name => TEXTSTEP.run(name);
+    menu.commands.define('files', runCommand);
+    menu.commands.define('build', runCommand);
+    menu.commands.define('terminal', runCommand);
+    menu.commands.define('control-panel', runCommand);
+    menu.commands.define('switch-user', () => {
+        TEXTSTEP.delete('session').then(function () {
+            TEXTSTEP.requestLogin(true).then(function () {
+            });
+        });
+    });
+    menu.commands.define('logout', () => {
+        TEXTSTEP.delete('session').then(function () {
+            localStorage.removeItem('textstepSessionId');
+            sessionStorage.removeItem('textstepSessionId');
+            sessionId = null;
+            location.reload();
+        });
+    });
     menu.addItem('Files', 'files');
     menu.addItem('Build', 'build');
     menu.addItem('Terminal', 'terminal');

@@ -270,11 +270,10 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     app.dockFrame.appendChild(TEXTSTEP.getIcon('code-editor', 32));
 
     frame = self.createFrame('Code');
-    frame.className += ' editor-frame';
-    frame.bodyElem.className += ' libedit-codemirror';
+    frame.inner.className += ' editor-frame-body libedit-codemirror';
 
     textarea = ui.elem('textarea');
-    frame.appendChild(textarea);
+    frame.append(textarea, {grow: 1});
 
     bufferPanel = ui.elem('div', {'class': 'files-list'});
     var bufferTool = frame.createToolFrame('buffers', 'Buffers');

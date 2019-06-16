@@ -257,11 +257,10 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
     app.dockFrame.appendChild(TEXTSTEP.getIcon('editor', 32));
 
     frame = self.createFrame('Code');
-    frame.className += ' editor-frame';
-    frame.bodyElem.className += ' libedit-simplemde';
+    frame.inner.className += ' editor-frame-body libedit-simplemde';
 
     textarea = ui.elem('textarea');
-    frame.appendChild(textarea);
+    frame.append(textarea);
 
     bufferPanel = ui.elem('div', {'class': 'files-list'});
     var bufferTool = frame.createToolFrame('buffers', 'Buffers');

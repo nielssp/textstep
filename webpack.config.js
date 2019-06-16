@@ -18,6 +18,7 @@ function app(name) {
         mode: 'development',
         entry: entry,
         context: __dirname + '/src/client',
+        devtool: 'source-map',
         output: {
             path: __dirname + '/dist/',
             filename: '[name]/main.js'

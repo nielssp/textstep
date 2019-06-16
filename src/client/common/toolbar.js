@@ -6,72 +6,57 @@
  */
 
 import * as ui from './ui';
+import {Component} from './component';
+import {CommandMap} from './command';
 
-function ActionMap() {
-    this.actions = {};
-    this.actionGroups = {};
-}
-
-ActionMap.prototype.activate = function (action) {
-    action.apply(this);
-};
-
-ActionMap.prototype.bindAction = function (action, button) {
-};
-
-export default function Toolbar(frame) {
-    if (!frame) {
-        frame = new ActionMap();
+export class Toolbar extends Component {
+    constructor(commands = new CommandMap()) {
+        super();
+        this.commands = commands;
+        this.outer.className = 'ts-toolbar';
     }
-    this.frame = frame;
-    this.elem = ui.elem('div', {'class': 'frame-toolbar'});
-}
 
-Toolbar.prototype.addItem = function (label, icon, action) {
-    var button = ui.elem('button', {title: label});
-    if (icon) {
-        button.appendChild(ui.elem('span', {'class': 'icon icon-' + icon}));
-    } else {
-        button.textContent = label;
+    addItem(label, icon, command) {
+        let button = ui.elem('button', {title: label});
+        if (icon) {
+            button.appendChild(ui.elem('span', {'class': 'icon icon-' + icon}));
+        } else {
+            button.textContent = label;
+        }
+        button.onclick = () => {
+            this.commands.activate(command);
+        };
+        this.commands.bindElement(button, command);
+        this.outer.appendChild(button);
+        return this;
     }
-    button.onclick = () => {
-        this.frame.activate(action);
-    };
-    this.frame.bindAction(action, button);
-    this.elem.appendChild(button);
-    return this;
-};
 
-Toolbar.prototype.addSeparator = function () {
-    this.elem.appendChild(ui.elem('span', {'class': 'frame-toolbar-separator'}));
-};
+    addSeparator() {
+        this.outer.appendChild(ui.elem('span', {'class': 'ts-toolbar-separator'}));
+    }
 
-Toolbar.prototype.createGroup = function () {
-    var group = new ButtonGroup(this.frame);
-    this.elem.appendChild(group.elem);
-    return group;
-};
-
-Toolbar.prototype.show = function () {
-    this.elem.style.display = '';
-};
-
-Toolbar.prototype.hide = function () {
-    this.elem.style.display = 'none';
-};
-
-function ButtonGroup(frame) {
-    this.frame = frame;
-    this.elem = ui.elem('div', {'class': 'button-group'});
+    createGroup() {
+        let group = new ButtonGroup(this.commands);
+        this.outer.appendChild(group.outer);
+        return group;
+    }
 }
 
-ButtonGroup.prototype.addItem = function (label, icon, action) {
-    var icon = ui.elem('span', {'class': 'icon icon-' + icon});
-    var button = ui.elem('button', {title: label}, [icon]);
-    button.onclick = () => {
-        this.frame.activate(action);
-    };
-    this.frame.bindAction(action, button);
-    this.elem.appendChild(button);
-    return this;
-};
+export class ButtonGroup extends Component {
+    constructor(commands = new CommandMap()) {
+        super();
+        this.commands = commands;
+        this.outer.className = 'button-group';
+    }
+
+    addItem(label, icon, command) {
+        var icon = ui.elem('span', {'class': 'icon icon-' + icon});
+        var button = ui.elem('button', {title: label}, [icon]);
+        button.onclick = () => {
+            this.commands.activate(command);
+        };
+        this.commands.bindElement(button, command);
+        this.outer.appendChild(button);
+        return this;
+    }
+}

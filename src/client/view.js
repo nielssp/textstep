@@ -19,7 +19,7 @@ TEXTSTEP.initApp('view', function (app) {
     var frame = app.createFrame('View');
     var imageList = document.createElement('div');
     imageList.className = 'image-list';
-    frame.bodyElem.className += ' viewapp-viewerjs';
+    frame.inner.className += ' viewapp-viewerjs';
     frame.appendChild(imageList);
     
     var menu = frame.addMenu('View');

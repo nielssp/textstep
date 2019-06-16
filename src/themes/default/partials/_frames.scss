@@ -87,33 +87,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-top: 1px solid #000;
         margin: 0;
 
-        & > .frame-toolbar,
-        & > .frame-iconbar {
-            padding: 6px;
-            flex-grow: 0;
-            & ~ .frame-content {
-                padding-top: 0;
-            }
-        }
-        & > .frame-content {
-            padding: 6px;
-            flex-grow: 1;
-            position: relative;
-
-            overflow-y: auto;
-
-            &-flex {
-                display: flex;
-                flex-direction: column;
-            }
-        }
-        & > .frame-footer {
-            padding: 6px;
-
-            &-buttons {
-                text-align: right;
-            }
-        }
         hr {
             border-top: 1px solid #555;
             border-bottom: 1px solid #fff;

@@ -6,8 +6,42 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
 
-.ts-stack-panel {
+.ts-padding {
+    padding: var(--frame-padding);
+}
+
+.ts-padding-top {
+    padding-top: var(--frame-padding);
+}
+
+.ts-padding-right {
+    padding-right: var(--frame-padding);
+}
+
+.ts-padding-bottom {
+    padding-bottom: var(--frame-padding);
+}
+
+.ts-padding-left {
+    padding-left: var(--frame-padding);
+}
+
+.ts-stack-row {
     display: flex;
+    flex-direction: row;
+
+    &.ts-stack-row-padding > * ~ * {
+        margin-left: var(--frame-padding);
+    }
+}
+
+.ts-stack-column {
+    display: flex;
+    flex-direction: column;
+
+    &.ts-stack-column-padding > * ~ * {
+        margin-top: var(--frame-padding);
+    }
 }
 
 .ts-list-view {

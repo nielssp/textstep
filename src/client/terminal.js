@@ -253,8 +253,6 @@ TEXTSTEP.initApp('terminal', function (app) {
     self = app;
     frame = app.createFrame('Terminal');
 
-    frame.contentElem.className = 'frame-content frame-content-flex';
-
     terminal = ui.elem('textarea', {'class': 'stretch'});
     frame.appendChild(terminal);
     
