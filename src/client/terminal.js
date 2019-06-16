@@ -253,8 +253,8 @@ TEXTSTEP.initApp('terminal', function (app) {
     self = app;
     frame = app.createFrame('Terminal');
 
-    terminal = ui.elem('textarea', {'class': 'stretch'});
-    frame.appendChild(terminal);
+    terminal = ui.elem('textarea');
+    frame.append(terminal, {grow: 1});
     
     frame.onFocus = function () {
         if (!terminal.readOnly) {
