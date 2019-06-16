@@ -196,6 +196,15 @@ export class ScrollPanel extends Container {
     }
 }
 
+export class DialogContainer extends Container {
+    constructor() {
+        super();
+        this.inner = elem('div', {'class': 'ts-dialog-container-inner'});
+        this.outer.className = 'ts-dialog-container';
+        this.outer.appendChild(this.inner);
+    }
+}
+
 export class ProgressBar extends Component {
     constructor() {
         super();

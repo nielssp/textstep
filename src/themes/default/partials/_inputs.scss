@@ -285,10 +285,6 @@ select:not([size="1"]) {
 }
 form {
     display: block;
-    margin-bottom: $pmargin;
-    & > *:last-child {
-        margin-bottom: 0;
-    }
 }
 .footer-buttons {
     text-align: right;

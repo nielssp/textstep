@@ -10,7 +10,6 @@ const Config = TEXTSTEP.Config;
 
 function input(config, key, type = 'text') {
     let elem = ui.elem('input', {type: type});
-    elem.style.maxWidth = '200px';
     config.get(key).bind(elem);
     return elem;
 }
@@ -66,8 +65,8 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     });
     main.append(mainToolbar);
 
-    let mainContent = new ui.StackColumn();
-    mainContent.padding('right', 'bottom', 'left');
+    let mainContent = new ui.DialogContainer();
+    mainContent.padding();
     main.append(mainContent, {grow: 1});
 
     let adjustContent = () => {
@@ -107,17 +106,18 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     grid.append(label('Time zone:'));
     grid.append(input(config, 'timeZone'));
 
-    frame.defineAction('save', () => {
-        config.commit();
-    });
-    frame.defineAction('reload', () => {
-        config.update();
-    });
-    
-    let menu = frame.addMenu('Control panel');
-    menu.addItem('Save', 'save');
-    menu.addItem('Reload', 'reload');
-    menu.addItem('Close', 'close');
+    let saveButton = ui.elem('button', {}, ['Save']);
+    saveButton.onclick = () => config.commit();
+    let cancelButton = ui.elem('button', {}, ['Cancel']);
+    cancelButton.onclick = () => config.update();
+
+    let buttons = new ui.StackRow();
+    buttons.innerPadding = true;
+    buttons.outer.style.gridColumn = 'span 2';
+    buttons.outer.style.justifySelf = 'end';
+    buttons.append(saveButton);
+    buttons.append(cancelButton);
+    grid.append(buttons.outer);
 
     frame.onClose = () => app.close();
     

@@ -178,6 +178,7 @@ TEXTSTEP.requestLogin = function(overlay = false) {
     let promise = new Promise(function (resolve, reject) {
         if (loginFrame === null) {
             loginFrame = new Frame('Log in');
+            loginFrame.padding();
             loginFrame.capsLockWarning = ui.elem('div', {'class': 'caps-lock-warning'}, [
                 'Caps Lock appears to be on'
             ]),

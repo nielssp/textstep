@@ -12,6 +12,7 @@ import {
     StackColumn,
     ListView,
     ScrollPanel,
+    DialogContainer,
     ProgressBar,
 } from './component';
 import {Toolbar} from './toolbar';
@@ -24,6 +25,7 @@ export {
     StackColumn,
     ListView,
     ScrollPanel,
+    DialogContainer,
     ProgressBar,
     Toolbar,
     DirView,
