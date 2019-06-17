@@ -187,6 +187,31 @@ export class ListView extends Container {
 
 }
 
+export class FieldSet extends Container {
+    constructor() {
+        super();
+        this.outer = this.inner = elem('fieldset');
+        this.legendElem = null;
+    }
+
+    get legend() {
+        return this.legendElem ? this.legendElem.textContent : null;
+    }
+
+    set legend(legend) {
+        if (legend) {
+            if (!this.legendElem) {
+                this.legendElem = elem('legend');
+                this.inner.appendChild(this.legendElem);
+            }
+            this.legendElem.textContent = legend;
+        } else if (this.legendElem) {
+            this.inner.removeChild(this.legendElem);
+            this.legendElem = null;
+        }
+    }
+}
+
 export class ScrollPanel extends Container {
     constructor() {
         super();

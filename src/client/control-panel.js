@@ -84,12 +84,16 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
 
     frame.onResize = adjustContent;
 
+    let fieldSet1 = new ui.FieldSet();
+    fieldSet1.legend = 'Site properties';
+    mainContent.append(fieldSet1);
+
     let grid = ui.elem('div');
     grid.style.display = 'grid';
     grid.style.gridTemplateColumns = 'min-content auto';
     grid.style.gridColumnGap = 'var(--frame-padding)';
     grid.style.gridRowGap = 'var(--frame-padding)';
-    mainContent.append(grid, {align: 'center'});
+    fieldSet1.append(grid);
 
     grid.append(label('Title:'));
     grid.append(input(config, 'title'));
@@ -113,11 +117,12 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
 
     let buttons = new ui.StackRow();
     buttons.innerPadding = true;
+    buttons.justifyContent = 'flex-end';
     buttons.outer.style.gridColumn = 'span 2';
     buttons.outer.style.justifySelf = 'end';
     buttons.append(saveButton);
     buttons.append(cancelButton);
-    grid.append(buttons.outer);
+    mainContent.append(buttons.outer);
 
     frame.onClose = () => app.close();
     
