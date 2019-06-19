@@ -44,6 +44,17 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     }
 }
 
+.ts-grid {
+    display: grid;
+
+    &.ts-grid-column-padding {
+        grid-column-gap: var(--frame-padding);
+    }
+    &.ts-grid-row-padding {
+        grid-row-gap: var(--frame-padding);
+    }
+}
+
 .ts-list-view {
     border: 1px solid #555;
     border-right: 1px solid #fff;

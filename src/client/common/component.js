@@ -160,6 +160,37 @@ export class StackColumn extends Container {
     }
 }
 
+export class Grid extends Container {
+    constructor() {
+        super();
+        this.outer.className = 'ts-grid';
+    }
+
+    get columnPadding() {
+        return this.outer.classList.contains('ts-grid-column-padding');
+    }
+
+    set columnPadding(enable) {
+        this.outer.classList.add('ts-grid-column-padding');
+    }
+
+    get rowPadding() {
+        return this.outer.classList.contains('ts-grid-row-padding');
+    }
+
+    set rowPadding(enable) {
+        this.outer.classList.add('ts-grid-row-padding');
+    }
+
+    get columns() {
+        return this.outer.style.gridTemplateColumns;
+    }
+
+    set columns(columns) {
+        this.outer.style.gridTemplateColumns = columns;
+    }
+}
+
 export class ListView extends Container {
     constructor() {
         super();
@@ -227,6 +258,14 @@ export class DialogContainer extends Container {
         this.inner = elem('div', {'class': 'ts-dialog-container-inner'});
         this.outer.className = 'ts-dialog-container';
         this.outer.appendChild(this.inner);
+    }
+
+    get maxWidth() {
+        return this.inner.style.maxWidth;
+    }
+
+    set maxWidth(w) {
+        this.inner.style.maxWidth = w + 'px';
     }
 }
 

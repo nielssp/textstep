@@ -67,6 +67,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
 
     let mainContent = new ui.DialogContainer();
     mainContent.padding();
+    mainContent.maxWidth = 450;
     main.append(mainContent, {grow: 1});
 
     let adjustContent = () => {
@@ -88,11 +89,10 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     fieldSet1.legend = 'Site properties';
     mainContent.append(fieldSet1);
 
-    let grid = ui.elem('div');
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'min-content auto';
-    grid.style.gridColumnGap = 'var(--frame-padding)';
-    grid.style.gridRowGap = 'var(--frame-padding)';
+    let grid = new ui.Grid();
+    grid.columns = 'min-content auto';
+    grid.rowPadding = true;
+    grid.columnPadding = true;
     fieldSet1.append(grid);
 
     grid.append(label('Title:'));
@@ -107,8 +107,23 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     grid.append(label('Copyright:'));
     grid.append(input(config, 'copyright'));
 
-    grid.append(label('Time zone:'));
-    grid.append(input(config, 'timeZone'));
+    let fieldSet2 = new ui.FieldSet();
+    fieldSet2.legend = 'Time zone';
+    mainContent.append(fieldSet2);
+
+    let timeZoneSelect = ui.elem('select', {size: 1, disabled: true});
+    TEXTSTEP.get('storage', {path: '/system/timezones.json'}).then(timeZones => {
+        timeZones.forEach(zone => {
+            timeZoneSelect.appendChild(ui.elem('option', {value: zone}, [zone]));
+        });
+        timeZoneSelect.disabled = false;
+    });
+    timeZoneSelect.style.width = '100%';
+    timeZoneSelect.onchange = e => config.get('timeZone').set(timeZoneSelect.value);
+    config.get('timeZone').change(value => {
+        timeZoneSelect.value = value;
+    });
+    fieldSet2.append(timeZoneSelect);
 
     let saveButton = ui.elem('button', {}, ['Save']);
     saveButton.onclick = () => config.commit();
