@@ -258,14 +258,24 @@ export class DialogContainer extends Container {
         this.inner = elem('div', {'class': 'ts-dialog-container-inner'});
         this.outer.className = 'ts-dialog-container';
         this.outer.appendChild(this.inner);
+        this._maxWidth = null;
     }
 
     get maxWidth() {
-        return this.inner.style.maxWidth;
+        return this._maxWidth;
     }
 
     set maxWidth(w) {
+        this._maxWidth = w;
         this.inner.style.maxWidth = w + 'px';
+    }
+
+    readjust() {
+        if (!this._maxWidth || this.width <= this._maxWidth) {
+            this.outer.classList.remove('ts-dialog-container-large');
+        } else {
+            this.outer.classList.add('ts-dialog-container-large');
+        }
     }
 }
 

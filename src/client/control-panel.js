@@ -70,24 +70,13 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     mainContent.maxWidth = 450;
     main.append(mainContent, {grow: 1});
 
-    let adjustContent = () => {
-        pageList.visible = true;
-        if (pageContainer.width < 400) {
-            main.visible = false;
-            mainToolbar.visible = true;
-            pageList.width = '100%';
-        } else {
-            main.visible = true;
-            mainToolbar.visible = false;
-            pageList.width = '200px';
-        }
-    };
-
-    frame.onResize = adjustContent;
+    let dialogForm = new ui.StackColumn();
+    dialogForm.innerPadding = true;
+    mainContent.append(dialogForm);
 
     let fieldSet1 = new ui.FieldSet();
     fieldSet1.legend = 'Site properties';
-    mainContent.append(fieldSet1);
+    dialogForm.append(fieldSet1);
 
     let grid = new ui.Grid();
     grid.columns = 'min-content auto';
@@ -109,7 +98,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
 
     let fieldSet2 = new ui.FieldSet();
     fieldSet2.legend = 'Time zone';
-    mainContent.append(fieldSet2);
+    dialogForm.append(fieldSet2);
 
     let timeZoneSelect = ui.elem('select', {size: 1, disabled: true});
     TEXTSTEP.get('storage', {path: '/system/timezones.json'}).then(timeZones => {
@@ -137,7 +126,23 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     buttons.outer.style.justifySelf = 'end';
     buttons.append(saveButton);
     buttons.append(cancelButton);
-    mainContent.append(buttons.outer);
+    dialogForm.append(buttons);
+
+    let adjustContent = () => {
+        pageList.visible = true;
+        if (pageContainer.width < 400) {
+            main.visible = false;
+            mainToolbar.visible = true;
+            pageList.width = '100%';
+        } else {
+            main.visible = true;
+            mainToolbar.visible = false;
+            pageList.width = '200px';
+        }
+        mainContent.readjust();
+    };
+
+    frame.onResize = adjustContent;
 
     frame.onClose = () => app.close();
     

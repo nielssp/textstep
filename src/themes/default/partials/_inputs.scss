@@ -6,8 +6,8 @@ $inputs: 'input[type=text], input[type=email], input[type=password], input[type=
     margin: 2px 0;
     display: block;
     font-size: 14px;
-    background-color: $contentBg;
-    color: $contentFg;
+    background: var(--input-bg);
+    color: var(--input-fg);
     border: 2px solid #555555;
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
@@ -155,8 +155,8 @@ select:not([size="1"]) {
     display: block;
     padding: 1px 4px 1px 4px;
     margin: 2px 0;
-    background-color: $contentBg;
-    color: $contentFg;
+    background: var(--input-bg);
+    color: var(--input-fg);
     border: 2px solid #555555;
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
@@ -168,9 +168,6 @@ select:not([size="1"]) {
         outline-offset: 0;
     }
 
-    &:hover {
-        background-color: darken($contentBg, 5%);
-    }
     &[disabled] {
         background-color: $frameBg;
     }
@@ -296,15 +293,13 @@ fieldset {
     border-bottom-color: #fff;
     border-right-color: #fff;
     box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #555;
-    padding: 5px 10px 10px 10px;
-    margin-bottom: 10px;
+    padding: var(--frame-padding);
     position: relative;
     
     legend {
         text-align: center;
         padding: 0 5px;
-        font-size: 0.9em;
-        background-color: $frameBg;
+        background-color: var(--active-frame-bg);
         display: block;
     }
     
