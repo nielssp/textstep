@@ -66,6 +66,25 @@ export class Component {
             }, this);
         }
     }
+
+    trigger(eventName, eventData) {
+        if (this.hasOwnProperty('on' + eventName)) {
+            this['on' + eventName](eventData);
+        }
+    }
+
+    addEventListener(eventName, handler) {
+        if (this.hasOwnProperty('on' + eventName)) {
+            let previous = this['on' + eventName];
+            this['on' + eventName] = (eventData) => {
+                if (previous(eventData)) {
+                    return handler(eventData);
+                }
+            };
+        } else {
+            this['on' + eventName] = handler;
+        }
+    }
 }
 
 export class Container extends Component {
@@ -96,6 +115,10 @@ export class Container extends Component {
         } else {
             this.inner.removeChild(child);
         }
+    }
+
+    clear() {
+        this.inner.innerHTML = '';
     }
 
     removePadding() {
@@ -197,25 +220,29 @@ export class ListView extends Container {
         this.inner = elem('div', {'class': 'ts-list-view-items'});
         this.outer.className = 'ts-list-view';
         this.outer.appendChild(this.inner);
-        this.onselect = () => {};
+        this.items = {};
     }
 
-    add(label) {
+    add(label, value) {
         let item = elem('a', {'class': 'ts-list-view-item'}, [label]);
-        item.onclick = () => this.onselect(item);
+        item.onclick = () => this.trigger('select', value);
         this.inner.appendChild(item);
+        this.items[value] = item;
         return item;
     }
     
-    select(item) {
-        for (let i = 0; i < this.inner.children.length; i++) {
-            this.inner.children[i].classList.remove('active');
-        }
-        if (item) {
-            item.classList.add('active');
+    select(value) {
+        this.removeSelection();
+        if (this.items.hasOwnProperty(value)) {
+            this.items[value].classList.add('active');
         }
     }
 
+    removeSelection() {
+        for (let i = 0; i < this.inner.children.length; i++) {
+            this.inner.children[i].classList.remove('active');
+        }
+    }
 }
 
 export class FieldSet extends Container {

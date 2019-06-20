@@ -27,52 +27,91 @@ function field(label, config, key, type = 'text') {
     ])
 }
 
-TEXTSTEP.initApp('control-panel', [], function (app) {
-    let frame = app.createFrame('Control panel');
+class PageView extends ui.Component {
+    constructor() {
+        super();
+        this.pages = [];
+        this.activePage = null;
 
-    let config = new Config(() => TEXTSTEP.get('content', {path: '/site/site.json'}), data =>
-        TEXTSTEP.put('content', {path: '/site/site.json'}, data));
+        this.container = new ui.StackRow();
+        this.outer = this.container.outer;
 
-    app.dockFrame.innerHTML = '';
-    app.dockFrame.appendChild(TEXTSTEP.getIcon('control-panel', 32));
+        this.pageList = new ui.ListView();
+        this.pageList.width = '200px';
+        this.pageList.onselect = id => this.open(id);
+        this.container.append(this.pageList);
 
-    let pageContainer = new ui.StackRow();
-    pageContainer.padding();
-    frame.append(pageContainer, {grow: 1});
+        this.main = new ui.StackColumn();
+        this.container.append(this.main, {grow: 1});
 
-    let pageList = new ui.ListView();
-    pageList.width = '200px';
-    pageList.add('Site');
-    pageContainer.append(pageList);
-    pageList.onselect = item => {
-        pageList.select(item);
-        if (!main.visible) {
-            main.visible = true;
-            pageList.visible = false;
+        this.pageToolbar = new ui.Toolbar(); 
+        this.pageToolbar.padding('bottom');
+        this.pageToolbar.addItem('Back', 'go-back', () => this.close());
+        this.main.append(this.pageToolbar);
+
+        this.pageContainer = new ui.DialogContainer();
+        this.pageContainer.padding();
+        this.pageContainer.maxWidth = 450;
+        this.main.append(this.pageContainer, {grow: 1});
+    }
+
+    open(id) {
+        this.pageContainer.clear();
+        for (let page of this.pages) {
+            if (page.id === id) {
+                this.activePage = page.component;
+                this.pageContainer.append(this.activePage);
+                break;
+            }
         }
-    };
-
-    let main = new ui.StackColumn();
-    pageContainer.append(main, {grow: 1});
-
-    let mainToolbar = new ui.Toolbar(); 
-    mainToolbar.padding('bottom');
-    mainToolbar.addItem('Back', 'go-back', () => {
-        if (!pageList.visible) {
-            main.visible = false;
-            pageList.visible = true;
+        if (!this.main.visible) {
+            this.main.visible = true;
+            this.pageList.visible = false;
         }
-    });
-    main.append(mainToolbar);
+        this.pageList.select(id);
+    }
 
-    let mainContent = new ui.DialogContainer();
-    mainContent.padding();
-    mainContent.maxWidth = 450;
-    main.append(mainContent, {grow: 1});
+    select(id) {
+        if (this.main.visible) {
+            this.open(id);
+        }
+    }
 
+    close() {
+        if (!this.pageList.visible) {
+            this.main.visible = false;
+            this.pageList.visible = true;
+        }
+        this.pageList.removeSelection();
+    }
+
+    readjust() {
+        this.pageList.visible = true;
+        if (this.container.width < 400) {
+            this.main.visible = false;
+            this.pageToolbar.visible = true;
+            this.pageList.width = '100%';
+        } else {
+            this.main.visible = true;
+            this.pageToolbar.visible = false;
+            this.pageList.width = '200px';
+        }
+        this.pageContainer.readjust();
+    }
+
+    addPage(id, label, component) {
+        this.pages.push({
+            id: id,
+            label: label,
+            component: component
+        });
+        this.pageList.add(label, id);
+    }
+}
+
+function sitePanel(config) {
     let dialogForm = new ui.StackColumn();
     dialogForm.innerPadding = true;
-    mainContent.append(dialogForm);
 
     let fieldSet1 = new ui.FieldSet();
     fieldSet1.legend = 'Site properties';
@@ -128,19 +167,24 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     buttons.append(cancelButton);
     dialogForm.append(buttons);
 
-    let adjustContent = () => {
-        pageList.visible = true;
-        if (pageContainer.width < 400) {
-            main.visible = false;
-            mainToolbar.visible = true;
-            pageList.width = '100%';
-        } else {
-            main.visible = true;
-            mainToolbar.visible = false;
-            pageList.width = '200px';
-        }
-        mainContent.readjust();
-    };
+    return dialogForm;
+}
+
+TEXTSTEP.initApp('control-panel', [], function (app) {
+    let frame = app.createFrame('Control panel');
+
+    let config = new Config(() => TEXTSTEP.get('content', {path: '/site/site.json'}), data =>
+        TEXTSTEP.put('content', {path: '/site/site.json'}, data));
+
+    app.dockFrame.innerHTML = '';
+    app.dockFrame.appendChild(TEXTSTEP.getIcon('control-panel', 32));
+
+    let pageView = new PageView();
+    pageView.padding();
+    pageView.addPage('site', 'Site', sitePanel(config));
+    frame.append(pageView, {grow: 1});
+
+    let adjustContent = () => pageView.readjust();
 
     frame.onResize = adjustContent;
 
@@ -150,6 +194,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
         if (!frame.isOpen) {
             frame.open();
             adjustContent();
+            pageView.select('site');
             config.update();
         } else {
             frame.requestFocus();
