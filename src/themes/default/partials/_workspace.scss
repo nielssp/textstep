@@ -204,12 +204,11 @@ main {
             top: 0px;
             left: 0px;
             bottom: 0px;
-            padding: 10px 5px 10px 10px;
+            padding: var(--outer-gaps);
             z-index: 1000;
         }
         main {
             opacity: 0.5;
-            margin: var(--outer-gaps);
         }
         #dock {
             display: block;

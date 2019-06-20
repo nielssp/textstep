@@ -191,18 +191,6 @@ function appearancePanel() {
     };
     fieldSet.append(bg);
 
-    let saveButton = ui.elem('button', {}, ['Save']);
-    saveButton.onclick = () => config.commit();
-    let cancelButton = ui.elem('button', {}, ['Cancel']);
-    cancelButton.onclick = () => config.update();
-
-    let buttons = new ui.StackRow();
-    buttons.innerPadding = true;
-    buttons.justifyContent = 'flex-end';
-    buttons.append(saveButton);
-    buttons.append(cancelButton);
-    dialog.append(buttons);
-
     return dialog;
 }
 
