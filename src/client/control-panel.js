@@ -31,6 +31,7 @@ class PageView extends ui.Component {
     constructor() {
         super();
         this.pages = [];
+        this.pageId = null;
         this.activePage = null;
 
         this.container = new ui.StackRow();
@@ -59,6 +60,7 @@ class PageView extends ui.Component {
         this.pageContainer.clear();
         for (let page of this.pages) {
             if (page.id === id) {
+                this.pageId = page.id;
                 this.activePage = page.component;
                 this.pageContainer.append(this.activePage);
                 break;
@@ -161,13 +163,47 @@ function sitePanel(config) {
     let buttons = new ui.StackRow();
     buttons.innerPadding = true;
     buttons.justifyContent = 'flex-end';
-    buttons.outer.style.gridColumn = 'span 2';
-    buttons.outer.style.justifySelf = 'end';
     buttons.append(saveButton);
     buttons.append(cancelButton);
     dialogForm.append(buttons);
 
     return dialogForm;
+}
+
+function appearancePanel() {
+    let skin = TEXTSTEP.getSkin();
+
+    let dialog = new ui.StackColumn();
+    dialog.innerPadding = true;
+
+    let fieldSet = new ui.FieldSet();
+    fieldSet.legend = 'Background';
+    dialog.append(fieldSet);
+
+    let bg = ui.elem('input', {type: 'color'});
+    if (skin.hasOwnProperty('desktop-bg')) {
+        bg.value = skin['desktop-bg'];
+    } else {
+        bg.value = '#515171'; // TODO: default skin
+    }
+    bg.onchange = () => {
+        TEXTSTEP.applySkin({'desktop-bg': bg.value});
+    };
+    fieldSet.append(bg);
+
+    let saveButton = ui.elem('button', {}, ['Save']);
+    saveButton.onclick = () => config.commit();
+    let cancelButton = ui.elem('button', {}, ['Cancel']);
+    cancelButton.onclick = () => config.update();
+
+    let buttons = new ui.StackRow();
+    buttons.innerPadding = true;
+    buttons.justifyContent = 'flex-end';
+    buttons.append(saveButton);
+    buttons.append(cancelButton);
+    dialog.append(buttons);
+
+    return dialog;
 }
 
 TEXTSTEP.initApp('control-panel', [], function (app) {
@@ -182,6 +218,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     let pageView = new PageView();
     pageView.padding();
     pageView.addPage('site', 'Site', sitePanel(config));
+    pageView.addPage('appearance', 'Appearance', appearancePanel());
     frame.append(pageView, {grow: 1});
 
     let adjustContent = () => pageView.readjust();

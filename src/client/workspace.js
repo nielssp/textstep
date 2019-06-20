@@ -590,9 +590,28 @@ TEXTSTEP.toggleMenu = function () {
     root.classList.toggle('show-menu');
 };
 
-TEXTSTEP.setBackgroundColor = function (color) {
-    root.style.backgroundColor = color;
-    document.querySelector('meta[name="theme-color"]').content = color;
+TEXTSTEP.getSkin = function () {
+    let skin = localStorage.getItem('textstepSkin');
+    if (skin) {
+        try {
+            return JSON.parse(skin);
+        } catch (error) {
+            console.error('Could not parse skin', error);
+        }
+    }
+    return {};
+};
+
+TEXTSTEP.applySkin = function (skin) {
+    for (let key in skin) {
+        if (skin.hasOwnProperty(key)) {
+            root.style.setProperty('--' + key, skin[key]);
+        }
+    }
+    if (skin.hasOwnProperty('desktop-bg')) {
+        document.querySelector('meta[name="theme-color"]').content = skin['desktop-bg'];
+    }
+    localStorage.setItem('textstepSkin', JSON.stringify(skin));
 };
 
 function createWorkspaceMenu() {
@@ -721,6 +740,7 @@ function requestAuthenticatedUser() {
 }
 
 TEXTSTEP.init = function (root) {
+    TEXTSTEP.applySkin(TEXTSTEP.getSkin());
     requestAuthenticatedUser().then(user => {
         TEXTSTEP.user = user;
         workspaceMenu.setTitle('Workspace for ' + user.username + '');

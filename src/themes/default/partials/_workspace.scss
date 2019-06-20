@@ -196,7 +196,7 @@ main {
             opacity: 0.5;
         }
         aside {
-            background-color: $wsBg;
+            background: var(--desktop-bg);
             box-shadow: 1px 0 5px #000000;
             display: block;
             position: fixed;
