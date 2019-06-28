@@ -11,17 +11,14 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     --desktop-bg: #515171;
     --desktop-fg: #000000;
 
-    --active-frame-bg: #aeaaae;
-    --active-frame-fg: #000000;
-
-    --inactive-frame-bg: var(--active-frame-bg);
-    --inactive-frame-fg: var(--active-frame-fg);
+    --frame-bg: #aeaaae;
+    --frame-fg: #000000;
 
     --active-titlebar-bg: #000000;
     --active-titlebar-fg: #ffffff;
 
-    --inactive-titlebar-bg: var(--inactive-frame-bg);
-    --inactive-titlebar-fg: var(--inactive-frame-fg);
+    --inactive-titlebar-bg: var(--frame-bg);
+    --inactive-titlebar-fg: var(--frame-fg);
 
     --input-bg: #ffffff;
     --input-fg: #000000;

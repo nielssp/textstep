@@ -82,8 +82,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         flex-direction: column;
         position: relative;
         flex-grow: 1;
-        background-color: var(--inactive-frame-bg);
-        color: var(--inactive-frame-fg);
+        background-color: var(--frame-bg);
+        color: var(--frame-fg);
         border-top: 1px solid #000;
         margin: 0;
 
@@ -114,10 +114,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         & > .frame-head {
             background: var(--active-titlebar-bg);
             color: var(--active-titlebar-fg);
-        }
-        & > .frame-body {
-            background: var(--active-frame-bg);
-            color: var(--active-frame-fg);
         }
     }
 
