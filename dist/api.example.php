@@ -2,9 +2,9 @@
 
 chdir(dirname(__FILE__));
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
-$main = new Blogstep\Main('dist', 'user', 'system');
+$main = new Blogstep\Main('.', '../user', '../system');
 
 // Development configuration:
 //$main->config['log.showExceptions'] = true;

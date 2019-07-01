@@ -1,6 +1,7 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const jsRule = {
     test: /\.js$/,
@@ -110,7 +111,23 @@ function icons(name) {
 }
 
 module.exports = [
-    app('workspace'),
+    Object.assign(app('workspace'), {
+        plugins: [
+            new CopyWebpackPlugin([
+                {from: 'assets/**', to: './apps/workspace.app/'},
+            ], {}),
+            new HtmlWebpackPlugin({
+                hash: true,
+                template: './index.html',
+                filename: './index.html'
+            }),
+            new HtmlWebpackPlugin({
+                hash: true,
+                template: './index.html',
+                filename: '../index.html'
+            }),
+        ]
+    }),
     app('files'),
     app('write'),
     app('code'),

@@ -45,6 +45,8 @@ var floatingMenu = null;
 
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
+TEXTSTEP.DIST_PATH = root.getAttribute('data-dist');
+
 TEXTSTEP.LOAD_TIMEOUT = 10000;
 
 TEXTSTEP.user = null;
@@ -488,7 +490,6 @@ function unloadLib(name) {
     }
 }
 
-
 TEXTSTEP.getIcon = function (name, size = 32) {
     // TODO: onerror
     return ui.elem('img', {
@@ -588,6 +589,24 @@ TEXTSTEP.getContainerSize = function () {
 
 TEXTSTEP.toggleMenu = function () {
     root.classList.toggle('show-menu');
+};
+
+TEXTSTEP.applyTheme = function (name) {
+    let scriptSrc = TEXTSTEP.DIST_PATH + '/themes/' + name + '/theme.css';
+    let scriptElem = ui.elem('link', {rel: 'stylesheet', type: 'text/css', href: scriptSrc});
+    scriptElem.onerror = function () {
+        root.removeChild(scriptElem);
+    };
+    root.appendChild(scriptElem);
+};
+
+TEXTSTEP.applyIcons = function (name) {
+    let scriptSrc = TEXTSTEP.DIST_PATH + '/icons/' + name + '/icons.css';
+    let scriptElem = ui.elem('link', {rel: 'stylesheet', type: 'text/css', href: scriptSrc});
+    scriptElem.onerror = function () {
+        root.removeChild(scriptElem);
+    };
+    root.appendChild(scriptElem);
 };
 
 TEXTSTEP.getSkin = function () {
@@ -740,6 +759,8 @@ function requestAuthenticatedUser() {
 }
 
 TEXTSTEP.init = function (root) {
+    TEXTSTEP.applyTheme('default');
+    TEXTSTEP.applyIcons('default');
     TEXTSTEP.applySkin(TEXTSTEP.getSkin());
     requestAuthenticatedUser().then(user => {
         TEXTSTEP.user = user;
