@@ -99,7 +99,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
                         $image = imagecreatefromgif($src);
                         break;
                     default:
-                        trigger_error('imageSize: unsupported format: ' . $src . ' (' . $type[2] . ')', E_USER_NOTICE);
+                        trigger_error('img: unsupported format: ' . $src . ' (' . $type[2] . ')', E_USER_NOTICE);
                         break;
                 }
                 if (isset($image) and $image !== false) {

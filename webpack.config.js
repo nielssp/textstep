@@ -114,17 +114,19 @@ module.exports = [
     Object.assign(app('workspace'), {
         plugins: [
             new CopyWebpackPlugin([
-                {from: 'assets/**', to: './apps/workspace.app/'},
-            ], {}),
+                {
+                    from: 'assets/**',
+                    to: './apps/workspace.app/'
+                },
+                {
+                    from: 'manifest.json',
+                    to: './manifest.json'
+                },
+            ]), 
             new HtmlWebpackPlugin({
                 hash: true,
                 template: './index.html',
                 filename: './index.html'
-            }),
-            new HtmlWebpackPlugin({
-                hash: true,
-                template: './index.html',
-                filename: '../index.html'
             }),
         ]
     }),
