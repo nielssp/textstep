@@ -329,7 +329,7 @@ abstract class Snippet
 
     protected function getRequestedFile()
     {
-        if (isset($this->request->query['path'])) {
+        if (isset($this->request->query['path']) and is_string($this->request->query['path'])) {
             return $this->m->files->get($this->request->query['path']);
         } else {
             throw new RuntimeException('"path" expected');

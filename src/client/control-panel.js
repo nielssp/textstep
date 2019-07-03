@@ -170,7 +170,7 @@ function sitePanel(config) {
     return dialogForm;
 }
 
-function appearancePanel() {
+function appearancePanel(frame) {
     let skin = TEXTSTEP.getSkin();
 
     let dialog = new ui.StackColumn();
@@ -191,6 +191,16 @@ function appearancePanel() {
     };
     fieldSet.append(bg);
 
+    let openButton = ui.elem('button', {}, ['Select skin']);
+    openButton.onclick = () => {
+        frame.file('Select skin').then(path => {
+            TEXTSTEP.get('content', {path: path[0]}).then(skin => {
+                TEXTSTEP.applySkin(skin);
+            });
+        });
+    };
+    fieldSet.append(openButton);
+
     return dialog;
 }
 
@@ -206,7 +216,7 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     let pageView = new PageView();
     pageView.padding();
     pageView.addPage('site', 'Site', sitePanel(config));
-    pageView.addPage('appearance', 'Appearance', appearancePanel());
+    pageView.addPage('appearance', 'Appearance', appearancePanel(frame));
     frame.append(pageView, {grow: 1});
 
     let adjustContent = () => pageView.readjust();

@@ -21,7 +21,13 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     --inactive-titlebar-fg: var(--frame-fg);
 
     --input-bg: #ffffff;
+    --input-bg-rgb: 255, 255, 255;
     --input-fg: #000000;
+
+    --item-bg: var(--frame-bg);
+    --item-fg: var(--frame-fg);
+    --active-item-bg: #ffffff;
+    --active-item-fg: #000000;
 
     --outer-gaps: 10px;
     --inner-gaps: 10px;

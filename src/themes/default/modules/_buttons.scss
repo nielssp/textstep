@@ -30,8 +30,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &, &:link, &:visited, &:active {
         color: #000;
         text-decoration: none;
-        background-color: $frameBg;
-        color: $frameFg;
+        background-color: var(--frame-bg);
+        color: var(--frame-fg);
         text-decoration: none;
         box-shadow: inset -1px -1px 0px #555555;
         border: 1px solid #fff;
@@ -50,11 +50,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &:default {
         font-weight: bold;
     }
-    &:hover {
-        background-color: lighten($frameBg, 5%);
-        color: $frameFg;
-        text-decoration: none;
-    }
     &:active {
         background-color: #ffffff;
         border: 1px solid #000000;
@@ -70,7 +65,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         &, &:hover, &:active {
             color: #666666;
             text-shadow: 1px 1px 0 #eee;
-            background-color: $frameBg;
+            background-color: var(--frame-bg);
             cursor: default;
         }
         .icon {

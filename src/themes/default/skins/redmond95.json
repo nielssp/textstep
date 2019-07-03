@@ -1,0 +1,15 @@
+{
+  "name": "Redmond 95",
+  "desktop-bg": "#008080",
+  "desktop-fg": "#ffffff",
+  "frame-bg": "#c0c0c0",
+  "frame-fg": "#000000",
+  "active-titlebar-bg": "#000080",
+  "active-titlebar-fg": "#ffffff",
+  "inactive-titlebar-bg": "#000080",
+  "inactive-titlebar-fg": "#808080",
+  "item-bg": "#ffffff",
+  "item-fg": "#000000",
+  "active-item-bg": "#000080",
+  "active-item-fg": "#ffffff"
+}

@@ -32,6 +32,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border: 1px solid #555;
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
+    background-color: var(--item-bg);
+    color: var(--item-fg);
     /*min-height: 200px;*/
     flex-grow: 1;
     position: relative;
@@ -94,7 +96,8 @@ a.file {
         text-decoration: none;
     }
     &.active {
-        background-color: #fff;
+        background-color: var(--active-item-bg);
+        color: var(--active-item-fg);
     }
     &:focus, &.match {
         outline: 1px solid #000;

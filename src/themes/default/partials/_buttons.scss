@@ -35,7 +35,7 @@ $buttons: '.button, button, input[type=button], input[type=reset], input[type=su
             &, &:hover, &:active {
                 color: #666666;
                 text-shadow: 1px 1px 0 #eee;
-                background-color: $frameBg;
+                background-color: var(--frame-bg);
                 cursor: default;
                 outline: none;
             }
