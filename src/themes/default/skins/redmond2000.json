@@ -1,0 +1,15 @@
+{
+  "name": "Redmond 2000",
+  "desktop-bg": "#396BA5",
+  "desktop-fg": "#ffffff",
+  "frame-bg": "#D6D6CE",
+  "frame-fg": "#000000",
+  "active-titlebar-bg": "linear-gradient(90deg, #08216B, #A5C6F7)",
+  "active-titlebar-fg": "#ffffff",
+  "inactive-titlebar-bg": "linear-gradient(90deg, #848484, #C6C6C6)",
+  "inactive-titlebar-fg": "#D6D6CE",
+  "item-bg": "#ffffff",
+  "item-fg": "#000000",
+  "active-item-bg": "#000080",
+  "active-item-fg": "#ffffff"
+}
