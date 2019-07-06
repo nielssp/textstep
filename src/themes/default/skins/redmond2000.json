@@ -11,5 +11,6 @@
   "item-bg": "#ffffff",
   "item-fg": "#000000",
   "active-item-bg": "#000080",
-  "active-item-fg": "#ffffff"
+  "active-item-fg": "#ffffff",
+  "dock-frame-bg": "#848484 linear-gradient(135deg, #848484 0%,#C6C6C6 100%)"
 }

@@ -177,6 +177,7 @@ export class Dialog extends Container {
         dialog.title = title;
         var dirView = new DirView();
         var toolbar = new Toolbar();
+        toolbar.padding('bottom');
         toolbar.createGroup()
             .addItem('Go up', 'go-up', () => dirView.goUp())
             .addItem('Go to root', 'go-home', () => dirView.cd('/'))

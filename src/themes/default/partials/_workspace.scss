@@ -142,13 +142,7 @@ main {
         border-bottom: 1px solid #000;
         border-right: 1px solid #000;
         box-shadow: inset -1px -1px 0 #222233;
-        background: #aaaabb; /* Old browsers */
-        background: -moz-linear-gradient(-45deg, #aaaabb 0%, #555566 100%); /* FF3.6-15 */
-        background: -webkit-linear-gradient(-45deg, #aaaabb 0%,#555566 100%); /* Chrome10-25,Safari5.1-6 */
-        background: linear-gradient(135deg, #aaaabb 0%,#555566 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aaaabb', endColorstr='#555566',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-        img {
-        }
+        background: var(--dock-frame-bg);
         label {
             position: absolute;
             bottom: 1px;

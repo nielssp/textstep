@@ -633,6 +633,16 @@ TEXTSTEP.applySkin = function (skin) {
     localStorage.setItem('textstepSkin', JSON.stringify(skin));
 };
 
+TEXTSTEP.resetSkin = function () {
+    for (let i = root.style.length - 1; i >= 0; i--) {
+        let property = root.style[i];
+        if (property.startsWith('--')) {
+            console.log(property, root.style.removeProperty(property));
+        }
+    }
+    localStorage.removeItem('textstepSkin');
+};
+
 function createWorkspaceMenu() {
     var menu = new Menu('Workspace');
     let runCommand = name => TEXTSTEP.run(name);

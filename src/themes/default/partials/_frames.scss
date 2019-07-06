@@ -18,9 +18,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         color: var(--inactive-titlebar-fg);
         font-weight: bold;
         font-size: 0.9em;
-        border: 1px solid #A2A2A2;
-        border-right: 1px solid #4F4F4F;
-        border-bottom: 1px solid #4F4F4F;
+        border: 1px solid rgba(255,255,255,0.635);
+        border-right: 1px solid rgba(255,255,255,0.31);
+        border-bottom: 1px solid rgba(255,255,255,0.31);
         position: relative;
         flex-grow: 0;
         flex-shrink: 0;
@@ -41,9 +41,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 padding: 0;
                 font-weight: bold;
                 font-size: 0.9em;
-                border: 1px solid #A2A2A2;
-                border-right: 1px solid #4F4F4F;
-                border-bottom: 1px solid #4F4F4F;
+                border: 1px solid rgba(255,255,255,0.635);
+                border-right: 1px solid rgba(255,255,255,0.31);
+                border-bottom: 1px solid rgba(255,255,255,0.31);
                 position: relative;
                 &:active {
                     background-color: #fff;
