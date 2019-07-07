@@ -7,6 +7,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 .ts-dialog-container {
     display: flex;
+    overflow: auto;
 
     & > &-inner {
         flex-grow: 1;
@@ -19,12 +20,15 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         border-bottom: 1px solid #fff;
         box-shadow: inset 1px 1px 0 #000;
         padding: var(--inner-gaps);
+        overflow: hidden;
 
         & > .ts-dialog-container-inner {
             align-self: flex-start;
             background: var(--frame-bg);
             border: 1px solid #000;
             box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+            overflow: auto;
+            max-height: 100%;
         }
     }
 }

@@ -100,6 +100,9 @@ export class Container extends Component {
         if (properties.hasOwnProperty('grow')) {
             child.style.flexGrow = properties.grow;
         }
+        if (properties.hasOwnProperty('shrink')) {
+            child.style.flexShrink = properties.shrink;
+        }
         if (properties.hasOwnProperty('align')) {
             child.style.alignSelf = properties.align;
         }

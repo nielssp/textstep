@@ -48,7 +48,7 @@ class PageView extends ui.Component {
         this.pageToolbar = new ui.Toolbar(); 
         this.pageToolbar.padding('bottom');
         this.pageToolbar.addItem('Back', 'go-back', () => this.close());
-        this.main.append(this.pageToolbar);
+        this.main.append(this.pageToolbar, {shrink: 0});
 
         this.pageContainer = new ui.DialogContainer();
         this.pageContainer.padding();

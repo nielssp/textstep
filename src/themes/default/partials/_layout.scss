@@ -29,6 +29,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .ts-stack-row {
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 
     &.ts-stack-row-padding > * ~ * {
         margin-left: var(--frame-padding);
@@ -38,6 +39,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 .ts-stack-column {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 
     &.ts-stack-column-padding > * ~ * {
         margin-top: var(--frame-padding);
