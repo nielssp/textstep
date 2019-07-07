@@ -16,6 +16,9 @@ import {
     ScrollPanel,
     DialogContainer,
     ProgressBar,
+    HueSlider,
+    ValueSaturation,
+    HsvPicker,
 } from './component';
 import {Toolbar} from './toolbar';
 import DirView from './dirview';
@@ -31,6 +34,9 @@ export {
     ScrollPanel,
     DialogContainer,
     ProgressBar,
+    HueSlider,
+    ValueSaturation,
+    HsvPicker,
     Toolbar,
     DirView,
 };

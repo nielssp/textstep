@@ -115,6 +115,15 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
         });
     }, ['dialogs']);
 
+    frame.defineAction('color', function () {
+        frame.disableGroup('dialogs');
+        frame.color('Select color', '#00ff00').then(function (choice) {
+            frame.alert('Choice:', choice);
+        }).finally(function () {
+            frame.enableGroup('dialogs');
+        });
+    }, ['dialogs']);
+
     frame.defineAction('terminal', function () {
         TEXTSTEP.run('terminal');
     });
@@ -141,6 +150,7 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
       .addSubmenu('Test 4')
           .addItem('Test 5', () => {});
     menu.addItem('File', 'file');
+    menu.addItem('Color', 'color');
     menu.addItem('Open terminal', 'terminal');
 
     frame.onClose = function () {

@@ -124,6 +124,10 @@ export class Frame extends Container {
         return Dialog.file(this.inner, title);
     }
 
+    color(title, value) {
+        return Dialog.color(this.inner, title, value);
+    }
+
     keydown(e) {
         if (e.defaultPrevented || this.isDialogOpen()) {
             return;

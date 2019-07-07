@@ -3,7 +3,6 @@ $inputs: 'input[type=text], input[type=email], input[type=password], input[type=
 
 #{$inputs} {
     padding: 2px 4px 2px 4px;
-    margin: 2px 0;
     display: block;
     font-size: 14px;
     background: var(--input-bg);
@@ -20,7 +19,7 @@ $inputs: 'input[type=text], input[type=email], input[type=password], input[type=
     }
 
     &[disabled] {
-        background-color: $frameBg;
+        background-color: var(--frame-bg);
     }
     &.input-xs {
         padding: 0px 1px 0px;
@@ -59,7 +58,7 @@ textarea {
 
 input[type=checkbox] {
     -webkit-appearance: none;
-    background-color: $frameBg;
+    background-color: var(--frame-bg);
     box-shadow: inset -1px -1px 0px #555555;
     border: 1px solid #fff;
     border-right: 1px solid #000000;
@@ -70,10 +69,6 @@ input[type=checkbox] {
     vertical-align: middle;
     margin: -2px 0 0 0;
     text-align: center;
-
-    &:hover {
-        background-color: lighten($frameBg, 5%);
-    }
 
     &:checked:before {
         color: #000000;
@@ -90,14 +85,14 @@ input[type=checkbox] {
     }
 
     &[disabled] {
-        background-color: $frameBg;
+        background-color: var(--frame-bg);
         opacity: 0.5;
     }
 }
 
 input[type=radio] {
     -webkit-appearance: none;
-    background-color: $frameBg;
+    background-color: var(--frame-bg);
     box-shadow: inset 1px 1px 0px #000000;
     border: 1px solid #515551;
     border-right: 1px solid #ffffff;
@@ -109,10 +104,6 @@ input[type=radio] {
     vertical-align: middle;
     margin: -2px 0 0 0;
     text-align: center;
-
-    &:hover {
-        background-color: lighten($frameBg, 5%);
-    }
 
     &:active:before,
         &:checked:before {
@@ -136,7 +127,7 @@ input[type=radio] {
     }
 
     &[disabled] {
-        background-color: $frameBg;
+        background-color: var(--frame-bg);
         opacity: 0.5;
     }
 }
@@ -169,7 +160,7 @@ select:not([size="1"]) {
     }
 
     &[disabled] {
-        background-color: $frameBg;
+        background-color: var(--frame-bg);
     }
 }
 

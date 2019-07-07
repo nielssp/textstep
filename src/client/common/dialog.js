@@ -214,4 +214,59 @@ export class Dialog extends Container {
         dialog.append(footer);
         return dialog.open();
     }
+
+    static color(parent, title, value) {
+        var dialog = new Dialog(parent);
+        dialog.padding();
+        dialog.title = title;
+        var colorPicker = new ui.HsvPicker();
+        colorPicker.color = value;
+        colorPicker.outer.style.minHeight = '200px';
+        colorPicker.outer.style.minWidth = '240px';
+        dialog.append(colorPicker);
+        var okButton = ui.elem('button', {}, ['OK']);
+        okButton.onclick = function () {
+            dialog.close(colorPicker.color);
+        };
+        okButton.onkeydown = function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
+        };
+        var cancelButton = ui.elem('button', {}, ['Cancel']);
+        cancelButton.onclick = function () {
+            dialog.close(null);
+        };
+        cancelButton.onkeydown = function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
+        };
+        var inputRow = new StackRow();
+        inputRow.innerPadding = true;
+        inputRow.padding('top');
+        dialog.append(inputRow);
+
+        var input = ui.elem('input', {type: 'text', value: value})
+        inputRow.append(input, {grow: 1});
+
+        var color = ui.elem('div', {'class': 'ts-inset'});
+        color.style.width = '100%';
+        color.style.backgroundColor = value;
+        inputRow.append(color, {grow: 1});
+
+        colorPicker.onchange = value => {
+            input.value = value;
+            color.style.backgroundColor = value;
+        };
+
+        var footer = new StackRow();
+        footer.justifyContent = 'flex-end';
+        footer.padding('top');
+        footer.innerPadding = true;
+        footer.append(okButton);
+        footer.append(cancelButton);
+        dialog.append(footer);
+        return dialog.open();
+    }
 }
