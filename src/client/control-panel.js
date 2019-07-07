@@ -173,6 +173,15 @@ function sitePanel(config) {
     return dialogForm;
 }
 
+function sessionPanel() {
+    let dialog = new ui.StackColumn();
+
+    let list = new ui.ListView();
+    dialog.append(list);
+
+    return dialog;
+}
+
 function userPanel() {
     let dialog = new ui.StackColumn();
 
@@ -396,7 +405,12 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     pageView.padding();
     pageView.addPage('site', 'Site', sitePanel(config));
     pageView.addPage('appearance', 'Appearance', appearancePanel(frame));
-    pageView.addPage('users', 'Users', userPanel());
+    if (TEXTSTEP.hasPermission('sessions.self.view')) {
+        pageView.addPage('sessions', 'Sessions', sessionPanel());
+    }
+    if (TEXTSTEP.hasPermission('users.view')) {
+        pageView.addPage('users', 'Users', userPanel());
+    }
     pageView.onopen = page => app.setArgs({page: page});
     frame.append(pageView, {grow: 1});
 

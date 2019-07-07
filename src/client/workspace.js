@@ -175,7 +175,22 @@ TEXTSTEP.delete = function (action, query = {}, responseType = null) {
     return TEXTSTEP.ajax(TEXTSTEP.url(action, query, false), 'delete', null, responseType);
 };
 
-TEXTSTEP.requestLogin = function(overlay = false) {
+TEXTSTEP.hasPermission = function (permission) {
+    if (!TEXTSTEP.user) {
+        return false;
+    }
+    if (TEXTSTEP.user.system) {
+        return true;
+    }
+    for (let p of TEXTSTEP.user.permissions) {
+        if (p === permission || permission.startsWith(p + '.')) {
+            return true;
+        }
+    }
+    return false;
+};
+
+TEXTSTEP.requestLogin = function (overlay = false) {
     if (loginFrame && loginFrame.promise) {
         return loginFrame.promise;
     }

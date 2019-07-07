@@ -133,16 +133,29 @@ paths:
                 properties:
                   username:
                     type: string
-                    description: The username
+                    description: The username of the current user
                   home:
                     type: string
-                    description: Absolute path to user's home directory
+                    description: Absolute path to the current user's home directory
                   shell:
                     type: string
                     description: The name of the shell application
                   version:
                     type: string
-                    description: Version string
+                    description: Server version string
+                  system:
+                    type: boolean
+                    description: Whether the current user is a system user
+                  groups:
+                    type: array
+                    description: List of groups that the current user is a member of
+                    items:
+                      type: string
+                  permission:
+                    type: array
+                    description: List of permissions that the current user has
+                    items:
+                      type: string
   /file:
     get:
       description: List file attributes and directory content

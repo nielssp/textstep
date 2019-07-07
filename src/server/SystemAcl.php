@@ -78,6 +78,18 @@ class SystemAcl
         }
         return $parent;
     }
+
+    public function getPermissions(\Blogstep\User $user)
+    {
+        $userGroups = $user->getGroups();
+        $permissions = [];
+        foreach ($this->getRecords() as $permission => $groups) {
+            if (count(array_intersect($userGroups, $groups)) > 0) {
+                $permissions[] = $permission;
+            }
+        }
+        return $permissions;
+    }
     
     public function check($key, \Blogstep\User $user = null)
     {

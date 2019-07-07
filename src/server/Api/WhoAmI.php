@@ -22,7 +22,10 @@ class WhoAmI extends \Blogstep\AuthenticatedSnippet
             'username' => $this->user->getName(),
             'home' => $this->user->getHome()->getPath(),
             'shell' => 'files',
-            'version' => \Blogstep\Main::VERSION
+            'version' => \Blogstep\Main::VERSION,
+            'groups' => $this->user->getGroups(),
+            'system' => $this->user->isSystem(),
+            'permissions' => $this->m->acl->getPermissions($this->user)
         ]);
     }
 }
