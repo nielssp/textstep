@@ -29,7 +29,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     --active-item-bg: #ffffff;
     --active-item-fg: #000000;
 
-    --dock-frame-bg: #aaaabb linear-gradient(135deg, #aaaabb 0%,#555566 100%);
+    --dock-frame-bg: linear-gradient(to bottom right, #aaaabb, #555566);
+    --dock-frame-fg: #000000;
 
     --outer-gaps: 10px;
     --inner-gaps: 10px;

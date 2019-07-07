@@ -641,6 +641,19 @@ TEXTSTEP.getSkin = function () {
     return activeSkin;
 };
 
+TEXTSTEP.getSkinProperty = function (property) {
+    let skin = TEXTSTEP.getSkin();
+    if (skin.hasOwnProperty(property)) {
+        return skin[property];
+    }
+    return getComputedStyle(root).getPropertyValue('--' + property);
+};
+
+TEXTSTEP.setSkinProperty = function (property, value) {
+    TEXTSTEP.getSkin()[property] = value;
+    TEXTSTEP.applySkin(activeSkin);
+};
+
 TEXTSTEP.applySkin = function (skin) {
     TEXTSTEP.resetSkin();
     activeSkin = skin;

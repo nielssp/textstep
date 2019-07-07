@@ -62,6 +62,8 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
     position: relative;
+    background-color: var(--item-bg);
+    color: var(--item-fg);
     & > .ts-list-view-items {
         position: absolute;
         top: 0;
@@ -93,11 +95,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
 a.ts-list-view-item {
     &:hover, &:active {
-        background-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.3);
         text-decoration: none;
     }
     &.active {
-        background-color: #fff;
+        background-color: var(--active-item-bg);
+        color: var(--active-item-fg);
     }
     &:focus, &.match {
         outline: 1px solid #000;

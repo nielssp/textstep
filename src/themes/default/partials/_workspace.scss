@@ -144,6 +144,7 @@ main {
         border-right: 1px solid #000;
         box-shadow: inset -1px -1px 0 #222233;
         background: var(--dock-frame-bg);
+        color: var(--dock-frame-fg);
         label {
             position: absolute;
             bottom: 1px;

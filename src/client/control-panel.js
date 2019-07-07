@@ -201,8 +201,8 @@ class BgSelector extends ui.Component {
         this.typeSelect.appendChild(ui.elem('option', {value: 'solid'}, ['Solid']));
         this.typeSelect.appendChild(ui.elem('option', {value: 'horizontal'}, ['Horizontal gradient']));
         this.typeSelect.appendChild(ui.elem('option', {value: 'vertical'}, ['Vertical gradient']));
-        this.typeSelect.appendChild(ui.elem('option', {value: 'sw'}, ['SW diagonal gradient']));
-        this.typeSelect.appendChild(ui.elem('option', {value: 'nw'}, ['NW diagonal gradient']));
+        this.typeSelect.appendChild(ui.elem('option', {value: 'se'}, ['SE diagonal gradient']));
+        this.typeSelect.appendChild(ui.elem('option', {value: 'ne'}, ['NE diagonal gradient']));
         this.container.append(this.typeSelect);
 
         this.color1 = new ui.ColorButton(frame);
@@ -233,9 +233,9 @@ class BgSelector extends ui.Component {
                 return `linear-gradient(to right, ${this.color1.color}, ${this.color2.color})`;
             case 'vertical':
                 return `linear-gradient(to bottom, ${this.color1.color}, ${this.color2.color})`;
-            case 'sw':
+            case 'se':
                 return `linear-gradient(to bottom right, ${this.color1.color}, ${this.color2.color})`;
-            case 'nw':
+            case 'ne':
                 return `linear-gradient(to top right, ${this.color1.color}, ${this.color2.color})`;
             case 'solid':
             default:
@@ -260,10 +260,10 @@ class BgSelector extends ui.Component {
                         this.typeSelect.value = 'vertical';
                         break;
                     case 'bottom right':
-                        this.typeSelect.value = 'sw';
+                        this.typeSelect.value = 'se';
                         break;
                     case 'top right':
-                        this.typeSelect.value = 'nw';
+                        this.typeSelect.value = 'ne';
                         break;
                 }
                 this.color1.visible = true;
@@ -277,6 +277,32 @@ class BgSelector extends ui.Component {
             }
         }
     }
+}
+
+function widgetStyle(frame, title, name) {
+    let fieldSet = new ui.FieldSet();
+    fieldSet.legend = title;
+
+    let grid = new ui.Grid();
+    grid.columns = 'min-content auto';
+    grid.rowPadding = true;
+    grid.columnPadding = true;
+    fieldSet.append(grid);
+
+    grid.append(label('Background:'));
+    let bg = new BgSelector(frame);
+    let bgVar = `${name}-bg`;
+    bg.value = TEXTSTEP.getSkinProperty(bgVar).trim();
+    bg.onchange = value => TEXTSTEP.setSkinProperty(bgVar, value);
+    grid.append(bg);
+
+    grid.append(label('Text:'));
+    let fg = new ui.ColorButton(frame);
+    let fgVar = `${name}-fg`;
+    fg.color = TEXTSTEP.getSkinProperty(fgVar).trim();
+    fg.onchange = value => TEXTSTEP.setSkinProperty(fgVar, value);
+    grid.append(ui.elem('div', {}, [fg.outer]));
+    return fieldSet;
 }
 
 function appearancePanel(frame) {
@@ -355,39 +381,23 @@ function appearancePanel(frame) {
 
     let colorPicker = new ui.HsvPicker();
     colorPicker.outer.style.minHeight = '200px';
-    colorPicker.onchange = color => {
-        TEXTSTEP.applySkin(Object.assign(TEXTSTEP.getSkin(), {
-            'desktop-bg': color
-        }));
-    };
-    if (skin.hasOwnProperty('desktop-bg')) {
-        colorPicker.color = skin['desktop-bg'];
-    } else {
-        colorPicker.color = '#515171'; // TODO: default skin
-    }
+    colorPicker.onchange = color => TEXTSTEP.setSkinProperty('desktop-bg', color);
+    colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim();
     bgFieldSet.append(colorPicker, {grow: 1});
 
-    let titleBarFieldSet = new ui.FieldSet();
-    titleBarFieldSet.legend = 'Title bars';
-    dialog.append(titleBarFieldSet);
+    dialog.append(widgetStyle(frame, 'Active title bars', 'active-titlebar'));
 
-    let tbBg = new BgSelector(frame);
-    if (skin.hasOwnProperty('active-titlebar-bg')) {
-        tbBg.value = skin['active-titlebar-bg'];
-    }
-    tbBg.onchange = bg => TEXTSTEP.applySkin(Object.assign(TEXTSTEP.getSkin(), {
-        'active-titlebar-bg': bg
-    }));
-    titleBarFieldSet.append(tbBg);
+    dialog.append(widgetStyle(frame, 'Inactive title bars', 'inactive-titlebar'));
 
-    let tbFgButton = new ui.ColorButton(frame);
-    if (skin.hasOwnProperty('active-titlebar-fg')) {
-        tbFgButton.color = skin['active-titlebar-fg'];
-    }
-    tbFgButton.onchange = color => TEXTSTEP.applySkin(Object.assign(TEXTSTEP.getSkin(), {
-        'active-titlebar-fg': color
-    }));
-    titleBarFieldSet.append(tbFgButton);
+    dialog.append(widgetStyle(frame, 'Frames', 'frame'));
+
+    dialog.append(widgetStyle(frame, 'Dock frames', 'dock-frame'));
+
+    dialog.append(widgetStyle(frame, 'Inputs', 'input'));
+
+    dialog.append(widgetStyle(frame, 'Items', 'item'));
+
+    dialog.append(widgetStyle(frame, 'Highlighted items', 'active-item'));
 
     return dialog;
 }

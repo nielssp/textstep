@@ -83,7 +83,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         flex-direction: column;
         position: relative;
         flex-grow: 1;
-        background-color: var(--frame-bg);
+        background: var(--frame-bg);
         color: var(--frame-fg);
         border-top: 1px solid #000;
         margin: 0;
