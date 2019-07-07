@@ -6,7 +6,7 @@
   "frame-fg": "#000000",
   "active-titlebar-bg": "linear-gradient(to right, #000080, #0884CE)",
   "active-titlebar-fg": "#ffffff",
-  "inactive-titlebar-bg": "linear-gradient(to right, #808080, #B0B0B)",
+  "inactive-titlebar-bg": "linear-gradient(to right, #808080, #B0B0B0)",
   "inactive-titlebar-fg": "#b0b0b0",
   "item-bg": "#ffffff",
   "item-fg": "#000000",

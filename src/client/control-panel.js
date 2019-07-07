@@ -294,14 +294,20 @@ function widgetStyle(frame, title, name) {
     let bg = new BgSelector(frame);
     let bgVar = `${name}-bg`;
     bg.value = TEXTSTEP.getSkinProperty(bgVar).trim();
-    bg.onchange = value => TEXTSTEP.setSkinProperty(bgVar, value);
+    bg.onchange = value => {
+        TEXTSTEP.setSkinProperty(bgVar, value);
+        TEXTSTEP.setSkinProperty('path', null)
+    };
     grid.append(bg);
 
     grid.append(label('Text:'));
     let fg = new ui.ColorButton(frame);
     let fgVar = `${name}-fg`;
     fg.color = TEXTSTEP.getSkinProperty(fgVar).trim();
-    fg.onchange = value => TEXTSTEP.setSkinProperty(fgVar, value);
+    fg.onchange = value => {
+        TEXTSTEP.setSkinProperty(fgVar, value);
+        TEXTSTEP.setSkinProperty('path', null)
+    };
     grid.append(ui.elem('div', {}, [fg.outer]));
 
     TEXTSTEP.addEventListener('skinChanged', () => {
@@ -312,7 +318,6 @@ function widgetStyle(frame, title, name) {
 }
 
 function appearancePanel(frame) {
-    let skin = TEXTSTEP.getSkin();
 
     let dialog = new ui.StackColumn();
     dialog.innerPadding = true;
@@ -350,6 +355,23 @@ function appearancePanel(frame) {
     skinFieldSet.append(skinRow);
 
     let skinSelect = ui.elem('select', {size: 1, disabled: true});
+    let selectCurrentSkin = () => {
+        let skin = TEXTSTEP.getSkin();
+        if (skin.hasOwnProperty('path') && typeof skin.path === 'string') {
+            let existing = Array.prototype.find.call(skinSelect.options, option => option.value === skin.path);
+            if (!existing) {
+                let name = skin.path.replace(/^.*?\/([^\/]*?)(\.json)?$/i, '$1');
+                skinSelect.appendChild(ui.elem('option', {value: skin.path}, [name]));
+            }
+            skinSelect.value = skin.path;
+        } else {
+            let existing = Array.prototype.find.call(skinSelect.options, option => option.value === '');
+            if (!existing) {
+                skinSelect.appendChild(ui.elem('option', {value: ''}, ['Unnamed color scheme']));
+            }
+            skinSelect.value = '';
+        }
+    };
     TEXTSTEP.get('file', {path: '/dist/themes/default/skins', list: true}).then(dir => {
         dir.files.forEach(skin => {
             if (skin.name.match(/\.json$/i)) {
@@ -357,12 +379,13 @@ function appearancePanel(frame) {
                 skinSelect.appendChild(ui.elem('option', {value: skin.path}, [name]));
             }
         });
-        if (skin.hasOwnProperty('path')) {
-            skinSelect.value = skin.path;
-        }
         skinSelect.disabled = false;
+        selectCurrentSkin();
     });
     skinSelect.onchange = () => {
+        if (!skinSelect.value) {
+            return;
+        }
         TEXTSTEP.get('content', {path: skinSelect.value}).then(skin => {
             skin.path = skinSelect.value;
             TEXTSTEP.applySkin(skin);
@@ -370,16 +393,24 @@ function appearancePanel(frame) {
     };
     skinRow.append(skinSelect, {grow: 1});
 
-    let skinBrowse = ui.elem('button', {}, ['Browse']);
+    let skinBrowse = ui.elem('button', {}, ['Load']);
     skinBrowse.onclick = () => {
         frame.file('Load skin').then(path => {
             TEXTSTEP.get('content', {path: path[0]}).then(skin => {
-                skin.path = path;
+                skin.path = path[0];
                 TEXTSTEP.applySkin(skin);
+                let name = skin.path.replace(/^.*?\/([^\/]*?)(\.json)?$/i, '$1');
+                skinSelect.appendChild(ui.elem('option', {value: skin.path}, [name]));
+                skinSelect.value = skin.path;
             });
         });
     };
     skinRow.append(skinBrowse);
+
+    let skinSave = ui.elem('button', {}, ['Save as']);
+    skinSave.onclick = () => {
+    };
+    skinRow.append(skinSave);
 
     let bgFieldSet = new ui.FieldSet();
     bgFieldSet.legend = 'Background';
@@ -387,10 +418,17 @@ function appearancePanel(frame) {
 
     let colorPicker = new ui.HsvPicker();
     colorPicker.outer.style.minHeight = '200px';
-    colorPicker.onchange = color => TEXTSTEP.setSkinProperty('desktop-bg', color);
+    colorPicker.onchange = color => {
+        TEXTSTEP.setSkinProperty('desktop-bg', color)
+        TEXTSTEP.setSkinProperty('path', null)
+    };
     colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim();
     bgFieldSet.append(colorPicker, {grow: 1});
-    TEXTSTEP.addEventListener('skinChanged', () => colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim());
+
+    TEXTSTEP.addEventListener('skinChanged', () => {
+        colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim()
+        selectCurrentSkin();
+    });
 
     dialog.append(widgetStyle(frame, 'Active title bars', 'active-titlebar'));
 
