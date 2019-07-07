@@ -195,6 +195,7 @@ class BgSelector extends ui.Component {
     constructor(frame) {
         super();
         this.container = new ui.StackRow();
+        this.container.wrap = true;
         this.outer = this.container.outer;
 
         this.typeSelect = ui.elem('select', {size: 1});

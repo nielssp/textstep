@@ -161,6 +161,10 @@ export class StackRow extends Container {
     set justifyContent(justify) {
         this.outer.style.justifyContent = justify;
     }
+
+    set wrap(wrap) {
+        this.outer.style.flexWrap = wrap ? 'wrap' : 'nowrap';
+    }
 }
 
 export class StackColumn extends Container {
@@ -183,6 +187,10 @@ export class StackColumn extends Container {
 
     set justifyContent(justify) {
         this.outer.style.justifyContent = justify;
+    }
+
+    set wrap(wrap) {
+        this.outer.style.flexWrap = wrap ? 'wrap' : 'nowrap';
     }
 }
 
