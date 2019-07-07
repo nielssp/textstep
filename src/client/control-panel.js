@@ -182,6 +182,94 @@ function userPanel() {
     return dialog;
 }
 
+class BgSelector extends ui.Component {
+    constructor(frame) {
+        super();
+        this.container = new ui.StackRow();
+        this.outer = this.container.outer;
+
+        this.typeSelect = ui.elem('select', {size: 1});
+        this.typeSelect.appendChild(ui.elem('option', {value: 'solid'}, ['Solid']));
+        this.typeSelect.appendChild(ui.elem('option', {value: 'horizontal'}, ['Horizontal gradient']));
+        this.typeSelect.appendChild(ui.elem('option', {value: 'vertical'}, ['Vertical gradient']));
+        this.typeSelect.appendChild(ui.elem('option', {value: 'sw'}, ['SW diagonal gradient']));
+        this.typeSelect.appendChild(ui.elem('option', {value: 'nw'}, ['NW diagonal gradient']));
+        this.container.append(this.typeSelect);
+
+        this.color1 = new ui.ColorButton(frame);
+        this.container.append(this.color1);
+
+        this.color2 = new ui.ColorButton(frame);
+        this.color2.visible = false;
+        this.container.append(this.color2);
+
+        this.typeSelect.onchange = () => {
+            this.color1.visible = true;
+            if (this.typeSelect.value === 'solid') {
+                this.color2.visible = false;
+            } else {
+                this.color2.visible = true;
+            }
+            this.trigger('change', this.value);
+        };
+        this.color1.onchange = () => this.trigger('change', this.value);
+        this.color2.onchange = () => this.trigger('change', this.value);
+
+        this.onchange = () => {};
+    }
+
+    get value() {
+        switch (this.typeSelect.value) {
+            case 'horizontal':
+                return `linear-gradient(to right, ${this.color1.color}, ${this.color2.color})`;
+            case 'vertical':
+                return `linear-gradient(to bottom, ${this.color1.color}, ${this.color2.color})`;
+            case 'sw':
+                return `linear-gradient(to bottom right, ${this.color1.color}, ${this.color2.color})`;
+            case 'nw':
+                return `linear-gradient(to top right, ${this.color1.color}, ${this.color2.color})`;
+            case 'solid':
+            default:
+                return this.color1.color;
+        }
+    }
+
+    set value(value) {
+        if (value.match(/^#[0-9a-z]{6}$/i)) {
+            this.typeSelect.value = 'solid';
+            this.color1.visible = true;
+            this.color1.color = value;
+            this.color2.visible = false;
+        } else {
+            let m = value.match(/^linear-gradient *\( *to +(bottom(?: right)?|(?:top )?right) *, *(#[0-9a-z]{6}) *, *(#[0-9a-z]{6}) *\)$/i);
+            if (m) {
+                switch (m[1]) {
+                    case 'right':
+                        this.typeSelect.value = 'horizontal';
+                        break;
+                    case 'bottom':
+                        this.typeSelect.value = 'vertical';
+                        break;
+                    case 'bottom right':
+                        this.typeSelect.value = 'sw';
+                        break;
+                    case 'top right':
+                        this.typeSelect.value = 'nw';
+                        break;
+                }
+                this.color1.visible = true;
+                this.color1.color = m[2];
+                this.color2.visible = true;
+                this.color2.color = m[3];
+            } else {
+                this.typeSelect.value = null;
+                this.color1.visible = false;
+                this.color2.visible = false;
+            }
+        }
+    }
+}
+
 function appearancePanel(frame) {
     let skin = TEXTSTEP.getSkin();
 
@@ -232,7 +320,6 @@ function appearancePanel(frame) {
     });
     skinSelect.onchange = () => {
         TEXTSTEP.get('content', {path: skinSelect.value}).then(skin => {
-            TEXTSTEP.resetSkin();
             TEXTSTEP.applySkin(skin);
         });
     };
@@ -248,21 +335,45 @@ function appearancePanel(frame) {
     };
     skinRow.append(skinBrowse);
 
-    let fieldSet = new ui.FieldSet();
-    fieldSet.legend = 'Background';
-    dialog.append(fieldSet);
+    let bgFieldSet = new ui.FieldSet();
+    bgFieldSet.legend = 'Background';
+    dialog.append(bgFieldSet);
 
     let colorPicker = new ui.HsvPicker();
     colorPicker.outer.style.minHeight = '200px';
     colorPicker.onchange = color => {
-        TEXTSTEP.applySkin({'desktop-bg': color});
+        TEXTSTEP.applySkin(Object.assign(TEXTSTEP.getSkin(), {
+            'desktop-bg': color
+        }));
     };
     if (skin.hasOwnProperty('desktop-bg')) {
         colorPicker.color = skin['desktop-bg'];
     } else {
         colorPicker.color = '#515171'; // TODO: default skin
     }
-    fieldSet.append(colorPicker, {grow: 1});
+    bgFieldSet.append(colorPicker, {grow: 1});
+
+    let titleBarFieldSet = new ui.FieldSet();
+    titleBarFieldSet.legend = 'Title bars';
+    dialog.append(titleBarFieldSet);
+
+    let tbBg = new BgSelector(frame);
+    if (skin.hasOwnProperty('active-titlebar-bg')) {
+        tbBg.value = skin['active-titlebar-bg'];
+    }
+    tbBg.onchange = bg => TEXTSTEP.applySkin(Object.assign(TEXTSTEP.getSkin(), {
+        'active-titlebar-bg': bg
+    }));
+    titleBarFieldSet.append(tbBg);
+
+    let tbFgButton = new ui.ColorButton(frame);
+    if (skin.hasOwnProperty('active-titlebar-fg')) {
+        tbFgButton.color = skin['active-titlebar-fg'];
+    }
+    tbFgButton.onchange = color => TEXTSTEP.applySkin(Object.assign(TEXTSTEP.getSkin(), {
+        'active-titlebar-fg': color
+    }));
+    titleBarFieldSet.append(tbFgButton);
 
     return dialog;
 }

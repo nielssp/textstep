@@ -230,7 +230,7 @@ export class ListView extends Container {
         this.items[value] = item;
         return item;
     }
-    
+
     select(value) {
         this.removeSelection();
         if (this.items.hasOwnProperty(value)) {
@@ -340,7 +340,7 @@ export class HueSlider extends Component {
 
         this.outer.className = 'ts-inset';
         this.outer.style.display = 'flex';
-        
+
         this.gradient = elem('div');
         this.gradient.style.background = 'linear-gradient(to bottom, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)';
         this.gradient.style.position = 'relative';
@@ -552,6 +552,7 @@ export class HsvPicker extends Component {
     }
 
     rgbToHsv(r, g, b) {
+        this._color = '#' + this.toHex(r) + this.toHex(g) + this.toHex(b);
         let M = Math.max(r, g, b);
         let m = Math.min(r, g, b);
         let C = M - m;
@@ -581,10 +582,62 @@ export class HsvPicker extends Component {
 
     set color(color) {
         color = color.replace(/^#/, '');
-        this.rgbToHsv(
-            parseInt(color.substring(0, 2), 16) / 255,
-            parseInt(color.substring(2, 4), 16) / 255,
-            parseInt(color.substring(4, 6), 16) / 255
-        );
+        if (color.length === 3) {
+            this.rgbToHsv(
+                parseInt(color[0], 16) / 15,
+                parseInt(color[1], 16) / 15,
+                parseInt(color[2], 16) / 15
+            );
+        } else if (color.length === 6) {
+            this.rgbToHsv(
+                parseInt(color.substring(0, 2), 16) / 255,
+                parseInt(color.substring(2, 4), 16) / 255,
+                parseInt(color.substring(4, 6), 16) / 255
+            );
+        }
+    }
+}
+
+export class ColorButton extends Component {
+    constructor(frame) {
+        super();
+        this.frame = frame;
+        this._color = '#000000';
+
+        this.colorElem = elem('div', {'class': 'ts-inset'});
+        this.colorElem.style.backgroundColor = this._color;
+        this.colorElem.style.width = '16px';
+        this.colorElem.style.height = '16px';
+
+        this.outer = elem('button', {}, [this.colorElem]);
+        this.outer.onclick = () => this.open();
+
+        this.onchange = () => {};
+    }
+
+    open() {
+        return this.frame.color('Select color', this.color).then(color => {
+            if (color) {
+                this.color = color;
+                this.trigger('change', color);
+            }
+        });
+    }
+
+    get color() {
+        return this._color;
+    }
+
+    set color(color) {
+        this._color = color;
+        this.colorElem.style.backgroundColor = color;
+    }
+
+    get disabled() {
+        return this.outer.disabled;
+    }
+
+    set disabled(disabled) {
+        this.outer.disabled = disabled;
     }
 }

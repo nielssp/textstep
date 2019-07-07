@@ -255,6 +255,10 @@ export class Dialog extends Container {
         color.style.backgroundColor = value;
         inputRow.append(color, {grow: 1});
 
+        input.onkeyup = () => {
+            colorPicker.color = input.value;
+            color.style.backgroundColor = colorPicker.color;
+        };
         colorPicker.onchange = value => {
             input.value = value;
             color.style.backgroundColor = value;
@@ -267,6 +271,12 @@ export class Dialog extends Container {
         footer.append(okButton);
         footer.append(cancelButton);
         dialog.append(footer);
-        return dialog.open();
+        let promise = dialog.open();
+        input.focus();
+        if (value.length > 0) {
+            input.value = value;
+            input.setSelectionRange(0, value.length)
+        }
+        return promise;
     }
 }

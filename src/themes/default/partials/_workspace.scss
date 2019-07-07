@@ -84,7 +84,7 @@ aside {
 
     header .version {
         float: right;
-        color: #fff;
+        color: var(--active-titlebar-fg);
         opacity: 0.4;
     }
 

@@ -43,6 +43,8 @@ var focus = null;
 
 var floatingMenu = null;
 
+var activeSkin = null;
+
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
 TEXTSTEP.DIST_PATH = root.getAttribute('data-dist');
@@ -610,18 +612,23 @@ TEXTSTEP.applyIcons = function (name) {
 };
 
 TEXTSTEP.getSkin = function () {
-    let skin = localStorage.getItem('textstepSkin');
-    if (skin) {
-        try {
-            return JSON.parse(skin);
-        } catch (error) {
-            console.error('Could not parse skin', error);
+    if (!activeSkin) {
+        activeSkin = {};
+        let skin = localStorage.getItem('textstepSkin');
+        if (skin) {
+            try {
+                activeSkin = JSON.parse(skin);
+            } catch (error) {
+                console.error('Could not parse skin', error);
+            }
         }
     }
-    return {};
+    return activeSkin;
 };
 
 TEXTSTEP.applySkin = function (skin) {
+    TEXTSTEP.resetSkin();
+    activeSkin = skin;
     for (let key in skin) {
         if (skin.hasOwnProperty(key)) {
             root.style.setProperty('--' + key, skin[key]);
@@ -637,7 +644,7 @@ TEXTSTEP.resetSkin = function () {
     for (let i = root.style.length - 1; i >= 0; i--) {
         let property = root.style[i];
         if (property.startsWith('--')) {
-            console.log(property, root.style.removeProperty(property));
+            root.style.removeProperty(property);
         }
     }
     localStorage.removeItem('textstepSkin');

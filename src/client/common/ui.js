@@ -19,6 +19,7 @@ import {
     HueSlider,
     ValueSaturation,
     HsvPicker,
+    ColorButton,
 } from './component';
 import {Toolbar} from './toolbar';
 import DirView from './dirview';
@@ -37,6 +38,7 @@ export {
     HueSlider,
     ValueSaturation,
     HsvPicker,
+    ColorButton,
     Toolbar,
     DirView,
 };

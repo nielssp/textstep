@@ -4,13 +4,13 @@
   "desktop-fg": "#ffffff",
   "frame-bg": "#c0c0c0",
   "frame-fg": "#000000",
-  "active-titlebar-bg": "linear-gradient(90deg, #000080, #0884CE)",
+  "active-titlebar-bg": "linear-gradient(to right, #000080, #0884CE)",
   "active-titlebar-fg": "#ffffff",
-  "inactive-titlebar-bg": "linear-gradient(90deg, #808080, #B0B0B)",
+  "inactive-titlebar-bg": "linear-gradient(to right, #808080, #B0B0B)",
   "inactive-titlebar-fg": "#b0b0b0",
   "item-bg": "#ffffff",
   "item-fg": "#000000",
   "active-item-bg": "#000080",
   "active-item-fg": "#ffffff",
-  "dock-frame-bg": "#808080 linear-gradient(135deg, #808080 0%,#B0B0B0 100%)"
+  "dock-frame-bg": "linear-gradient(to bottom right, #808080, #B0B0B0)"
 }
