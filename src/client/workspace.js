@@ -45,6 +45,8 @@ var floatingMenu = null;
 
 var activeSkin = null;
 
+var events = {};
+
 TEXTSTEP.SERVER = root.getAttribute('data-server').replace(/\/$/, '');
 
 TEXTSTEP.DIST_PATH = root.getAttribute('data-dist');
@@ -52,6 +54,25 @@ TEXTSTEP.DIST_PATH = root.getAttribute('data-dist');
 TEXTSTEP.LOAD_TIMEOUT = 10000;
 
 TEXTSTEP.user = null;
+
+TEXTSTEP.trigger = function (eventName, eventData) {
+    if (events.hasOwnProperty(eventName)) {
+        events[eventName](eventData);
+    }
+};
+
+TEXTSTEP.addEventListener = function (eventName, handler) {
+    if (events.hasOwnProperty(eventName)) {
+        let previous = events[ eventName];
+        events[eventName] = (eventData) => {
+            if (previous(eventData) !== false) {
+                return handler(eventData);
+            }
+        };
+    } else {
+        events[eventName] = handler;
+    }
+};
 
 TEXTSTEP.prepareRequest = function(xhr) {
     if (sessionId !== null) {
@@ -666,6 +687,7 @@ TEXTSTEP.applySkin = function (skin) {
         document.querySelector('meta[name="theme-color"]').content = skin['desktop-bg'];
     }
     localStorage.setItem('textstepSkin', JSON.stringify(skin));
+    TEXTSTEP.trigger('skinChanged', activeSkin);
 };
 
 TEXTSTEP.resetSkin = function () {

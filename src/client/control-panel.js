@@ -303,6 +303,11 @@ function widgetStyle(frame, title, name) {
     fg.color = TEXTSTEP.getSkinProperty(fgVar).trim();
     fg.onchange = value => TEXTSTEP.setSkinProperty(fgVar, value);
     grid.append(ui.elem('div', {}, [fg.outer]));
+
+    TEXTSTEP.addEventListener('skinChanged', () => {
+        bg.value = TEXTSTEP.getSkinProperty(bgVar).trim();
+        fg.color = TEXTSTEP.getSkinProperty(fgVar).trim();
+    });
     return fieldSet;
 }
 
@@ -385,6 +390,7 @@ function appearancePanel(frame) {
     colorPicker.onchange = color => TEXTSTEP.setSkinProperty('desktop-bg', color);
     colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim();
     bgFieldSet.append(colorPicker, {grow: 1});
+    TEXTSTEP.addEventListener('skinChanged', () => colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim());
 
     dialog.append(widgetStyle(frame, 'Active title bars', 'active-titlebar'));
 

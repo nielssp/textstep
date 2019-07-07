@@ -77,7 +77,7 @@ export class Component {
         if (this.hasOwnProperty('on' + eventName)) {
             let previous = this['on' + eventName];
             this['on' + eventName] = (eventData) => {
-                if (previous(eventData)) {
+                if (previous(eventData) !== false) {
                     return handler(eventData);
                 }
             };
