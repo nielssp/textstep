@@ -316,10 +316,14 @@ function appearancePanel(frame) {
                 skinSelect.appendChild(ui.elem('option', {value: skin.path}, [name]));
             }
         });
+        if (skin.hasOwnProperty('path')) {
+            skinSelect.value = skin.path;
+        }
         skinSelect.disabled = false;
     });
     skinSelect.onchange = () => {
         TEXTSTEP.get('content', {path: skinSelect.value}).then(skin => {
+            skin.path = skinSelect.value;
             TEXTSTEP.applySkin(skin);
         });
     };
@@ -329,6 +333,7 @@ function appearancePanel(frame) {
     skinBrowse.onclick = () => {
         frame.file('Load skin').then(path => {
             TEXTSTEP.get('content', {path: path[0]}).then(skin => {
+                skin.path = path;
                 TEXTSTEP.applySkin(skin);
             });
         });
