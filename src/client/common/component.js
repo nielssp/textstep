@@ -336,6 +336,54 @@ export class ProgressBar extends Component {
     }
 }
 
+function draggable(element, handler) {
+    let move = (clientX, clientY) => {
+        let rect = element.getBoundingClientRect();
+        handler(
+            Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)),
+            Math.min(1, Math.max(0, (clientY - rect.top) / rect.height))
+        );
+    };
+    let moveMouse = e => {
+        e.preventDefault();
+        move(e.clientX, e.clientY);
+    };
+    let stopMouse = e => {
+        moveMouse(e);
+        document.removeEventListener('mousemove', moveMouse);
+        document.removeEventListener('mouseup', stopMouse);
+    };
+    element.onmousedown = e => {
+        if (e.button !== 0) {
+            return;
+        }
+        moveMouse(e);
+        document.addEventListener('mousemove', moveMouse);
+        document.addEventListener('mouseup', stopMouse);
+    };
+    let moveTouch = e => {
+        if (e.touches.length !== 1) {
+            return;
+        }
+        move(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    let stopTouch = e => {
+        moveTouch(e);
+        document.removeEventListener('touchmove', moveTouch);
+        document.removeEventListener('touchend', stopTouch);
+        document.removeEventListener('touchcancel', stopTouch);
+    };
+    element.ontouchstart = e => {
+        if (e.touches.length !== 1) {
+            return;
+        }
+        moveTouch(e);
+        document.addEventListener('touchmove', moveTouch);
+        document.addEventListener('touchend', stopTouch);
+        document.addEventListener('touchcancel', stopTouch);
+    };
+};
+
 export class HueSlider extends Component {
     constructor() {
         super();
@@ -349,23 +397,10 @@ export class HueSlider extends Component {
         this.gradient.style.position = 'relative';
         this.gradient.style.minWidth = '30px';
         this.gradient.style.flexGrow = '1';
-
-        let move = e => {
-            e.preventDefault();
-            let rect = this.gradient.getBoundingClientRect();
-            this.hue = Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height));
+        draggable(this.gradient, (x, y) => {
+            this.hue = y;
             this.trigger('change', this.hue);
-        };
-        let stop = e => {
-            move(e);
-            document.removeEventListener('mousemove', move);
-            document.removeEventListener('mouseup', stop);
-        };
-        this.gradient.onmousedown = e => {
-            move(e);
-            document.addEventListener('mousemove', move);
-            document.addEventListener('mouseup', stop);
-        };
+        });
         this.outer.appendChild(this.gradient);
 
         this.slider = elem('div');
@@ -407,25 +442,12 @@ export class ValueSaturation extends Component {
         this.color.style.background = 'hsl(0deg, 100%, 50%)';
         this.color.style.position = 'relative';
         this.color.style.flexGrow = '1';
-        this.outer.appendChild(this.color);
-
-        let move = e => {
-            e.preventDefault();
-            let rect = this.color.getBoundingClientRect();
-            this.value = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-            this.saturation = 1 - Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height));
+        draggable(this.color, (x, y) => {
+            this.value = x;
+            this.saturation = 1 - y;
             this.trigger('change', {value: this.value, saturation: this.saturation});
-        };
-        let stop = e => {
-            move(e);
-            document.removeEventListener('mousemove', move);
-            document.removeEventListener('mouseup', stop);
-        };
-        this.color.onmousedown = e => {
-            move(e);
-            document.addEventListener('mousemove', move);
-            document.addEventListener('mouseup', stop);
-        };
+        });
+        this.outer.appendChild(this.color);
 
         this.satGradient = elem('div');
         this.satGradient.style.position = 'absolute';
