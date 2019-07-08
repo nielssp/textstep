@@ -28,7 +28,7 @@ class Content extends \Blogstep\AuthenticatedSnippet
             }
             return $this->error('Extension not loaded: zip');
         }
-        $type = $this->m->assets->getMimeType($file->getName());
+        $type = $file->getMimeType();
         if (!isset($type)) {
             $type = 'application/octet-stream';
         }

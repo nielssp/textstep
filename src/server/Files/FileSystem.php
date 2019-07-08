@@ -24,6 +24,11 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
      * @var FileAcl
      */
     protected $acl;
+
+    /**
+     * @var \Mimey\MimeTypes
+     */
+    protected $mimeTypes;
     
     public function __construct(\Blogstep\User $user = null)
     {
@@ -31,6 +36,12 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
         $this->mount(new NullDevice());
         $this->user = $user;
         $this->logger = new \Psr\Log\NullLogger();
+        $this->mimeTypes = new \Mimey\MimeTypes();
+    }
+
+    public function fileNameToMimeType($name)
+    {
+        return $this->mimeTypes->getMimeType(Utilities::getFileExtension($name));
     }
     
     public function getAuthentication()

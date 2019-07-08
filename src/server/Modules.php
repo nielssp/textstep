@@ -8,8 +8,6 @@ namespace Blogstep;
 
 /**
  * BlogSTEP module collection.
- * @property \Jivoo\Http\Route\AssetScheme $assets
- * @property View $view
  * @property \Jivoo\Log\Logger $logger
  * @property Main $main
  * @property \Jivoo\Http\SapiServer $server
@@ -25,8 +23,6 @@ namespace Blogstep;
 class Modules extends \Jivoo\Modules
 {
     protected $types = [
-        'assets' => 'Jivoo\Http\Route\AssetScheme',
-        'view' => 'Blogstep\View',
         'logger' => 'Jivoo\Log\Logger',
         'main' => 'Blogstep\Main',
         'server' => 'Jivoo\Http\SapiServer',

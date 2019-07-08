@@ -47,7 +47,7 @@ class Thumbnail extends AuthenticatedSnippet
         $cached = $this->m->files->get('/var/cache/thumbnails/' . $cacheKey . '.png');
         if ($cached->exists() and $cached->getCreated() >= $fs->getModified()) {
             $path = $cached->getHostPath();
-            $mimeType = $this->m->assets->getMimeType($path);
+            $mimeType = $cached->getMimeType();
             $response = Response::file($path, $mimeType);
             return $response;
         }
@@ -103,7 +103,7 @@ class Thumbnail extends AuthenticatedSnippet
                 });
                 if ($created) {
                     $path = $cached->getHostPath();
-                    $mimeType = $this->m->assets->getMimeType($path);
+                    $mimeType = $cached->getMimeType();
                     $response = Response::file($path, $mimeType);
                     return $response;
                 }
@@ -117,7 +117,7 @@ class Thumbnail extends AuthenticatedSnippet
                 }
             }
         }
-        $mimeType = $this->m->assets->getMimeType($path);
+        $mimeType = $this->m->files->fileNameToMimeType($path);
         $response = Response::file($path, $mimeType);
         return $response;
     }

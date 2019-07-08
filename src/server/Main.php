@@ -64,35 +64,30 @@ class Main implements \Psr\Log\LoggerAwareInterface
 
     private function initRoutes()
     {
-        $this->m->router->addScheme($this->m->assets);
-        $this->m->router->addScheme(new Route\SnippetScheme($this->m, 'Blogstep'));
-        $this->m->router->addScheme(new \Jivoo\Http\Route\UrlScheme());
-        $this->m->router->addScheme(new \Jivoo\Http\Route\PathScheme());
+        $this->m->router->addScheme(new Route\SnippetScheme($this->m, 'Blogstep\Api'));
 
-        $this->m->router->match('assets/**', 'asset:');
-        $this->m->router->root('snippet:Snippets\Workspace');
-        $this->m->router->error('snippet:Snippets\NotFound');
-        $this->m->router->match('manifest.json', 'snippet:Snippets\Manifest');
+        $this->m->router->root('snippet:Version');
+        $this->m->router->error('snippet:NotFound');
 
-        $this->m->router->auto('snippet:Api\Session');
-        $this->m->router->auto('snippet:Api\WhoAmI');
+        $this->m->router->auto('snippet:Session');
+        $this->m->router->auto('snippet:WhoAmI');
 
-        $this->m->router->auto('snippet:Api\File');
-        $this->m->router->auto('snippet:Api\Content');
-        $this->m->router->match('api/content/*', 'snippet:Api\Content');
-        $this->m->router->auto('snippet:Api\Copy');
-        $this->m->router->auto('snippet:Api\Move');
-        $this->m->router->auto('snippet:Api\Storage');
-        $this->m->router->auto('snippet:Api\Thumbnail');
+        $this->m->router->auto('snippet:File');
+        $this->m->router->auto('snippet:Content');
+        $this->m->router->match('content/*', 'snippet:Content');
+        $this->m->router->auto('snippet:Copy');
+        $this->m->router->auto('snippet:Move');
+        $this->m->router->auto('snippet:Storage');
+        $this->m->router->auto('snippet:Thumbnail');
 
-        $this->m->router->auto('snippet:Api\Mount');
-        $this->m->router->auto('snippet:Api\Unmount');
+        $this->m->router->auto('snippet:Mount');
+        $this->m->router->auto('snippet:Unmount');
 
-        $this->m->router->auto('snippet:Api\Build');
-        $this->m->router->auto('snippet:Api\Preview');
+        $this->m->router->auto('snippet:Build');
+        $this->m->router->auto('snippet:Preview');
 
-        $this->m->router->auto('snippet:Api\Setup');
-        $this->m->router->auto('snippet:Api\GenerateTestContent');
+        $this->m->router->auto('snippet:Setup');
+        $this->m->router->auto('snippet:GenerateTestContent');
     }
 
     public function p($ipath)
@@ -166,17 +161,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
             $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
             $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
             $this->m->server->add(new \Jivoo\Http\EntityTag);
-
-            // Initialize assets
-            $this->m->assets = new \Jivoo\Http\Route\AssetScheme($this->p('dist'), null, true);
-
-            // Initialize view
-            $this->m->view = new View(
-                $this->m->assets,
-                $this->m->router,
-                $this->m->logger
-            );
-            $this->m->view->addTemplateDir($this->p('src/templates'));
 
             // Initialize routes
             $this->initRoutes();

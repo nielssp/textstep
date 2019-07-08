@@ -317,6 +317,11 @@ class File implements \IteratorAggregate, HasRoute
         return $this->type;
     }
 
+    public function getMimeType()
+    {
+        return $this->system->mimeTypes->getMimeType(Utilities::getFileExtension($this->getName()));
+    }
+
     public function isDirectory()
     {
         return $this->getType() === 'directory';

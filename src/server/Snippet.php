@@ -43,11 +43,6 @@ abstract class Snippet
     private $enableLayout = false;
 
     /**
-     * @var array Data for template.
-     */
-    protected $viewData = array();
-
-    /**
      * @var \Jivoo\Http\ActionRequest
      */
     protected $request = null;
@@ -69,9 +64,7 @@ abstract class Snippet
     final public function __construct(Modules $m, SnippetScheme $scheme)
     {
         $this->m = $m;
-        $this->m->required('assets', 'Jivoo\Http\Route\AssetScheme');
         $this->m->required('router', 'Jivoo\Http\Router');
-        $this->m->required('view', 'Blogstep\View');
 
         $this->scheme = $scheme;
 
@@ -368,31 +361,6 @@ abstract class Snippet
     {
         $response = $this->response;
         return $response->withStatus(\Jivoo\Http\Message\Status::METHOD_NOT_ALLOWED);
-    }
-
-    /**
-     * Render a template.
-     *
-     * If $templateName is not set, the path of the template will be computed
-     * based on the name of the snippet.
-     *
-     * @param string $templateName Name of template to render.
-     * @return string Rendered template.
-     */
-    protected function render($templateName = null)
-    {
-        if (!isset($templateName)) {
-            $class = str_replace($this->scheme->getNamespace(), '', get_class($this));
-            $type = 'html';
-            if (strpos($class, '_') !== false and preg_match('/^(.*)_([a-z0-9]+)$/i', $class, $matches) === 1) {
-                $class = $matches[1];
-                $type = $matches[2];
-            }
-            $dirs = array_map(array('Jivoo\Utilities', 'camelCaseToDashes'), explode('\\', $class));
-            $templateName = implode('/', $dirs) . '.' . $type;
-        }
-        $this->response->getBody()->write($this->m->view->render($templateName, $this->viewData));
-        return $this->response;
     }
     
     protected function json($object)
