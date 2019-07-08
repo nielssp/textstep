@@ -410,7 +410,12 @@ function appearancePanel(frame) {
     let skinSave = ui.elem('button', {}, ['Save as']);
     skinSave.onclick = () => {
         frame.saveFile('Save skin').then(path => {
-            alert(path);
+            let skin = TEXTSTEP.getSkin();
+            delete skin.path;
+            TEXTSTEP.put('content', {path: path}, TEXTSTEP.getSkin()).then(() => {
+                skin.path = path;
+                TEXTSTEP.applySkin(skin);
+            });
         });
     };
     skinRow.append(skinSave);

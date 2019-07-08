@@ -6,6 +6,7 @@
  */
 
 import * as ui from './ui';
+import * as paths from './paths';
 import DirView from './dirview';
 import {Toolbar} from './toolbar';
 import {Container, StackRow} from './component';
@@ -23,7 +24,7 @@ export class Dialog extends Container {
         this.frameElem = ui.elem('div', {'class': 'frame frame-focus'}, [this.headElem, this.inner]);
         this.outer = ui.elem('div', {'class': 'dialog-overlay'}, [this.frameElem]);
 
-        this.onOpen = null;
+        this.onopen = () => {};
     };
 
     get title() {
@@ -36,15 +37,13 @@ export class Dialog extends Container {
 
     open() {
         var self = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             self.deferred = {
                 resolve: resolve,
                 reject: reject
             };
             self.parent.appendChild(self.outer);
-            if (self.onOpen !== null) {
-                self.onOpen();
-            }
+            this.trigger('open', null);
         });
     }
 
@@ -189,7 +188,7 @@ export class Dialog extends Container {
         dialog.append(dirView.elem);
         dialog.inner.style.width = '450px';
         dialog.inner.style.height = '300px';
-        dialog.onOpen = () => dirView.cd('/');
+        dialog.onopen = () => dirView.cd('/');
         var okButton = ui.elem('button', {}, ['OK']);
         okButton.onclick = function () {
             dialog.close(dirView.selection);
@@ -225,7 +224,6 @@ export class Dialog extends Container {
         var dirView = new DirView();
         dirView.touchOpen = false;
         dirView.multiSelect = false;
-        dirView.on('fileOpen', path => dialog.close(path));
         var toolbar = new Toolbar();
         toolbar.padding('bottom');
         toolbar.createGroup()
@@ -236,7 +234,7 @@ export class Dialog extends Container {
         dialog.append(dirView.elem);
         dialog.inner.style.width = '450px';
         dialog.inner.style.height = '300px';
-        dialog.onOpen = () => dirView.cd('/');
+        dialog.onopen = () => dirView.cd('/');
         dialog.inner.onsubmit = function (e) {
             dialog.close(dirView.cwd + '/' + input.value);
             return false;
@@ -273,8 +271,20 @@ export class Dialog extends Container {
         footer.append(okButton);
         footer.append(cancelButton);
         dialog.append(footer);
+
+        dirView.on('fileOpen', path => dialog.close(path));
+        dirView.on('cwdChanged', path => input.focus());
+        dirView.on('selectionChanged', selection => {
+            if (selection.length === 1) {
+                input.value = paths.fileName(selection[0]);
+                input.setSelectionRange(0, input.value.length)
+            }
+            input.focus();
+        });
+
+        var promise = dialog.open();
         input.focus();
-        return dialog.open();
+        return promise;
     }
 
     static color(parent, title, value) {

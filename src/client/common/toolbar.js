@@ -17,7 +17,7 @@ export class Toolbar extends Component {
     }
 
     addItem(label, icon, command) {
-        let button = ui.elem('button', {title: label});
+        let button = ui.elem('button', {title: label, type: 'button'});
         if (icon) {
             button.appendChild(ui.elem('span', {'class': 'icon icon-' + icon}));
         } else {
@@ -51,7 +51,7 @@ export class ButtonGroup extends Component {
 
     addItem(label, icon, command) {
         var icon = ui.elem('span', {'class': 'icon icon-' + icon});
-        var button = ui.elem('button', {title: label}, [icon]);
+        var button = ui.elem('button', {title: label, type: 'button'}, [icon]);
         button.onclick = () => {
             this.commands.activate(command);
         };
