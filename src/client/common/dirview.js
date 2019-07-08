@@ -20,6 +20,9 @@ export default function DirView() {
     this.selection = [];
     this.touchSelectMode = false;
 
+    this.multiSelect = true;
+    this.touchOpen = true;
+
     this.elem = ui.elem('div', {'class': 'files-columns'});
 }
 
@@ -363,26 +366,35 @@ function DirFile(column, data) {
         if (this.column.dirView.touchSelectMode) {
             if (this.selected) {
                 this.column.dirView.removeSelection(this.path);
+                if (!this.column.dirView.selection.length) {
+                    this.column.dirView.touchSelectMode = false;
+                }
             } else {
                 this.column.dirView.addSelection(this.path);
             }
-        } else {
+        } else if (this.type === 'directory') {
+            this.column.dirView.cd(this.path);
+        } else if (this.column.dirView.touchOpen) {
             this.column.dirView.open(this.path);
+        } else {
+            this.column.dirView.setSelection(this.path);
         }
     });
     ui.onLongPress(this.elem, e => {
         e.preventDefault();
         e.stopPropagation();
-        this.column.dirView.touchSelectMode = true;
+        if (this.column.dirView.multiSelect) {
+            this.column.dirView.touchSelectMode = true;
+        }
     });
     this.elem.onclick = (e) => {
-        if (e.ctrlKey) {
+        if (e.ctrlKey && this.column.dirView.multiSelect) {
             if (this.selected) {
                 this.column.dirView.removeSelection(this.path);
             } else {
                 this.column.dirView.addSelection(this.path);
             }
-        } else if (e.shiftKey) {
+        } else if (e.shiftKey && this.column.dirView.multiSelect) {
             if (this.column.selection.length === 0) {
                 this.column.dirView.setSelection(this.path);
             } else {

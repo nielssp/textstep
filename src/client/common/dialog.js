@@ -171,11 +171,14 @@ export class Dialog extends Container {
         return promise;
     }
 
-    static file(parent, title) {
+    static file(parent, title, multiple = false) {
         var dialog = new Dialog(parent);
         dialog.padding();
         dialog.title = title;
         var dirView = new DirView();
+        dirView.touchOpen = false;
+        dirView.multiSelect = multiple;
+        dirView.on('fileOpen', path => dialog.close([path]));
         var toolbar = new Toolbar();
         toolbar.padding('bottom');
         toolbar.createGroup()
@@ -212,6 +215,65 @@ export class Dialog extends Container {
         footer.append(okButton);
         footer.append(cancelButton);
         dialog.append(footer);
+        return dialog.open();
+    }
+
+    static save(parent, title) {
+        var dialog = new Dialog(parent);
+        dialog.padding();
+        dialog.title = title;
+        var dirView = new DirView();
+        dirView.touchOpen = false;
+        dirView.multiSelect = false;
+        dirView.on('fileOpen', path => dialog.close(path));
+        var toolbar = new Toolbar();
+        toolbar.padding('bottom');
+        toolbar.createGroup()
+            .addItem('Go up', 'go-up', () => dirView.goUp())
+            .addItem('Go to root', 'go-home', () => dirView.cd('/'))
+            .addItem('Reload', 'reload', () => dirView.reload());
+        dialog.append(toolbar.outer);
+        dialog.append(dirView.elem);
+        dialog.inner.style.width = '450px';
+        dialog.inner.style.height = '300px';
+        dialog.onOpen = () => dirView.cd('/');
+        dialog.inner.onsubmit = function (e) {
+            dialog.close(dirView.cwd + '/' + input.value);
+            return false;
+        };
+        var input = ui.elem('input', {type: 'text'}, []);
+        var nameStack = new StackRow();
+        nameStack.padding('top');
+        nameStack.innerPadding = true;
+        nameStack.append(ui.elem('label', {}, ['File name:']), {shrink: 0, align: 'center'});
+        nameStack.append(input);
+        dialog.append(nameStack);
+        var okButton = ui.elem('button', {}, ['OK']);
+        okButton.onclick = function () {
+            dialog.close(dirView.cwd + '/' + input.value);
+        };
+        okButton.onkeydown = function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
+        };
+        var cancelButton = ui.elem('button', {}, ['Cancel']);
+        cancelButton.onclick = function () {
+            dialog.close(null);
+        };
+        cancelButton.onkeydown = function (e) {
+            if (e.key === 'Escape') {
+                dialog.close(null);
+            }
+        };
+        var footer = new StackRow();
+        footer.justifyContent = 'flex-end';
+        footer.padding('top');
+        footer.innerPadding = true;
+        footer.append(okButton);
+        footer.append(cancelButton);
+        dialog.append(footer);
+        input.focus();
         return dialog.open();
     }
 

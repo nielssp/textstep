@@ -92,7 +92,7 @@ class PageView extends ui.Component {
 
     readjust() {
         this.pageList.visible = true;
-        if (this.container.width < 400) {
+        if (this.container.width < 500) {
             this.main.visible = false;
             this.pageToolbar.visible = true;
             this.pageList.width = '100%';
@@ -393,9 +393,9 @@ function appearancePanel(frame) {
     };
     skinRow.append(skinSelect, {grow: 1});
 
-    let skinBrowse = ui.elem('button', {}, ['Load']);
+    let skinBrowse = ui.elem('button', {}, ['Open']);
     skinBrowse.onclick = () => {
-        frame.file('Load skin').then(path => {
+        frame.openFile('Load skin').then(path => {
             TEXTSTEP.get('content', {path: path[0]}).then(skin => {
                 skin.path = path[0];
                 TEXTSTEP.applySkin(skin);
@@ -409,6 +409,9 @@ function appearancePanel(frame) {
 
     let skinSave = ui.elem('button', {}, ['Save as']);
     skinSave.onclick = () => {
+        frame.saveFile('Save skin').then(path => {
+            alert(path);
+        });
     };
     skinRow.append(skinSave);
 

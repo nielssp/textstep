@@ -124,6 +124,14 @@ export class Frame extends Container {
         return Dialog.file(this.inner, title);
     }
 
+    openFile(title, multiple = false) {
+        return Dialog.file(this.inner, title, multiple);
+    }
+
+    saveFile(title) {
+        return Dialog.save(this.inner, title);
+    }
+
     color(title, value) {
         return Dialog.color(this.inner, title, value);
     }
