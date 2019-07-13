@@ -116,8 +116,8 @@ export class Frame extends Container {
         return Dialog.confirm(this.inner, title, message, choices, defaultChoice);
     }
 
-    prompt(title, message, value) {
-        return Dialog.prompt(this.inner, title, message, value);
+    prompt(title, message, value = '', type = 'text') {
+        return Dialog.prompt(this.inner, title, message, value, type);
     }
 
     file(title) {

@@ -24,6 +24,7 @@ import {
     ColorButton,
 } from './component';
 import {Toolbar} from './toolbar';
+import {Dialog} from './dialog';
 import DirView from './dirview';
 
 export {
@@ -44,6 +45,7 @@ export {
     HsvPicker,
     ColorButton,
     Toolbar,
+    Dialog,
     DirView,
 };
 

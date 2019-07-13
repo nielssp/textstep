@@ -168,8 +168,8 @@ function confirmClose() {
         if (current === null || !current.unsaved) {
             openBuffer(unsaved);
         }
-        return frame.confirm('Write', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 'Cancel').then(function (choice) {
-            return choice === 'Close without saving';
+        return frame.confirm('Write', 'One or more buffers contain unsaved changes.', ['Close without saving', 'Cancel'], 1).then(function (choice) {
+            return choice === 0;
         });
     } else {
         return Promise.resolve(true);
@@ -205,11 +205,11 @@ function closeBuffer() {
         let ok;
         if (current.unsaved) {
             ok = frame.confirm('Write', 'Do you want to save the buffer before closing?', ['Yes', 'No', 'Cancel'],
-                'Yes').then(choice => {
-                    if (choice === 'Yes') {
+                0).then(choice => {
+                    if (choice === 0) {
                         return saveFile().then(() => true);
                     }
-                    return choice === 'No';
+                    return choice === 1;
                 });
         } else {
             ok = Promise.resolve(true);

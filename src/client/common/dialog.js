@@ -27,6 +27,38 @@ export class Dialog extends Container {
         this.onopen = () => {};
     };
 
+    get width() {
+        return this.frameElem.getBoundingClientRect().width;
+    }
+
+    set width(width) {
+        this.frameElem.style.width = width;
+    }
+
+    get height() {
+        return this.frameElem.getBoundingClientRect().height;
+    }
+
+    set height(height) {
+        this.frameElem.style.height = height;
+    }
+
+    set minWidth(width) {
+        this.frameElem.style.minWidth = width;
+    }
+
+    set maxWidth(width) {
+        this.frameElem.style.maxWidth = width;
+    }
+
+    set minHeight(height) {
+        this.frameElem.style.minHeight = height;
+    }
+
+    set maxHeight(height) {
+        this.frameElem.style.maxHeight = height;
+    }
+
     get title() {
         return this.titleElem.textContent;
     }
@@ -55,73 +87,63 @@ export class Dialog extends Container {
         }
     }
 
-    static alert(parent, title, message, details = null) {
-        var dialog = new Dialog(parent);
-        dialog.padding();
-        dialog.title = title;
-        var content = ui.elem('div', {}, ['' + message]);
-        if (details) {
-            content.appendChild(ui.elem('textarea', {}, [details]));
-        }
-        var okButton = ui.elem('button', {}, ['OK']);
-        okButton.onclick = function () {
-            dialog.close();
-        };
-        okButton.onkeydown = function (e) {
-            if (e.key === 'Escape') {
-                dialog.close(null);
-            }
-        };
-        var footer = new StackRow();
-        footer.justifyContent = 'flex-end';
-        footer.padding('top');
-        footer.append(okButton);
-        dialog.append(content);
-        dialog.append(footer);
-        var promise = dialog.open();
-        okButton.focus();
-        return promise;
-    }
-
-    static confirm(parent, title, message, choices = ['OK', 'Cancel'], defaultChoice = 'OK') {
-        var dialog = new Dialog(parent);
-        dialog.padding();
-        dialog.title = title;
-        var content = ui.elem('div', {'class': 'frame-content'}, ['' + message]);
-        var footer = new StackRow();
+    static footer(dialog, choices = ['OK', 'Cancel'], defaultChoice = 0) {
+        let footer = new StackRow();
         footer.justifyContent = 'flex-end';
         footer.padding('top');
         footer.innerPadding = true;
-        var defaultButton = null;
-        for (var i = 0; i < choices.length; i++) {
+        let defaultButton = null;
+        for (let i = 0; i < choices.length; i++) {
             let button = ui.elem('button', {}, [choices[i]]);
             footer.append(button);
             button.onclick = function () {
-                dialog.close(button.textContent);
+                dialog.close(i);
             };
             button.onkeydown = function (e) {
                 if (e.key === 'Escape') {
                     dialog.close(null);
                 }
             };
-            if (choices[i] === defaultChoice) {
+            if (i === defaultChoice) {
                 defaultButton = button;
             }
         }
-        dialog.append(content);
-        dialog.append(footer);
-        var promise = dialog.open();
         if (defaultButton !== null) {
-            defaultButton.focus();
+            dialog.addEventListener('open', () => {
+                defaultButton.focus();
+            });
         }
-        return promise;
+        return footer;
     }
 
-    static prompt(parent, title, message, value = '') {
+    static alert(parent, title, message, details = null) {
+        let dialog = new Dialog(parent);
+        dialog.padding();
+        dialog.title = title;
+        let content = ui.elem('div', {}, ['' + message]);
+        if (details) {
+            content.appendChild(ui.elem('textarea', {}, [details]));
+        }
+        dialog.append(content);
+        dialog.append(Dialog.footer(dialog, ['OK']));
+        return dialog.open();
+    }
+
+    static confirm(parent, title, message, choices = ['OK', 'Cancel'], defaultChoice = 0) {
         var dialog = new Dialog(parent);
         dialog.padding();
         dialog.title = title;
-        var input = ui.elem('input', {type: 'text'}, []);
+        var content = ui.elem('div', {'class': 'frame-content'}, ['' + message]);
+        dialog.append(content);
+        dialog.append(Dialog.footer(dialog, choices, defaultChoice));
+        return dialog.open();
+    }
+
+    static prompt(parent, title, message, value = '', type = 'text') {
+        var dialog = new Dialog(parent);
+        dialog.padding();
+        dialog.title = title;
+        var input = ui.elem('input', {type: type}, []);
         var content = ui.elem('div', {'class': 'frame-content'}, [
             ui.elem('div', {}, ['' + message]),
             input

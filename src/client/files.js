@@ -154,8 +154,8 @@ function trash() {
         confirmation = 'Permanently delete the ' + dirView.selection.length + ' selected files?';
         data.paths = dirView.selection;
     }
-    frame.confirm('Files', confirmation, ['Delete', 'Cancel'], 'Delete').then(function (choice) {
-        if (choice === 'Delete') {
+    frame.confirm('Files', confirmation, ['Delete', 'Cancel'], 0).then(function (choice) {
+        if (choice === 0) {
             TEXTSTEP.delete('file', data).then(function (data) {
                 dirView.clearSelection();
                 dirView.reload();

@@ -437,31 +437,6 @@ function loadApp(name) {
             }
         } else {
             apps[name] = new App(name);
-            apps[name].dockFrame = ui.elem('div', {'class': 'dock-frame'}, [
-                ui.elem('label', {}, [name])
-            ]);
-            apps[name].dockFrame.onmousedown = function (e) {
-                if (e.button === 1) {
-                    if (apps.hasOwnProperty(name) && apps[name].state === 'running') {
-                        var frame = apps[name].getUnsavedFrame();
-                        if (frame !== null) {
-                            if (!frame.hasFocus) {
-                                frame.requestFocus();
-                                frame.close();
-                            }
-                        } else {
-                            apps[name].close();
-                        }
-                    }
-                }
-                e.preventDefault();
-            };
-            apps[name].dockFrame.onclick = function (e) {
-                TEXTSTEP.run(name).catch((e) => {
-                    console.error('Could not restore ' + name + ': ' + e);
-                    unloadApp(name);
-                });
-            };
             dock.appendChild(apps[name].dockFrame);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
             var scriptSrc = TEXTSTEP.url('content', {path: '/dist/apps/' + name + '.app/main.js'});
@@ -484,6 +459,10 @@ function loadApp(name) {
     });
     return promise;
 }
+
+TEXTSTEP.kill = function (name) {
+    unloadApp(name);
+};
 
 function unloadApp(name) {
     if (apps.hasOwnProperty(name)) {

@@ -73,7 +73,7 @@ Menu.prototype.positionAtButton = function (button) {
     let buttonRect = button.getBoundingClientRect();
     let x = buttonRect.left + buttonRect.width;
     if (rect.width + x > document.body.clientWidth) {
-            x = Math.max(0, buttonRect.left - rect.width);
+        x = Math.max(0, buttonRect.left - rect.width);
     }
     let y = buttonRect.top - headRect.height;
     if (rect.height + y > document.body.clientHeight) {

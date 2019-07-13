@@ -90,7 +90,7 @@ TEXTSTEP.initApp('test', ['libtest'], function (app) {
 
     frame.defineAction('confirm', function () {
         frame.disableGroup('dialogs');
-        frame.confirm('Confirm', 'Hello, World?', ['Delete', 'No', 'Cancel'], 'Delete').then(function (choice) {
+        frame.confirm('Confirm', 'Hello, World?', ['Delete', 'No', 'Cancel'], 0).then(function (choice) {
             frame.alert('Choice:', choice);
         }).finally(function () {
             frame.enableGroup('dialogs');

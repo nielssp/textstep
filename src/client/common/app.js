@@ -6,7 +6,9 @@
  */
 
 import * as util from './util';
+import * as ui from './ui';
 import {Frame} from './frame';
+import Menu from './menu';
 
 var skipHistory = false;
 var previousTitle = null;
@@ -23,7 +25,43 @@ export default function App(name) {
 
     this.frames = [];
 
-    this.dockFrame = null;
+    this.dockMenu = new Menu('Dock');
+    this.dockMenu.addItem('Pin', () => {
+    });
+    this.dockMenu.addItem('Close', () => {
+        TEXTSTEP.kill(name);
+    });
+
+    this.dockFrame = ui.elem('div', {'class': 'dock-frame'}, [
+        ui.elem('label', {}, [name])
+    ]);
+    this.dockFrame.onmousedown = e => {
+        if (e.button === 1) {
+            if (this.state === 'running') {
+                var frame = this.getUnsavedFrame();
+                if (frame !== null) {
+                    if (!frame.hasFocus) {
+                        frame.requestFocus();
+                        frame.close();
+                    }
+                } else {
+                    this.close();
+                }
+            }
+        }
+        e.preventDefault();
+    };
+    this.dockFrame.oncontextmenu = e => {
+        e.preventDefault();
+        this.dockMenu.contextOpen(e);
+    };
+    this.dockFrame.onclick = e => {
+        TEXTSTEP.run(name).catch((e) => {
+            console.error('Could not restore ' + name + ':', e);
+            TEXTSTEP.kill(name);
+        });
+    };
+
     this.onInit = null;
     this.onOpen = null;
     this.onClose = null;
@@ -105,7 +143,7 @@ App.prototype.kill = function () {
 
 App.prototype.close = function (action) {
     if (this.state !== 'running') {
-        console.error(this.name + ': close: unexpected state:', this.state);
+        console.warn(this.name + ': close: unexpected state:', this.state);
         return;
     }
     this.state = 'closing';

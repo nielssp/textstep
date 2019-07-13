@@ -144,8 +144,8 @@ function confirmClose() {
                 openBuffer(path);
             }
             return frame.confirm('Code', 'One or more buffers contain unsaved changes.',
-                ['Close without saving', 'Cancel'], 'Cancel').then(choice => {
-                    return choice === 'Close without saving';
+                ['Close without saving', 'Cancel'], 1).then(choice => {
+                    return choice === 0;
                 });
         }
     }
@@ -183,8 +183,8 @@ function reloadFile() {
         let promise;
         if (buffer.unsaved) {
             promise = frame.confirm('Code', 'The buffer contains unsaved changes.',
-                ['Reload without saving', 'Cancel'], 'Cancel').then(choice => {
-                    return choice === 'Reload without saving';
+                ['Reload without saving', 'Cancel'], 1).then(choice => {
+                    return choice === 0;
                 });
         } else {
             promise = Promise.resolve(true);
@@ -210,8 +210,8 @@ function closeBuffer() {
         let ok;
         if (current.unsaved) {
             ok = frame.confirm('Code', 'Do you want to save the buffer before closing?',
-                ['Yes', 'No', 'Cancel'], 'Yes').then(choice => {
-                    if (choice === 'Yes') {
+                ['Yes', 'No', 'Cancel'], 0).then(choice => {
+                    if (choice === 0) {
                         return saveFile().then(() => true);
                     }
                     return choice === 'No';
