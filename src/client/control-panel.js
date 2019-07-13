@@ -17,6 +17,7 @@ function input(config, key, type = 'text') {
 function label(label) {
     let elem = ui.elem('label', {}, [label]);
     elem.style.alignSelf = 'center';
+    elem.style.whiteSpace = 'nowrap';
     return elem;
 }
 
@@ -173,11 +174,147 @@ function sitePanel(config) {
     return dialogForm;
 }
 
+function passwordPanel(frame) {
+    let dialogForm = new ui.StackColumn();
+    dialogForm.innerPadding = true;
+
+    let fieldSet1 = new ui.FieldSet();
+    fieldSet1.legend = 'Change password';
+    dialogForm.append(fieldSet1);
+
+    let grid = new ui.Grid();
+    grid.columns = 'min-content auto';
+    grid.rowPadding = true;
+    grid.columnPadding = true;
+    fieldSet1.append(grid);
+
+    grid.append(label('Old password:'));
+    let current = ui.elem('input', {type: 'password'});
+    grid.append(current);
+
+    grid.append(label('New password:'));
+    let newPassword = ui.elem('input', {type: 'password'});
+    grid.append(newPassword);
+
+    grid.append(label('Confirm password:'));
+    let confirmPassword = ui.elem('input', {type: 'password'});
+    grid.append(confirmPassword);
+
+    let saveButton = new ui.Button('OK');
+    saveButton.onclick = () => {
+        if (newPassword.value === '') {
+            frame.alert('Change password', 'The password is empty.');
+            return;
+        }
+        if (newPassword.value !== confirmPassword.value) {
+            frame.alert('Change password', 'The passwords do not match.');
+            return;
+        }
+        TEXTSTEP.put('storage', {path: '/system/users.json', key: TEXTSTEP.user.username}, {
+            'password': newPassword.value
+        }).then(() => {
+            current.value = '';
+            newPassword.value = '';
+            confirmPassword.value = '';
+            frame.alert('Change password', 'Your password has been changed.');
+        }, () => {
+            frame.alert('Error', 'Password could not be changed');
+        });
+    };
+    let cancelButton = new ui.Button('Cancel');
+    cancelButton.onclick = () => {
+        current.value = '';
+        newPassword.value = '';
+        confirmPassword.value = '';
+    };
+
+    let buttons = new ui.StackRow();
+    buttons.innerPadding = true;
+    buttons.justifyContent = 'flex-end';
+    buttons.append(saveButton);
+    buttons.append(cancelButton);
+    dialogForm.append(buttons);
+
+    return dialogForm;
+}
+
+
+function guessBrowser(ua) {
+    if (ua.indexOf('chrome') >= 0) return 'Chrome';
+    if (ua.indexOf('firefox') >= 0) return 'Firefox';
+    if (ua.indexOf('edge') >= 0) return 'Edge';
+    if (ua.indexOf('msie') >= 0) return 'Internet Explorer';
+    if (ua.indexOf('safari') >= 0) return 'Safari';
+    return 'unknown browser';
+}
+
+function guessOs(ua) {
+    if (ua.indexOf('windows') >= 0) return 'Windows';
+    if (ua.indexOf('mac os') >= 0) return 'macOS';
+    if (ua.indexOf('iphone') >= 0) return 'iOS';
+    if (ua.indexOf('ipad') >= 0) return 'iOS';
+    if (ua.indexOf('android') >= 0) return 'Android';
+    if (ua.indexOf('linux') >= 0) return 'Linux';
+    return 'unknown OS';
+}
+
 function sessionPanel() {
     let dialog = new ui.StackColumn();
 
+    let row = new ui.StackRow();
+    row.innerPadding = true;
+    dialog.append(row, {grow: 1});
+
     let list = new ui.ListView();
-    dialog.append(list);
+    list.height = '300px';
+    row.append(list, {grow: 1});
+
+    let actions = new ui.StackColumn();
+    row.append(actions);
+
+    let deleteButton = new ui.Button('Delete');
+    deleteButton.disabled = true;
+    if (TEXTSTEP.hasPermission('sessions.self.delete')) {
+        actions.append(deleteButton);
+    }
+
+    let sessions = {};
+    let selection = null;
+
+    list.onselect = id => {
+        selection = id;
+        list.select(id);
+        deleteButton.disabled = !selection;
+    };
+
+    deleteButton.onclick = () => {
+        if (selection) {
+            TEXTSTEP.delete('storage', {path: '/system/sessions.json', key: selection}).then(() => {
+                list.removeItem(selection);
+            });
+        }
+    };
+
+    TEXTSTEP.get('storage', {path: '/system/sessions.json', 'filter[username]': TEXTSTEP.user.username}).then(sessions => {
+        for (let sessionId in sessions) {
+            if (sessions.hasOwnProperty(sessionId)) {
+                let session = sessions[sessionId];
+                let name = sessionId.substring(0, 6);
+                if (typeof session.userAgent === 'string') {
+                    let ua = session.userAgent.toLowerCase();
+                    name += ' (' + guessBrowser(ua);
+                    name += ' on ' + guessOs(ua) + ')';
+                } else {
+                    name += ' (unknown)';
+                }
+                let item = list.add(name, sessionId);
+                if (TEXTSTEP.isCurrentSession(sessionId)) {
+                    item.label += ' (current)';
+                    item.outer.style.fontWeight = '600';
+                }
+            }
+        }
+    });
 
     return dialog;
 }
@@ -185,8 +322,88 @@ function sessionPanel() {
 function userPanel() {
     let dialog = new ui.StackColumn();
 
+    let row = new ui.StackRow();
+    row.innerPadding = true;
+    dialog.append(row, {grow: 1});
+
     let list = new ui.ListView();
-    dialog.append(list);
+    list.height = '300px';
+    list.onselect = id => list.select(id);
+    row.append(list, {grow: 1});
+
+    let actions = new ui.StackColumn();
+    actions.innerPadding = true;
+    row.append(actions);
+
+    let newButton = new ui.Button('New user');
+    if (TEXTSTEP.hasPermission('users.create')) {
+        actions.append(newButton);
+    }
+
+    let passwordButton = new ui.Button('Password');
+    passwordButton.disabled = true;
+    if (TEXTSTEP.hasPermission('users.update.password')) {
+        actions.append(passwordButton);
+    }
+
+    let groupsButton = new ui.Button('Groups');
+    groupsButton.disabled = true;
+    if (TEXTSTEP.hasPermission('users.update.groups')) {
+        actions.append(groupsButton);
+    }
+
+    let deleteButton = new ui.Button('Delete');
+    deleteButton.disabled = true;
+    if (TEXTSTEP.hasPermission('users.delete')) {
+        actions.append(deleteButton);
+    }
+
+    TEXTSTEP.get('storage', {path: '/system/users.json'}).then(users => {
+        for (let username in users) {
+            if (users.hasOwnProperty(username)) {
+                list.add(username, username);
+            }
+        }
+    });
+
+    return dialog;
+}
+
+function groupPanel() {
+    let dialog = new ui.StackColumn();
+
+    let row = new ui.StackRow();
+    row.innerPadding = true;
+    dialog.append(row, {grow: 1});
+
+    let list = new ui.ListView();
+    list.height = '300px';
+    list.onselect = id => list.select(id);
+    row.append(list, {grow: 1});
+
+    let actions = new ui.StackColumn();
+    actions.innerPadding = true;
+    row.append(actions);
+
+    let groupsButton = new ui.Button('Permissions');
+    groupsButton.disabled = true;
+    if (TEXTSTEP.hasPermission('sysacl.view')) {
+        actions.append(groupsButton);
+    }
+
+    let deleteButton = new ui.Button('Delete');
+    deleteButton.disabled = true;
+    if (TEXTSTEP.hasPermission('groups.delete')) {
+        actions.append(deleteButton);
+    }
+
+    TEXTSTEP.get('storage', {path: '/system/groups.json'}).then(groups => {
+        for (let group in groups) {
+            if (groups.hasOwnProperty(group)) {
+                list.add(group, group);
+            }
+        }
+    });
 
     return dialog;
 }
@@ -468,11 +685,17 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
     pageView.padding();
     pageView.addPage('site', 'Site', sitePanel(config));
     pageView.addPage('appearance', 'Appearance', appearancePanel(frame));
+    if (TEXTSTEP.hasPermission('users.self.update.password')) {
+        pageView.addPage('password', 'Change password', passwordPanel(frame));
+    }
     if (TEXTSTEP.hasPermission('sessions.self.view')) {
         pageView.addPage('sessions', 'Sessions', sessionPanel());
     }
     if (TEXTSTEP.hasPermission('users.view')) {
         pageView.addPage('users', 'Users', userPanel());
+    }
+    if (TEXTSTEP.hasPermission('groups.view')) {
+        pageView.addPage('groups', 'Groups', groupPanel());
     }
     pageView.onopen = page => app.setArgs({page: page});
     frame.append(pageView, {grow: 1});

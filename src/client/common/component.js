@@ -87,6 +87,30 @@ export class Component {
     }
 }
 
+export class Button extends Component {
+    constructor(label) {
+        super();
+        this.outer = elem('button', {type: 'button'}, [label]);
+        this.outer.onclick = e => this.trigger('click', e);
+    }
+
+    get label() {
+        return this.outer.textContent;
+    }
+
+    set label(label) {
+        this.outer.textContent = label;
+    }
+
+    get disabled() {
+        return this.outer.disabled;
+    }
+
+    set disabled(disabled) {
+        this.outer.disabled = disabled;
+    }
+}
+
 export class Container extends Component {
     constructor() {
         super();
@@ -225,6 +249,36 @@ export class Grid extends Container {
     }
 }
 
+export class ListItem extends Component {
+    constructor(label) {
+        super();
+        this.outer = elem('a', {'class': 'ts-list-view-item'}, [label]);
+        this.outer.onclick = e => this.trigger('click', e);
+
+        this.onclick = () => {};
+    }
+
+    get label() {
+        return this.outer.textContent;
+    }
+
+    set label(label) {
+        this.outer.textContent = label;
+    }
+
+    get active() {
+        return this.outer.classList.contains('active');
+    }
+
+    set active(active) {
+        if (active) {
+            this.outer.classList.add('active');
+        } else {
+            this.outer.classList.remove('active');
+        }
+    }
+}
+
 export class ListView extends Container {
     constructor() {
         super();
@@ -235,23 +289,34 @@ export class ListView extends Container {
     }
 
     add(label, value) {
-        let item = elem('a', {'class': 'ts-list-view-item'}, [label]);
+        let item = new ListItem(label);
         item.onclick = () => this.trigger('select', value);
-        this.inner.appendChild(item);
+        this.append(item);
         this.items[value] = item;
         return item;
+    }
+
+    removeItem(value) {
+        if (this.items.hasOwnProperty(value)) {
+            if (this.items[value].active) {
+                this.trigger('select', null);
+            }
+            this.remove(this.items[value]);
+        }
     }
 
     select(value) {
         this.removeSelection();
         if (this.items.hasOwnProperty(value)) {
-            this.items[value].classList.add('active');
+            this.items[value].active = true;
         }
     }
 
     removeSelection() {
-        for (let i = 0; i < this.inner.children.length; i++) {
-            this.inner.children[i].classList.remove('active');
+        for (let value in this.items) {
+            if (this.items.hasOwnProperty(value)) {
+                this.items[value].active = false;
+            }
         }
     }
 }

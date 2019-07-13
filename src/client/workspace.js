@@ -55,6 +55,10 @@ TEXTSTEP.LOAD_TIMEOUT = 10000;
 
 TEXTSTEP.user = null;
 
+TEXTSTEP.isCurrentSession = function (id) {
+    return id === sessionId;
+};
+
 TEXTSTEP.trigger = function (eventName, eventData) {
     if (events.hasOwnProperty(eventName)) {
         events[eventName](eventData);

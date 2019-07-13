@@ -146,6 +146,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         // Create virtual system files
         $this->m->system->addFile('log.json', new System\ConfigFile($this->p('system/log.php'), $logConfig, 'config.system', $this->m->acl));
         $this->m->system->addFile('users.json', new System\UserFile($this->m->users, $this->m->acl));
+        $this->m->system->addFile('groups.json', new System\GroupFile($this->m->users, $this->m->acl));
         $this->m->system->addFile('sessions.json', new System\SessionFile($this->m->users, $this->m->acl));
         $this->m->system->addFile('sysacl.json', new System\SysAclFile($this->m->acl));
         $this->m->system->addFile('timezones.json', new System\TimeZoneFile($this->m->acl));

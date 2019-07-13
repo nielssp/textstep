@@ -174,6 +174,18 @@ class UserModel
         return null;
     }
 
+    public function deleteGroup($name)
+    {
+        $state = $this->state->write('groups');
+        if (isset($state[$name])) {
+            unset($state[$name]);
+            if (isset($this->groups) and isset($this->groups[$name])) {
+                unset($this->groups[$name]);
+            }
+        }
+        $state->close();
+    }
+
     private function createSessionObject($id, $doc)
     {
         return new Session(
