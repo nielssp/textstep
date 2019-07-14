@@ -115,32 +115,41 @@ export class Container extends Component {
     constructor() {
         super();
         this.inner = this.outer;
+        this.children = [];
     }
 
     append(child, properties = {}) {
-        if (child instanceof Component) {
-            child = child.outer;
+        if (!(child instanceof Component)) {
+            let component = new Component();
+            component.outer = child;
+            child = component;
         }
         if (properties.hasOwnProperty('grow')) {
-            child.style.flexGrow = properties.grow;
+            child.outer.style.flexGrow = properties.grow;
         }
         if (properties.hasOwnProperty('shrink')) {
-            child.style.flexShrink = properties.shrink;
+            child.outer.style.flexShrink = properties.shrink;
         }
         if (properties.hasOwnProperty('align')) {
-            child.style.alignSelf = properties.align;
+            child.outer.style.alignSelf = properties.align;
         }
         if (properties.hasOwnProperty('justify')) {
-            child.style.justifySelf = properties.justify;
+            child.outer.style.justifySelf = properties.justify;
         }
-        this.inner.appendChild(child);
+        this.inner.appendChild(child.outer);
+        this.children.push(child);
     }
 
     remove(child) {
+        let index;
         if (child instanceof Component) {
-            this.inner.removeChild(child.outer);
+            index = this.children.indexOf(child);
         } else {
-            this.inner.removeChild(child);
+            index = this.children.findIndex(c => c.outer === child);
+        }
+        if (index >= 0) {
+            this.inner.removeChild(this.children[index].outer);
+            this.children.splice(index, 1);
         }
     }
 
@@ -250,9 +259,11 @@ export class Grid extends Container {
 }
 
 export class ListItem extends Component {
-    constructor(label) {
+    constructor(label, value) {
         super();
+        this.value = value;
         this.outer = elem('a', {'class': 'ts-list-view-item'}, [label]);
+        this.outer.tabIndex = -1;
         this.outer.onclick = e => this.trigger('click', e);
 
         this.onclick = () => {};
@@ -284,12 +295,40 @@ export class ListView extends Container {
         super();
         this.inner = elem('div', {'class': 'ts-list-view-items'});
         this.outer.className = 'ts-list-view';
+        this.outer.tabIndex = 0;
         this.outer.appendChild(this.inner);
         this.items = {};
+        this.selection = null;
+
+        this.outer.onkeyup = e => {
+            if (e.key === 'ArrowUp') {
+                if (!this.selection && this.children.length) {
+                    this.trigger('select', this.children[0].value);
+                    return;
+                }
+                for (let i = 0; i < this.children.length - 1; i++) {
+                    if (this.children[i + 1].active) {
+                        this.trigger('select', this.children[i].value);
+                        break;
+                    }
+                }
+            } else if (e.key === 'ArrowDown') {
+                if (!this.selection && this.children.length) {
+                    this.trigger('select', this.children[0].value);
+                    return;
+                }
+                for (let i = 1; i < this.children.length; i++) {
+                    if (this.children[i - 1].active) {
+                        this.trigger('select', this.children[i].value);
+                        break;
+                    }
+                }
+            }
+        };
     }
 
     add(label, value) {
-        let item = new ListItem(label);
+        let item = new ListItem(label, value);
         item.onclick = () => this.trigger('select', value);
         this.append(item);
         this.items[value] = item;
@@ -309,14 +348,14 @@ export class ListView extends Container {
         this.removeSelection();
         if (this.items.hasOwnProperty(value)) {
             this.items[value].active = true;
+            this.selection = this.items[value];
         }
     }
 
     removeSelection() {
-        for (let value in this.items) {
-            if (this.items.hasOwnProperty(value)) {
-                this.items[value].active = false;
-            }
+        if (this.selection) {
+            this.selection.active = false;
+            this.selection = null;
         }
     }
 }

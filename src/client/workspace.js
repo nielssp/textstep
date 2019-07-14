@@ -299,6 +299,7 @@ TEXTSTEP.requestLogin = function (overlay = false) {
                 loginFrame.formElem.password.value = '';
                 loginFrame.formElem.onsubmit = null;
                 loginFrame.promise = null;
+                TEXTSTEP.trigger('login');
                 resolve();
             }, function () {
                 ui.shake(loginFrame.outer);

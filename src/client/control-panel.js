@@ -225,7 +225,7 @@ function passwordPanel(frame) {
     };
     let cancelButton = new ui.Button('Cancel');
     cancelButton.onclick = () => {
-        current.value = '';
+        // current.value = '';
         newPassword.value = '';
         confirmPassword.value = '';
     };
@@ -386,6 +386,7 @@ function userPanel(frame) {
         actions.append(deleteButton);
     }
 
+    let users = {};
     let selection = null;
 
     list.onselect = id => {
@@ -444,6 +445,9 @@ function userPanel(frame) {
         dialog.title = 'Groups for: ' + selection;
         let groupList = new ui.ListView();
         groupList.height = '300px';
+        for (let group of users[selection].groups) {
+            groupList.add(group, group);
+        }
         dialog.append(groupList);
         let row = new ui.StackRow();
         row.padding('top');
@@ -464,13 +468,15 @@ function userPanel(frame) {
         frame.confirm('Delete user', 'Delete user: ' + selection + '?').then(choice => {
             if (choice === 0) {
                 TEXTSTEP.delete('storage', {path: '/system/users.json', key: selection}).then(() => {
+                    delete users[selection];
                     list.removeItem(selection);
                 });
             }
         });
     };
 
-    TEXTSTEP.get('storage', {path: '/system/users.json'}).then(users => {
+    TEXTSTEP.get('storage', {path: '/system/users.json'}).then(data => {
+        users = data;
         for (let username in users) {
             if (users.hasOwnProperty(username)) {
                 let item = list.add(username, username);
