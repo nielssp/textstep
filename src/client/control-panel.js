@@ -433,6 +433,30 @@ function userPanel(frame) {
         dialog.open();
     };
 
+    groupsButton.onclick = () => {
+        if (!selection) {
+            return;
+        }
+        let dialog = new ui.Dialog(frame);
+        dialog.width = '100%';
+        dialog.maxWidth = '400px';
+        dialog.padding();
+        dialog.title = 'Groups for: ' + selection;
+        let groupList = new ui.ListView();
+        groupList.height = '300px';
+        dialog.append(groupList);
+        let row = new ui.StackRow();
+        row.padding('top');
+        row.innerPadding = true;
+        row.alignItems = 'center';
+        dialog.append(row);
+        row.append(ui.elem('label', {}, ['Add group:']), {shrink: 0});
+        row.append(ui.elem('input', {type: 'text'}));
+        row.append(new ui.Button('Add'));
+        dialog.append(ui.Dialog.footer(dialog, ['Close']));
+        dialog.open();
+    };
+
     deleteButton.onclick = () => {
         if (!selection) {
             return;
