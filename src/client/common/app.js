@@ -10,9 +10,6 @@ import * as ui from './ui';
 import {Frame} from './frame';
 import Menu from './menu';
 
-var skipHistory = false;
-var previousTitle = null;
-
 export default function App(name) {
     this.name = name;
     this.state = 'loading';
@@ -73,18 +70,7 @@ App.prototype.require = function (name) {
 
 App.prototype.setArgs = function (args) {
     this.args = args;
-    if (!skipHistory) {
-        var path = '#' + this.name;
-        if (Object.keys(args).length !== 0) {
-            path += '?' + util.serializeQuery(args).replace(/%2F/gi, '/');
-        }
-        if (previousTitle !== null) {
-            //document.title = previousTitle;
-        }
-        history.pushState({app: this.name, args: args}, previousTitle, path);
-        //document.title = this.title;
-        previousTitle = this.title;
-    }
+    TEXTSTEP.pushState(this.title, this.name, args);
 };
 
 App.prototype.init = function () {

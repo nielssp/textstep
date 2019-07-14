@@ -747,6 +747,23 @@ window.onresize = function () {
     }
 };
 
+let skipHistory = false;
+var previousTitle = null;
+
+TEXTSTEP.pushState = function (title, name, args) {
+    if (!skipHistory) {
+        var path = '#' + name;
+        if (Object.keys(args).length !== 0) {
+            path += '?' + util.serializeQuery(args).replace(/%2F/gi, '/');
+        }
+        if (previousTitle !== null) {
+            //document.title = previousTitle;
+        }
+        history.pushState({app: name, args: args}, previousTitle, path);
+        previousTitle = title;
+    }
+};
+
 window.onpopstate = function (e) {
     if (e.state !== null) {
         skipHistory = true;

@@ -884,6 +884,9 @@ TEXTSTEP.initApp('control-panel', [], function (app) {
             config.update();
         } else {
             frame.requestFocus();
+            if (args.page) {
+                pageView.select(args.page);
+            }
         }
         app.setArgs({page: pageView.pageId});
     };
