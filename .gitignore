@@ -7,7 +7,6 @@
 /.settings
 /.idea
 /apigen
-/doc
 /tests/_output
 /vendor/*
 /node_modules

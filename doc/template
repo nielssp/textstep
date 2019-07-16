@@ -1,0 +1,61 @@
+Template ::= {"{" Statement "}" | Text}
+
+Statement ::= If
+            | For
+            | Switch
+            | Assignment
+            | Expression
+
+If ::= "if" Expression "}" Template
+       {"{" "else" "if" Expression "}" Template}
+       ["{" "else" "}" Template] "{" "end" "if"
+
+For ::= "for" Name "in" Expression "}" Template "{" "end" "for"
+
+Switch ::= "switch" Expression ["}" [Text] "{"]
+           {"case" Expression "}" Template "{"}
+           ["default" "}" Template "{"] "end" "switch"
+
+Assignment ::= Name ("=" | "+=" | "-=" | "*=" | "/=") Expression
+
+Expression ::= "fn" [Name {"," Name}] "->" Expression
+             | "." Name {"." Name}
+             | PipeLine
+
+PipeLine ::= PipeLine "|" Name ["(" [Expression {"," Expression}] ")"]
+           | LogicalOr
+
+LogicalOr ::= LogicalOr "or" LogicalAnd
+            | LogicalAnd
+
+LogicalAnd ::= Logical "and" LogicalNot
+             | LogicalNot
+
+LogicalNot ::= "not" LogicalNot
+             | Comparison
+
+Comparison ::= Comparison ("<" | ">" | "<=" | ">=" | "==" | "!=") MulDiv
+             | MulDiv
+
+MulDiv ::= MulDiv ("*" | "/" | "%") AddSub
+         | AddSub
+
+AddSub ::= AddSub ("+" | "-") Negate
+         | Negate
+
+Negate ::= "-" Negate
+         | ApplyDot
+
+ApplyDot ::= ApplyDot "(" [Expression {"," Expression}] ")"
+           | ApplyDot "." Name
+           | ApplyDot "[" Expression "]"
+           | Atom
+
+Atom ::= "[" [Expression {"," Expression}] "]"
+       | "(" Expression ")"
+       | "{" [(Name | String | Number) ":" Expression {"," (Name | String | Number) ":" Expression}] "}"
+       | "do" "}" Template "{" "end" "do"
+       | Number
+       | String
+       | Name
+
