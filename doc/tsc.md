@@ -74,7 +74,8 @@ If ::= "if" Expression Block
        {"else" "if" Expression Block}
        ["else" Block] "end" "if"
 
-For ::= "for" name "in" Expression Block "end" "for"
+For ::= "for" name "in" Expression Block
+       ["else" Block] "end" "for"
 
 Switch ::= "switch" Expression (lf | {lf} [text])
            {"case" Expression Block}

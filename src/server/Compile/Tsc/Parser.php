@@ -459,6 +459,10 @@ class Parser
         $this->expectValue('KEYWORD', 'in');
         $node->children[] = $this->parseExpression();
         $node->children[] = $this->parseBlock();
+        if ($this->peekValue('KEYWORD', 'else')) {
+            $this->pop();
+            $node->children[] = $this->parseBlock();
+        }
         $this->expectEnd($node, 'for');
         return $node;
     }
