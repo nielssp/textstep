@@ -17,9 +17,7 @@ class Lexer
 
     private $column = 1;
 
-    private $textMode = true;
-
-    private $nesting = 0;
+    private $parenStack = [];
 
     private static $keywords = ['if', 'for', 'in', 'switch', 'case', 'default', 'end', 'fn', 'and', 'or', 'not', 'do'];
 
@@ -53,10 +51,10 @@ class Lexer
         return null;
     }
 
-    private function skipWhiteSpace()
+    private function skipWhiteSpace($skipLf = false)
     {
         $c = $this->peek();
-        while ($c === ' ' or $c === "\t" or $c === "\r") {
+        while ($c === ' ' or $c === "\t" or $c === "\r" or ($skipLf and $c === "\n")) {
             $this->pop();
             $c = $this->peek();
         }
@@ -198,7 +196,7 @@ class Lexer
         if ($this->peek() === null) {
             return null;
         }
-        if ($this->textMode) {
+        if (!count($this->parenStack)) {
             $token = $this->createToken('TEXT');
             $text = '';
             while (true) {
@@ -206,7 +204,7 @@ class Lexer
                 if ($c === null) {
                     break;
                 } else if ($c === '{') {
-                    $this->textMode = false;
+                    $this->parenStack[] = $this->pop();
                     break;
                 } else {
                     $text .= $this->pop();
@@ -215,7 +213,7 @@ class Lexer
             $token->value = $text;
             return $token;
         } else {
-            $this->skipWhiteSpace();
+            $this->skipWhiteSpace(count($this->parenStack) > 1);
             $c = $this->peek();
             if ($c === null) {
                 return null;
@@ -223,21 +221,29 @@ class Lexer
                 $token = $this->createToken('LINE_FEED');
                 $this->pop();
                 return $token;
+            } else if ($c === '}' and $this->parenStack === ['{']) {
+                $this->pop();
+                $this->parenStack = [];
+                return $this->readNextToken();
             } else if ($c === "'") {
                 return $this->readString();
-            } else if (strpos('(){}[].,:', $c) !== false) {
+            } else if (strpos('([{', $c) !== false) {
                 $token = $this->createToken('PUNCT');
                 $token->value = $this->pop();
-                if ($c === '{') {
-                    $this->nesting++;
-                } else if ($c === '}') {
-                    $this->nesting--;
-                    if ($this->nesting <= 0) {
-                        $this->textMode = true;
-                    }
-                }
+                $this->parenStack[] = $token->value;
                 return $token;
-            } else if (strpos('+-*/%!<>=|', $c) !== false) {
+            } else if (($i = strpos(')]}', $c)) !== false) {
+                if (!count($this->parenStack)) {
+                    throw new LexerError('unexpected "' . $c . '"', $this->line, $this->column);
+                }
+                $expected = array_pop($this->parenStack);
+                if ('([{'[$i] !== $expected) {
+                    throw new LexerError('unexpected "' . $c . '"', $this->line, $this->column);
+                }
+                $token = $this->createToken('PUNCT');
+                $token->value = $this->pop();
+                return $token;
+            } else if (strpos('+-*/%!<>=|.,:', $c) !== false) {
                 return $this->readOperator();
             } else if (strpos('0123456789', $c) !== false) {
                 return $this->readNumber();
