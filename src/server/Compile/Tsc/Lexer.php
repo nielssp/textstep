@@ -204,7 +204,20 @@ class Lexer
                 if ($c === null) {
                     break;
                 } else if ($c === '{') {
-                    $this->parenStack[] = $this->pop();
+                    $this->pop();
+                    if ($this->peek() === '#') {
+                        $this->pop();
+                        while ($this->peek() !== null) {
+                            if ($this->pop() === '#') {
+                                if ($this->peek() === '}') {
+                                    $this->pop();
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        $this->parenStack[] = '{';
+                    }
                     break;
                 } else {
                     $text .= $this->pop();
@@ -230,6 +243,18 @@ class Lexer
             } else if (strpos('([{', $c) !== false) {
                 $token = $this->createToken('PUNCT');
                 $token->value = $this->pop();
+                if ($c === '{' and $this->peek() === '#') {
+                    $this->pop();
+                    while ($this->peek() !== null) {
+                        if ($this->pop() === '#') {
+                            if ($this->peek() === '}') {
+                                $this->pop();
+                                break;
+                            }
+                        }
+                    }
+                    return $this->readNextToken();
+                }
                 $this->parenStack[] = $token->value;
                 return $token;
             } else if (($i = strpos(')]}', $c)) !== false) {

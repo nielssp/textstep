@@ -3,20 +3,22 @@
 ## Token grammar
 
 ```
-tokenStream ::= {text | command}
+tokenStream ::= {text | comment | command}
 
-command ::= commandStart {token | paren | bracket | brace | lf | skip} commandEnd
+command ::= commandStart {token | paren | bracket | brace | lf | comment | skip} commandEnd
 
 commandStart = "{"  -- ignored
 commandEnd = "}"  -- ignored
+
+comment ::= "{" "#" {any \ "#" "}"} "#" "}"   -- ignored
 
 lf ::= "\n"
 skip ::= " " | "\t" | "\r"    -- ignored
 skipLf ::= skip | lf         -- ignored
 
-paren ::= "(" {token | paren | bracket | brace | skipLf} ")"
-bracket ::= "[" {token | paren | bracket | brace | skipLf} "]"
-brace ::= "{" {token | paren | bracket | brace | skipLf} "}"
+paren ::= "(" {token | paren | bracket | brace | comment | skipLf} ")"
+bracket ::= "[" {token | paren | bracket | brace | comment |  skipLf} "]"
+brace ::= "{" {token | paren | bracket | brace | comment | skipLf} "}"
 
 text ::= {any \ (commandStart | commandEnd)}
 
@@ -126,4 +128,18 @@ Atom ::= "[" [Expression {"," Expression} [","]] "]"
        | float
        | string
        | name
+```
+
+### Syntax transformations
+
+```
+"." name_1 {"." name_n}
+=>
+"fn" newName -> newName "." name_1 {"." name_n}
+```
+
+```
+PipeLine "|" name ["(" [Expression_1 {"," Expression_n} [","]] ")"]
+=>
+name "(" PipeLine ["," Expression_1 {"," Expression_n}] ")"
 ```
