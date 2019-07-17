@@ -19,7 +19,7 @@ class Lexer
 
     private $parenStack = [];
 
-    private static $keywords = ['if', 'for', 'in', 'switch', 'case', 'default', 'end', 'fn', 'and', 'or', 'not', 'do'];
+    private static $keywords = ['if', 'else', 'for', 'in', 'switch', 'case', 'default', 'end', 'fn', 'and', 'or', 'not', 'do'];
 
     public function __construct($input)
     {
