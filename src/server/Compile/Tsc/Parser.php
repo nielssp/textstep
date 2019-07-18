@@ -149,7 +149,7 @@ class Parser
         }
     }
 
-    public function parseList()
+    public function parseDelimited()
     {
         if ($this->peekValue('PUNCT', '[')) {
             $list = $this->createNode('LIST');
@@ -201,6 +201,12 @@ class Parser
             $node = $this->parseBlock();
             $this->expectEnd($node, 'do');
             return $node;
+        } else if ($this->peekType('START_QUOTE')) {
+            $node = $this->createNode('TEMPLATE');
+            $this->pop();
+            $node->children = $this->parseTemplate()->children;
+            $this->expectType('END_QUOTE');
+            return $node;
         } else {
             return $this->parseAtom();
         }
@@ -208,7 +214,7 @@ class Parser
 
     public function parseApplyDot()
     {
-        $expr = $this->parseList();
+        $expr = $this->parseDelimited();
         while (true) {
             if ($this->peekValue('PUNCT', '(')) {
                 $apply = $this->createNode('APPLY');
@@ -557,7 +563,7 @@ class Parser
                 $node->children[] = $text;
             } else if ($this->peekValues('KEYWORD', ['end', 'else', 'case', 'default'])) {
                 break;
-            } else if ($this->peekType('EOF')) {
+            } else if ($this->peekType('EOF') or $this->peekType('END_QUOTE')) {
                 break;
             } else if (!$this->peekType('LINE_FEED')) {
                 $node->children[] = $this->parseStatement();

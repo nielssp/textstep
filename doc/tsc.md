@@ -20,7 +20,10 @@ paren ::= "(" {token | paren | bracket | brace | comment | skipLf} ")"
 bracket ::= "[" {token | paren | bracket | brace | comment |  skipLf} "]"
 brace ::= "{" {token | paren | bracket | brace | comment | skipLf} "}"
 
+quote ::= '"' {quoteText | command} '"'
+
 text ::= {any \ (commandStart | commandEnd)}
+quoteText ::= {any \ (commandStart | commandEnd | '"') | "\\" (commandStart | commandEnd | "n" | "r" | "t" | '"' | "\\")}
 
 token ::= keyword
         | operator
@@ -51,7 +54,7 @@ int ::= digit {digit}
 
 float ::= int "." int
 
-string ::= '"' {(any / ("\\" | '"')) | "\\\\" | '\\"' | "\\n" | "\\r" | "\\t"} '"'
+string ::= "'" {(any / ("\\" | "'")) | "\\\\" | "\\'" | "\\n" | "\\r" | "\\t"} "'"
 ```
 
 ## Syntax
@@ -124,6 +127,7 @@ Key ::= int
 Atom ::= "[" [Expression {"," Expression} [","]] "]"
        | "(" Expression ")"
        | "{" [Key ":" Expression {"," Key ":" Expression} [","]] "}"
+       | '"' Template '"'
        | "do" Block "end" "do"
        | int
        | float

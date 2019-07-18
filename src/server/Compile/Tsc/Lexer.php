@@ -117,6 +117,34 @@ class Lexer
         return $token;
     }
 
+    private function readEscapeSequence($doubleQuote = false)
+    {
+        $c = $this->peek();
+        if ($c === null) {
+            throw new LexerError('unexpected end of input', $this->line, $this->column);
+        }
+        if ($doubleQuote and $c === '{') {
+            return $this->pop();
+        }
+        switch ($c) {
+            case '\\':
+            case "'":
+                return $this->pop();
+            case 'n':
+                $this->pop();
+                return "\n";
+            case 'r':
+                $this->pop();
+                return "\r";
+            case 't':
+                $this->pop();
+                return "\t";
+            default:
+                throw new LexerError('undefined escape character: ' + $c, $this->line, $this->column);
+
+        }
+    }
+
     private function readString()
     {
         $token = $this->createToken('STRING');
@@ -131,31 +159,7 @@ class Lexer
                 break;
             } else if ($c === '\\') {
                 $this->pop();
-                $c = $this->peek();
-                if ($c === null) {
-                    throw new LexerError('unexpected end of input', $this->line, $this->column);
-                }
-                switch ($c) {
-                    case '\\':
-                    case "'":
-                        $value .= $this->pop();
-                        break;
-                    case 'n':
-                        $this->pop();
-                        $value .= "\n";
-                        break;
-                    case 'r':
-                        $this->pop();
-                        $value .= "\r";
-                        break;
-                    case 't':
-                        $this->pop();
-                        $value .= "\t";
-                        break;
-                    default:
-                        throw new LexerError('undefined escape character: ' + $c, $this->line, $this->column);
-
-                }
+                $value .= $this->readEscapeSequence();
             } else {
                 $value .= $this->pop();
             }
@@ -196,7 +200,11 @@ class Lexer
         if ($this->peek() === null) {
             return null;
         }
-        if (!count($this->parenStack)) {
+        $topParen = null;
+        if (count($this->parenStack)) {
+            $topParen = $this->parenStack[count($this->parenStack) - 1];
+        }
+        if (!$topParen or $topParen === '"') {
             $token = $this->createToken('TEXT');
             $text = '';
             while (true) {
@@ -219,6 +227,13 @@ class Lexer
                         $this->parenStack[] = '{';
                     }
                     break;
+                } else if ($topParen === '"' and $c === '\\') {
+                    $this->pop();
+                    $text .= $this->readEscapeSequence(true);
+                } else if ($topParen === '"' and $c === '"') {
+                    array_pop($this->parenStack);
+                    $this->parenStack[] = '"(end)';
+                    break;
                 } else {
                     $text .= $this->pop();
                 }
@@ -226,6 +241,7 @@ class Lexer
             $token->value = $text;
             return $token;
         } else {
+            $isCommand = ($topParen === '{' and (count($this->parenStack) === 1 or (count($this->parenStack) > 1 and $this->parenStack[count($this->parenStack) - 2] === '"')));
             $this->skipWhiteSpace(count($this->parenStack) > 1);
             $c = $this->peek();
             if ($c === null) {
@@ -234,12 +250,22 @@ class Lexer
                 $token = $this->createToken('LINE_FEED');
                 $this->pop();
                 return $token;
-            } else if ($c === '}' and $this->parenStack === ['{']) {
+            } else if ($c === '}' and $isCommand) {
                 $this->pop();
-                $this->parenStack = [];
+                array_pop($this->parenStack);
                 return $this->readNextToken();
             } else if ($c === "'") {
                 return $this->readString();
+            } else if ($c === '"' and $topParen === '"(end)') {
+                $token = $this->createToken('END_QUOTE');
+                $this->pop();
+                array_pop($this->parenStack);
+                return $token;
+            } else if ($c === '"') {
+                $token = $this->createToken('START_QUOTE');
+                $this->pop();
+                $this->parenStack[] = '"';
+                return $token;
             } else if (strpos('([{', $c) !== false) {
                 $token = $this->createToken('PUNCT');
                 $token->value = $this->pop();
