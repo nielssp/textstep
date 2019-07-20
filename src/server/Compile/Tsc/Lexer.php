@@ -72,7 +72,7 @@ class Lexer
 
     private function readName()
     {
-        $token = $this->createToken('NAME');
+        $token = $this->createToken('Name');
         $name = '';
         while (true) {
             $c = $this->peek();
@@ -85,7 +85,7 @@ class Lexer
             $name .= $this->pop();
         }
         if (in_array($name, self::$keywords)) {
-            $token->type = 'KEYWORD';
+            $token->type = 'Keyword';
         }
         $token->value = $name;
         return $token;
@@ -93,7 +93,7 @@ class Lexer
 
     private function readOperator()
     {
-        $token = $this->createToken('OPERATOR');
+        $token = $this->createToken('Operator');
         $c = $this->pop();
         $token->value = $c;
         switch ($c) {
@@ -147,7 +147,7 @@ class Lexer
 
     private function readString()
     {
-        $token = $this->createToken('STRING');
+        $token = $this->createToken('String');
         $this->pop();
         $value = '';
         while (true) {
@@ -170,7 +170,7 @@ class Lexer
 
     private function readNumber()
     {
-        $token = $this->createToken('INT');
+        $token = $this->createToken('Int');
         $value = '';
         while (true) {
             $c = $this->peek();
@@ -182,7 +182,7 @@ class Lexer
         if ($this->peek() === '.') {
             $this->pop();
             $value .= '.';
-            $token->type = 'FLOAT';
+            $token->type = 'Float';
             while (true) {
                 $c = $this->peek();
                 if ($c === null or !preg_match('/[0-9]/', $c)) {
@@ -205,7 +205,7 @@ class Lexer
             $topParen = $this->parenStack[count($this->parenStack) - 1];
         }
         if (!$topParen or $topParen === '"') {
-            $token = $this->createToken('TEXT');
+            $token = $this->createToken('Text');
             $text = '';
             while (true) {
                 $c = $this->peek();
@@ -247,7 +247,7 @@ class Lexer
             if ($c === null) {
                 return null;
             } else if ($c === "\n") {
-                $token = $this->createToken('LINE_FEED');
+                $token = $this->createToken('LineFeed');
                 $this->pop();
                 return $token;
             } else if ($c === '}' and $isCommand) {
@@ -257,17 +257,17 @@ class Lexer
             } else if ($c === "'") {
                 return $this->readString();
             } else if ($c === '"' and $topParen === '"(end)') {
-                $token = $this->createToken('END_QUOTE');
+                $token = $this->createToken('EndQuote');
                 $this->pop();
                 array_pop($this->parenStack);
                 return $token;
             } else if ($c === '"') {
-                $token = $this->createToken('START_QUOTE');
+                $token = $this->createToken('StartQuote');
                 $this->pop();
                 $this->parenStack[] = '"';
                 return $token;
             } else if (strpos('([{', $c) !== false) {
-                $token = $this->createToken('PUNCT');
+                $token = $this->createToken('Punct');
                 $token->value = $this->pop();
                 if ($c === '{' and $this->peek() === '#') {
                     $this->pop();
@@ -291,7 +291,7 @@ class Lexer
                 if ('([{'[$i] !== $expected) {
                     throw new LexerError('unexpected "' . $c . '"', $this->line, $this->column);
                 }
-                $token = $this->createToken('PUNCT');
+                $token = $this->createToken('Punct');
                 $token->value = $this->pop();
                 return $token;
             } else if (strpos('+-*/%!<>=|.,:', $c) !== false) {
@@ -314,7 +314,7 @@ class Lexer
             }
             $tokens[] = $token;
         }
-        $tokens[] = $this->createToken('EOF');
+        $tokens[] = $this->createToken('Eof');
         return $tokens;
     }
 }

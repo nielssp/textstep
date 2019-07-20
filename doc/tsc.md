@@ -71,20 +71,19 @@ Statement ::= If
             | For
             | Switch
             | Assignment
-            | Expression
 
 If ::= "if" Expression Block
        {"else" "if" Expression Block}
        ["else" Block] "end" "if"
 
-For ::= "for" name "in" Expression Block
+For ::= "for" name [":" name] "in" Expression Block
        ["else" Block] "end" "for"
 
 Switch ::= "switch" Expression (lf | {lf} [text])
            {"case" Expression Block}
            ["default" Block] "end" "switch"
 
-Assignment ::= name ("=" | "+=" | "-=" | "*=" | "/=") Expression
+Assignment ::= Expression [("=" | "+=" | "-=" | "*=" | "/=") Expression]
 
 Expression ::= "fn" [name {"," name} [","]] "->" Expression
              | "." name {"." name}

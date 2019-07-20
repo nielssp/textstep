@@ -13,6 +13,8 @@ class Compiler
         $tokens = $lexer->readAllTokens();
         $parser = new Parser($tokens);
         $node = $parser->parse();
-        return json_encode($node, JSON_PRETTY_PRINT);
+        $interpreter = new Interpreter();
+        $value = $interpreter->eval($node, new Env());
+        return $value->toString();
     }
 }

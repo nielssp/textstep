@@ -90,8 +90,8 @@ class Parser
 
     private function expectEnd(Node $node, $value) {
         try {
-            $this->expectValue('KEYWORD', 'end');
-            $this->expectValue('KEYWORD', $value);
+            $this->expectValue('Keyword', 'end');
+            $this->expectValue('Keyword', $value);
         } catch (SyntaxError $e) {
             throw new SyntaxError('missing "end ' . $value . '": ' . $e->getMessage(), $node->line, $node->column);
         }
@@ -99,7 +99,7 @@ class Parser
 
     public function skipLineFeeds()
     {
-        while ($this->peekType('LINE_FEED')) {
+        while ($this->peekType('LineFeed')) {
             $this->pop();
         }
     }
@@ -107,40 +107,40 @@ class Parser
     public function skipLineFeedsAndtext()
     {
         $this->skipLineFeeds();
-        if ($this->peekValue('PUNCT', '}')) {
+        if ($this->peekValue('Punct', '}')) {
             $this->pop();
-            while ($this->peekType('TEXT')) {
+            while ($this->peekType('Text')) {
                 $this->pop();
             }
-            $this->expectValue('PUNCT', '{');
+            $this->expectValue('Punct', '{');
             $this->skipLineFeeds();
         }
     }
 
     public function parseName()
     {
-        $node = $this->createNode('NAME');
-        $token = $this->expectType('NAME');
+        $node = $this->createNode('Name');
+        $token = $this->expectType('Name');
         $node->value = $token->value;
         return $node;
     }
 
     public function parseAtom()
     {
-        if ($this->peekType('INT')) {
-            $node = $this->createNode('INT');
+        if ($this->peekType('Int')) {
+            $node = $this->createNode('Int');
             $node->value = $this->pop()->value;
             return $node;
-        } else if ($this->peekType('FLOAT')) {
-            $node = $this->createNode('FLOAT');
+        } else if ($this->peekType('Float')) {
+            $node = $this->createNode('Float');
             $node->value = $this->pop()->value;
             return $node;
-        } else if ($this->peekType('STRING')) {
-            $node = $this->createNode('STRING');
+        } else if ($this->peekType('String')) {
+            $node = $this->createNode('String');
             $node->value = $this->pop()->value;
             return $node;
-        } else if ($this->peekType('NAME')) {
-            $node = $this->createNode('NAME');
+        } else if ($this->peekType('Name')) {
+            $node = $this->createNode('Name');
             $node->value = $this->pop()->value;
             return $node;
         } else {
@@ -151,61 +151,60 @@ class Parser
 
     public function parseDelimited()
     {
-        if ($this->peekValue('PUNCT', '[')) {
-            $list = $this->createNode('LIST');
+        if ($this->peekValue('Punct', '[')) {
+            $list = $this->createNode('List');
             $this->pop();
-            if (!$this->peekValue('PUNCT', ']')) {
+            if (!$this->peekValue('Punct', ']')) {
                 while (true) {
                     $list->children[] = $this->parseExpression();
-                    if (!$this->peekValue('OPERATOR', ',')) {
+                    if (!$this->peekValue('Operator', ',')) {
                         break;
                     }
                     $this->pop();
                     // Allow comma after last element
-                    if ($this->peekValue('PUNCT', ']')) {
+                    if ($this->peekValue('Punct', ']')) {
                         break;
                     }
                 }
             }
-            $this->expectValue('PUNCT', ']');
+            $this->expectValue('Punct', ']');
             return $list;
-        } else if ($this->peekValue('PUNCT', '(')) {
+        } else if ($this->peekValue('Punct', '(')) {
             $this->pop();
             $expr = $this->parseExpression();
-            $this->expectValue('PUNCT', ')');
+            $this->expectValue('Punct', ')');
             return $expr;
-        } else if ($this->peekValue('PUNCT', '{')) {
-            $object = $this->createNode('OBJECT');
+        } else if ($this->peekValue('Punct', '{')) {
+            $object = $this->createNode('Object');
             $this->pop();
-            if (!$this->peekValue('PUNCT', '}')) {
+            if (!$this->peekValue('Punct', '}')) {
                 while (true) {
-                    $prop = $this->createNode('PROPERTY');
+                    $prop = $this->createNode('Property');
                     $prop->children[] = $this->parseAtom();
-                    $this->expectValue('OPERATOR', ':');
+                    $this->expectValue('Operator', ':');
                     $prop->children[] = $this->parseExpression();
                     $object->children[] = $prop;
-                    if (!$this->peekValue('OPERATOR', ',')) {
+                    if (!$this->peekValue('Operator', ',')) {
                         break;
                     }
                     $this->pop();
                     // Allow comma after last element
-                    if ($this->peekValue('PUNCT', '}')) {
+                    if ($this->peekValue('Punct', '}')) {
                         break;
                     }
                 }
             }
-            $this->expectValue('PUNCT', '}');
+            $this->expectValue('Punct', '}');
             return $object;
-        } else if ($this->peekValue('KEYWORD', 'do')) {
+        } else if ($this->peekValue('Keyword', 'do')) {
             $this->pop();
             $node = $this->parseBlock();
             $this->expectEnd($node, 'do');
             return $node;
-        } else if ($this->peekType('START_QUOTE')) {
-            $node = $this->createNode('TEMPLATE');
+        } else if ($this->peekType('StartQuote')) {
             $this->pop();
-            $node->children = $this->parseTemplate()->children;
-            $this->expectType('END_QUOTE');
+            $node = $this->parseTemplate();
+            $this->expectType('EndQuote');
             return $node;
         } else {
             return $this->parseAtom();
@@ -216,36 +215,36 @@ class Parser
     {
         $expr = $this->parseDelimited();
         while (true) {
-            if ($this->peekValue('PUNCT', '(')) {
-                $apply = $this->createNode('APPLY');
+            if ($this->peekValue('Punct', '(')) {
+                $apply = $this->createNode('Apply');
                 $this->pop();
                 $apply->children[] = $expr;
-                $params = $this->createNode('ACTUAL');
+                $params = $this->createNode('Actual');
                 $apply->children[] = $params;
-                if (!$this->peekValue('PUNCT', ')')) {
+                if (!$this->peekValue('Punct', ')')) {
                     while (true) {
                         $params->children[] = $this->parseExpression();
-                        if (!$this->peekValue('OPERATOR', ',')) {
+                        if (!$this->peekValue('Operator', ',')) {
                             break;
                         }
                         $this->pop();
                         // Allow comma after last element
-                        if ($this->peekValue('PUNCT', ')')) {
+                        if ($this->peekValue('Punct', ')')) {
                             break;
                         }
                     }
                 }
-                $this->expectValue('PUNCT', ')');
+                $this->expectValue('Punct', ')');
                 $expr = $apply;
-            } else if ($this->peekValue('PUNCT', '[')) {
-                $subs = $this->createNode('SUBSCRIPT');
+            } else if ($this->peekValue('Punct', '[')) {
+                $subs = $this->createNode('Subscript');
                 $this->pop();
                 $subs->children[] = $expr;
                 $subs->children[] = $this->parseExpression();
-                $this->expectValue('PUNCT', ']');
+                $this->expectValue('Punct', ']');
                 $expr = $subs;
-            } else if ($this->peekValue('OPERATOR', '.')) {
-                $dot = $this->createNode('DOT');
+            } else if ($this->peekValue('Operator', '.')) {
+                $dot = $this->createNode('Dot');
                 $this->pop();
                 $dot->children[] = $expr;
                 $dot->children[] = $this->parseName();
@@ -259,8 +258,8 @@ class Parser
 
     public function parseNegate()
     {
-        if ($this->peekValue('OPERATOR', '-')) {
-            $node = $this->createNode('PREFIX');
+        if ($this->peekValue('Operator', '-')) {
+            $node = $this->createNode('Prefix');
             $node->value = '-';
             $this->pop();
             $node->children[] = $this->parseNegate();
@@ -272,8 +271,8 @@ class Parser
     public function parseAddSub()
     {
         $expr = $this->parseNegate();
-        while ($this->peekValues('OPERATOR', ['+', '-'])) {
-            $infix = $this->createNode('INFIX');
+        while ($this->peekValues('Operator', ['+', '-'])) {
+            $infix = $this->createNode('Infix');
             $infix->value = $this->pop()->value;
             $infix->children[] = $expr;
             $infix->children[] = $this->parseNegate();
@@ -285,8 +284,8 @@ class Parser
     public function parseMulDiv()
     {
         $expr = $this->parseAddSub();
-        while ($this->peekValues('OPERATOR', ['*', '/', '%'])) {
-            $infix = $this->createNode('INFIX');
+        while ($this->peekValues('Operator', ['*', '/', '%'])) {
+            $infix = $this->createNode('Infix');
             $infix->value = $this->pop()->value;
             $infix->children[] = $expr;
             $infix->children[] = $this->parseAddSub();
@@ -298,8 +297,8 @@ class Parser
     public function parseComparison()
     {
         $expr = $this->parseMulDiv();
-        while ($this->peekValues('OPERATOR', ['<', '>', '<=', '>=', '==', '!='])) {
-            $infix = $this->createNode('INFIX');
+        while ($this->peekValues('Operator', ['<', '>', '<=', '>=', '==', '!='])) {
+            $infix = $this->createNode('Infix');
             $infix->value = $this->pop()->value;
             $infix->children[] = $expr;
             $infix->children[] = $this->parseMulDiv();
@@ -310,8 +309,8 @@ class Parser
 
     public function parseLogicalNot()
     {
-        if ($this->peekValue('KEYWORD', 'not')) {
-            $node = $this->createNode('PREFIX');
+        if ($this->peekValue('Keyword', 'not')) {
+            $node = $this->createNode('Prefix');
             $node->value = 'not';
             $this->pop();
             $node->children[] = $this->parseLogicalNot();
@@ -323,8 +322,8 @@ class Parser
     public function parseLogicalAnd()
     {
         $expr = $this->parseLogicalNot();
-        while ($this->peekValue('KEYWORD', 'and')) {
-            $infix = $this->createNode('INFIX');
+        while ($this->peekValue('Keyword', 'and')) {
+            $infix = $this->createNode('Infix');
             $infix->value = 'and';
             $this->pop();
             $infix->children[] = $expr;
@@ -337,8 +336,8 @@ class Parser
     public function parseLogicalOr()
     {
         $expr = $this->parseLogicalAnd();
-        while ($this->peekValue('KEYWORD', 'or')) {
-            $infix = $this->createNode('INFIX');
+        while ($this->peekValue('Keyword', 'or')) {
+            $infix = $this->createNode('Infix');
             $infix->value = 'or';
             $this->pop();
             $infix->children[] = $expr;
@@ -351,29 +350,29 @@ class Parser
     public function parsePipeLine()
     {
         $expr = $this->parseLogicalOr();
-        while ($this->peekValue('OPERATOR', '|')) {
-            $apply = $this->createNode('APPLY');
+        while ($this->peekValue('Operator', '|')) {
+            $apply = $this->createNode('Apply');
             $this->pop();
             $apply->children[] = $this->parseName();
-            $params = $this->createNode('ACTUAL');
+            $params = $this->createNode('Actual');
             $apply->children[] = $params;
             $params->children[] = $expr;
-            if ($this->peekValue('PUNCT', '(')) {
+            if ($this->peekValue('Punct', '(')) {
                 $this->pop();
-                if (!$this->peekValue('PUNCT', ')')) {
+                if (!$this->peekValue('Punct', ')')) {
                     while (true) {
                         $params->children[] = $this->parseExpression();
-                        if (!$this->peekValue('OPERATOR', ',')) {
+                        if (!$this->peekValue('Operator', ',')) {
                             break;
                         }
                         $this->pop();
                         // Allow comma after last element
-                        if ($this->peekValue('PUNCT', ')')) {
+                        if ($this->peekValue('Punct', ')')) {
                             break;
                         }
                     }
                 }
-                $this->expectValue('PUNCT', ')');
+                $this->expectValue('Punct', ')');
             }
             $expr = $apply;
         }
@@ -382,37 +381,37 @@ class Parser
 
     public function parseFn()
     {
-        $node = $this->createNode('FN');
-        $params = $this->createNode('FORMAL');
+        $node = $this->createNode('Fn');
+        $params = $this->createNode('Formal');
         $node->children[] = $params;
-        $this->expectValue('KEYWORD', 'fn');
-        if ($this->peekType('NAME')) {
+        $this->expectValue('Keyword', 'fn');
+        if ($this->peekType('Name')) {
             $params->children[] = $this->parseName();
-            while ($this->peekValue('OPERATOR', ',')) {
+            while ($this->peekValue('Operator', ',')) {
                 $this->pop();
                 // Allow comma after last element
-                if ($this->peekValue('OPERATOR', '->')) {
+                if ($this->peekValue('Operator', '->')) {
                     break;
                 }
                 $params->children[] = $this->parseName();
             }
         }
-        $this->expectValue('OPERATOR', '->');
+        $this->expectValue('Operator', '->');
         $node->children[] = $this->parseExpression();
         return $Node;
     }
 
     public function parsePartialDot()
     {
-        $node = $this->createNode('FN');
-        $params = $this->createNode('FORMAL');
+        $node = $this->createNode('Fn');
+        $params = $this->createNode('Formal');
         $node->children[] = $params;
-        $param = $this->createNode('NAME');
+        $param = $this->createNode('Name');
         $param->value = 'o';
         $params->children[] = $param;
         $expr = $param;
-        while ($this->peekValue('OPERATOR', '.')) {
-            $op = $this->createNode('DOT');
+        while ($this->peekValue('Operator', '.')) {
+            $op = $this->createNode('Dot');
             $this->pop();
             $op->children[] = $expr;
             $op->children[] = $this->parseName();
@@ -424,9 +423,9 @@ class Parser
     
     public function parseExpression()
     {
-        if ($this->peekValue('KEYWORD', 'fn')) {
+        if ($this->peekValue('Keyword', 'fn')) {
             return $this->parseFn();
-        } else if ($this->peekValue('OPERATOR', '.')) {
+        } else if ($this->peekValue('Operator', '.')) {
             return $this->parsePartialDot();
         } else {
             return $this->parsePipeLine();
@@ -435,15 +434,15 @@ class Parser
 
     public function parseIf()
     {
-        $node = $this->createNode('IF');
-        $this->expectValue('KEYWORD', 'if');
+        $node = $this->createNode('If');
+        $this->expectValue('Keyword', 'if');
         $node->children[] = $this->parseExpression();
         $node->children[] = $this->parseBlock();
-        while ($this->peekValue('KEYWORD', 'else')) {
+        while ($this->peekValue('Keyword', 'else')) {
             $this->pop();
-            if ($this->peekValue('KEYWORD', 'if')) {
+            if ($this->peekValue('Keyword', 'if')) {
                 $this->pop();
-                $new = $this->createNode('IF');
+                $new = $this->createNode('If');
                 $node->children[] = $new;
                 $node = $new;
                 $node->children[] = $this->parseExpression();
@@ -459,13 +458,19 @@ class Parser
 
     public function parseFor()
     {
-        $node = $this->createNode('FOR');
-        $this->expectValue('KEYWORD', 'for');
-        $node->children[] = $this->parseName();
-        $this->expectValue('KEYWORD', 'in');
+        $node = $this->createNode('For');
+        $this->expectValue('Keyword', 'for');
+        $params = $this->createNode('Formal');
+        $node->children[] = $params;
+        $params->children[] = $this->parseName();
+        if ($this->peekValue('Operator', ':')) {
+            $this->pop();
+            $params->children[] = $this->parseName();
+        }
+        $this->expectValue('Keyword', 'in');
         $node->children[] = $this->parseExpression();
         $node->children[] = $this->parseBlock();
-        if ($this->peekValue('KEYWORD', 'else')) {
+        if ($this->peekValue('Keyword', 'else')) {
             $this->pop();
             $node->children[] = $this->parseBlock();
         }
@@ -475,21 +480,21 @@ class Parser
 
     public function parseSwitch()
     {
-        $node = $this->createNode('SWITCH');
-        $this->expectValue('KEYWORD', 'switch');
+        $node = $this->createNode('Switch');
+        $this->expectValue('Keyword', 'switch');
         $node->children[] = $this->parseExpression();
-        if (!$this->peekType('TEXT')) {
-            $this->expectType('LINE_FEED');
+        if (!$this->peekType('Text')) {
+            $this->expectType('LineFeed');
         }
         $this->skipLineFeedsAndText();
-        while ($this->peekValue('KEYWORD', 'case')) {
-            $case = $this->createNode('CASE');
+        while ($this->peekValue('Keyword', 'case')) {
+            $case = $this->createNode('Case');
             $this->pop();
             $case->children[] = $this->parseExpression();
             $case->children[] = $this->parseBlock();
         }
-        if ($this->peekValue('KEYWORD', 'default')) {
-            $case = $this->createNode('DEFAULT');
+        if ($this->peekValue('Keyword', 'default')) {
+            $case = $this->createNode('Default');
             $this->pop();
             $case->children[] = $this->parseBlock();
         }
@@ -499,54 +504,46 @@ class Parser
 
     public function parseAssign()
     {
-        $node = $this->createNode('ASSIGN');
-        $node->children[] = $this->parseName();
-        $op = $this->expectType('OPERATOR')->value;
-        if (strlen($op) === 2) {
-            $infix = $this->createNode('INFIX');
-            $infix->value = $op[0];
-            $infix->children[] = $node->children[0];
-            $infix->children[] = $this->parseExpression();
-            $node->children[] = $infix;
-        } else {
-            $node->children[] = $this->parseExpression();
+        $node = $this->parseExpression();
+        if ($this->peekValues('Operator', ['=', '+=', '-=', '*=', '/='])) {
+            $assign = $this->createNode('Assign');
+            $op = $this->pop()->value;
+            $assign->children[] = $node;
+            if (strlen($op) === 2) {
+                $infix = $this->createNode('Infix');
+                $infix->value = $op[0];
+                $infix->children[] = $assign->children[0];
+                $infix->children[] = $this->parseExpression();
+                $assign->children[] = $infix;
+            } else {
+                $assign->children[] = $this->parseExpression();
+            }
+            $node = $assign;
         }
         return $node;
     }
 
     public function parseStatement()
     {
-        if ($this->peekValue('KEYWORD', 'if')) {
+        if ($this->peekValue('Keyword', 'if')) {
             return $this->parseIf();
-        } else if ($this->peekValue('KEYWORD', 'for')) {
+        } else if ($this->peekValue('Keyword', 'for')) {
             return $this->parseFor();
-        } else if ($this->peekValue('KEYWORD', 'switch')) {
+        } else if ($this->peekValue('Keyword', 'switch')) {
             return $this->parseSwitch();
-        } else if ($this->peekType('NAME')) {
-            $next = $this->peek(1);
-            if ($next->type === 'OPERATOR') {
-                switch ($next->value) {
-                    case '=':
-                    case '+=':
-                    case '-=':
-                    case '*=':
-                    case '/=':
-                        return $this->parseAssign();
-                }
-            }
         }
-        return $this->parseExpression();
+        return $this->parseAssign();
     }
 
     public function parseBlock()
     {
-        $node = $this->createNode('BLOCK');
-        if ($this->peekType('TEXT')) {
-            $text = $this->createNode('TEXT');
+        $node = $this->createNode('Block');
+        if ($this->peekType('Text')) {
+            $text = $this->createNode('String');
             $text->value = $this->pop()->value;
             $node->children[] = $text;
         } else {
-            $this->expectType('LINE_FEED');
+            $this->expectType('LineFeed');
         }
         $template = $this->parseTemplate();
         $node->children = array_merge($node->children, $template->children);
@@ -555,20 +552,20 @@ class Parser
 
     public function parseTemplate()
     {
-        $node = $this->createNode('BLOCK');
+        $node = $this->createNode('Block');
         while (true) {
-            if ($this->peekType('TEXT')) {
-                $text = $this->createNode('TEXT');
+            if ($this->peekType('Text')) {
+                $text = $this->createNode('String');
                 $text->value = $this->pop()->value;
                 $node->children[] = $text;
-            } else if ($this->peekValues('KEYWORD', ['end', 'else', 'case', 'default'])) {
+            } else if ($this->peekValues('Keyword', ['end', 'else', 'case', 'default'])) {
                 break;
-            } else if ($this->peekType('EOF') or $this->peekType('END_QUOTE')) {
+            } else if ($this->peekType('Eof') or $this->peekType('EndQuote')) {
                 break;
-            } else if (!$this->peekType('LINE_FEED')) {
+            } else if (!$this->peekType('LineFeed')) {
                 $node->children[] = $this->parseStatement();
-                if (!$this->peekType('TEXT') or $this->peekType('EOF')) {
-                    $this->expectType('LINE_FEED');
+                if (!$this->peekType('Text') or $this->peekType('Eof')) {
+                    $this->expectType('LineFeed');
                 }
             } else {
                 $this->pop();
@@ -580,7 +577,7 @@ class Parser
     public function parse()
     {
         $template = $this->parseTemplate();
-        $this->expectType('EOF');
+        $this->expectType('Eof');
         return $template;
     }
 }
