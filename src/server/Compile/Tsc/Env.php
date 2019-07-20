@@ -25,7 +25,7 @@ class Env
     {
         if (isset($this->values[$name])) {
             return $this->values[$name];
-        } else if (isset($this->parent)) {
+        } elseif (isset($this->parent)) {
             return $this->parent->get($name);
         }
         return null;
@@ -40,5 +40,3 @@ class Env
         $this->values[$name] = $value;
     }
 }
-
-

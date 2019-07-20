@@ -152,7 +152,9 @@ class Shell
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
                 $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
-                $id = function ($content) { return $content; };
+                $id = function ($content) {
+                    return $content;
+                };
                 $compiler->getHandler()->addHandler('html', $id);
                 $compiler->getHandler()->addHandler('htm', $id);
                 $compiler->getHandler()->addHandler('md', [new \Parsedown(), 'text']);

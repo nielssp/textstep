@@ -141,7 +141,6 @@ class Lexer
                 return "\t";
             default:
                 throw new LexerError('undefined escape character: ' + $c, $this->line, $this->column);
-
         }
     }
 
@@ -154,10 +153,10 @@ class Lexer
             $c = $this->peek();
             if ($c === null) {
                 throw new LexerError('unexpected end of input, expected end of string', $this->line, $this->column);
-            } else if ($c === "'") {
+            } elseif ($c === "'") {
                 $this->pop();
                 break;
-            } else if ($c === '\\') {
+            } elseif ($c === '\\') {
                 $this->pop();
                 $value .= $this->readEscapeSequence();
             } else {
@@ -211,7 +210,7 @@ class Lexer
                 $c = $this->peek();
                 if ($c === null) {
                     break;
-                } else if ($c === '{') {
+                } elseif ($c === '{') {
                     $this->pop();
                     if ($this->peek() === '#') {
                         $this->pop();
@@ -227,10 +226,10 @@ class Lexer
                         $this->parenStack[] = '{';
                     }
                     break;
-                } else if ($topParen === '"' and $c === '\\') {
+                } elseif ($topParen === '"' and $c === '\\') {
                     $this->pop();
                     $text .= $this->readEscapeSequence(true);
-                } else if ($topParen === '"' and $c === '"') {
+                } elseif ($topParen === '"' and $c === '"') {
                     array_pop($this->parenStack);
                     $this->parenStack[] = '"(end)';
                     break;
@@ -246,27 +245,27 @@ class Lexer
             $c = $this->peek();
             if ($c === null) {
                 return null;
-            } else if ($c === "\n") {
+            } elseif ($c === "\n") {
                 $token = $this->createToken('LineFeed');
                 $this->pop();
                 return $token;
-            } else if ($c === '}' and $isCommand) {
+            } elseif ($c === '}' and $isCommand) {
                 $this->pop();
                 array_pop($this->parenStack);
                 return $this->readNextToken();
-            } else if ($c === "'") {
+            } elseif ($c === "'") {
                 return $this->readString();
-            } else if ($c === '"' and $topParen === '"(end)') {
+            } elseif ($c === '"' and $topParen === '"(end)') {
                 $token = $this->createToken('EndQuote');
                 $this->pop();
                 array_pop($this->parenStack);
                 return $token;
-            } else if ($c === '"') {
+            } elseif ($c === '"') {
                 $token = $this->createToken('StartQuote');
                 $this->pop();
                 $this->parenStack[] = '"';
                 return $token;
-            } else if (strpos('([{', $c) !== false) {
+            } elseif (strpos('([{', $c) !== false) {
                 $token = $this->createToken('Punct');
                 $token->value = $this->pop();
                 if ($c === '{' and $this->peek() === '#') {
@@ -283,7 +282,7 @@ class Lexer
                 }
                 $this->parenStack[] = $token->value;
                 return $token;
-            } else if (($i = strpos(')]}', $c)) !== false) {
+            } elseif (($i = strpos(')]}', $c)) !== false) {
                 if (!count($this->parenStack)) {
                     throw new LexerError('unexpected "' . $c . '"', $this->line, $this->column);
                 }
@@ -294,9 +293,9 @@ class Lexer
                 $token = $this->createToken('Punct');
                 $token->value = $this->pop();
                 return $token;
-            } else if (strpos('+-*/%!<>=|.,:', $c) !== false) {
+            } elseif (strpos('+-*/%!<>=|.,:', $c) !== false) {
                 return $this->readOperator();
-            } else if (strpos('0123456789', $c) !== false) {
+            } elseif (strpos('0123456789', $c) !== false) {
                 return $this->readNumber();
             } else {
                 return $this->readName();

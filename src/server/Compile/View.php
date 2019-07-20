@@ -96,7 +96,7 @@ class View extends \Blogstep\View
             return false;
         }
         if ($this->currentPath != null and \Jivoo\Unicode::endsWith($this->currentPath, 'index.html')) {
-          return ltrim($link, '/') === preg_replace('/^index.html$|\/index.html$/', '', $this->currentPath);
+            return ltrim($link, '/') === preg_replace('/^index.html$|\/index.html$/', '', $this->currentPath);
         }
         return ltrim($link, '/') === $this->currentPath;
     }

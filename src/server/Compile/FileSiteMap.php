@@ -63,5 +63,4 @@ class FileSiteMap implements SiteMap
     {
         unset($this->data[$path]);
     }
-
 }

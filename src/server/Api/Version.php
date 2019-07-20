@@ -15,4 +15,3 @@ class Version extends \Blogstep\Snippet
         ]);
     }
 }
-

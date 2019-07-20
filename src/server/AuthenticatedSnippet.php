@@ -23,7 +23,7 @@ class AuthenticatedSnippet extends Snippet
     {
         if ($this->request->hasHeader('X-Auth-Token')) {
             $sessionId = $this->request->getHeaderLine('X-Auth-Token');
-        } else if (isset($this->request->query['access_token'])) {
+        } elseif (isset($this->request->query['access_token'])) {
             $sessionId = $this->request->query['access_token'];
         } else {
             return $this->unauthorizedError('Missing authentication header');

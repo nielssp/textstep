@@ -83,7 +83,7 @@ class FileAcl
         $record = $this->getRecord($path);
         if (!isset($record[$capability])) {
             $record[$capability] = [];
-        } else if (in_array($group, $record[$capability], true)) {
+        } elseif (in_array($group, $record[$capability], true)) {
             return;
         }
         $record[$capability][] = $group;

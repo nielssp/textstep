@@ -64,5 +64,4 @@ class UnitTask implements Task
     {
         $this->done = $serialized['done'];
     }
-
 }

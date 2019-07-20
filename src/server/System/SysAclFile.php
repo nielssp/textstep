@@ -7,7 +7,8 @@ namespace Blogstep\System;
 
 use Blogstep\SystemAcl;
 
-class SysAclFile extends SystemFile {
+class SysAclFile extends SystemFile
+{
 
     public function __construct(SystemAcl $acl)
     {
@@ -70,4 +71,3 @@ class SysAclFile extends SystemFile {
         }
     }
 }
-

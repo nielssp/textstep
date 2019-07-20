@@ -70,9 +70,9 @@ class ExceptionHandler
                         }
                         if (is_scalar($arg)) {
                             $report .= substr(var_export($arg, true), 0, 15);
-                        } else if (is_object($arg)) {
+                        } elseif (is_object($arg)) {
                             $report .= get_class($arg);
-                        } else if (is_array($arg)) {
+                        } elseif (is_array($arg)) {
                             $report .= 'array(' . count($arg) . ')';
                         } else {
                             $report .= gettype($arg);

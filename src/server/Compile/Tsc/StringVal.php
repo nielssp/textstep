@@ -34,7 +34,3 @@ class StringVal extends Val
         return $this->value;
     }
 }
-
-
-
-

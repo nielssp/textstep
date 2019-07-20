@@ -111,5 +111,4 @@ class Runner implements Task
         }
         $this->currentTask = $serialized['currentTask'];
     }
-
 }

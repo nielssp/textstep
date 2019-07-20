@@ -60,7 +60,7 @@ class ContentCompiler
         $dom = new \simple_html_dom();
         $dom->load($html, true, false);
         if (!$dom) {
-          throw new \Blogstep\RuntimeException('Could not parse HTML: ' . $htmlFile()->getPath());
+            throw new \Blogstep\RuntimeException('Could not parse HTML: ' . $htmlFile()->getPath());
         }
         return $dom;
     }

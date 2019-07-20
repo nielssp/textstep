@@ -8,7 +8,8 @@ namespace Blogstep\Files;
 use Jivoo\Json;
 use Jivoo\JsonException;
 
-class JsonStorage implements Storage {
+class JsonStorage implements Storage
+{
     private $file;
 
     private $handle;
@@ -26,7 +27,8 @@ class JsonStorage implements Storage {
         if (! $this->handle) {
             throw new FileException(
                 FileException::READ_FAILED,
-                'Could not read file');
+                'Could not read file'
+            );
         }
         flock($this->handle, $writeMode ? LOCK_EX : LOCK_SH);
         $this->writeMode = $writeMode;
@@ -138,5 +140,3 @@ class JsonStorage implements Storage {
         }
     }
 }
-
-

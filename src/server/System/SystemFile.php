@@ -8,7 +8,8 @@ namespace Blogstep\System;
 use Blogstep\SystemAcl;
 use Blogstep\User;
 
-abstract class SystemFile implements \Blogstep\Files\Storage {
+abstract class SystemFile implements \Blogstep\Files\Storage
+{
 
     protected $acl ;
 
@@ -50,9 +51,9 @@ abstract class SystemFile implements \Blogstep\Files\Storage {
         return null;
     }
 
-    public abstract function getModified();
+    abstract public function getModified();
 
-    public abstract function getCreated();
+    abstract public function getCreated();
 
     public function updateDocuments($documents)
     {
@@ -71,7 +72,8 @@ abstract class SystemFile implements \Blogstep\Files\Storage {
         }
     }
 
-    protected function applyFilter(array $unfiltered, array $filter) {
+    protected function applyFilter(array $unfiltered, array $filter)
+    {
         $data = [];
         foreach ($unfiltered as $key => $document) {
             if (!is_array($document)) {

@@ -8,7 +8,8 @@ namespace Blogstep\Files;
 /**
  * Abstract key/value storage.
  */
-interface Storage {
+interface Storage
+{
     public function close();
 
     public function getDocuments($filter = null);
@@ -23,4 +24,3 @@ interface Storage {
 
     public function deleteDocument($key);
 }
-

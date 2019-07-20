@@ -63,5 +63,4 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
     {
         $this->logger = $logger;
     }
-
 }

@@ -57,5 +57,4 @@ class FileContentMap implements ContentMap
     {
         unset($this->data[$path]);
     }
-
 }

@@ -114,27 +114,27 @@ class View implements LoggerAwareInterface
         $this->blocks = new ViewBlocks($this);
 
         $this->addFunction('link', function ($route) use ($router) {
-          return $router->getUri($route)->__toString();
+            return $router->getUri($route)->__toString();
         });
         $this->addFunction('url', function ($route) use ($router) {
-          return $router->getUri($route)->__toString();
+            return $router->getUri($route)->__toString();
         });
         $this->addFunction('isCurrent', function ($route) use ($router) {
           // TODO
         });
         //        $this->addFunction('mergeRoutes', array($this->m->Routing, 'mergeRoutes'));
         $this->addFunction('file', function ($asset) use ($assets) {
-          return $assets->find($asset);
+            return $assets->find($asset);
         });
         $this->addFunctions(
-          $this->resources,
-          array('provide', 'import', 'resourceBlock', 'importConditional',
-          'openFrame', 'closeFrame')
+            $this->resources,
+            array('provide', 'import', 'resourceBlock', 'importConditional',
+            'openFrame', 'closeFrame')
         );
 
         $this->addFunctions(
-          $this->blocks,
-          array('icon', 'meta', 'relation', 'block', 'isEmpty')
+            $this->blocks,
+            array('icon', 'meta', 'relation', 'block', 'isEmpty')
         );
     }
 

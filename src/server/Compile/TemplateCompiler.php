@@ -66,8 +66,7 @@ class TemplateCompiler
     
     public function __get($property)
     {
-        switch ($property)
-        {
+        switch ($property) {
             case 'buildDir':
                 return $this->$property;
         }
@@ -78,7 +77,7 @@ class TemplateCompiler
         if ($file->isDirectory()) {
             if ($file->get('site.json')->isFile()) {
                 return $file;
-            } else if ($file->getParent() === $file) {
+            } elseif ($file->getParent() === $file) {
                 return null;
             }
         }
@@ -121,7 +120,7 @@ class TemplateCompiler
             }
             $object = $this->tsTemplateCompiler->compile($source, $path);
             $target->putContents($object);
-        } else if (\Jivoo\Unicode::endsWith($name, '.html')) {
+        } elseif (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();
             $target = $this->buildDir->get('.' . $file->getPath() . '.php');
             $target->getParent()->makeDirectory(true);
@@ -138,7 +137,7 @@ class TemplateCompiler
         } elseif (preg_match('/\.([a-z0-9]+)\.php$/i', $name)) {
             $path = preg_replace('/\.php$/i', '', $file->getRelativePath($this->templateRoot));
             $this->siteMap->add($path, 'eval', [$path]);
-        } else if (!\Jivoo\Unicode::startsWith($name, '_')) {
+        } elseif (!\Jivoo\Unicode::startsWith($name, '_')) {
             $path = $file->getRelativePath($this->templateRoot);
             $file = $this->filterSet->applyFileFilters($this, $file);
             $this->siteMap->add($path, 'copy', [$file->getPath()]);

@@ -255,5 +255,4 @@ class ContentSelection implements \IteratorAggregate, Selectable
         }
         return $nodes;
     }
-
 }

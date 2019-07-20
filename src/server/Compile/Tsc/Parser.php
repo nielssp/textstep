@@ -21,7 +21,7 @@ class Parser
         if ($token) {
             $node->line = $token->line;
             $node->column = $token->column;
-        } else if (count($this->tokens)) {
+        } elseif (count($this->tokens)) {
             $node->line = $this->tokens[0]->line;
             $node->column = $this->tokens[0]->column;
         }
@@ -68,7 +68,7 @@ class Parser
             return $token;
         }
         if (!$token) {
-            throw new SyntaxError('unexpected end of token stream, expected ' . $type, 0, 0); 
+            throw new SyntaxError('unexpected end of token stream, expected ' . $type, 0, 0);
         }
         throw new SyntaxError('unexpected ' . $token->type . ', expected ' . $type, $token->line, $token->column);
     }
@@ -80,15 +80,24 @@ class Parser
             return $token;
         }
         if (!$token) {
-            throw new SyntaxError('unexpected end of token stream, expected "' . $value . '"', 0, 0); 
+            throw new SyntaxError('unexpected end of token stream, expected "' . $value . '"', 0, 0);
         }
         if ($token->type === $type) {
-            throw new SyntaxError('unexpected "' . $token->value . '", expected "' . $value . '"', $token->line, $token->column);
+            throw new SyntaxError(
+                'unexpected "' . $token->value . '", expected "' . $value . '"',
+                $token->line,
+                $token->column
+            );
         }
-        throw new SyntaxError('unexpected ' . $token->type . ', expected "' . $value . '"', $token->line, $token->column);
+        throw new SyntaxError(
+            'unexpected ' . $token->type . ', expected "' . $value . '"',
+            $token->line,
+            $token->column
+        );
     }
 
-    private function expectEnd(Node $node, $value) {
+    private function expectEnd(Node $node, $value)
+    {
         try {
             $this->expectValue('Keyword', 'end');
             $this->expectValue('Keyword', $value);
@@ -131,15 +140,15 @@ class Parser
             $node = $this->createNode('Int');
             $node->value = $this->pop()->value;
             return $node;
-        } else if ($this->peekType('Float')) {
+        } elseif ($this->peekType('Float')) {
             $node = $this->createNode('Float');
             $node->value = $this->pop()->value;
             return $node;
-        } else if ($this->peekType('String')) {
+        } elseif ($this->peekType('String')) {
             $node = $this->createNode('String');
             $node->value = $this->pop()->value;
             return $node;
-        } else if ($this->peekType('Name')) {
+        } elseif ($this->peekType('Name')) {
             $node = $this->createNode('Name');
             $node->value = $this->pop()->value;
             return $node;
@@ -169,12 +178,12 @@ class Parser
             }
             $this->expectValue('Punct', ']');
             return $list;
-        } else if ($this->peekValue('Punct', '(')) {
+        } elseif ($this->peekValue('Punct', '(')) {
             $this->pop();
             $expr = $this->parseExpression();
             $this->expectValue('Punct', ')');
             return $expr;
-        } else if ($this->peekValue('Punct', '{')) {
+        } elseif ($this->peekValue('Punct', '{')) {
             $object = $this->createNode('Object');
             $this->pop();
             if (!$this->peekValue('Punct', '}')) {
@@ -196,12 +205,12 @@ class Parser
             }
             $this->expectValue('Punct', '}');
             return $object;
-        } else if ($this->peekValue('Keyword', 'do')) {
+        } elseif ($this->peekValue('Keyword', 'do')) {
             $this->pop();
             $node = $this->parseBlock();
             $this->expectEnd($node, 'do');
             return $node;
-        } else if ($this->peekType('StartQuote')) {
+        } elseif ($this->peekType('StartQuote')) {
             $this->pop();
             $node = $this->parseTemplate();
             $this->expectType('EndQuote');
@@ -236,14 +245,14 @@ class Parser
                 }
                 $this->expectValue('Punct', ')');
                 $expr = $apply;
-            } else if ($this->peekValue('Punct', '[')) {
+            } elseif ($this->peekValue('Punct', '[')) {
                 $subs = $this->createNode('Subscript');
                 $this->pop();
                 $subs->children[] = $expr;
                 $subs->children[] = $this->parseExpression();
                 $this->expectValue('Punct', ']');
                 $expr = $subs;
-            } else if ($this->peekValue('Operator', '.')) {
+            } elseif ($this->peekValue('Operator', '.')) {
                 $dot = $this->createNode('Dot');
                 $this->pop();
                 $dot->children[] = $expr;
@@ -425,7 +434,7 @@ class Parser
     {
         if ($this->peekValue('Keyword', 'fn')) {
             return $this->parseFn();
-        } else if ($this->peekValue('Operator', '.')) {
+        } elseif ($this->peekValue('Operator', '.')) {
             return $this->parsePartialDot();
         } else {
             return $this->parsePipeLine();
@@ -527,9 +536,9 @@ class Parser
     {
         if ($this->peekValue('Keyword', 'if')) {
             return $this->parseIf();
-        } else if ($this->peekValue('Keyword', 'for')) {
+        } elseif ($this->peekValue('Keyword', 'for')) {
             return $this->parseFor();
-        } else if ($this->peekValue('Keyword', 'switch')) {
+        } elseif ($this->peekValue('Keyword', 'switch')) {
             return $this->parseSwitch();
         }
         return $this->parseAssign();
@@ -558,11 +567,11 @@ class Parser
                 $text = $this->createNode('String');
                 $text->value = $this->pop()->value;
                 $node->children[] = $text;
-            } else if ($this->peekValues('Keyword', ['end', 'else', 'case', 'default'])) {
+            } elseif ($this->peekValues('Keyword', ['end', 'else', 'case', 'default'])) {
                 break;
-            } else if ($this->peekType('Eof') or $this->peekType('EndQuote')) {
+            } elseif ($this->peekType('Eof') or $this->peekType('EndQuote')) {
                 break;
-            } else if (!$this->peekType('LineFeed')) {
+            } elseif (!$this->peekType('LineFeed')) {
                 $node->children[] = $this->parseStatement();
                 if (!$this->peekType('Text') or $this->peekType('Eof')) {
                     $this->expectType('LineFeed');

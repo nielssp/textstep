@@ -449,7 +449,7 @@ class File implements \IteratorAggregate, HasRoute
                     $this->invalidate();
                     return true;
                 }
-            } else if ($destination->device->moveFromDevice($this->device, $this->devicePath, $destination->devicePath)) {
+            } elseif ($destination->device->moveFromDevice($this->device, $this->devicePath, $destination->devicePath)) {
                 $this->invalidate();
                 return true;
             }
@@ -604,20 +604,20 @@ class File implements \IteratorAggregate, HasRoute
         $this->assumeWritable();
         if (!$this->device->delete($this->devicePath)) {
             if ($this->isDirectory()) {
-                    if (!$this->exists()) {
-                        throw new FileException(
-                            FileException::NOT_FOUND,
-                            'Directory does not exist: {path}',
-                            ['path' => $this->getPath()]
-                        );
-                    }
-                    if (iterator_count($this->getIterator()) > 0) {
-                        throw new FileException(
-                            FileException::NOT_EMPTY,
-                            'Directory is not empty: {path}',
-                            ['path' => $this->getPath()]
-                        );
-                    }
+                if (!$this->exists()) {
+                    throw new FileException(
+                        FileException::NOT_FOUND,
+                        'Directory does not exist: {path}',
+                        ['path' => $this->getPath()]
+                    );
+                }
+                if (iterator_count($this->getIterator()) > 0) {
+                    throw new FileException(
+                        FileException::NOT_EMPTY,
+                        'Directory is not empty: {path}',
+                        ['path' => $this->getPath()]
+                    );
+                }
                     throw new FileException(
                         FileException::DELETE_FAILED,
                         'Could not delete directory: {path}',

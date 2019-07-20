@@ -43,7 +43,9 @@ class Preview extends AuthenticatedSnippet
         $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
 
         $cc = new ContentCompiler($destination, $siteMap, $contentMap, $filterSet);
-        $id = function ($content) { return $content; };
+        $id = function ($content) {
+            return $content;
+        };
         $cc->getHandler()->addHandler('html', $id);
         $cc->getHandler()->addHandler('htm', $id);
         $cc->getHandler()->addHandler('md', [new \Parsedown(), 'text']);

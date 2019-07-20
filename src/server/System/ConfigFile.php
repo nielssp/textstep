@@ -8,7 +8,8 @@ namespace Blogstep\System;
 use Jivoo\Store\Config;
 use Blogstep\SystemAcl;
 
-class ConfigFile extends SystemFile {
+class ConfigFile extends SystemFile
+{
 
     private $file;
     private $config;
@@ -85,4 +86,3 @@ class ConfigFile extends SystemFile {
         }
     }
 }
-

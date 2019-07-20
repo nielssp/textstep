@@ -15,7 +15,7 @@ interface Device
 
     /**
      * List contents of a directory.
-     * 
+     *
      * @param string $path Directory path.
      * @return string[] List of files in directory.
      * @throws FileException On error.
@@ -24,7 +24,7 @@ interface Device
 
     /**
      * Gets the size of the given file.
-     * 
+     *
      * @param string $path File path.
      * @return int File size in bytes.
      * @throws FileException On error.
@@ -33,7 +33,7 @@ interface Device
 
     /**
      * Gets the modification time of the given file.
-     * 
+     *
      * @param string $path File path.
      * @return int File modification time as a UNIX timestamp.
      * @throws FileException On error.
@@ -42,7 +42,7 @@ interface Device
 
     /**
      * Gets the creation time of the given file.
-     * 
+     *
      * @param string $path File path.
      * @return int File creation time as a UNIX timestamp.
      * @throws FileException On error.
@@ -51,7 +51,7 @@ interface Device
 
     /**
      * Returns whether the file or directory is readable.
-     * 
+     *
      * @param string $path File path.
      * @return bool True if the file exists and is readable, false otherwise.
      * @throws FileException On error.
@@ -60,7 +60,7 @@ interface Device
 
     /**
      * Returns whether the file or directory is writable.
-     * 
+     *
      * @param string $path File path.
      * @return bool True if the file exists and is writable, false otherwise.
      * @throws FileException On error.

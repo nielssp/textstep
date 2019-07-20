@@ -81,7 +81,7 @@ class BlogstepMacros extends \Jivoo\View\Compile\DefaultMacros
             }
             if (!isset($listType)) {
                 $listType = $type;
-            } else if ($listType !== $type) {
+            } elseif ($listType !== $type) {
                 throw new \Blogstep\RuntimeException('Inconsistent list type');
             }
             $this->siteMap->add($path, 'eval', [$template, $type, $arg]);

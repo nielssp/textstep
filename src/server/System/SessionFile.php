@@ -9,7 +9,8 @@ use Blogstep\UserModel;
 use Blogstep\SystemAcl;
 use Blogstep\Session;
 
-class SessionFile extends SystemFile {
+class SessionFile extends SystemFile
+{
 
     private $users;
 
@@ -45,7 +46,7 @@ class SessionFile extends SystemFile {
             foreach ($this->users->getSessions() as $session) {
                 $sessions[$session->id] = $this->toDocument($session);
             }
-        } else if ($this->check('sessions.self.view')) {
+        } elseif ($this->check('sessions.self.view')) {
             foreach ($this->users->getSessions($this->user) as $session) {
                 $sessions[$session->id] = $this->toDocument($session);
             }
@@ -67,7 +68,7 @@ class SessionFile extends SystemFile {
             if ($session) {
                 return $this->toDocument($session);
             }
-        } else if ($this->check('sessions.self.view')) {
+        } elseif ($this->check('sessions.self.view')) {
             $session = $this->users->getSession($key);
             if ($session and $session['username'] === $this->user->getName()) {
                 return $this->toDocument($session);
@@ -84,7 +85,7 @@ class SessionFile extends SystemFile {
         $checked = $this->checkDocument('sessions.update', $document);
         if ($checked) {
             $this->users->updateSession($key, $checked);
-        } else if ($this->user) {
+        } elseif ($this->user) {
             $checked = $this->checkDocument('sessions.self.update', $document);
             if ($checked) {
                 $this->users->updateSession($key, $checked, $this->user);
@@ -96,9 +97,8 @@ class SessionFile extends SystemFile {
     {
         if ($this->check('sessions.delete')) {
             $this->users->deleteSession($key);
-        } else if ($this->check('sessions.self.delete')) {
+        } elseif ($this->check('sessions.self.delete')) {
             $this->users->deleteSession($key, $this->user);
         }
     }
 }
-

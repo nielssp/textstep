@@ -7,7 +7,8 @@ namespace Blogstep\System;
 
 use Blogstep\SystemAcl;
 
-class TimeZoneFile extends SystemFile {
+class TimeZoneFile extends SystemFile
+{
 
     public function __construct(SystemAcl $acl)
     {

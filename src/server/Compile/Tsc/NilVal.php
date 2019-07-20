@@ -36,5 +36,3 @@ class NilVal extends Val
         return '';
     }
 }
-
-

@@ -34,5 +34,3 @@ class IntVal extends Val
         return $this->value;
     }
 }
-
-

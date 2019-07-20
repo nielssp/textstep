@@ -73,5 +73,4 @@ class ContentTree implements IteratorAggregate, Selectable
     {
         return count($this->getNodes());
     }
-
 }

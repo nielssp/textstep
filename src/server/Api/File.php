@@ -34,7 +34,7 @@ class File extends \Blogstep\AuthenticatedSnippet
                 return $this->json($file->getBrief());
             }
             return $this->error('File could not be created');
-        } else if ($type === 'directory') {
+        } elseif ($type === 'directory') {
             if ($file->makeDirectory($recursive)) {
                 return $this->json($file->getBrief());
             }
@@ -64,4 +64,3 @@ class File extends \Blogstep\AuthenticatedSnippet
         return $this->ok();
     }
 }
-

@@ -100,7 +100,7 @@ class ContentPage extends ContentGroup
         }
         if ($this->page == 1) {
             return $this->expRange(1, $this->pages, $n);
-        } else if ($this->page == $this->pages) {
+        } elseif ($this->page == $this->pages) {
             return array_reverse($this->expRange($this->pages, 1, $n));
         }
         $middle = min(ceil($n / 2) - 1, $this->page - 1);

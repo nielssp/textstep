@@ -58,5 +58,4 @@ abstract class TaskBase implements Task
     {
         $this->progress = $progress;
     }
-
 }

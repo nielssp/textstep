@@ -6,7 +6,7 @@
 namespace Blogstep\Task;
 
 /**
- * 
+ *
  */
 class Serializer
 {
@@ -30,7 +30,8 @@ class Serializer
     {
         $this->initializers[$class] = $initializer;
         if (!$defaultUnserializer && !isset($this->unserializers[$class])) {
-            $this->unserializers[$class] = function () {};
+            $this->unserializers[$class] = function () {
+            };
         }
     }
     
@@ -121,7 +122,7 @@ class Serializer
         $class = get_class($object);
         if (isset($this->unserializers[$class])) {
             call_user_func($this->unserializers[$class], $object, $serialized[2], $this);
-        } else if ($object instanceof Serializable) {
+        } elseif ($object instanceof Serializable) {
             $object->unserialize($serialized[2], $this);
         } else {
             $this->unserializePropreties($object, $serialized[2]);
@@ -218,5 +219,4 @@ class Serializer
             $this->unserializeObject($object, $this->objects[$id]);
         }
     }
-    
 }

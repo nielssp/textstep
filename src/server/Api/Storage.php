@@ -16,7 +16,7 @@ class Storage extends \Blogstep\AuthenticatedSnippet
         if (isset($this->request->query['key'])) {
             $key = $this->request->query['key'];
             $document = $storage->getDocument($key);
-        } else if (isset($this->request->query['filter']) and is_array($this->request->query['filter'])) {
+        } elseif (isset($this->request->query['filter']) and is_array($this->request->query['filter'])) {
             $document = $storage->getDocuments($this->request->query['filter']);
         } else {
             $document = $storage->getDocuments();

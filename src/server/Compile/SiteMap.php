@@ -11,13 +11,13 @@ namespace Blogstep\Compile;
 interface SiteMap
 {
 
-  public function add($path, $handler, array $args);
+    public function add($path, $handler, array $args);
 
-  public function get($path);
+    public function get($path);
 
-  public function remove($path);
+    public function remove($path);
 
-  public function getAll($prefix = '', $recursive = true);
+    public function getAll($prefix = '', $recursive = true);
 
-  public function commit();
+    public function commit();
 }

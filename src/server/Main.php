@@ -45,7 +45,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->config = new \Jivoo\Store\Document();
         $this->config['log'] = new \Jivoo\Store\Config(new \Jivoo\Store\PhpStore($this->p('system/log.php')));
         $this->config['log']->setDefault('showExceptions', false);
-
     }
 
     public function __get($property)

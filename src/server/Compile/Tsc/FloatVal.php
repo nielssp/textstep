@@ -34,6 +34,3 @@ class FloatVal extends Val
         return $this->value;
     }
 }
-
-
-

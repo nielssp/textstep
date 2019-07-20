@@ -52,7 +52,7 @@ class TokenAuthentication implements \Jivoo\Security\Authentication
     {
         if ($this->request->hasHeader($this->header)) {
             $sessionId = $this->request->getHeaderLine($this->header);
-        } else if (array_key_exists($this->query, $this->request->getQueryParams())) {
+        } elseif (array_key_exists($this->query, $this->request->getQueryParams())) {
             $sessionId = $this->request->getQueryParams()[$this->query];
         } else {
             return null;
@@ -65,7 +65,8 @@ class TokenAuthentication implements \Jivoo\Security\Authentication
         return null;
     }
 
-    public function getSessionId() {
+    public function getSessionId()
+    {
         return $this->sessionId;
     }
 

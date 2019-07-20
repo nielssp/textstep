@@ -40,7 +40,6 @@ class SnippetRoute extends \Jivoo\Http\Route\RouteBase
         $pattern = 'ANY ' . str_replace('_', '.', implode('/', $dirs));
         $matcher->match($pattern, $this);
         return $pattern;
-
     }
 
     public function dispatch(\Jivoo\Http\ActionRequest $request, \Psr\Http\Message\ResponseInterface $response)

@@ -9,7 +9,8 @@ use Blogstep\UserModel;
 use Blogstep\SystemAcl;
 use Blogstep\User;
 
-class UserFile extends SystemFile {
+class UserFile extends SystemFile
+{
 
     private $users;
 
@@ -43,7 +44,7 @@ class UserFile extends SystemFile {
             foreach ($this->users->getUsers() as $user) {
                 $users[$user->getName()] = $this->toDocument($user);
             }
-        } else if ($this->check('users.self.view')) {
+        } elseif ($this->check('users.self.view')) {
             $users[$this->user->getName()] = $this->toDocument($this->user);
         }
         if (isset($filter)) {
@@ -67,7 +68,7 @@ class UserFile extends SystemFile {
             if ($user) {
                 return $this->toDocument($user);
             }
-        } else if ($this->check('users.self.view') and $key === $this->user->getName()) {
+        } elseif ($this->check('users.self.view') and $key === $this->user->getName()) {
             return $this->toDocument($this->user);
         }
         return null;
@@ -78,7 +79,7 @@ class UserFile extends SystemFile {
         $checked = $this->checkDocument('users.update', $document);
         if ($checked) {
             $this->users->updateUser($key, $checked);
-        } else if ($this->user and $key === $this->user->getName()) {
+        } elseif ($this->user and $key === $this->user->getName()) {
             $checked = $this->checkDocument('users.self.update', $document);
             if ($checked) {
                 $this->users->updateUser($key, $checked);
@@ -90,7 +91,7 @@ class UserFile extends SystemFile {
     {
         if ($this->check('users.delete')) {
             $this->users->deleteUser($key);
-        } else if ($this->check('users.self.delete') and $key === $this->user->getName()) {
+        } elseif ($this->check('users.self.delete') and $key === $this->user->getName()) {
             $this->users->deleteUser($key);
         }
     }

@@ -7,9 +7,9 @@ namespace Blogstep\Compile\Tsc;
 
 abstract class Val
 {
-    public abstract function isTruthy();
+    abstract public function isTruthy();
 
-    public abstract function equals(Val $other);
+    abstract public function equals(Val $other);
 
     public function getValues()
     {
@@ -21,6 +21,5 @@ abstract class Val
         throw new \DomainException('Value is not iterable');
     }
 
-    public abstract function toString();
+    abstract public function toString();
 }
-

@@ -11,7 +11,8 @@ use Jivoo\Json;
 use Jivoo\Http\Message\UploadedFile;
 use Blogstep\User;
 
-class SystemDevice implements Device {
+class SystemDevice implements Device
+{
     private $files = [];
 
     private $user = null;

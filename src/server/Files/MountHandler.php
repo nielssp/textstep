@@ -22,7 +22,6 @@ class MountHandler
         $this->mounts = $this->store->read();
         $this->store->close();
         $this->mountAll();
-        
     }
     
     private function mountAll()
@@ -42,7 +41,7 @@ class MountHandler
         }
         if (!isset($options['type']) or $options['type'] !== 'host') {
             throw new \Blogstep\RuntimeException(
-                'Unsupported file system type: ' . 
+                'Unsupported file system type: ' .
                 (isset($options['type']) ? $options['type'] : '(null)')
             );
         }

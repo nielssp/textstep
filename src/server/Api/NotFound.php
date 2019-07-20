@@ -13,4 +13,3 @@ class NotFound extends \Blogstep\Snippet
         return $this->error('Not found', \Jivoo\Http\Message\Status::NOT_FOUND);
     }
 }
-

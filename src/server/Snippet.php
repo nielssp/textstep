@@ -76,7 +76,6 @@ abstract class Snippet
      */
     protected function init()
     {
-        
     }
 
     /**
@@ -205,7 +204,7 @@ abstract class Snippet
             if ($this->request->method === 'HEAD') {
                 $respsonse = $this->get();
                 if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                  $response = $response->withBody(new \Jivoo\Http\Message\StringStream(''));
+                    $response = $response->withBody(new \Jivoo\Http\Message\StringStream(''));
                 }
                 return $this->after($response);
             }
@@ -337,7 +336,7 @@ abstract class Snippet
                 $files[] = $this->m->files->get($path);
             }
             return $files;
-        } else if (isset($this->request->query['path'])) {
+        } elseif (isset($this->request->query['path'])) {
             return [$this->m->files->get($this->request->query['path'])];
         } else {
             throw new RuntimeException('"path" or "paths[]" expected');

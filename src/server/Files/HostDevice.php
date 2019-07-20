@@ -129,7 +129,8 @@ class HostDevice implements Device
         return true;
     }
 
-    public function setOwnership($path) {
+    public function setOwnership($path)
+    {
         $path = $this->rootPath . $path;
         if (isset($this->dirMode)) {
             chmod($path, $this->dirMode);

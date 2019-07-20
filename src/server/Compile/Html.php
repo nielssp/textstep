@@ -415,7 +415,10 @@ class Html implements \ArrayAccess
     public static function readAttributeString($string)
     {
         preg_match_all(
-            '/([a-z_:-]+)\s*=\s*(?:([a-z0-9_:-]+)|"((?:[^"\\\\]|\\\\.)*)")|([a-z_-]+)/i', $string, $tokens, PREG_SET_ORDER
+            '/([a-z_:-]+)\s*=\s*(?:([a-z0-9_:-]+)|"((?:[^"\\\\]|\\\\.)*)")|([a-z_-]+)/i',
+            $string,
+            $tokens,
+            PREG_SET_ORDER
         );
         $attributes = array();
         foreach ($tokens as $token) {
@@ -452,5 +455,4 @@ class Html implements \ArrayAccess
     {
         return htmlentities(strval($string), ENT_COMPAT, 'UTF-8', false);
     }
-
 }

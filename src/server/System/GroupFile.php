@@ -9,7 +9,8 @@ use Blogstep\UserModel;
 use Blogstep\SystemAcl;
 use Blogstep\Group;
 
-class GroupFile extends SystemFile {
+class GroupFile extends SystemFile
+{
 
     private $users;
 
@@ -79,4 +80,3 @@ class GroupFile extends SystemFile {
         }
     }
 }
-

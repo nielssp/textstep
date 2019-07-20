@@ -12,4 +12,3 @@ class SyntaxError extends \RuntimeException
         parent::__construct($line . ':' . $column . ': ' . $message);
     }
 }
-

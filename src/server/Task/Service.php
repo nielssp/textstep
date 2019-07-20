@@ -97,7 +97,8 @@ class Service
                 $task->run([$this, 'checkTime']);
             } catch (\Exception $e) {
                 $this->logger->error(
-                    \Jivoo\I18n\I18n::get('Task failed: %1', $e->getMessage()), array('exception' => $e)
+                    \Jivoo\I18n\I18n::get('Task failed: %1', $e->getMessage()),
+                    array('exception' => $e)
                 );
                 $this->putLine('error: ' . $e->getMessage());
                 break;
@@ -128,5 +129,4 @@ class Service
         }
         exit;
     }
-
 }

@@ -11,7 +11,7 @@ class Interpreter
     private function boolean($boolean)
     {
         if ($boolean) {
-            return True::true();
+            return TrueVal::true();
         }
         return NilVal::nil();
     }
@@ -46,7 +46,7 @@ class Interpreter
             case 'Dot':
                 $object = $this->eval($leftSide->children[0], $env);
                 if (!($object instanceof ObjectVal)) {
-                    throw \DomainException('expected object');
+                    throw new \DomainException('expected object');
                 }
                 $object->set($leftSide->children[1]->value, $value);
                 break;
@@ -55,17 +55,20 @@ class Interpreter
                 $index = $this->eval($leftSide->children[1], $env);
                 if ($object instanceof ObjectVal) {
                     $object->set($index->toString(), $value);
-                } else if ($object instanceof ArrayVal) {
-                    if (!($index instanceof Int)) {
-                        throw \DomainException('expected int');
+                } elseif ($object instanceof ArrayVal) {
+                    if (!($index instanceof IntVal)) {
+                        throw new \DomainException('expected int');
                     }
                     $object->set($index->getValue(), $value);
                 } else {
-                    throw \DomainException('not indexable');
+                    throw new \DomainException('not indexable');
                 }
                 break;
             default:
-                throw \RangeException('expression of type ' . $leftSide->type . ' cannot be used as the left side of an assignment');
+                throw new \RangeException(
+                    'expression of type ' . $leftSide->type
+                    . ' cannot be used as the left side of an assignment'
+                );
         }
         return NilVal::nil();
     }
@@ -96,7 +99,7 @@ class Interpreter
                 return $this->eval($node->children[3], $env);
             }
             return NilVal::nil();
-        } else if (count($node->children[0]->children) > 1) {
+        } elseif (count($node->children[0]->children) > 1) {
             $keyName = $node->children[0]->children[0]->value;
             $valueName = $node->children[0]->children[1]->value;
             foreach ($elements->getEntries() as $entry) {
@@ -119,7 +122,7 @@ class Interpreter
         $cond = $this->eval($node->children[0], $env);
         if ($cond->isTruthy()) {
             return $this->eval($node->children[1], $env);
-        } else if (count($node->children) > 2) {
+        } elseif (count($node->children) > 2) {
             return $this->eval($node->children[2], $env);
         } else {
             return NilVal::nil();
@@ -155,14 +158,14 @@ class Interpreter
                 if ($left instanceof IntVal) {
                     if ($right instanceof IntVal) {
                         return new IntVal($left->getValue() + $right->getValue());
-                    } else if ($right instanceof FloatVal) {
+                    } elseif ($right instanceof FloatVal) {
                         return new FloatVal($left->getValue() + $right->getValue());
                     }
-                } else if ($left instanceof FloatVal) {
+                } elseif ($left instanceof FloatVal) {
                     if ($right instanceof IntVal or $right instanceof FloatVal) {
                         return new FloatVal($left->getValue() + $right->getValue());
                     }
-                } else if ($left instanceof StringVal) {
+                } elseif ($left instanceof StringVal) {
                     return new StringVal($left->toString() . $right->toString());
                 }
                 break;
@@ -171,10 +174,10 @@ class Interpreter
                 if ($left instanceof IntVal) {
                     if ($right instanceof IntVal) {
                         return new IntVal($left->getValue() - $right->getValue());
-                    } else if ($right instanceof FloatVal) {
+                    } elseif ($right instanceof FloatVal) {
                         return new FloatVal($left->getValue() - $right->getValue());
                     }
-                } else if ($left instanceof FloatVal) {
+                } elseif ($left instanceof FloatVal) {
                     if ($right instanceof IntVal or $right instanceof FloatVal) {
                         return new FloatVal($left->getValue() - $right->getValue());
                     }
@@ -185,10 +188,10 @@ class Interpreter
                 if ($left instanceof IntVal) {
                     if ($right instanceof IntVal) {
                         return new IntVal($left->getValue() * $right->getValue());
-                    } else if ($right instanceof FloatVal) {
+                    } elseif ($right instanceof FloatVal) {
                         return new FloatVal($left->getValue() * $right->getValue());
                     }
-                } else if ($left instanceof FloatVal) {
+                } elseif ($left instanceof FloatVal) {
                     if ($right instanceof IntVal or $right instanceof FloatVal) {
                         return new FloatVal($left->getValue() * $right->getValue());
                     }
@@ -199,10 +202,10 @@ class Interpreter
                 if ($left instanceof IntVal) {
                     if ($right instanceof IntVal) {
                         return new IntVal(intval($left->getValue() / $right->getValue()));
-                    } else if ($right instanceof FloatVal) {
+                    } elseif ($right instanceof FloatVal) {
                         return new FloatVal($left->getValue() / $right->getValue());
                     }
-                } else if ($left instanceof FloatVal) {
+                } elseif ($left instanceof FloatVal) {
                     if ($right instanceof IntVal or $right instanceof FloatVal) {
                         return new FloatVal($left->getValue() / $right->getValue());
                     }
@@ -271,7 +274,7 @@ class Interpreter
             case '-':
                 if ($operand instanceof IntVal) {
                     return new IntVal(-$operand->getValue());
-                } else if ($operand instanceof FloatVal) {
+                } elseif ($operand instanceof FloatVal) {
                     return new FloatVal(-$operand->getValue());
                 }
                 break;
@@ -310,7 +313,7 @@ class Interpreter
         if ($object instanceof ArrayVal) {
             if (!($index instanceof IntVal)) {
                 return \RangeException('index must be an int');
-            } 
+            }
             return $object->get($index->getValue());
         }
         return \RangeException('not indexable');
@@ -378,4 +381,3 @@ class Interpreter
         throw new \RangeException('undefined name: ' . $node->value);
     }
 }
-
