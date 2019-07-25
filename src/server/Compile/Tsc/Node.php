@@ -13,6 +13,8 @@ class Node
 
     public $children = [];
 
+    public $file = null;
+
     public $line;
 
     public $column;

@@ -118,7 +118,7 @@ class TemplateCompiler
             } else {
                 $this->siteMap->add($path, 'eval', [$path]);
             }
-            $object = $this->tsTemplateCompiler->compile($source, $path);
+            $object = $this->tsTemplateCompiler->compile($source, $file->getPath(), $path);
             $target->putContents($object);
         } elseif (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();

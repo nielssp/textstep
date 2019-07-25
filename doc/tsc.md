@@ -147,3 +147,76 @@ PipeLine "|" name ["(" [Expression_1 {"," Expression_n} [","]] ")"]
 =>
 name "(" PipeLine ["," Expression_1 {"," Expression_n}] ")"
 ```
+
+## Types
+nil
+true
+int
+float
+string
+array
+object
+time
+
+any
+
+### Boolean
+
+Falsy valus: nil, 0, 0.0, [], {}, ''
+
+## Modules
+
+### core
+```
+nil: nil
+false: nil
+true: true
+import(name: string): nil
+type(val: any): string
+string(val: any): string
+```
+
+### strings
+```
+lower(str: string): string
+upper(str: string): string
+starts_with(str: string, prefix: string): nil|true
+ends_with(str: string, suffix: string): nil|true
+```
+
+### collections
+
+```
+length(collection: array|object|string): int
+keys(obj: object): array
+values(obj: object): array
+map(collection: array|object, f: func): array
+map_keys(obj: object, f: func): object
+filter(collection: array|object, predicate: func): array
+exclude(collection: array|object, predicate: func): array
+pop(array: array): any
+push(array: array, element: any): array
+push_all(array: array, elements: array): array
+shift(array: array): any
+unshift(array: array, element: any): array
+delete(obj: object, key: string): obj
+```
+
+### time
+
+```
+now(): time
+date(time: time, format: string): string
+iso8601(time: time): string
+```
+
+### template
+```
+embed(name: string, data: object?): string
+```
+
+### html
+
+### sitemap
+
+### contentmap

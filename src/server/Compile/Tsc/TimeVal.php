@@ -5,18 +5,18 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Compile\Tsc;
 
-class FuncVal extends Val
+class TimeVal extends Val
 {
-    private $f;
+    private $value;
 
-    public function __construct(callable $f)
+    public function __construct($value)
     {
-        $this->f = $f;
+        $this->value = $value;
     }
 
-    public function apply(array $args, Env $dynamicEnv)
+    public function getValue()
     {
-        return call_user_func($this->f, $args, $dynamicEnv);
+        return $this->value;
     }
 
     public function isTruthy()
@@ -26,16 +26,17 @@ class FuncVal extends Val
 
     public function equals(Val $other)
     {
-        return $other instanceof self and $other->f === $this->f;
+        return $other instanceof self and $other->value === $this->value;
     }
 
     public function toString()
     {
-        return '';
+        return date('c', $this->value);
     }
 
     public function getType()
     {
-        return 'func';
+        return 'time';
     }
 }
+

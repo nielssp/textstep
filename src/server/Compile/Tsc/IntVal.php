@@ -33,4 +33,9 @@ class IntVal extends Val
     {
         return $this->value;
     }
+
+    public function getType()
+    {
+        return 'int';
+    }
 }

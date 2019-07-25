@@ -152,7 +152,7 @@ class Lexer
         while (true) {
             $c = $this->peek();
             if ($c === null) {
-                throw new LexerError('unexpected end of input, expected end of string', $this->line, $this->column);
+                throw new LexerError('missing end of string literal, string literal started on line ' . $token->line . ':' . $token->column, $this->line, $this->column);
             } elseif ($c === "'") {
                 $this->pop();
                 break;
@@ -303,9 +303,14 @@ class Lexer
         }
     }
 
-    public function readAllTokens()
+    public function readAllTokens($template = true)
     {
         $tokens = [];
+        if ($template) {
+            $this->topParen = [];
+        } else {
+            $this->topParen = ['{'];
+        }
         while (true) {
             $token = $this->readNextToken();
             if ($token === null) {

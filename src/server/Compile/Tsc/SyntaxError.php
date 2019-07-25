@@ -5,10 +5,10 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Compile\Tsc;
 
-class SyntaxError extends \RuntimeException
+class SyntaxError extends Error
 {
-    public function __construct($message, $line, $column)
+    public function __construct($message, $file, $line, $column)
     {
-        parent::__construct($line . ':' . $column . ': ' . $message);
+        parent::__construct($message, $file, $line, $column);
     }
 }

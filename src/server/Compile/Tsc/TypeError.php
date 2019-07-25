@@ -5,10 +5,12 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Compile\Tsc;
 
-class LexerError extends Error
+class TypeError extends Error
 {
-    public function __construct($message, $line, $column)
+    public function __construct($message, Node $node)
     {
-        parent::__construct($message, $line, $column);
+        parent::__construct($message, $node->line, $node->column);
+        $this->srcFile = $node->file;
     }
 }
+

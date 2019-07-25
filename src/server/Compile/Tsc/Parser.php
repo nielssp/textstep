@@ -9,9 +9,12 @@ class Parser
 {
     private $tokens;
 
-    public function __construct(array $tokens)
+    private $file;
+
+    public function __construct(array $tokens, $file)
     {
         $this->tokens = $tokens;
+        $this->file = $file;
     }
 
     private function createNode($type, Token $token = null)
@@ -25,6 +28,7 @@ class Parser
             $node->line = $this->tokens[0]->line;
             $node->column = $this->tokens[0]->column;
         }
+        $node->file = $this->file;
         return $node;
     }
 
@@ -68,9 +72,9 @@ class Parser
             return $token;
         }
         if (!$token) {
-            throw new SyntaxError('unexpected end of token stream, expected ' . $type, 0, 0);
+            throw new SyntaxError('unexpected end of token stream, expected ' . $type, $this->file, 0, 0);
         }
-        throw new SyntaxError('unexpected ' . $token->type . ', expected ' . $type, $token->line, $token->column);
+        throw new SyntaxError('unexpected ' . $token->type . ', expected ' . $type, $this->file, $token->line, $token->column);
     }
 
     private function expectValue($type, $value)
@@ -80,17 +84,19 @@ class Parser
             return $token;
         }
         if (!$token) {
-            throw new SyntaxError('unexpected end of token stream, expected "' . $value . '"', 0, 0);
+            throw new SyntaxError('unexpected end of token stream, expected "' . $value . '"', $this->file, 0, 0);
         }
         if ($token->type === $type) {
             throw new SyntaxError(
                 'unexpected "' . $token->value . '", expected "' . $value . '"',
+                $this->file,
                 $token->line,
                 $token->column
             );
         }
         throw new SyntaxError(
             'unexpected ' . $token->type . ', expected "' . $value . '"',
+            $this->file,
             $token->line,
             $token->column
         );
@@ -102,7 +108,7 @@ class Parser
             $this->expectValue('Keyword', 'end');
             $this->expectValue('Keyword', $value);
         } catch (SyntaxError $e) {
-            throw new SyntaxError('missing "end ' . $value . '": ' . $e->getMessage(), $node->line, $node->column);
+            throw new SyntaxError('missing "end ' . $value . '": ' . $e->getMessage(), $this->file, $node->line, $node->column);
         }
     }
 
@@ -154,7 +160,7 @@ class Parser
             return $node;
         } else {
             $token = $this->peek();
-            throw new SyntaxError('unexpected ' . $token->type . ', expected an atom"', $token->line, $token->column);
+            throw new SyntaxError('unexpected ' . $token->type . ', expected an atom"', $this->file, $token->line, $token->column);
         }
     }
 
@@ -407,7 +413,7 @@ class Parser
         }
         $this->expectValue('Operator', '->');
         $node->children[] = $this->parseExpression();
-        return $Node;
+        return $node;
     }
 
     public function parsePartialDot()

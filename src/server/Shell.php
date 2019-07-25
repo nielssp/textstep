@@ -162,6 +162,14 @@ class Shell
                 $siteMap->commit();
                 $contentMap->commit();
                 break;
+            case 'ic':
+                $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
+                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
+                $compiler = new Compile\IndexCompiler($siteMap, $contentMap);
+                $compiler->compile($this->workingDir->get($parameters[0]));
+                $siteMap->commit();
+                $contentMap->commit();
+                break;
             case 'tc':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
@@ -266,7 +274,7 @@ class Shell
             $arglist = array();
             if (isset($call['args'])) {
                 foreach ($call['args'] as $arg) {
-                    $arglist[] = (is_scalar($arg) ? var_export($arg, true) : gettype($arg));
+                    $arglist[] = (is_scalar($arg) ? substr(var_export($arg, true), 0, 30) : gettype($arg));
                 }
                 $message .= implode(', ', $arglist);
             }
@@ -417,6 +425,9 @@ class Shell
             $message = Logger::interpolate($record['message'], $record['context']);
             if ($record['level'] != LogLevel::INFO) {
                 $message = '[' . $record['level'] . '] ' . $message;
+                if (isset($record['context']) and isset($record['context']['file'])) {
+                    $message .= ' in ' . $record['context']['file'] . ':' . $record['context']['line'];
+                }
             }
             if (Logger::compare($record['level'], LogLevel::ERROR) >= 0) {
                 $this->error($message);

@@ -64,4 +64,9 @@ class ObjectVal extends Val
         }
         return implode(', ', $strs);
     }
+
+    public function getType()
+    {
+        return 'object';
+    }
 }

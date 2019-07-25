@@ -10,10 +10,7 @@ class Interpreter
 
     private function boolean($boolean)
     {
-        if ($boolean) {
-            return TrueVal::true();
-        }
-        return NilVal::nil();
+        return TrueVal::from($boolean);
     }
 
     public function eval(Node $node, Env $env)
@@ -23,6 +20,11 @@ class Interpreter
             return $this->$method($node, $env);
         }
         throw new \DomainException('unhandled node type: ' . $node->type);
+    }
+
+    public function typeError($expectedType, Val $value, Node $node)
+    {
+        return new TypeError('unexpected value of type ' . $value->getType() . ', expected ' . $expectedType, $node);
     }
 
     public function evalBlock(Node $node, Env $env)
@@ -46,7 +48,7 @@ class Interpreter
             case 'Dot':
                 $object = $this->eval($leftSide->children[0], $env);
                 if (!($object instanceof ObjectVal)) {
-                    throw new \DomainException('expected object');
+                    throw $this->typeError('object', $object, $leftSide->children[0]);
                 }
                 $object->set($leftSide->children[1]->value, $value);
                 break;
@@ -57,17 +59,18 @@ class Interpreter
                     $object->set($index->toString(), $value);
                 } elseif ($object instanceof ArrayVal) {
                     if (!($index instanceof IntVal)) {
-                        throw new \DomainException('expected int');
+                        throw $this->typeError('int', $index, $leftSide->children[1]);
                     }
                     $object->set($index->getValue(), $value);
                 } else {
-                    throw new \DomainException('not indexable');
+                    return new TypeError('value of type ' . $object->getType() . ' is not subscriptable', $leftSide->children[0]);
                 }
                 break;
             default:
-                throw new \RangeException(
+                throw new TypeError(
                     'expression of type ' . $leftSide->type
-                    . ' cannot be used as the left side of an assignment'
+                    . ' cannot be used as the left side of an assignment',
+                    $leftSide
                 );
         }
         return NilVal::nil();
@@ -136,7 +139,7 @@ class Interpreter
             $names[] = $param->value;
         }
         $body = $node->children[1];
-        return new Func(function (array $args) use ($body, $env, $names) {
+        return new FuncVal(function (array $args) use ($body, $env, $names) {
             $env = $env->openScope();
             for ($i = 0; $i < count($names); $i++) {
                 if ($i < count($args)) {
@@ -152,6 +155,7 @@ class Interpreter
     public function evalInfix(Node $node, Env $env)
     {
         $left = $this->eval($node->children[0], $env);
+        $right = null;
         switch ($node->value) {
             case '+':
                 $right = $this->eval($node->children[1], $env);
@@ -167,6 +171,10 @@ class Interpreter
                     }
                 } elseif ($left instanceof StringVal) {
                     return new StringVal($left->toString() . $right->toString());
+                } elseif ($left instanceof ArrayVal) {
+                    return new ArrayVal(array_merge($left->getValues(), $right->getValues()));
+                } elseif ($left instanceof ObjectVal) {
+                    return new ObjectVal(array_merge($left->getValues(), $right->getValues()));
                 }
                 break;
             case '-':
@@ -264,7 +272,11 @@ class Interpreter
             default:
                 throw new \DomainException('unhandled operator: ' + $node->value);
         }
-        return \RangeException('invalid operand types');
+        if (isset($right)) {
+            throw new TypeError('operator "' . $node->value . '" cannot be applied to operands of type ' . $left->getType() . ' and ' . $right->getType(), $node);
+        } else {
+            throw new TypeError('operator "' . $node->value . '" cannot be applied to operand of type ' . $left->getType(), $node);
+        }
     }
 
     public function evalPrefix(Node $node, Env $env)
@@ -283,7 +295,7 @@ class Interpreter
             default:
                 throw new \DomainException('unhandled operator: ' + $node->value);
         }
-        return \RangeException('invalid operand types');
+        throw new TypeError('operator "' . $node->value . '" cannot be applied to operand of type ' . $operand->getType(), $node);
     }
 
     public function evalDot(Node $node, Env $env)
@@ -292,11 +304,11 @@ class Interpreter
         if ($object instanceof ObjectVal) {
             $value = $object->get($node->children[1]->value);
             if (!isset($value)) {
-                \RangeException('undefined property: ' . $node->children[1]->value);
+                throw new \RangeException('undefined property: ' . $node->children[1]->value);
             }
             return $value;
         }
-        return \RangeException('not an object');
+        throw $this->typeError('object', $object, $node->children[0]);
     }
 
     public function evalSubscript(Node $node, Env $env)
@@ -306,30 +318,47 @@ class Interpreter
         if ($object instanceof ObjectVal) {
             $value = $object->get($index->toString());
             if (!isset($value)) {
-                \RangeException('undefined property: ' . $index->toString());
+                return NilVal::nil();
             }
             return $value;
         }
+        if (!($index instanceof IntVal)) {
+            throw $this->typeError('int', $index, $node->children[1]);
+        }
         if ($object instanceof ArrayVal) {
-            if (!($index instanceof IntVal)) {
-                return \RangeException('index must be an int');
-            }
             return $object->get($index->getValue());
         }
-        return \RangeException('not indexable');
+        if ($object instanceof StringVal) {
+            return $object->get($index->getValue());
+        }
+        return new TypeError('value of type ' . $object->getType() . ' is not subscriptable', $node->children[0]);
     }
 
     public function evalApply(Node $node, Env $env)
     {
         $func = $this->eval($node->children[0], $env);
         if (!($func instanceof FuncVal)) {
-            throw new \RangeException('not a function');
+            throw $this->typeError('func', $func, $node->children[0]);
         }
         $args = [];
         foreach ($node->children[1]->children as $argNode) {
             $args[] = $this->eval($argNode, $env);
         }
-        return $func->apply($args, $env);
+        try {
+            return $func->apply($args, $env);
+        } catch (ArgError $e) {
+            if (isset($e->index) and $e->index < count($node->children[1]->children)) {
+                $arg = $node->children[1]->children[$e->index];
+                $e->srcFile = $arg->file;
+                $e->srcLine = $arg->line;
+                $e->srcColumn = $arg->column;
+            } else {
+                $e->srcFile = $node->file;
+                $e->srcLine = $node->line;
+                $e->srcColumn = $node->column;
+            }
+            throw $e;
+        }
     }
 
     public function evalObject(Node $node, Env $env)
@@ -378,6 +407,6 @@ class Interpreter
         if (isset($value)) {
             return $value;
         }
-        throw new \RangeException('undefined name: ' . $node->value);
+        return NilVal::nil();
     }
 }

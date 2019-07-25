@@ -5,10 +5,14 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Compile\Tsc;
 
-class LexerError extends Error
+class ArgTypeError extends ArgError
 {
-    public function __construct($message, $line, $column)
+    public $expectedType;
+
+    public function __construct($message, $index, $expectedType = null)
     {
-        parent::__construct($message, $line, $column);
+        parent::__construct($message, $index);
+        $this->expectedType = $expectedType;
     }
 }
+

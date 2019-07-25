@@ -35,4 +35,9 @@ class NilVal extends Val
     {
         return '';
     }
+
+    public function getType()
+    {
+        return 'nil';
+    }
 }

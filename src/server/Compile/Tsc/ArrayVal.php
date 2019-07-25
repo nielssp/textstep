@@ -32,7 +32,7 @@ class ArrayVal extends Val
     public function get($offset)
     {
         if ($offset < 0 or $offset >= count($this->value)) {
-            return null;
+            return NilVal::nil();
         }
         return $this->value[$offset];
     }
@@ -66,5 +66,10 @@ class ArrayVal extends Val
             $strs[] = $value->toString();
         }
         return implode(', ', $strs);
+    }
+
+    public function getType()
+    {
+        return 'array';
     }
 }

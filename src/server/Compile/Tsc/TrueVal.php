@@ -35,4 +35,17 @@ class TrueVal extends Val
     {
         return '';
     }
+
+    public static function from($boolean)
+    {
+        if ($boolean) {
+            return TrueVal::true();
+        }
+        return NilVal::nil();
+    }
+
+    public function getType()
+    {
+        return 'true';
+    }
 }

@@ -22,4 +22,6 @@ abstract class Val
     }
 
     abstract public function toString();
+
+    abstract public function getType();
 }

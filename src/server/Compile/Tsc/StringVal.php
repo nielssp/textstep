@@ -29,8 +29,21 @@ class StringVal extends Val
         return $other instanceof self and $other->value === $this->value;
     }
 
+    public function get($offset)
+    {
+        if ($offset < 0 or $offset >= strlen($this->value)) {
+            return NilVal::nil();
+        }
+        return new StringVal($this->value[$offset]);
+    }
+
     public function toString()
     {
         return $this->value;
+    }
+
+    public function getType()
+    {
+        return 'string';
     }
 }

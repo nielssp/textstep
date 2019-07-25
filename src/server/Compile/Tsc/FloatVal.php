@@ -33,4 +33,9 @@ class FloatVal extends Val
     {
         return $this->value;
     }
+
+    public function getType()
+    {
+        return 'float';
+    }
 }
