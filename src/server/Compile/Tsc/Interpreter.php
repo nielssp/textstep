@@ -97,6 +97,9 @@ class Interpreter
         $elements = $this->eval($node->children[1], $env);
         $env = $env->openScope();
         $output = '';
+        if (!in_array($elements->getType(), ['object', 'array'])) {
+            throw new TypeError('value of type ' . $elements->getType() . ' is not iterable', $node->children[1]);
+        }
         if (count($elements->getValues()) === 0) {
             if (count($node->children) > 3) {
                 return $this->eval($node->children[3], $env);

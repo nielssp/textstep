@@ -29,6 +29,19 @@ class StringVal extends Val
         return $other instanceof self and $other->value === $this->value;
     }
 
+    public function compare(Val $other)
+    {
+        if ($other instanceof self) {
+            if ($this->value < $other->value) {
+                return -1;
+            } else if ($this->value > $other->value) {
+                return 1;
+            }
+            return 0;
+        }
+        return parent::compare($other);
+    }
+
     public function get($offset)
     {
         if ($offset < 0 or $offset >= strlen($this->value)) {
@@ -45,5 +58,10 @@ class StringVal extends Val
     public function getType()
     {
         return 'string';
+    }
+
+    public function encode()
+    {
+        return $this->value;
     }
 }

@@ -38,5 +38,10 @@ class TimeVal extends Val
     {
         return 'time';
     }
+
+    public function encode()
+    {
+        return $this->value;
+    }
 }
 

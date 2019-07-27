@@ -31,10 +31,15 @@ class ObjectVal extends Val
 
     public function get($property)
     {
-        if (isset($this->value[$property])) {
+        if (isset($this->value[$property]) and $this->value[$property] instanceof Val) {
             return $this->value[$property];
         }
-        return null;
+        return NilVal::nil();
+    }
+
+    public function has($property)
+    {
+        return isset($this->value[$property]);
     }
 
     public function set($property, Val $value)
@@ -68,5 +73,12 @@ class ObjectVal extends Val
     public function getType()
     {
         return 'object';
+    }
+
+    public function encode()
+    {
+        return array_map(function ($item) {
+            return $item->encode();
+        }, $this->value);
     }
 }

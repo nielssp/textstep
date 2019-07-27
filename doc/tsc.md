@@ -194,6 +194,10 @@ map(collection: array|object, f: func): array
 map_keys(obj: object, f: func): object
 filter(collection: array|object, predicate: func): array
 exclude(collection: array|object, predicate: func): array
+sort(array: array): array
+sort_with(array: array, comparator: func): array
+sort_by(array: array, f: func): array
+sort_by_desc(array: array, f: func): array
 pop(array: array): any
 push(array: array, element: any): array
 push_all(array: array, elements: array): array
@@ -216,7 +220,18 @@ embed(name: string, data: object?): string
 ```
 
 ### html
+```
+h(str: string): string
+```
 
 ### sitemap
+```
+add_page(path: string, template: string, data: object?): nil
+paginate(items: array, per_page: int, path: string, template: string, data: object?): nil
+```
 
 ### contentmap
+
+```
+list_content(path: string, options: {recursive: boolean}?): array
+```

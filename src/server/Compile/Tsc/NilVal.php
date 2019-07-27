@@ -40,4 +40,9 @@ class NilVal extends Val
     {
         return 'nil';
     }
+
+    public function encode()
+    {
+        return null;
+    }
 }

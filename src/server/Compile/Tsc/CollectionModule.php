@@ -89,6 +89,77 @@ class CollectionModule extends Module
         }
         return new ObjectVal($result);
     }
+
+    public function sort(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        return $array->sort(function ($a, $b) {
+            return $a->compare($b);
+        });
+    }
+
+    public function sortWith(array $args, Env $dynamicEnv)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $comparator = self::parseArg($args, 1, 'func', false);
+        return $array->sort(function ($a, $b) use ($comparator, $dynamicEnv){
+            $order = $comparator->apply([$a, $b], $dynamicEnv);
+            if (!($order instanceof IntVal)) {
+                throw new ArgTypeError('incorrect comparator return value of type ' . $order->getType() . ', expected int', 1, 'int');
+            }
+            return $order->getValue();
+        });
+    }
+
+    public function sortBy(array $args, Env $dynamicEnv)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $propertyGetter = self::parseArg($args, 1, 'func', false);
+        return $array->sort(function ($a, $b) use ($propertyGetter, $dynamicEnv) {
+            $a = $propertyGetter->apply([$a], $dynamicEnv);
+            $b = $propertyGetter->apply([$b], $dynamicEnv);
+            return $a->compare($b);
+        });
+    }
+
+    public function sortByDesc(array $args, Env $dynamicEnv)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $propertyGetter = self::parseArg($args, 1, 'func', false);
+        return $array->sort(function ($a, $b) use ($propertyGetter, $dynamicEnv) {
+            $a = $propertyGetter->apply([$a], $dynamicEnv);
+            $b = $propertyGetter->apply([$b], $dynamicEnv);
+            return $b->compare($a);
+        });
+    }
+
+    public function push(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $item = self::parseArg($args, 1);
+        $array->push($item);
+        return $array;
+    }
+
+    public function pop(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        return $array->pop();
+    }
+
+    public function unshift(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $item = self::parseArg($args, 1);
+        $array->unshift($item);
+        return $array;
+    }
+
+    public function shift(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        return $array->shift();
+    }
 }
 
 

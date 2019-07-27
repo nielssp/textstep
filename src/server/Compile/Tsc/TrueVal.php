@@ -48,4 +48,9 @@ class TrueVal extends Val
     {
         return 'true';
     }
+
+    public function encode()
+    {
+        return true;
+    }
 }

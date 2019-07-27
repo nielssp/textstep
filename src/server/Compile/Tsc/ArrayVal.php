@@ -45,6 +45,39 @@ class ArrayVal extends Val
         $this->value[$offset] = $value;
     }
 
+    public function push(Val $value)
+    {
+        $this->value[] = $value;
+    }
+
+    public function pop()
+    {
+        if (!count($this->value)) {
+            return NilVal::nil();
+        }
+        return array_pop($this->value);
+    }
+
+    public function unshift(Val $value)
+    {
+        array_unshift($this->value, $value);
+    }
+
+    public function shift()
+    {
+        if (!count($this->value)) {
+            return NilVal::nil();
+        }
+        return array_shift($this->value);
+    }
+
+    public function sort(callable $comparator)
+    {
+        $array = $this->value;
+        usort($array, $comparator);
+        return new ArrayVal($array);
+    }
+
     public function getValues()
     {
         return $this->value;
@@ -71,5 +104,12 @@ class ArrayVal extends Val
     public function getType()
     {
         return 'array';
+    }
+
+    public function encode()
+    {
+        return array_map(function ($item) {
+            return $item->encode();
+        }, $this->value);
     }
 }

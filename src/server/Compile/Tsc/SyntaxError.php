@@ -9,6 +9,7 @@ class SyntaxError extends Error
 {
     public function __construct($message, $file, $line, $column)
     {
-        parent::__construct($message, $file, $line, $column);
+        parent::__construct($message, $line, $column);
+        $this->srcFile = $file;
     }
 }

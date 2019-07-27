@@ -24,11 +24,11 @@ abstract class Module
         }
     }
 
-    public static function parseArg(array $args, $index, $expectedType = null, $allowNil = false)
+    public static function parseArg(array $args, $index, $expectedType = null, $allowNil = false, $default = null)
     {
         if ($index >= count($args)) {
             if ($allowNil) {
-                return NilVal::nil();
+                return isset($default) ? $default() : NilVal::nil();
             }
             throw new ArgTypeError('too few arguments for function', $index, $expectedType);
         }
@@ -36,7 +36,7 @@ abstract class Module
             return $args[$index];
         }
         if ($allowNil and $args[$index] instanceof NilVal) {
-            return NilVal::nil();
+            return isset($default) ? $default() : NilVal::nil();
         }
         if (is_array($expectedType)) {
             foreach ($expectedType as $t) {

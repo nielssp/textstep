@@ -307,9 +307,9 @@ class Lexer
     {
         $tokens = [];
         if ($template) {
-            $this->topParen = [];
+            $this->parenStack = [];
         } else {
-            $this->topParen = ['{'];
+            $this->parenStack = ['{'];
         }
         while (true) {
             $token = $this->readNextToken();

@@ -27,18 +27,24 @@ class IndexCompiler
 
     public function compile(\Blogstep\Files\File $index)
     {
-        $source = $index->getContents();
-        $lexer = new Tsc\Lexer($source);
-        $tokens = $lexer->readAllTokens(false);
-        $parser = new Tsc\Parser($tokens, $index->getPath());
-        $node = $parser->parse();
-        $interpreter = new Tsc\Interpreter();
-        $env = new Tsc\Env();
-        $env->addModule('core', new Tsc\CoreModule(), true);
-        $env->addModule('string', new Tsc\StringModule(), true);
-        $env->addModule('collection', new Tsc\CollectionModule(), true);
-        $env->addModule('time', new Tsc\TimeModule(), true);
-        $interpreter->eval($node, $env);
+        try {
+            $source = $index->getContents();
+            $lexer = new Tsc\Lexer($source);
+            $tokens = $lexer->readAllTokens(false);
+            $parser = new Tsc\Parser($tokens, $index->getPath());
+            $node = $parser->parse();
+            $interpreter = new Tsc\Interpreter();
+            $env = new Tsc\Env();
+            $env->addModule('core', new Tsc\CoreModule(), true);
+            $env->addModule('string', new Tsc\StringModule(), true);
+            $env->addModule('collection', new Tsc\CollectionModule(), true);
+            $env->addModule('time', new Tsc\TimeModule(), true);
+            $env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap), true);
+            $env->addModule('sitemap', new Tsc\SiteMapModule($this->siteMap, $index->getParent()), true);
+            $interpreter->eval($node, $env);
+        } catch (Tsc\Error $e) {
+            throw new \RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
+        }
     }
 }
 

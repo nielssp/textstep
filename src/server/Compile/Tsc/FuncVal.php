@@ -38,4 +38,9 @@ class FuncVal extends Val
     {
         return 'func';
     }
+
+    public function encode()
+    {
+        return $this->f;
+    }
 }

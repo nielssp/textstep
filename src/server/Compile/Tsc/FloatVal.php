@@ -29,6 +29,14 @@ class FloatVal extends Val
         return $other instanceof self and $other->value === $this->value;
     }
 
+    public function compare(Val $other)
+    {
+        if ($other instanceof self) {
+            return $this->value - $other->value;
+        }
+        return parent::compare($other);
+    }
+
     public function toString()
     {
         return $this->value;
@@ -37,5 +45,10 @@ class FloatVal extends Val
     public function getType()
     {
         return 'float';
+    }
+
+    public function encode()
+    {
+        return $this->value;
     }
 }
