@@ -144,6 +144,29 @@ class Lexer
         }
     }
 
+    private function readVerbatim()
+    {
+        $token = $this->createToken('String');
+        $this->pop();
+        $this->pop();
+        $this->pop();
+        $value = '';
+        while (true) {
+            $c = $this->peek();
+            if ($c === null) {
+                throw new LexerError('missing end of string literal, string literal started on line ' . $token->line . ':' . $token->column, $this->line, $this->column);
+            } elseif ($c === '"' and substr_compare($this->input, '"""', $this->offset, 3) === 0) {
+                $this->pop();
+                $this->pop();
+                $this->pop();
+                break;
+            }
+            $value .= $this->pop();
+        }
+        $token->value = $value;
+        return $token;
+    }
+
     private function readString()
     {
         $token = $this->createToken('String');
@@ -261,10 +284,14 @@ class Lexer
                 array_pop($this->parenStack);
                 return $token;
             } elseif ($c === '"') {
-                $token = $this->createToken('StartQuote');
-                $this->pop();
-                $this->parenStack[] = '"';
-                return $token;
+                if (substr_compare($this->input, '"""', $this->offset, 3) === 0) {
+                    return $this->readVerbatim();
+                } else {
+                    $token = $this->createToken('StartQuote');
+                    $this->pop();
+                    $this->parenStack[] = '"';
+                    return $token;
+                }
             } elseif (strpos('([{', $c) !== false) {
                 $token = $this->createToken('Punct');
                 $token->value = $this->pop();

@@ -30,6 +30,7 @@ token ::= keyword
         | int
         | float
         | string
+        | verbatim
         | name
 
 keyword ::= "if" | "else" | "end" | "for" | "in" | "switch" | "case" | "default"
@@ -55,6 +56,8 @@ int ::= digit {digit}
 float ::= int "." int
 
 string ::= "'" {(any / ("\\" | "'")) | "\\\\" | "\\'" | "\\n" | "\\r" | "\\t"} "'"
+
+verbatim ::= '"""'  {any / '"""'} '"""'
 ```
 
 ## Syntax
