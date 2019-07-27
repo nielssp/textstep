@@ -18,10 +18,22 @@ class IndexCompiler
      */
     private $contentMap;
 
+    private $interpreter;
+
+    private $env;
+
     public function __construct(SiteMap $siteMap, ContentMap $contentMap)
     {
         $this->siteMap = $siteMap;
         $this->contentMap = $contentMap;
+        $this->interpreter = new Tsc\Interpreter();
+        $this->env = new Tsc\Env();
+        $this->env->addModule('core', new Tsc\CoreModule(), true);
+        $this->env->addModule('string', new Tsc\StringModule(), true);
+        $this->env->addModule('collection', new Tsc\CollectionModule(), true);
+        $this->env->addModule('time', new Tsc\TimeModule(), true);
+        $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap), true);
+        $this->env->addModule('sitemap', new Tsc\SiteMapModule($this->siteMap, $index->getParent()), true);
     }
     
 
@@ -33,15 +45,7 @@ class IndexCompiler
             $tokens = $lexer->readAllTokens(false);
             $parser = new Tsc\Parser($tokens, $index->getPath());
             $node = $parser->parse();
-            $interpreter = new Tsc\Interpreter();
-            $env = new Tsc\Env();
-            $env->addModule('core', new Tsc\CoreModule(), true);
-            $env->addModule('string', new Tsc\StringModule(), true);
-            $env->addModule('collection', new Tsc\CollectionModule(), true);
-            $env->addModule('time', new Tsc\TimeModule(), true);
-            $env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap), true);
-            $env->addModule('sitemap', new Tsc\SiteMapModule($this->siteMap, $index->getParent()), true);
-            $interpreter->eval($node, $env);
+            $this->interpreter->eval($node, $this->env->openScope());
         } catch (Tsc\Error $e) {
             throw new \RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
         }

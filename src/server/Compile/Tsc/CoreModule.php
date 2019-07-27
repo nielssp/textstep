@@ -10,6 +10,7 @@ class CoreModule extends Module
     public function __construct()
     {
         $this->constants['nil'] = NilVal::nil();
+        $this->constants['null'] = NilVal::nil();
         $this->constants['false'] = NilVal::nil();
         $this->constants['true'] = TrueVal::true();
     }

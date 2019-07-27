@@ -21,11 +21,12 @@ class SiteMapModule extends Module
         $path = self::parseArg($args, 0, 'string', false)->toString();
         $template = self::parseArg($args, 1, 'string', false)->toString();
         $data = self::parseArg($args, 2, 'object', true, function () { return new ObjectVal([]); });
-        if (!$this->root->get($template)->exists()) {
+        $templateFile = $this->root->get($template);
+        if (!$templateFile->exists()) {
             throw new ArgError('template not found: ' . $template, 1);
         }
         $this->siteMap->add($path, 'tsc', array_merge($data->encode(), [
-            'TEMPLATE' => $template
+            'TEMPLATE' => $templateFile->getPath()
         ]));
         return NilVal::nil();
     }
@@ -73,9 +74,11 @@ class SiteMapModule extends Module
         $path = self::parseArg($args, 2, 'string', false)->toString();
         $template = self::parseArg($args, 3, 'string', false)->toString();
         $data = self::parseArg($args, 4, 'object', true, function () { return new ObjectVal([]); })->encode();
-        if (!$this->root->get($template)->exists()) {
+        $templateFile = $this->root->get($template);
+        if (!$templateFile->exists()) {
             throw new ArgError('template not found: ' . $template, 1);
         }
+        $template = $templateFile->getPath();
         $length = count($items);
         $numPages = max(ceil($length / $perPage), 1);
         $page = [
@@ -88,7 +91,7 @@ class SiteMapModule extends Module
         $counter = 0;
         for ($i = 0; $i < $length; $i++) {
             if ($counter >= $perPage) {
-                $this->addItemPage($path, $template, $page, $data);
+                $this->addItemPage($path, $templateFile, $page, $data);
                 $page = [
                     'items' => [],
                     'total' => $length,

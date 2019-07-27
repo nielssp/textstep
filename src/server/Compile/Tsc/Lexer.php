@@ -123,13 +123,21 @@ class Lexer
         if ($c === null) {
             throw new LexerError('unexpected end of input', $this->line, $this->column);
         }
-        if ($doubleQuote and $c === '{') {
+        if ($doubleQuote and ($c === '{' or $c === '}')) {
             return $this->pop();
         }
         switch ($c) {
-            case '\\':
+            case '"':
             case "'":
+            case '\\':
+            case '/':
                 return $this->pop();
+            case 'b':
+                $this->pop();
+                return "\x08";
+            case 'f':
+                $this->pop();
+                return "\f";
             case 'n':
                 $this->pop();
                 return "\n";
@@ -139,8 +147,15 @@ class Lexer
             case 't':
                 $this->pop();
                 return "\t";
+            case 'u':
+                $this->pop();
+                $sequence = $this->pop() . $this->pop() . $this->pop() . $this->pop();
+                if (!preg_match('/^[a-fA-F0-9]{4}$/', $sequence)) {
+                    throw new LexerError('invalid unicode escape sequence: \u' . $sequence, $this->line, $this->column);
+                }
+                return html_entity_decode('&#' . hexdec($sequence) . ';', ENT_NOQUOTES, 'UTF-8');
             default:
-                throw new LexerError('undefined escape character: ' + $c, $this->line, $this->column);
+                throw new LexerError('undefined escape character: ' . $c, $this->line, $this->column);
         }
     }
 
@@ -201,19 +216,35 @@ class Lexer
             }
             $value .= $this->pop();
         }
-        if ($this->peek() === '.') {
-            $this->pop();
-            $value .= '.';
+        if (in_array($this->peek(), ['.', 'e', 'E'])) {
             $token->type = 'Float';
-            while (true) {
-                $c = $this->peek();
-                if ($c === null or !preg_match('/[0-9]/', $c)) {
-                    break;
-                }
+            if ($this->peek() === '.') {
                 $value .= $this->pop();
+                while (true) {
+                    $c = $this->peek();
+                    if ($c === null or !preg_match('/[0-9]/', $c)) {
+                        break;
+                    }
+                    $value .= $this->pop();
+                }
             }
+            if ($this->peek() !== '.') {
+                $value .= $this->pop();
+                if (in_array($this->peek(), ['+', '-'])) {
+                    $value .= $this->pop();
+                }
+                while (true) {
+                    $c = $this->peek();
+                    if ($c === null or !preg_match('/[0-9]/', $c)) {
+                        break;
+                    }
+                    $value .= $this->pop();
+                }
+            }
+            $token->value = floatval($value);
+        } else {
+            $token->value = intval($value);
         }
-        $token->value = $value;
         return $token;
     }
 

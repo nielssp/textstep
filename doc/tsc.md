@@ -23,7 +23,7 @@ brace ::= "{" {token | paren | bracket | brace | comment | skipLf} "}"
 quote ::= '"' {quoteText | command} '"'
 
 text ::= {any \ (commandStart | commandEnd)}
-quoteText ::= {any \ (commandStart | commandEnd | '"') | "\\" (commandStart | commandEnd | "n" | "r" | "t" | '"' | "\\")}
+quoteText ::= {any \ (commandStart | commandEnd | '"') | "\\" (commandStart | commandEnd | escape)}
 
 token ::= keyword
         | operator
@@ -51,11 +51,26 @@ nameFollow ::= nameStart | digit
 
 digit ::= "0" | ... | "9"
 
+hex ::= digit | "a" | ... | "f" | "A" | ... | "F"
+
 int ::= digit {digit}
 
-float ::= int "." int
+exponent ::= ("e" | "E") ["-" | "+"] int
 
-string ::= "'" {(any / ("\\" | "'")) | "\\\\" | "\\'" | "\\n" | "\\r" | "\\t"} "'"
+float ::= int ["." int] exponent
+
+escape ::= '"'
+         | "'"
+         | '\\'
+         | '/'
+         | 'b'
+         | 'f'
+         | 'n'
+         | 'r'
+         | 't'
+         | 'u' hex hex hex hex
+
+string ::= "'" {(any / ("\\" | "'")) | '\\' escape} "'"
 
 verbatim ::= '"""'  {any / '"""'} '"""'
 ```
