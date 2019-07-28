@@ -117,6 +117,26 @@ class Lexer
         return $token;
     }
 
+    private static function utf8Encode($codePoint)
+    {
+        if ($codePoint < 0x80) {
+            return chr($codePoint);
+        }
+        $bytes = chr(0x80 | ($codePoint & 0x3F));
+        $codePoint >>= 6;
+        if ($codePoint < 0x20) {
+            return chr(0xC0 | $codePoint) . $bytes;
+        }
+        $bytes = chr(0x80 | ($codePoint & 0x3F)) . $bytes;
+        $codePoint >>= 6;
+        if ($codePoint < 0x10) {
+            return chr(0xE0 | $codePoint) . $bytes;
+        }
+        $bytes = chr(0x80 | ($codePoint & 0x3F)) . $bytes;
+        $codePoint >>= 6;
+        return chr(0xF0 | $codePoint) . $bytes;
+    }
+
     private function readEscapeSequence($doubleQuote = false)
     {
         $c = $this->peek();
@@ -147,13 +167,27 @@ class Lexer
             case 't':
                 $this->pop();
                 return "\t";
+            case 'x':
+                $this->pop();
+                $sequence = $this->pop() . $this->pop();
+                if (!preg_match('/^[a-fA-F0-9]{2}$/', $sequence)) {
+                    throw new LexerError('invalid hexadecimal escape sequence: \x' . $sequence, $this->line, $this->column);
+                }
+                return chr(hexdec($sequence));
             case 'u':
                 $this->pop();
                 $sequence = $this->pop() . $this->pop() . $this->pop() . $this->pop();
                 if (!preg_match('/^[a-fA-F0-9]{4}$/', $sequence)) {
                     throw new LexerError('invalid unicode escape sequence: \u' . $sequence, $this->line, $this->column);
                 }
-                return html_entity_decode('&#' . hexdec($sequence) . ';', ENT_NOQUOTES, 'UTF-8');
+                return self::utf8Encode(hexdec($sequence));
+            case 'U':
+                $this->pop();
+                $sequence = $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop();
+                if (!preg_match('/^[a-fA-F0-9]{8}$/', $sequence)) {
+                    throw new LexerError('invalid unicode escape sequence: \u' . $sequence, $this->line, $this->column);
+                }
+                return self::utf8Encode(hexdec($sequence));
             default:
                 throw new LexerError('undefined escape character: ' . $c, $this->line, $this->column);
         }

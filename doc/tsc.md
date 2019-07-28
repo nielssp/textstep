@@ -51,7 +51,12 @@ nameFollow ::= nameStart | digit
 
 digit ::= "0" | ... | "9"
 
-hex ::= digit | "a" | ... | "f" | "A" | ... | "F"
+hex ::= digit
+      | "a" | ... | "f"
+      | "A" | ... | "F"
+hex2 ::= hex hex
+hex4 ::= hex2 hex2
+hex8 ::= hex4 hex4
 
 int ::= digit {digit}
 
@@ -68,7 +73,9 @@ escape ::= '"'
          | 'n'
          | 'r'
          | 't'
-         | 'u' hex hex hex hex
+         | 'x' hex2
+         | 'u' hex4
+         | 'U' hex8
 
 string ::= "'" {(any / ("\\" | "'")) | '\\' escape} "'"
 
