@@ -163,5 +163,13 @@ class TimeModule extends Module
         $date->setTimestamp($time->getValue());
         return new StringVal($date->format('c'));
     }
+
+    public function rfc2822(array $args)
+    {
+        $time = $this->time($args);
+        $date = new \DateTime('now', $this->timeZone);
+        $date->setTimestamp($time->getValue());
+        return new StringVal($date->format('r'));
+    }
 }
 

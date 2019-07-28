@@ -180,7 +180,7 @@ class Shell
                 $filterSet = new Compile\FilterSet();
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
-                $compiler = new Compile\TemplateCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
+                $compiler = new Compile\TemplateCompilerOld($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
                 $compiler->compile($this->workingDir->get($parameters[0]));
                 $siteMap->commit();
                 $contentMap->commit();
@@ -217,7 +217,7 @@ class Shell
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
                 $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
-                $assembler = new Compile\TemplateCompiler2($this->m->files->get('build'), $installMap, $siteMap, $contentMap, $filterSet, $config);
+                $assembler = new Compile\TemplateCompiler($this->m->files->get('build'), $installMap, $siteMap, $contentMap, $filterSet, $config);
                 $prefix = '';
                 if (isset($parameters[0])) {
                     $prefix = $parameters[0];

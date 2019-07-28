@@ -6,8 +6,8 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-use Blogstep\Compile\View;
 use Blogstep\Compile\ContentCompiler;
+use Blogstep\Compile\TemplateCompiler;
 use Blogstep\Compile\Filter;
 use Blogstep\Files\File;
 use Jivoo\Store\Document;
@@ -22,14 +22,14 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, \
     }
 };
 
-$filter->content = function (View $view, $content, array $parameters) {
+$filter->content = function (TemplateCompiler $tc, $content, array $parameters) {
     if (isset($parameters['brief'])) {
         return explode('<?bs brief ?>', $content)[0];
     }
     return $content;
 };
 
-$filter['brief'] = function (View $view, $attr, $enabled) {
+$filter['brief'] = function (TemplateCompiler $tc, $attr, $enabled) {
     return '';
 };
 

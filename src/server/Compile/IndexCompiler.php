@@ -39,7 +39,6 @@ class IndexCompiler
         $this->env->addModule('collection', new Tsc\CollectionModule(), true);
         $timeZone = new \DateTimeZone($config->get('timeZone', date_default_timezone_get()));
         $this->env->addModule('time', new Tsc\TimeModule($timeZone), true);
-        $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap), true);
         $this->env->let('CONFIG', Tsc\Val::from($this->config->toArray()));
     }
     
@@ -53,6 +52,7 @@ class IndexCompiler
             $parser = new Tsc\Parser($tokens, $index->getPath());
             $node = $parser->parse();
             $this->env->addModule('sitemap', new Tsc\SiteMapModule($this->siteMap, $this->filterSet, $index->getParent()), true);
+            $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap, $this->filterSet, $index->getParent()), true);
             $this->interpreter->eval($node, $this->env->openScope());
         } catch (Tsc\Error $e) {
             throw new \Blogstep\RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);

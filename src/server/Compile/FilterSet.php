@@ -71,25 +71,25 @@ class FilterSet
         }
     }
     
-    public function applyContentFilters(View $view, $content, array $parameters)
+    public function applyContentFilters(TemplateCompiler $tc, $content, array $parameters)
     {
         foreach ($this->content as $handler) {
-            $content = $handler($view, $content, $parameters);
+            $content = $handler($tc, $content, $parameters);
         }
         return $content;
     }
     
-    public function applyDisplayFilters(View $view, $content, array $parameters)
+    public function applyDisplayFilters(TemplateCompiler $tc, $content, array $parameters)
     {
         foreach ($this->display as $handler) {
-            $content = $handler($view, $content, $parameters);
+            $content = $handler($tc, $content, $parameters);
         }
         return $content;
     }
 
-    public function applyDisplayTags(View $view, $content, array $parameters)
+    public function applyDisplayTags(TemplateCompiler $tc, $content, array $parameters)
     {
-        return preg_replace_callback('/<\?bs\s*([a-z0-9_]+)(?:\s+([^?]+?))?\s*\?>/i', function ($matches) use ($view, $parameters) {
+        return preg_replace_callback('/<\?bs\s*([a-z0-9_]+)(?:\s+([^?]+?))?\s*\?>/i', function ($matches) use ($tc, $parameters) {
             $tag = $matches[1];
             $attributes = [];
             if (isset($matches[2])) {
@@ -106,7 +106,7 @@ class FilterSet
             }
             if (isset($this->displayTags[$tag])) {
                 return call_user_func_array($this->displayTags[$tag], array_merge(
-                    [$view, $attributes, $enabled],
+                    [$tc, $attributes, $enabled],
                     $filterParameters
                 ));
             } else {

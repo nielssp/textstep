@@ -7,28 +7,29 @@
  */
 
 use Blogstep\Compile\View;
+use Blogstep\Compile\TemplateCompiler;
 
 $filter = new \Blogstep\Compile\Filter();
 
-$filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeight = 480, $quality = 100, $linkFull = true) {
+$filter['img'] = function(TemplateCompiler $tc, $attr, $enabled, $maxWidth = 640, $maxHeight = 480, $quality = 100, $linkFull = true) {
     if (!$enabled) {
         return View::html('img', $attr);
     }
     $useImageMagick = false;
-    if (isset($view->data->config['useImageMagick']) and $view->data->config['useImageMagick']) {
+    if (isset($tc->getConfig()['useImageMagick']) and $tc->getConfig()['useImageMagick']) {
       $useImageMagick = false;
     } else  if (!extension_loaded('gd')) {
         trigger_error('img: missing extension: gd', E_USER_WARNING);
         return;
     }
-    $usePngcrush = (isset($view->data->config['usePngcrush']) and $view->data->config['usePngcrush']);
-    $preserveLossless = (isset($view->data->config['preserveLossless']) and $view->data->config['preserveLossless']);
+    $usePngcrush = (isset($tc->getConfig()['usePngcrush']) and $tc->getConfig()['usePngcrush']);
+    $preserveLossless = (isset($tc->getConfig()['preserveLossless']) and $ts->getConfig()['preserveLossless']);
     $src = $attr['src'];
     if (Jivoo\Unicode::startsWith($src, 'bs:')) {
         $path = preg_replace('/^bs:\/?/', '', $src);
-        $siteNode = $view->assembler->getSiteMap()->get($path);
+        $siteNode = $tc->getSiteMap()->get($path);
         if ($siteNode['handler'] === 'copy') {
-            $file = $view->assembler->getBuildDir()->get($siteNode['data'][0]);
+            $file = $tc->getBuildDir()->get($siteNode['data'][0]);
         }
     }
     if (!isset($file)) {
@@ -82,7 +83,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
             $destType = 'jpg';
         }
         $destName = preg_replace('/\.[^\.]+$/', '.' . $targetWidth . 'x' . $targetHeight . 'q' . $quality . '.' . $destType, $file->getName());
-        $destDir = $view->assembler->getBuildDir()->get('.' . $file->getParent()->getPath());
+        $destDir = $tc->getBuildDir()->get('.' . $file->getParent()->getPath());
         $destDir->makeDirectory(true);
         $destFile = $destDir->get($destName);
         if (!$destFile->exists()) {
@@ -152,7 +153,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
             }
             if ($destFile->getSize() <= $file->getSize()) {
                 $newPath = preg_replace('/\/[^\/]+$/', '/' . $destFile->getName(), $path);
-                $view->assembler->getInstallMap()->add($newPath, 'copy', [$destFile->getPath()]);
+                $tc->getInstallMap()->add($newPath, 'copy', [$destFile->getPath()]);
                 $attr['src'] = 'bs:' . $newPath;
             }
         }
@@ -167,7 +168,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
         $attr['height'] = $height;
         if ($usePngcrush and $type[2] === IMAGETYPE_PNG) {
             $destName = preg_replace('/\.png$/i', '.c.png', $file->getName());
-            $destDir = $view->assembler->getBuildDir()->get('.' . $file->getParent()->getPath());
+            $destDir = $tc->getBuildDir()->get('.' . $file->getParent()->getPath());
             $destDir->makeDirectory(true);
             $destFile = $destDir->get($destName);
             if (!$destFile->exists()) {
@@ -181,7 +182,7 @@ $filter['img'] = function(View $view, $attr, $enabled, $maxWidth = 640, $maxHeig
                 }
             }
             $newPath = preg_replace('/\/[^\/]+$/', '/' . $file->getName(), $path);
-            $view->assembler->getInstallMap()->add($newPath, 'copy', [$destFile->getPath()]);
+            $tc->getInstallMap()->add($newPath, 'copy', [$destFile->getPath()]);
             $attr['src'] = 'bs:' . $newPath;
         }
     }

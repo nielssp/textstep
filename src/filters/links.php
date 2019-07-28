@@ -6,18 +6,18 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-use Blogstep\Compile\View;
+use Blogstep\Compile\TemplateCompiler;
 use Blogstep\Compile\Filter;
 use Jivoo\View\Html;
 
 $filter = new Filter();
 
-$filter->display = function (View $view, $content, array $parameters) {
+$filter->display = function (TemplateCompiler $tc, $content, array $parameters) {
     if (isset($parameters['linksAbsolute'])) {
         return $content;
     }
-    return preg_replace_callback('/(src|href)\s*=\s*"bs:([^"]*)"/i', function ($matches) use ($view) {
-        $link = $view->link($matches[2]);
+    return preg_replace_callback('/(src|href)\s*=\s*"bs:([^"]*)"/i', function ($matches) use ($tc) {
+        $link = $tc->getLink($matches[2]);
         return $matches[1] . '="' . Html::h($link) . '"';
     }, $content);
 };

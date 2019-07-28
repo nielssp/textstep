@@ -177,6 +177,20 @@ class CollectionModule extends Module
         return new ArrayVal(array_values($groups));
     }
 
+    public function take(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false)->getValues();
+        $n = self::parseArg($args, 1, 'int', false)->getValue();
+        return new ArrayVal(array_slice($array, 0, $n));
+    }
+
+    public function drop(array $args)
+    {
+        $array = self::parseArg($args, 0, 'array', false)->getValues();
+        $n = self::parseArg($args, 1, 'int', false)->getValue();
+        return new ArrayVal(array_slice($array, $n));
+    }
+
     public function push(array $args)
     {
         $array = self::parseArg($args, 0, 'array', false);

@@ -224,6 +224,8 @@ sort_with(array: array, comparator: func): array
 sort_by(array: array, f: func): array
 sort_by_desc(array: array, f: func): array
 group_by(array: array, f: func): array
+take(array: array, n: int): array
+drop(array: array, n: int): array
 pop(array: array): any
 push(array: array, element: any): array
 push_all(array: array, elements: array): array
@@ -239,6 +241,7 @@ now(): time
 time(time: time|string|int): time
 date(time: time|string|int, format: string): string
 iso8601(time: time|string|int): string
+rfc2822(time: time|string|int): string
 ```
 
 ### template
@@ -246,6 +249,10 @@ iso8601(time: time|string|int): string
 embed(name: string, data: object?): string
 link(link: string?): string
 url(link: string?): string
+read(file: string): string
+page_list(n: int, page: int? = PAGE.page, pages: int? = PAGE.pages): array
+page_link(page: int, path: string? = PAGE.path): string
+filter_content(content: object, filters: array?): string
 ```
 
 ### html

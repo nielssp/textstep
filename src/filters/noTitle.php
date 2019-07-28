@@ -7,6 +7,7 @@
  */
 
 use Blogstep\Compile\ContentCompiler;
+use Blogstep\Compile\TemplateCompiler;
 use Blogstep\Compile\Filter;
 use Blogstep\Compile\View;
 use Blogstep\Files\File;
@@ -25,7 +26,7 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, \
     }
 };
 
-$filter['noTitle'] = function (View $view, $attr, $enabled) {
+$filter['noTitle'] = function (TemplateCompiler $tc, $attr, $enabled) {
     if ($enabled) {
         return '';
     }

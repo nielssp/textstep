@@ -88,7 +88,8 @@ class SiteMapModule extends Module
             'total' => $length,
             'page' => 1,
             'pages' => $numPages,
-            'offset' => 0
+            'offset' => 0,
+            'path' => $path
         ];
         $counter = 0;
         for ($i = 0; $i < $length; $i++) {
@@ -99,7 +100,8 @@ class SiteMapModule extends Module
                     'total' => $length,
                     'page' => $page['page'] + 1,
                     'pages' => $numPages,
-                    'offset' => $i
+                    'offset' => $i,
+                    'path' => $path
                 ];
                 $counter = 0;
             }
