@@ -7,7 +7,6 @@
  */
 
 use Blogstep\Compile\Filter;
-use Blogstep\Compile\TemplateCompiler;
 use Blogstep\Files\File;
 use Jivoo\Utilities;
 use MatthiasMullie\Minify\CSS;
@@ -15,10 +14,10 @@ use MatthiasMullie\Minify\JS;
 
 $filter = new Filter();
 
-$filter->file = function(TemplateCompiler $compiler, File $file) {
+$filter->file = function(File $buildDir, File $file) {
     $ext = Utilities::getFileExtension($file->getName());
     $destName = preg_replace('/\.[^\.]+$/', '.min.' . $ext, $file->getName());
-    $destDir = $compiler->buildDir->get('.' . $file->getParent()->getPath());
+    $destDir = $buildDir->get('.' . $file->getParent()->getPath());
     $destDir->makeDirectory(true);
     $destFile = $destDir->get($destName);
     switch ($ext) {

@@ -47,6 +47,11 @@ class FloatVal extends Val
         return 'float';
     }
 
+    public function getIdentity()
+    {
+        return 'f:' . $this->value;
+    }
+
     public function encode()
     {
         return $this->value;

@@ -16,11 +16,11 @@ abstract class Module
         foreach ($methods as $method) {
             if (!$method->isStatic() and !$method->isConstructor() and $method->getName() !== 'importInto') {
                 $name = \Jivoo\Utilities::camelCaseToUnderscores($method->getName());
-                $env->set($name, new FuncVal([$this, $method->getName()]));
+                $env->letConst($name, new FuncVal([$this, $method->getName()]));
             }
         }
         foreach ($this->constants as $name => $value) {
-            $env->set($name, $value);
+            $env->letConst($name, $value);
         }
     }
 

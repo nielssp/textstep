@@ -8,11 +8,13 @@ namespace Blogstep\Compile\Tsc;
 class SiteMapModule extends Module
 {
     private $siteMap;
+    private $filterSet;
     private $root;
 
-    public function __construct(\Blogstep\Compile\SiteMap $siteMap, \Blogstep\Files\File $root)
+    public function __construct(\Blogstep\Compile\SiteMap $siteMap, \Blogstep\Compile\FilterSet $filterSet, \Blogstep\Files\File $root)
     {
         $this->siteMap = $siteMap;
+        $this->filterSet = $filterSet;
         $this->root = $root;
     }
 
@@ -42,7 +44,7 @@ class SiteMapModule extends Module
             return;
         }
         $path = $file->getRelativePath($this->root);
-        //$file = $this->filterSet->applyFileFilters($this, $file);
+        $file = $this->filterSet->applyFileFilters($this->siteMap->getFile()->getParent(), $file);
         $this->siteMap->add($path, 'copy', [$file->getPath()]);
     }
 
@@ -56,9 +58,9 @@ class SiteMapModule extends Module
     private function addItemPage($path, $template, array $page, $data)
     {
         if ($page['page'] === 1) {
-            $path = $path . '/index.html';
+            $path = str_replace('%page%', '', $path);
         } else {
-            rtrim($path, '/') . '/page' . $page['page'] . '/index.html';
+            $path = str_replace('%page%', '/page' . $page['page'], $path);
         }
         $page['count'] = count($page['items']);
         $this->siteMap->add($path, 'tsc', array_merge($data, [

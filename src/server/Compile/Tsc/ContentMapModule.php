@@ -19,8 +19,7 @@ class ContentMapModule extends Module
         $prefix = self::parseArg($args, 0, 'string', true, function () { return new StringVal('/'); });
         $options = self::parseArg($args, 1, 'object', true, function () { return new ObjectVal([]); });
         $recursive = !$options->has('recursive') || $option->get('recursive')->isTruthy();
-        return new ObjectVal(array_map(function ($node) {
-            $obj = [];
+        return new ArrayVal(array_map(function ($node) {
             return Val::from(array_merge($node->metadata, [
                 'path' => $node->path,
                 'relative_path' => $node->relativePath,

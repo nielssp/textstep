@@ -56,10 +56,10 @@ class FilterSet
         }
     }
     
-    public function applyFileFilters(TemplateCompiler $tc, \Blogstep\Files\File $file)
+    public function applyFileFilters(\Blogstep\Files\File $buildDir, \Blogstep\Files\File $file)
     {
         foreach ($this->file as $handler) {
-            $file = $handler($tc, $file);
+            $file = $handler($buildDir, $file);
         }
         return $file;
     }

@@ -47,6 +47,13 @@ class ObjectVal extends Val
         $this->value[$property] = $value;
     }
 
+    public function getKeys()
+    {
+        return array_map(function ($key) {
+            return new StringVal($key);
+        }, array_keys($this->value));
+    }
+
     public function getValues()
     {
         return array_values($this->value);
@@ -73,6 +80,13 @@ class ObjectVal extends Val
     public function getType()
     {
         return 'object';
+    }
+
+    public function getIdentity()
+    {
+        return 'o:' . count($this->value) . ':' . implode(':', array_map(function ($key, $value) {
+            return strlen($key) . ':' . $key . ':' . $value->getIdentity();
+        }, array_keys($this->value), $this->value));
     }
 
     public function encode()

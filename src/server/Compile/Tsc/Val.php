@@ -39,6 +39,11 @@ abstract class Val
 
     abstract public function encode();
 
+    public function getIdentity()
+    {
+        return $this->getType();
+    }
+
     public static function from($data)
     {
         if (is_int($data)) {

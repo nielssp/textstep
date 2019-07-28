@@ -29,7 +29,6 @@ class Interpreter
 
     public function evalBlock(Node $node, Env $env)
     {
-        $env = $env->openScope();
         $output = '';
         foreach ($node->children as $child) {
             $output .= $this->eval($child, $env)->toString();
@@ -63,7 +62,7 @@ class Interpreter
                     }
                     $object->set($index->getValue(), $value);
                 } else {
-                    return new TypeError('value of type ' . $object->getType() . ' is not subscriptable', $leftSide->children[0]);
+                    throw new TypeError('value of type ' . $object->getType() . ' is not subscriptable', $leftSide->children[0]);
                 }
                 break;
             default:
@@ -95,7 +94,6 @@ class Interpreter
     public function evalFor(Node $node, Env $env)
     {
         $elements = $this->eval($node->children[1], $env);
-        $env = $env->openScope();
         $output = '';
         if (!in_array($elements->getType(), ['object', 'array'])) {
             throw new TypeError('value of type ' . $elements->getType() . ' is not iterable', $node->children[1]);
@@ -177,7 +175,7 @@ class Interpreter
                 } elseif ($left instanceof ArrayVal) {
                     return new ArrayVal(array_merge($left->getValues(), $right->getValues()));
                 } elseif ($left instanceof ObjectVal) {
-                    return new ObjectVal(array_merge($left->getValues(), $right->getValues()));
+                    return new ObjectVal(array_merge($left->getValue(), $right->getValue()));
                 }
                 break;
             case '-':
@@ -334,13 +332,16 @@ class Interpreter
         if ($object instanceof StringVal) {
             return $object->get($index->getValue());
         }
-        return new TypeError('value of type ' . $object->getType() . ' is not subscriptable', $node->children[0]);
+        throw new TypeError('value of type ' . $object->getType() . ' is not subscriptable', $node->children[0]);
     }
 
     public function evalApply(Node $node, Env $env)
     {
         $func = $this->eval($node->children[0], $env);
         if (!($func instanceof FuncVal)) {
+            if ($node->children[0]->type === 'Name') {
+                throw new TypeError('undefined function: ' . $node->children[0]->value, $node->children[0]);
+            }
             throw $this->typeError('func', $func, $node->children[0]);
         }
         $args = [];

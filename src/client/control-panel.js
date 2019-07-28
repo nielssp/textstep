@@ -141,6 +141,9 @@ function sitePanel(config) {
     grid.append(label('Copyright:'));
     grid.append(input(config, 'copyright'));
 
+    grid.append(label('Website URI:'));
+    grid.append(input(config, 'websiteUri'));
+
     let fieldSet2 = new ui.FieldSet();
     fieldSet2.legend = 'Time zone';
     dialogForm.append(fieldSet2);

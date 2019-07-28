@@ -11,6 +11,8 @@ namespace Blogstep\Compile;
 interface SiteMap
 {
 
+    public function getFile();
+
     public function add($path, $handler, array $args);
 
     public function get($path);

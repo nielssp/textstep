@@ -106,6 +106,13 @@ class ArrayVal extends Val
         return 'array';
     }
 
+    public function getIdentity()
+    {
+        return 'a:' . count($this->value) . ':' . implode(':', array_map(function ($item) {
+            return $item->getIdentity();
+        }, $this->value));
+    }
+
     public function encode()
     {
         return array_map(function ($item) {

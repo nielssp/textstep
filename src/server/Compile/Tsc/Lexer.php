@@ -11,6 +11,8 @@ class Lexer
 
     private $length;
 
+    private $file;
+
     private $offset = 0;
 
     private $line = 1;
@@ -21,10 +23,11 @@ class Lexer
 
     private static $keywords = ['if', 'else', 'for', 'in', 'switch', 'case', 'default', 'end', 'fn', 'and', 'or', 'not', 'do'];
 
-    public function __construct($input)
+    public function __construct($input, $file)
     {
         $this->input = $input;
         $this->length = strlen($input);
+        $this->file = $file;
     }
 
     private function peek()
@@ -122,6 +125,9 @@ class Lexer
         if ($codePoint < 0x80) {
             return chr($codePoint);
         }
+        if ($codePoint > 0x10FFFF) {
+            throw new \RangeException('Out of range');
+        }
         $bytes = chr(0x80 | ($codePoint & 0x3F));
         $codePoint >>= 6;
         if ($codePoint < 0x20) {
@@ -185,9 +191,13 @@ class Lexer
                 $this->pop();
                 $sequence = $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop() . $this->pop();
                 if (!preg_match('/^[a-fA-F0-9]{8}$/', $sequence)) {
-                    throw new LexerError('invalid unicode escape sequence: \u' . $sequence, $this->line, $this->column);
+                    throw new LexerError('invalid unicode escape sequence: \U' . $sequence, $this->line, $this->column);
                 }
+                try {
                 return self::utf8Encode(hexdec($sequence));
+                } catch (\RangeException $e) {
+                    throw new LexerError('unicode codepoint out of range: \U' . $sequence, $this->line, $this->column);
+                }
             default:
                 throw new LexerError('undefined escape character: ' . $c, $this->line, $this->column);
         }
@@ -397,20 +407,25 @@ class Lexer
 
     public function readAllTokens($template = true)
     {
-        $tokens = [];
-        if ($template) {
-            $this->parenStack = [];
-        } else {
-            $this->parenStack = ['{'];
-        }
-        while (true) {
-            $token = $this->readNextToken();
-            if ($token === null) {
-                break;
+        try {
+            $tokens = [];
+            if ($template) {
+                $this->parenStack = [];
+            } else {
+                $this->parenStack = ['{'];
             }
-            $tokens[] = $token;
+            while (true) {
+                $token = $this->readNextToken();
+                if ($token === null) {
+                    break;
+                }
+                $tokens[] = $token;
+            }
+            $tokens[] = $this->createToken('Eof');
+        } catch (LexerError $e) {
+            $e->srcFile = $this->file;
+            throw $e;
         }
-        $tokens[] = $this->createToken('Eof');
         return $tokens;
     }
 }

@@ -22,11 +22,6 @@ class TemplateCompiler
     private $templateCompiler;
 
     /**
-     * @var Tsc\Compiler
-     */
-    private $tsTemplateCompiler;
-
-    /**
      * @var BlogstepMacros
      */
     private $macros;
@@ -57,7 +52,6 @@ class TemplateCompiler
         $this->siteMap = $siteMap;
         $this->contentMap = $contentMap;
         $this->filterSet = $filterSet;
-        $this->tsTemplateCompiler = new Tsc\Compiler();
         $this->templateCompiler = new HtmlTemplateCompiler();
         $this->macros = new BlogstepMacros($siteMap, $contentMap);
         $this->templateCompiler->addMacros(new \Jivoo\View\Compile\DefaultMacros);
@@ -108,19 +102,7 @@ class TemplateCompiler
             }
         }
         $name = $file->getName();
-        if (preg_match('/\.ts\.([a-z0-9]+)$/i', $name, $match)) {
-            $source = $file->getContents();
-            $target = $this->buildDir->get('.' . $file->getPath() . '.php');
-            $target->getParent()->makeDirectory(true);
-            $path = $file->getRelativePath($this->templateRoot);
-            if (\Jivoo\Unicode::startsWith($name, '_')) {
-                $path = null;
-            } else {
-                $this->siteMap->add($path, 'eval', [$path]);
-            }
-            $object = $this->tsTemplateCompiler->compile($source, $file->getPath(), $path);
-            $target->putContents($object);
-        } elseif (\Jivoo\Unicode::endsWith($name, '.html')) {
+        if (\Jivoo\Unicode::endsWith($name, '.html')) {
             $html = $file->getContents();
             $target = $this->buildDir->get('.' . $file->getPath() . '.php');
             $target->getParent()->makeDirectory(true);

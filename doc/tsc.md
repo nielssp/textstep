@@ -223,6 +223,7 @@ sort(array: array): array
 sort_with(array: array, comparator: func): array
 sort_by(array: array, f: func): array
 sort_by_desc(array: array, f: func): array
+group_by(array: array, f: func): array
 pop(array: array): any
 push(array: array, element: any): array
 push_all(array: array, elements: array): array
@@ -235,13 +236,16 @@ delete(obj: object, key: string): obj
 
 ```
 now(): time
-date(time: time, format: string): string
-iso8601(time: time): string
+time(time: time|string|int): time
+date(time: time|string|int, format: string): string
+iso8601(time: time|string|int): string
 ```
 
 ### template
 ```
 embed(name: string, data: object?): string
+link(link: string?): string
+url(link: string?): string
 ```
 
 ### html

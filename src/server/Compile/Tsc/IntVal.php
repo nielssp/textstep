@@ -47,6 +47,11 @@ class IntVal extends Val
         return 'int';
     }
 
+    public function getIdentity()
+    {
+        return 'i:' . $this->value;
+    }
+
     public function encode()
     {
         return $this->value;

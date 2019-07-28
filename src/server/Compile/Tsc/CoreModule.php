@@ -36,5 +36,11 @@ class CoreModule extends Module
     {
         return new StringVal(self::parseArg($args, 0, null, true)->toString());
     }
+
+    public function debug(array $args)
+    {
+        var_dump($args);
+        return NilVal::nil();
+    }
 }
 

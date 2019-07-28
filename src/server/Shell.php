@@ -165,7 +165,11 @@ class Shell
             case 'ic':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
-                $compiler = new Compile\IndexCompiler($siteMap, $contentMap);
+                $filterSet = new Compile\FilterSet();
+                $filterSet->addFilters($this->m->main->p('src/filters'));
+                $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
+                $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
+                $compiler = new Compile\IndexCompiler($siteMap, $contentMap, $filterSet, $config);
                 $compiler->compile($this->workingDir->get($parameters[0]));
                 $siteMap->commit();
                 $contentMap->commit();

@@ -60,6 +60,11 @@ class StringVal extends Val
         return 'string';
     }
 
+    public function getIdentity()
+    {
+        return 's:' . strlen($this->value) . ':' . $this->value;
+    }
+
     public function encode()
     {
         return $this->value;

@@ -24,6 +24,11 @@ class FileSiteMap implements SiteMap
         }
     }
 
+    public function getFile()
+    {
+        return $this->file;
+    }
+
     public function commit()
     {
         $this->file->putContents(\Jivoo\Json::prettyPrint($this->data));

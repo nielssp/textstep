@@ -20,6 +20,18 @@ class CollectionModule extends Module
         throw new ArgTypeError('length() is not applicable to argument of type ' . $arg->getType(), 0);
     }
 
+    public function keys(array $args)
+    {
+        $obj = self::parseArg($args, 0, 'object', false);
+        return $obj->getKeys();
+    }
+
+    public function values(array $args)
+    {
+        $obj = self::parseArg($args, 0, 'object', false);
+        return $obj->getValues();
+    }
+
     public function map(array $args, Env $dynamicEnv)
     {
         $array = self::parseArg($args, 0, ['array', 'object'], false);
@@ -35,6 +47,23 @@ class CollectionModule extends Module
             $result[$key] = $func->apply([$value, new StringVal($key)], $dynamicEnv);
         }
         return new ObjectVal($result);
+    }
+
+    public function flatMap(array $args, Env $dynamicEnv)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $func = self::parseArg($args, 1, 'func', false);
+        $result = [];
+        foreach ($array->getValues() as $key => $value) {
+            $subitems = $func->apply([$value, new IntVal($key)], $dynamicEnv);
+            if (!($subitems instanceof ArrayVal)) {
+                throw new ArgTypeError('incorrect flat map function return value of type ' . $subitems->getType() . ', expected array', 1, 'array');
+            }
+            foreach ($subitems->getValues() as $subitem) {
+                $result[] = $subitem;
+            }
+        }
+        return new ArrayVal($result);
     }
 
     public function mapKeys(array $args, Env $dynamicEnv)
@@ -131,6 +160,21 @@ class CollectionModule extends Module
             $b = $propertyGetter->apply([$b], $dynamicEnv);
             return $b->compare($a);
         });
+    }
+
+    public function groupBy(array $args, Env $dynamicEnv)
+    {
+        $array = self::parseArg($args, 0, 'array', false);
+        $propertyGetter = self::parseArg($args, 1, 'func', false);
+        $groups = [];
+        foreach ($array->getValues() as $item) {
+            $key = $propertyGetter->apply([$item], $dynamicEnv)->getIdentity();
+            if (!isset($groups[$key])) {
+                $groups[$key] = new ArrayVal([]);
+            }
+            $groups[$key]->push($item);
+        }
+        return new ArrayVal(array_values($groups));
     }
 
     public function push(array $args)

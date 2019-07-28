@@ -11,9 +11,13 @@ class Env
 
     private $parent;
 
-    private $values = [];
+    private $consts = [];
+
+    private $vars = [];
 
     private $modules = [];
+
+    private $readOnly = false;
 
     public function __construct(Env $parent = null)
     {
@@ -25,6 +29,16 @@ class Env
                 $this->root = $this->parent;
             }
         }
+    }
+
+    public function isReadOnly()
+    {
+        return $this->readOnly;
+    }
+
+    public function setReadOnly($readOnly = true)
+    {
+        $this->readOnly = $readOnly;
     }
 
     public function addModule($name, Module $module, $import = false)
@@ -57,20 +71,46 @@ class Env
 
     public function get($name)
     {
-        if (isset($this->values[$name])) {
-            return $this->values[$name];
+        if (isset($this->consts[$name])) {
+            return $this->consts[$name];
+        } elseif (isset($this->vars[$name])) {
+            return $this->vars[$name];
         } elseif (isset($this->parent)) {
             return $this->parent->get($name);
         }
         return null;
     }
 
+    public function let($name, Val $value)
+    {
+        $this->vars[$name] = $value;
+    }
+
+    public function letConst($name, Val $value)
+    {
+        $this->consts[$name] = $value;
+    }
+
+    private function findScope($name)
+    {
+        if (isset($this->consts[$name]) or isset($this->vars[$name])) {
+            return $this;
+        } elseif (isset($this->parent)) {
+            return $this->parent->findScope($name);
+        }
+        return null;
+    }
+
     public function set($name, Val $value)
     {
-        if (!isset($this->values[$name]) and isset($htis->parent)) {
-            $this->parent->set($name, $value);
+        $scope = $this->findScope($name);
+        if (!isset($scope)) {
+            $this->let($name, $value);
             return;
         }
-        $this->values[$name] = $value;
+        if (isset($scope->consts[$name])) {
+            throw new ReadOnlyError('reassignment of constant "' . $name . '" not allowed');
+        }
+        $scope->vars[$name] = $value;
     }
 }

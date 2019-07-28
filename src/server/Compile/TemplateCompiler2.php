@@ -71,8 +71,12 @@ class TemplateCompiler2
         $this->env->addModule('core', new Tsc\CoreModule(), true);
         $this->env->addModule('string', new Tsc\StringModule(), true);
         $this->env->addModule('collection', new Tsc\CollectionModule(), true);
-        $this->env->addModule('time', new Tsc\TimeModule(), true);
+        $timeZone = new \DateTimeZone($config->get('timeZone', date_default_timezone_get()));
+        $this->env->addModule('time', new Tsc\TimeModule($timeZone), true);
         $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap), true);
+        $this->env->addModule('template', new Tsc\TemplateModule($this), true);
+        $this->env->addModule('html', new Tsc\HtmlModule(), false);
+        $this->env->let('CONFIG', Tsc\Val::from($this->config->toArray()));
     }
 
     public function getBuildDir()
@@ -110,13 +114,23 @@ class TemplateCompiler2
         return $this->router;
     }
 
+    public function getEnv()
+    {
+        return $this->env;
+    }
+
+    public function getInterpreter()
+    {
+        return $this->interpreter;
+    }
+
     public function getTemplate($template)
     {
         if (!isset($this->templateCache[$template])) {
             $source = $this->buildDir->get($template)->getContents();
-            $lexer = new Tsc\Lexer($source);
+            $lexer = new Tsc\Lexer($source, $template);
             $tokens = $lexer->readAllTokens(true);
-            $parser = new Tsc\Parser($tokens, $index->getPath());
+            $parser = new Tsc\Parser($tokens, $template);
             $this->templateCache[$template] = $parser->parse();
         }
         return $this->templateCache[$template];
@@ -130,23 +144,41 @@ class TemplateCompiler2
             return;
         }
         $target = $this->buildDir->get('output/' . $path);
-        switch ($node['handler']) {
-            case 'tsc':
-                $data = $node['data'];
-                $data['PATH'] = $path;
-                $template = $this->getTemplate($data['TEMPLATE']);
-                $env = $this->env->openScope();
-                foreach ($data as $key => $value) {
-                    $env->set($key, Tsc\Val::from($value));
-                }
-                $object = $this->interpreter->eval($node, $env);
-                $target->getParent()->makeDirectory(true);
-                $target->putContents($object);
-                $this->installMap->add($path, 'copy', [$target->getPath()]);
-                break;
-            default:
-                $this->installMap->add($path, $node['handler'], $node['data']);
-                break;
+        try {
+            switch ($node['handler']) {
+                case 'tsc':
+                    $this->env->let('PATH', new Tsc\StringVal($path));
+                    $data = $node['data'];
+                    $template = $this->getTemplate($data['TEMPLATE']);
+                    $env = $this->env->openScope();
+                    foreach ($data as $key => $value) {
+                        $env->let($key, Tsc\Val::from($value));
+                    }
+                    $extension = strtolower(\Jivoo\Utilities::getFileExtension($data['TEMPLATE']));
+                    if ($extension === 'html' or $extension === 'htm') {
+                        $env->getModule('html')->importInto($env);
+                    }
+                    $object = $this->interpreter->eval($template, $env);
+                    $layout = $env->get('LAYOUT');
+                    if (isset($layout)) {
+                        $layoutFile = $this->getBuildDir()->get($data['TEMPLATE'])
+                                           ->getParent()
+                                           ->get($layout->toString());
+                        $layoutTemplate = $this->getTemplate($layoutFile->getPath());
+                        $env->let('TEMPLATE', $layout);
+                        $env->let('CONTENT', $object);
+                        $object = $this->interpreter->eval($layoutTemplate, $env);
+                    }
+                    $target->getParent()->makeDirectory(true);
+                    $target->putContents($object->toString());
+                    $this->installMap->add($path, 'copy', [$target->getPath()]);
+                    break;
+                default:
+                    $this->installMap->add($path, $node['handler'], $node['data']);
+                    break;
+            }
+        } catch (Tsc\Error $e) {
+            throw new \Blogstep\RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
         }
     }
 }

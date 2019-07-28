@@ -117,6 +117,10 @@ class ExceptionHandler
             'Uncaught exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine(),
             ['exception' => $exception]
         );
+        if (php_sapi_name() === 'cli') {
+            Shell::dumpException($exception);
+            exit;
+        }
         if (headers_sent()) {
             echo 'Uncaught exception: ' . $exception->getMessage();
             exit;
@@ -124,10 +128,6 @@ class ExceptionHandler
         // Clean the view
         while (ob_get_level() > 0) {
             ob_end_clean();
-        }
-        if (php_sapi_name() === 'cli') {
-            Shell::dumpException($exception);
-            exit;
         }
         header('HTTP/1.1 500 Internal Server Error');
         header('Content-Type: text/plain');
