@@ -37,5 +37,11 @@ class StringModule extends Module
         }
         return TrueVal::from(substr($string, - $l) === $suffix);
     }
+
+    public function json(array $args)
+    {
+        $arg = self::parseArg($args, 0);
+        return new StringVal(json_encode($arg->encode()));
+    }
 }
 

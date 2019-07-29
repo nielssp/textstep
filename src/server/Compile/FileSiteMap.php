@@ -36,6 +36,7 @@ class FileSiteMap implements SiteMap
 
     public function add($path, $handler, array $data)
     {
+        $path = ltrim($path, '/');
         $this->data[$path] = [
             'handler' => $handler,
             'data' => $data
@@ -44,6 +45,7 @@ class FileSiteMap implements SiteMap
 
     public function get($path)
     {
+        $path = ltrim($path, '/');
         if (isset($this->data[$path])) {
             return $this->data[$path];
         }
@@ -66,6 +68,7 @@ class FileSiteMap implements SiteMap
 
     public function remove($path)
     {
+        $path = ltrim($path, '/');
         unset($this->data[$path]);
     }
 }

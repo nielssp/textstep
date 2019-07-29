@@ -26,5 +26,17 @@ class ContentMapModule extends Module
             ]));
         }, $this->contentMap->getAll($prefix->toString(), $recursive)));
     }
+
+    public function saveContent(array $args)
+    {
+        $object = self::parseArg($args, 0, 'object', false);
+        $path = $object->get('path')->toString();
+        $node = $this->contentMap->get($path);
+        if (!isset($node)) {
+            throw new ArgError('content not found by path: ' . $path, 0);
+        }
+        $this->contentMap->add($path, $object->encode());
+        return NilVal::nil();
+    }
 }
 

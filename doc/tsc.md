@@ -207,6 +207,7 @@ lower(str: string): string
 upper(str: string): string
 starts_with(str: string, prefix: string): nil|true
 ends_with(str: string, suffix: string): nil|true
+json(var: any): string
 ```
 
 ### collections
@@ -270,4 +271,5 @@ paginate(items: array, per_page: int, path: string, template: string, data: obje
 
 ```
 list_content(path: string, options: {recursive: boolean}?): array
+save_content(content: object): nil
 ```

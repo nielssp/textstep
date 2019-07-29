@@ -18,7 +18,7 @@ $filter->html = function (ContentCompiler $cc, File $file, Document $metadata, \
     $break = $dom->find('.break', 0);
     if (isset($break)) {
         $break->outertext = '<?bs brief ?>';
-        $metadata['hasBreak'] = true;
+        $metadata['has_break'] = true;
     }
 };
 

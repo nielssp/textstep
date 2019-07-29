@@ -94,7 +94,7 @@ class SiteMapModule extends Module
         $counter = 0;
         for ($i = 0; $i < $length; $i++) {
             if ($counter >= $perPage) {
-                $this->addItemPage($path, $templateFile, $page, $data);
+                $this->addItemPage($path, $template, $page, $data);
                 $page = [
                     'items' => [],
                     'total' => $length,
