@@ -10,8 +10,8 @@ use Blogstep\Compile\FileContentMap;
 use Blogstep\Compile\FileSiteMap;
 use Blogstep\Compile\FilterSet;
 use Blogstep\Compile\ContentCompiler;
+use Blogstep\Compile\IndexCompiler;
 use Blogstep\Compile\TemplateCompiler;
-use Blogstep\Compile\SiteAssembler;
 use Blogstep\Compile\SiteInstaller;
 use Blogstep\Compile\SiteMap;
 use Blogstep\Files\File;
@@ -27,7 +27,7 @@ use Jivoo\Unicode;
  */
 class Build extends AuthenticatedSnippet
 {
-    private static $targets = ['all', 'content', 'template', 'assemble', 'install'];
+    private static $targets = ['all', 'content', 'index', 'template', 'install'];
     
     public function post(array $data)
     {
@@ -37,7 +37,7 @@ class Build extends AuthenticatedSnippet
         }
         
         $content = $this->m->files->get('content');
-        $structure = $this->m->files->get('site');
+        $index = $this->m->files->get('site/index.tss');
         $destination = $this->m->files->get('build');
 
         $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
@@ -56,13 +56,10 @@ class Build extends AuthenticatedSnippet
         $cc->getHandler()->addHandler('htm', $id);
         $cc->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
 
-        $tc = new TemplateCompiler($destination, $siteMap, $contentMap, $filterSet);
-
-        $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
-
         $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
 
-        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $config);
+        $ic = new IndexCompiler($siteMap, $contentMap, $filterSet, $config);
+        $tc = new TemplateCompiler($destination, $installMap, $siteMap, $contentMap, $filterSet, $config);
 
         $installer = new SiteInstaller($this->m->files->get('target'), $installMap);
         
@@ -77,15 +74,15 @@ class Build extends AuthenticatedSnippet
                 $contentMap->commit();
             }, 'Compiling content'));
         }
-        if ($target == 'all' or $target == 'template') {
-            $runner->add(new UnitTask('tc', function () use ($tc, $structure, $siteMap, $contentMap) {
-                $tc->compile($structure);
+        if ($target == 'all' or $target == 'index') {
+            $runner->add(new UnitTask('ic', function () use ($ic, $index, $siteMap, $contentMap) {
+                $ic->compile($index);
                 $siteMap->commit();
                 $contentMap->commit();
-            }, 'Compiling templates'));
+            }, 'Compiling site map'));
         }
-        if ($target == 'all' or $target == 'assemble') {
-            $runner->add(new SiteAssemblerTask($assembler, $installMap, $siteMap), 7);
+        if ($target == 'all' or $target == 'template') {
+            $runner->add(new TemplateCompilerTask($tc, $installMap, $siteMap), 7);
         }
         if ($target == 'all' or $target == 'install') {
             $runner->add(new UnitTask('install', function () use ($installer, $installMap) {
@@ -115,17 +112,17 @@ class Build extends AuthenticatedSnippet
     }
 }
 
-class SiteAssemblerTask extends \Blogstep\Task\TaskBase
+class TemplateCompilerTask extends \Blogstep\Task\TaskBase
 {
-    private $assembler;
+    private $tc;
     private $installMap;
     private $siteMap;
     private $total = 0;
     private $paths = null;
 
-    public function __construct(SiteAssembler $assembler, SiteMap $installMap, SiteMap $siteMap)
+    public function __construct(TemplateCompiler $tc, SiteMap $installMap, SiteMap $siteMap)
     {
-        $this->assembler = $assembler;
+        $this->tc = $tc;
         $this->installMap = $installMap;
         $this->siteMap = $siteMap;
     }
@@ -142,7 +139,7 @@ class SiteAssemblerTask extends \Blogstep\Task\TaskBase
         $n = count($this->paths);
         while (count($this->paths)) {
             $path = array_shift($this->paths);
-            $this->assembler->assemble($path);
+            $this->tc->compile($path);
             if (!$checkTime()) {
                 break;
             }
@@ -155,13 +152,13 @@ class SiteAssemblerTask extends \Blogstep\Task\TaskBase
         }
         $this->progress(floor($progress));
         $this->status(
-            'Assembling ' . $n  . ' nodes'
+            'Compiling ' . $n  . ' nodes'
         );
     }
 
     public function getName()
     {
-        return 'assembler';
+        return 'tc';
     }
 
     public function isDone()

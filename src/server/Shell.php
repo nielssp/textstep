@@ -177,24 +177,12 @@ class Shell
             case 'tc':
                 $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
                 $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
-                $filterSet = new Compile\FilterSet();
-                $filterSet->addFilters($this->m->main->p('src/filters'));
-                $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
-                $compiler = new Compile\TemplateCompilerOld($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
-                $compiler->compile($this->workingDir->get($parameters[0]));
-                $siteMap->commit();
-                $contentMap->commit();
-                break;
-            case 'sa':
-                $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
-                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
                 $installMap = new Compile\FileSiteMap($this->m->files->get('build/install.json'));
-                $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
                 $filterSet = new Compile\FilterSet();
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
                 $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
-                $assembler = new Compile\SiteAssembler($this->m->files->get('build'), $installMap, $siteMap, $contentTree, $filterSet, $config);
+                $tc = new Compile\TemplateCompiler($this->m->files->get('build'), $installMap, $siteMap, $contentMap, $filterSet, $config);
                 $prefix = '';
                 if (isset($parameters[0])) {
                     $prefix = $parameters[0];
@@ -203,31 +191,8 @@ class Shell
                 $i = 1;
                 $n = count($paths);
                 foreach ($paths as $path) {
-                    $this->put('Assembling ' . $i . ' of ' . $n . ': ' . $path);
-                    $assembler->assemble($path);
-                    $i++;
-                }
-                $installMap->commit();
-                break;
-            case 'tc2':
-                $contentMap = new Compile\FileContentMap($this->m->files->get('build/content.json'));
-                $siteMap = new Compile\FileSiteMap($this->m->files->get('build/sitemap.json'));
-                $installMap = new Compile\FileSiteMap($this->m->files->get('build/install.json'));
-                $filterSet = new Compile\FilterSet();
-                $filterSet->addFilters($this->m->main->p('src/filters'));
-                $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
-                $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
-                $assembler = new Compile\TemplateCompiler($this->m->files->get('build'), $installMap, $siteMap, $contentMap, $filterSet, $config);
-                $prefix = '';
-                if (isset($parameters[0])) {
-                    $prefix = $parameters[0];
-                }
-                $paths = array_keys($siteMap->getAll($prefix));
-                $i = 1;
-                $n = count($paths);
-                foreach ($paths as $path) {
-                    $this->put('Assembling ' . $i . ' of ' . $n . ': ' . $path);
-                    $assembler->assemble($path);
+                    $this->put('Compiling page ' . $i . ' of ' . $n . ': ' . $path);
+                    $tc->compile($path);
                     $i++;
                 }
                 $installMap->commit();

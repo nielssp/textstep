@@ -9,7 +9,7 @@
 use Blogstep\Compile\ContentCompiler;
 use Blogstep\Compile\TemplateCompiler;
 use Blogstep\Compile\Filter;
-use Blogstep\Compile\View;
+use Blogstep\Compile\Html;
 use Blogstep\Files\File;
 use Jivoo\Store\Document;
 
@@ -30,7 +30,7 @@ $filter['noTitle'] = function (TemplateCompiler $tc, $attr, $enabled) {
     if ($enabled) {
         return '';
     }
-    return View::html('h1', $attr);
+    return Html::html('h1', $attr);
 };
 
 return $filter;

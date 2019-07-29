@@ -111,7 +111,7 @@ class FilterSet
                 ));
             } else {
                 trigger_error('No handler for display tag: ' . $tag, E_USER_WARNING);
-                return View::html($tag, $attributes);
+                return Html::html($tag, $attributes);
             }
         }, $content);
     }

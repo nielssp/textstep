@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd34e63e6205ea4f2ec70036e9511d7e",
+    "content-hash": "592480e1c38ec68823eaa0f75d0ea559",
     "packages": [
         {
             "name": "badcow/lorem-ipsum",
@@ -255,59 +255,6 @@
                 "framework"
             ],
             "time": "2019-06-05T15:24:41+00:00"
-        },
-        {
-            "name": "jivoo/view",
-            "version": "v1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jivoo/view.git",
-                "reference": "3ec351037d07c1d20faf50b0708c046b68e585f8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jivoo/view/zipball/3ec351037d07c1d20faf50b0708c046b68e585f8",
-                "reference": "3ec351037d07c1d20faf50b0708c046b68e585f8",
-                "shasum": ""
-            },
-            "require": {
-                "composer/semver": "^1.2",
-                "jivoo/core": "^1.0",
-                "jivoo/http": "^1.0",
-                "php": ">=5.4.0",
-                "psr/log": "1.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.0",
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Jivoo\\View\\": "src/"
-                },
-                "classmap": [
-                    "src/vendor/simple_html_dom.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Niels Sonnich Poulsen",
-                    "email": "niels@nielssp.dk",
-                    "homepage": "http://nielssp.dk",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Jivoo view and template library.",
-            "homepage": "http://nielssp.dk",
-            "keywords": [
-                "framework"
-            ],
-            "time": "2019-05-30T13:39:14+00:00"
         },
         {
             "name": "matthiasmullie/minify",
@@ -803,16 +750,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06"
+                "reference": "1927e75f4ed19131ec9bcc3b002e07fb1173ee76"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
-                "reference": "4ba436b55987b4bf311cb7c6ba82aa528aac0a06",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/1927e75f4ed19131ec9bcc3b002e07fb1173ee76",
+                "reference": "1927e75f4ed19131ec9bcc3b002e07fb1173ee76",
                 "shasum": ""
             },
             "require": {
@@ -833,8 +780,8 @@
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Prophecy\\": "src/"
+                "psr-4": {
+                    "Prophecy\\": "src/Prophecy"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -862,7 +809,7 @@
                 "spy",
                 "stub"
             ],
-            "time": "2018-08-05T17:53:17+00:00"
+            "time": "2019-06-13T12:50:23+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -1751,16 +1698,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.4.28",
+            "version": "v3.4.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "212a27b731e5bfb735679d1ffaac82bd6a1dc996"
+                "reference": "051d045c684148060ebfc9affb7e3f5e0899d40b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/212a27b731e5bfb735679d1ffaac82bd6a1dc996",
-                "reference": "212a27b731e5bfb735679d1ffaac82bd6a1dc996",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/051d045c684148060ebfc9affb7e3f5e0899d40b",
+                "reference": "051d045c684148060ebfc9affb7e3f5e0899d40b",
                 "shasum": ""
             },
             "require": {
@@ -1806,7 +1753,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2019-03-25T07:48:46+00:00"
+            "time": "2019-07-24T13:01:31+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -1866,7 +1813,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.4.0"
+        "php": ">=5.5.0"
     },
     "platform-dev": []
 }

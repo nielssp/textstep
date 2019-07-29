@@ -32,11 +32,6 @@ class TemplateCompiler
     private $contentMap;
 
     /**
-     * @var View
-     */
-    private $view;
-
-    /**
      * @var \Blogstep\Config\Config
      */
     private $config;
@@ -55,6 +50,7 @@ class TemplateCompiler
     private $interpreter;
 
     private $env;
+    private $templateEnv;
 
     public function __construct(\Blogstep\Files\File $buildDir, SiteMap $installMap, SiteMap $siteMap, ContentMap $contentMap, FilterSet $filterSet, \Jivoo\Store\Config $config)
     {
@@ -109,6 +105,11 @@ class TemplateCompiler
         return $this->env;
     }
 
+    public function getTemplateEnv()
+    {
+        return $this->templateEnv;
+    }
+
     public function getInterpreter()
     {
         return $this->interpreter;
@@ -143,7 +144,34 @@ class TemplateCompiler
         return $this->templateCache[$template];
     }
 
-    public function assemble($path)
+    public function compileTemplate($templatePath, array $data)
+    {
+        $template = $this->getTemplate($templatePath);
+        $env = $this->env->openScope();
+        $this->templateEnv = $env;
+        foreach ($data as $key => $value) {
+            $env->let($key, Tsc\Val::from($value));
+        }
+        $extension = strtolower(\Jivoo\Utilities::getFileExtension($templatePath));
+        if ($extension === 'html' or $extension === 'htm') {
+            $env->getModule('html')->importInto($env);
+        }
+        $object = $this->interpreter->eval($template, $env);
+        $layout = $env->get('LAYOUT');
+        if (isset($layout)) {
+            $layoutFile = $this->getBuildDir()->get($templatePath)
+                               ->getParent()
+                               ->get($layout->toString());
+            $layoutTemplate = $this->getTemplate($layoutFile->getPath());
+            $env->let('TEMPLATE', $layout);
+            $env->let('CONTENT', $object);
+            $object = $this->interpreter->eval($layoutTemplate, $env);
+        }
+        $this->templateEnv = null;
+        return $object->toString();
+    }
+
+    public function compile($path)
     {
         $node = $this->siteMap->get($path);
         if (!isset($node)) {
@@ -156,28 +184,9 @@ class TemplateCompiler
                 case 'tsc':
                     $this->env->let('PATH', new Tsc\StringVal($path));
                     $data = $node['data'];
-                    $template = $this->getTemplate($data['TEMPLATE']);
-                    $env = $this->env->openScope();
-                    foreach ($data as $key => $value) {
-                        $env->let($key, Tsc\Val::from($value));
-                    }
-                    $extension = strtolower(\Jivoo\Utilities::getFileExtension($data['TEMPLATE']));
-                    if ($extension === 'html' or $extension === 'htm') {
-                        $env->getModule('html')->importInto($env);
-                    }
-                    $object = $this->interpreter->eval($template, $env);
-                    $layout = $env->get('LAYOUT');
-                    if (isset($layout)) {
-                        $layoutFile = $this->getBuildDir()->get($data['TEMPLATE'])
-                                           ->getParent()
-                                           ->get($layout->toString());
-                        $layoutTemplate = $this->getTemplate($layoutFile->getPath());
-                        $env->let('TEMPLATE', $layout);
-                        $env->let('CONTENT', $object);
-                        $object = $this->interpreter->eval($layoutTemplate, $env);
-                    }
+                    $compiled = $this->compileTemplate($data['TEMPLATE'], $data);
                     $target->getParent()->makeDirectory(true);
-                    $target->putContents($object->toString());
+                    $target->putContents($compiled);
                     $this->installMap->add($path, 'copy', [$target->getPath()]);
                     break;
                 default:

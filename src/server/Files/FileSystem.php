@@ -41,7 +41,7 @@ class FileSystem extends File implements \Psr\Log\LoggerAwareInterface
 
     public function fileNameToMimeType($name)
     {
-        return $this->mimeTypes->getMimeType(Utilities::getFileExtension($name));
+        return $this->mimeTypes->getMimeType(\Jivoo\Utilities::getFileExtension($name));
     }
     
     public function getAuthentication()

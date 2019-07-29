@@ -11,8 +11,8 @@ use Blogstep\Compile\FileSiteMap;
 use Blogstep\Compile\FilterSet;
 use Blogstep\Compile\ContentCompiler;
 use Blogstep\Compile\TemplateCompiler;
-use Blogstep\Compile\SiteAssembler;
 use Blogstep\Compile\SiteInstaller;
+use Blogstep\Compile\ContentMap;
 use Blogstep\Compile\SiteMap;
 use Blogstep\Task\Runner;
 use Blogstep\Task\Serializer;
@@ -31,7 +31,6 @@ class Preview extends AuthenticatedSnippet
             $path = $this->request->query['path'];
         }
         $content = $this->m->files->get('content');
-        $structure = $this->m->files->get('site');
         $destination = $this->m->files->get('build');
 
         $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
@@ -50,17 +49,11 @@ class Preview extends AuthenticatedSnippet
         $cc->getHandler()->addHandler('htm', $id);
         $cc->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
 
-        $tc = new TemplateCompiler($destination, $siteMap, $contentMap, $filterSet);
-
-        $contentTree = new \Blogstep\Compile\Content\ContentTree($contentMap, '/content/');
-
         $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
 
-        $assembler = new SiteAssembler($destination, $installMap, $siteMap, $contentTree, $filterSet, $config);
+        // TODO: generate temporary auth token
+        $tc = new PreviewTemplateCompiler($destination, $installMap, $siteMap, $contentMap, $filterSet, $config, $this->sessionId);
 
-        $view = new PreviewView($assembler, $this->sessionId);
-        $view->addTemplateDir($destination->get('site')->getHostPath());
-        $view->addTemplateDir($destination->get('/site')->getHostPath());
         $node = $siteMap->get($path);
         if (!isset($node)) {
             $node = $siteMap->get(trim($path . '/index.html', '/'));
@@ -77,43 +70,32 @@ class Preview extends AuthenticatedSnippet
         switch ($node['handler']) {
             case 'copy':
                 $args = $node['data'];
-                $type = $assembler->getAssetScheme()->getMimeType($node['data'][0]);
+                $type = $this->m->files->fileNameToMimeType($node['data'][0]);
                 $this->response = \Jivoo\Http\Message\Response::file($this->m->files->get($node['data'][0])->getHostPath(), $type);
                 return $this->response;
-            case 'eval':
-                $args = $node['data'];
-                $template = array_shift($args);
-                $view->currentPath = $path;
-                $view->data->evalArgs = $args;
-                $this->response->getBody()->write($view->render($template));
+            case 'tsc':
+                $tc->getEnv()->let('PATH', new \Blogstep\Compile\Tsc\StringVal($path));
+                $data = $node['data'];
+                $compiled = $tc->compileTemplate($data['TEMPLATE'], $data);
+                $this->response->getBody()->write($compiled);
                 return $this->response;
         }
         return $this->error('Not implemented');
     }
 }
 
-class PreviewView extends \Blogstep\Compile\View
+class PreviewTemplateCompiler extends TemplateCompiler
 {
     private $token;
 
-    public function __construct($assembler, $token)
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $installMap, SiteMap $siteMap, ContentMap $contentMap, FilterSet $filterSet, \Jivoo\Store\Config $config, $token)
     {
-        parent::__construct($assembler);
+        parent::__construct($buildDir, $installMap, $siteMap, $contentMap, $filterSet, $config);
         $this->token = $token;
     }
 
-    public function link($link = null, $absolute = false)
+    public function getLink($link = null)
     {
-        if (!isset($link)) {
-            $link = $this->currentPath;
-        }
-        if ($link instanceof \Blogstep\Compile\Content\ContentNode) {
-            $content = $link;
-            $link = $content->link;
-            if (!isset($link)) {
-                return '#not-found' . $content->path;
-            }
-        }
         if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
             $link = preg_replace('/\/index.html$/', '', $link);
         }

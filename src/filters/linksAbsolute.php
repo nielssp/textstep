@@ -8,7 +8,7 @@
 
 use Blogstep\Compile\TemplateCompiler;
 use Blogstep\Compile\Filter;
-use Jivoo\View\Html;
+use Blogstep\Compile\Html;
 
 $filter = new Filter();
 

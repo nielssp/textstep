@@ -6,14 +6,14 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-use Blogstep\Compile\View;
+use Blogstep\Compile\Html;
 use Blogstep\Compile\TemplateCompiler;
 
 $filter = new \Blogstep\Compile\Filter();
 
 $filter['img'] = function(TemplateCompiler $tc, $attr, $enabled, $maxWidth = 640, $maxHeight = 480, $quality = 100, $linkFull = true) {
     if (!$enabled) {
-        return View::html('img', $attr);
+        return Html::html('img', $attr);
     }
     $useImageMagick = false;
     if (isset($tc->getConfig()['useImageMagick']) and $tc->getConfig()['useImageMagick']) {
@@ -160,7 +160,7 @@ $filter['img'] = function(TemplateCompiler $tc, $attr, $enabled, $maxWidth = 640
         $attr['width'] = $targetWidth;
         $attr['height'] = $targetHeight;
         if ($linkFull) {
-            $prefix = '<a href="bs:' . \Jivoo\View\Html::h($path) . '">';
+            $prefix = '<a href="bs:' . Html::h($path) . '">';
             $suffix = '</a>';
         }
     } else {
@@ -186,7 +186,7 @@ $filter['img'] = function(TemplateCompiler $tc, $attr, $enabled, $maxWidth = 640
             $attr['src'] = 'bs:' . $newPath;
         }
     }
-    return $prefix . View::html('img', $attr) . $suffix;
+    return $prefix . Html::html('img', $attr) . $suffix;
 };
 
 return $filter;

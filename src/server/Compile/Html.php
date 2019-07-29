@@ -126,7 +126,7 @@ class Html implements \ArrayAccess
      * @param string $html HTML content.
      * @return string HTML content when called without parameters.
      */
-    public function html($html = null)
+    public function innerHtml($html = null)
     {
         if (isset($html)) {
             $this->content = $html;
@@ -454,5 +454,20 @@ class Html implements \ArrayAccess
     public static function h($string)
     {
         return htmlentities(strval($string), ENT_COMPAT, 'UTF-8', false);
+    }
+
+    public static function html($tag, array $attributes = [])
+    {
+        $html = new self($tag);
+        if (isset($attributes['innerText'])) {
+            $html->innerHtml(self::h($attributes['innerText']));
+            unset($attributes['innerText']);
+        }
+        if (isset($attributes['innerHtml'])) {
+            $html->innerHtml($attributes['innerHtml']);
+            unset($attributes['innerHtml']);
+        }
+        $html->attr($attributes);
+        return $html->toString();
     }
 }

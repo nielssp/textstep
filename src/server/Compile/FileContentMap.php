@@ -36,7 +36,7 @@ class FileContentMap implements ContentMap
 
     public function get($path, $prefix = '/')
     {
-        return new Content\ContentNode($this->file->get($path), $this->data[$path], $prefix);
+        return new ContentNode($this->file->get($path), $this->data[$path], $prefix);
     }
 
     public function getAll($prefix = '/', $recursive = true)
@@ -46,7 +46,7 @@ class FileContentMap implements ContentMap
         foreach ($this->data as $key => $value) {
             if (strpos($key, $prefix) === 0) {
                 if ($recursive or strrpos($key, '/', $prefixLength) === false) {
-                    $result[] = new Content\ContentNode($this->file->get($key), $value, $prefix);
+                    $result[] = new ContentNode($this->file->get($key), $value, $prefix);
                 }
             }
         }

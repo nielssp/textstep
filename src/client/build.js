@@ -16,8 +16,7 @@ var progressBar = null;
 var statusHistory = null;
 var preview = null;
 
-var doCancel = false;
-
+var doCancel = false; 
 function build(target) {
     target = target.replace(/^build-/, '');
     doCancel = false;
@@ -147,8 +146,8 @@ TEXTSTEP.initApp('build', [], function (app) {
 
     frame.defineAction('build-all', build, ['build']);
     frame.defineAction('build-content', build, ['build']);
+    frame.defineAction('build-index', build, ['build']);
     frame.defineAction('build-template', build, ['build']);
-    frame.defineAction('build-assemble', build, ['build']);
     frame.defineAction('build-install', build, ['build']);
     frame.defineAction('cancel', cancel);
     frame.defineAction('clean', clean);
@@ -156,8 +155,8 @@ TEXTSTEP.initApp('build', [], function (app) {
     let toolbar = frame.createToolbar();
     toolbar.addItem('Build all', null, 'build-all');
     toolbar.addItem('Compile content', null, 'build-content');
-    toolbar.addItem('Compile templates', null, 'build-template');
-    toolbar.addItem('Assemble ', null, 'build-assemble');
+    toolbar.addItem('Compile site map', null, 'build-index');
+    toolbar.addItem('Compile templates ', null, 'build-template');
     toolbar.addItem('Install ', null, 'build-install');
     toolbar.addItem('Cancel ', null, 'cancel');
     toolbar.addItem('Clean ', null, 'clean');
