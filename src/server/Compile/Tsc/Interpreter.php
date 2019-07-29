@@ -351,15 +351,17 @@ class Interpreter
         try {
             return $func->apply($args, $env);
         } catch (ArgError $e) {
-            if (isset($e->index) and $e->index < count($node->children[1]->children)) {
-                $arg = $node->children[1]->children[$e->index];
-                $e->srcFile = $arg->file;
-                $e->srcLine = $arg->line;
-                $e->srcColumn = $arg->column;
-            } else {
-                $e->srcFile = $node->file;
-                $e->srcLine = $node->line;
-                $e->srcColumn = $node->column;
+            if (!isset($e->srcFile)) {
+                if (isset($e->index) and $e->index < count($node->children[1]->children)) {
+                    $arg = $node->children[1]->children[$e->index];
+                    $e->srcFile = $arg->file;
+                    $e->srcLine = $arg->line;
+                    $e->srcColumn = $arg->column;
+                } else {
+                    $e->srcFile = $node->file;
+                    $e->srcLine = $node->line;
+                    $e->srcColumn = $node->column;
+                }
             }
             throw $e;
         }
