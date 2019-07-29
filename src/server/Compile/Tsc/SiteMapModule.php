@@ -82,7 +82,7 @@ class SiteMapModule extends Module
         }
         $template = $templateFile->getPath();
         $length = count($items);
-        $numPages = max(ceil($length / $perPage), 1);
+        $numPages = intval(max(ceil($length / $perPage), 1));
         $page = [
             'items' => [],
             'total' => $length,
