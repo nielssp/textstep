@@ -78,6 +78,7 @@ class Preview extends AuthenticatedSnippet
                 $data = $node['data'];
                 $compiled = $tc->compileTemplate($data['TEMPLATE'], $data);
                 $this->response->getBody()->write($compiled);
+                $installMap->commit();
                 return $this->response;
         }
         return $this->error('Not implemented');
