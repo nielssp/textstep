@@ -32,7 +32,7 @@ export class Toolbar extends Component {
     }
 
     addSeparator() {
-        this.outer.appendChild(ui.elem('span', {'class': 'ts-toolbar-separator'}));
+        this.outer.appendChild(ui.elem('div', {'class': 'ts-toolbar-separator'}));
     }
 
     createGroup() {

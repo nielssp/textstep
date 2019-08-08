@@ -6,16 +6,18 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
 .ts-toolbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     &-separator {
-       display: inline-block;
-       width: 10px;
+        width: 10px;
         @media screen and (max-width: $xs - 1) {
             display: none;
         }
     }
     @media screen and (max-width: $xs - 1) {
         overflow-y: auto;
-        white-space: nowrap;
+        flex-wrap: nowrap;
         button[disabled] {
             display: none;
         }
@@ -23,16 +25,18 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 }
 
 .ts-iconbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     &-separator {
-       display: inline-block;
-       width: 10px;
+        width: 10px;
         @media screen and (max-width: $xs - 1) {
             display: none;
         }
     }
     @media screen and (max-width: $xs - 1) {
         overflow-y: auto;
-        white-space: nowrap;
+        flex-wrap: nowrap;
         button[disabled] {
             display: none;
         }

@@ -5,17 +5,9 @@ $buttons: '.button, button, input[type=button], input[type=reset], input[type=su
 }
 
 .button-group {
-    display: inline-block;
-    vertical-align: middle;
-    position: relative;
-    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
     #{$buttons} {
-        float: left;
-        margin-left: -1px;
-        position: relative;
-        &:first-child {
-            margin-left: 0;
-        }
         &.active {
             z-index: 1;
         }
