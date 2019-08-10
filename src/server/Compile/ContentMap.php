@@ -17,7 +17,7 @@ interface ContentMap
 
     public function remove($path);
 
-    public function getAll($prefix = '/', $recursive = true);
+    public function getAll($prefix = '/', $recursive = true, $suffix = '');
 
     public function commit();
 }

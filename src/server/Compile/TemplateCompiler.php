@@ -89,6 +89,11 @@ class TemplateCompiler
         return $this->siteMap;
     }
 
+    public function getContentMap()
+    {
+        return $this->contentMap;
+    }
+
     public function getConfig()
     {
         return $this->config;

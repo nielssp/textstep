@@ -21,6 +21,10 @@ class ContentMapModule extends Module
         $path = self::parseArg($args, 0, 'string', true, function () { return new StringVal('.'); });
         $options = self::parseArg($args, 1, 'object', true, function () { return new ObjectVal([]); });
         $recursive = !$options->has('recursive') || $option->get('recursive')->isTruthy();
+        $suffix = '';
+        if ($options->has('suffix')) {
+            $suffix = $options->get('suffix')->toString();
+        }
         $contentRoot = $this->root->get($path->toString());
         if (!$contentRoot->exists()) {
             throw new ArgError('content root not found: ' . $path->toString(), 0);
@@ -30,7 +34,7 @@ class ContentMapModule extends Module
                 'path' => $node->path,
                 'relative_path' => $node->relativePath,
             ]));
-        }, $this->contentMap->getAll($contentRoot->getPath(), $recursive)));
+        }, $this->contentMap->getAll($contentRoot->getPath(), $recursive, $suffix)));
     }
 
     public function saveContent(array $args)

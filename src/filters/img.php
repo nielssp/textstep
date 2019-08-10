@@ -31,6 +31,20 @@ $filter['img'] = function(TemplateCompiler $tc, $attr, $enabled, $maxWidth = 640
         if ($siteNode['handler'] === 'copy') {
             $file = $tc->getBuildDir()->get($siteNode['data'][0]);
         }
+    } else if (Jivoo\Unicode::startsWith($src, 'asset:')) {
+        $path = preg_replace('/^asset:/', '', $src);
+        $contentNode = $tc->getContentMap()->get($path);
+        if (!isset($contentNode)) {
+            trigger_error('img: could not find content: ' . $path, E_USER_NOTICE);
+            return;
+        }
+        $assetPath = $contentNode->assetPath;
+        if (isset($assetPath)) {
+            $path = 'assets/' . $assetPath;
+            $file = $tc->getBuildDir()->get($contentNode->path);
+            $tc->getInstallMap()->add($path, 'copy', [$file->getPath()]);
+        }
+        $file = $tc->getBuildDir()->get($contentNode->path);
     }
     if (!isset($file)) {
         trigger_error('img: could not find: ' . $src, E_USER_NOTICE);

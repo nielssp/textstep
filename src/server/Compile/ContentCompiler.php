@@ -126,9 +126,9 @@ class ContentCompiler
                 $url = $element->getAttribute($attribute);
                 if (strpos($url, ':') === false and !\Jivoo\Unicode::startsWith($url, '//')) {
                     $file = $source->getParent()->get($url);
-                    $path = 'assets/' . $file->getRelativePath($this->root);
-                    $this->siteMap->add($path, 'copy', [$file->getPath()]);
-                    $element->setAttribute($attribute, 'bs:/' . $path);
+                    /*$path = 'assets/' . $file->getRelativePath($this->root);
+                    $this->siteMap->add($path, 'copy', [$file->getPath()]);*/
+                    $element->setAttribute($attribute, 'asset:' . $file->getPath());
                     if ($element->tag === 'img' && $attribute === 'src') {
                         $element->outertext = self::displayTag('img', $element->attr);
                     }
@@ -148,6 +148,11 @@ class ContentCompiler
         $type = preg_replace('/^.*?(?:\.([^.]+))?$/', '\\1', $file->getName());
         $handler = $this->handler->getHandler($type);
         if (!isset($handler)) {
+            $this->contentMap->add($file->getPath(), [
+                'modified' => $file->getModified(),
+                'assetPath' => $file->getRelativePath($this->root),
+                'path' => $file->getPath()
+            ]);
             return;
         }
         $contentBuildDir = $this->root->get('build' . $file->getPath());

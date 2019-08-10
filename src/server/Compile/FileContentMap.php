@@ -36,16 +36,22 @@ class FileContentMap implements ContentMap
 
     public function get($path, $prefix = '/')
     {
+        if (!isset($this->data[$path])) {
+            return null;
+        }
         return new ContentNode($this->file->get($path), $this->data[$path], $prefix);
     }
 
-    public function getAll($prefix = '/', $recursive = true)
+    public function getAll($prefix = '/', $recursive = true, $suffix = '')
     {
         $result = [];
         $prefixLength = strlen($prefix);
         foreach ($this->data as $key => $value) {
             if (strpos($key, $prefix) === 0) {
                 if ($recursive or strrpos($key, '/', $prefixLength) === false) {
+                    if ($suffix !== '' && !\Jivoo\Unicode::endsWith($key, $suffix)) {
+                        continue;
+                    }
                     $result[] = new ContentNode($this->file->get($key), $value, $prefix);
                 }
             }

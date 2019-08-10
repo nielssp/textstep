@@ -30,8 +30,8 @@ class Preview extends AuthenticatedSnippet
         if (isset($this->request->query['path'])) {
             $path = $this->request->query['path'];
         }
-        $content = $this->m->files->get('content');
-        $destination = $this->m->files->get('build');
+        $content = $this->m->files->get('site/content');
+        $destination = $this->m->files->get('site/build');
 
         $contentMap = new FileContentMap($this->m->files->get('site/build/content.json'));
         $siteMap = new FileSiteMap($this->m->files->get('site/build/sitemap.json'));
