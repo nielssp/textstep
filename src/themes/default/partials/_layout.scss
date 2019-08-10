@@ -30,6 +30,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     display: flex;
     flex-direction: row;
     overflow: visible;
+    max-height: 100%;
 
     &.ts-stack-row-padding > * ~ * {
         margin-left: var(--frame-padding);
@@ -40,6 +41,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     display: flex;
     flex-direction: column;
     overflow: visible;
+    max-width: 100%;
 
     &.ts-stack-column-padding > * ~ * {
         margin-top: var(--frame-padding);
