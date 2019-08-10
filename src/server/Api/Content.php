@@ -64,8 +64,7 @@ class Content extends \Blogstep\AuthenticatedSnippet
     {
         $file = $this->getRequestedFile();
         $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
-        $length = intval($this->request->getHeaderLine('Content-Length'));
-        $data = $this->request->getBody()->read($length);
+        $data = $this->request->getBody()->getContents();
         if (isset($this->request->query['append']) and $this->request->query['append'] === 'true') {
             $stream = $fs->openStream('ab');
             $stream->write($data);

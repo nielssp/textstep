@@ -221,8 +221,7 @@ abstract class Snippet
             }
             if ($this->parseBody and $contentType === 'application/json') {
                 try {
-                    $length = intval($this->request->getHeaderLine('Content-Length'));
-                    $data = \Jivoo\Json::decode($this->request->getBody()->read($length));
+                    $data = \Jivoo\Json::decode($this->request->getBody()->getContents());
                     if (!is_array($data)) {
                         return $this->error('JSON object expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
                     }
