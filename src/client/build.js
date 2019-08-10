@@ -56,8 +56,27 @@ function build(target) {
         request.onreadystatechange = function () {
             if (this.readyState === 3 || this.readyState === 4) {
                 if (this.status >= 200 && this.status < 400) {
-                    if (this.responseText)
+                    if (this.responseText) {
                         success(this.responseText, this.readyState, this.status);
+                    }
+                } else if (this.readyState === 4) {
+                    done = true;
+                    frame.enableGroup('build');
+                    frame.disableAction('cancel');
+                    if (this.status >= 500) {
+                        updateStatus('Server error', true);
+                        frame.alert('Server error', 'Internal server error', {
+                            errorType: 'SERVER_ERROR',
+                            message: 'Internal server error',
+                            context: { details: this.response }
+                        });
+                    } else {
+                        try {
+                            updateStatus(JSON.parse(xhr.response).message, true);
+                        } catch (e) {
+                            updateStatus(xhr.response, true);
+                        }
+                    }
                 }
             }
         };
@@ -113,15 +132,13 @@ function build(target) {
 
 function cancel() {
     doCancel = true;
-    TEXTSTEP.delete('file', {path: '/build/.build'}).finally(function () {
-        frame.enableGroup('build');
-        frame.disableAction('cancel');
-    });
+    frame.enableGroup('build');
+    frame.disableAction('cancel');
 }
 
 function clean() {
     doCancel = true;
-    TEXTSTEP.delete('file', {path: '/build', recursive: true});
+    TEXTSTEP.delete('file', {path: '/site/build', recursive: true});
 }
 
 

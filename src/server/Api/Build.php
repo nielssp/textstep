@@ -36,13 +36,14 @@ class Build extends AuthenticatedSnippet
             $target = $data['target'];
         }
         
-        $content = $this->m->files->get('content');
-        $index = $this->m->files->get('site/index.tss');
-        $destination = $this->m->files->get('build');
+        $root = $this->m->files->get('site');
+        $content = $root->get('content');
+        $index = $root->get('index.tss');
+        $destination = $root->get('build');
 
-        $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
-        $siteMap = new FileSiteMap($this->m->files->get('build/sitemap.json'));
-        $installMap = new FileSiteMap($this->m->files->get('build/install.json'));
+        $contentMap = new FileContentMap($destination->get('content.json'));
+        $siteMap = new FileSiteMap($destination->get('sitemap.json'));
+        $installMap = new FileSiteMap($destination->get('install.json'));
 
         $filterSet = new FilterSet();
         $filterSet->addFilters($this->m->main->p('src/filters'));
@@ -50,7 +51,7 @@ class Build extends AuthenticatedSnippet
 
         $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
 
-        $cc = new ContentCompiler($destination, $siteMap, $contentMap, $filterSet, $config);
+        $cc = new ContentCompiler($root, $siteMap, $contentMap, $filterSet, $config);
         $id = function ($content) {
             return $content;
         };

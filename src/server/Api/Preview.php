@@ -33,9 +33,9 @@ class Preview extends AuthenticatedSnippet
         $content = $this->m->files->get('content');
         $destination = $this->m->files->get('build');
 
-        $contentMap = new FileContentMap($this->m->files->get('build/content.json'));
-        $siteMap = new FileSiteMap($this->m->files->get('build/sitemap.json'));
-        $installMap = new FileSiteMap($this->m->files->get('build/install.json'));
+        $contentMap = new FileContentMap($this->m->files->get('site/build/content.json'));
+        $siteMap = new FileSiteMap($this->m->files->get('site/build/sitemap.json'));
+        $installMap = new FileSiteMap($this->m->files->get('site/build/install.json'));
 
         $filterSet = new FilterSet();
         $filterSet->addFilters($this->m->main->p('src/filters'));

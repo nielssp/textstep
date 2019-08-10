@@ -14,7 +14,7 @@ class ContentCompiler
     /**
      * @var \Blogstep\Files\File
      */
-    private $buildDir;
+    private $root;
 
     /**
      * @var \Blogstep\Compile\ContentHandler
@@ -43,9 +43,9 @@ class ContentCompiler
 
     private $timeZone;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap, FilterSet $filterSet, \Jivoo\Store\Config $config)
+    public function __construct(\Blogstep\Files\File $root, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap, FilterSet $filterSet, \Jivoo\Store\Config $config)
     {
-        $this->buildDir = $buildDir;
+        $this->root = $root;
         $this->handler = new \Blogstep\Compile\ContentHandler();
         $this->contentMap = $contentMap;
         $this->siteMap = $siteMap;
@@ -126,7 +126,7 @@ class ContentCompiler
                 $url = $element->getAttribute($attribute);
                 if (strpos($url, ':') === false and !\Jivoo\Unicode::startsWith($url, '//')) {
                     $file = $source->getParent()->get($url);
-                    $path = 'assets' . $file->getPath();
+                    $path = 'assets/' . $file->getRelativePath($this->root);
                     $this->siteMap->add($path, 'copy', [$file->getPath()]);
                     $element->setAttribute($attribute, 'bs:/' . $path);
                     if ($element->tag === 'img' && $attribute === 'src') {
@@ -150,7 +150,7 @@ class ContentCompiler
         if (!isset($handler)) {
             return;
         }
-        $contentBuildDir = $this->buildDir->get('.' . $file->getPath());
+        $contentBuildDir = $this->root->get('build' . $file->getPath());
         if (!$contentBuildDir->makeDirectory(true)) {
             throw new \Blogstep\RuntimeException('Could not create build directory: ' . $contentBuildDir->getPath());
         }

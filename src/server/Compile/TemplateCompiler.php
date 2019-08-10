@@ -69,7 +69,6 @@ class TemplateCompiler
         $this->env->addModule('collection', new Tsc\CollectionModule(), true);
         $timeZone = new \DateTimeZone($config->get('timeZone', date_default_timezone_get()));
         $this->env->addModule('time', new Tsc\TimeModule($timeZone), true);
-        $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap, $this->filterSet, $this->buildDir), true);
         $this->env->addModule('template', new Tsc\TemplateModule($this), true);
         $this->env->addModule('html', new Tsc\HtmlModule($this), false);
         $this->env->let('CONFIG', Tsc\Val::from($this->config->toArray()));
@@ -159,6 +158,7 @@ class TemplateCompiler
     public function compileTemplate($templatePath, array $data)
     {
         $template = $this->getTemplate($templatePath);
+        $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap, $this->buildDir->get($templatePath)->getParent()), true);
         $env = $this->env->openScope();
         $this->templateEnv = $env;
         foreach ($data as $key => $value) {
