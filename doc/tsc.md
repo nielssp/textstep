@@ -250,6 +250,7 @@ rfc2822(time: time|string|int): string
 embed(name: string, data: object?): string
 link(link: string?): string
 url(link: string?): string
+is_current(link: string?): nil|true
 read(file: string): string
 page_list(n: int, page: int? = PAGE.page, pages: int? = PAGE.pages): array
 page_link(page: int, path: string? = PAGE.path): string
@@ -259,10 +260,12 @@ filter_content(content: object, filters: array?): string
 ### html
 ```
 h(str: string): string
+href(link: string?): string
 ```
 
 ### sitemap
 ```
+add_static(path: string): nil
 add_page(path: string, template: string, data: object?): nil
 paginate(items: array, per_page: int, path: string, template: string, data: object?): nil
 ```
