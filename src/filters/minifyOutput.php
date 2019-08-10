@@ -9,7 +9,6 @@
 use Blogstep\Compile\Filter;
 use Blogstep\Compile\TemplateCompiler;
 use Jivoo\Utilities;
-use voku\helper\HtmlMin;
 
 $htmlMin = new HtmlMin();
 
