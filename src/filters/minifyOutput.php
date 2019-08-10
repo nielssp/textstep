@@ -10,11 +10,9 @@ use Blogstep\Compile\Filter;
 use Blogstep\Compile\TemplateCompiler;
 use Jivoo\Utilities;
 
-$htmlMin = new HtmlMin();
-
 $filter = new Filter();
 
-$filter->output = function(TemplateCompiler $tc, $path, $content) use ($htmlMin) {
+$filter->output = function(TemplateCompiler $tc, $path, $content) {
     $ext = Utilities::getFileExtension($path);
     switch ($ext) {
         case 'html':
