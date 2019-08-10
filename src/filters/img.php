@@ -23,7 +23,7 @@ $filter['img'] = function(TemplateCompiler $tc, $attr, $enabled, $maxWidth = 640
         return;
     }
     $usePngcrush = (isset($tc->getConfig()['usePngcrush']) and $tc->getConfig()['usePngcrush']);
-    $preserveLossless = (isset($tc->getConfig()['preserveLossless']) and $ts->getConfig()['preserveLossless']);
+    $preserveLossless = (isset($tc->getConfig()['preserveLossless']) and $tc->getConfig()['preserveLossless']);
     $src = $attr['src'];
     if (Jivoo\Unicode::startsWith($src, 'bs:')) {
         $path = preg_replace('/^bs:\/?/', '', $src);
