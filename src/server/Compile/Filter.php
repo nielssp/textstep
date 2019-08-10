@@ -17,6 +17,8 @@ class Filter implements \ArrayAccess
     
     public $content = null;
 
+    public $output = null;
+
     public $sourceFile;
 
     public function __construct()

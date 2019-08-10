@@ -71,7 +71,7 @@ class TemplateCompiler
         $this->env->addModule('time', new Tsc\TimeModule($timeZone), true);
         $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap, $this->filterSet, $this->buildDir), true);
         $this->env->addModule('template', new Tsc\TemplateModule($this), true);
-        $this->env->addModule('html', new Tsc\HtmlModule(), false);
+        $this->env->addModule('html', new Tsc\HtmlModule($this), false);
         $this->env->let('CONFIG', Tsc\Val::from($this->config->toArray()));
     }
 
@@ -113,6 +113,18 @@ class TemplateCompiler
     public function getInterpreter()
     {
         return $this->interpreter;
+    }
+
+    public function isCurrent($link)
+    {
+        $current = $this->env->get('PATH')->toString();
+        if (\Jivoo\Unicode::endsWith($current, 'index.html')) {
+            $current = preg_replace('/^index.html$|\/index.html$/', '', $current);
+        }
+        if (\Jivoo\Unicode::endsWith($link, 'index.html')) {
+            $link = preg_replace('/^index.html$|\/index.html$/', '', $link);
+        }
+        return ltrim($link, '/') === ltrim($current, '/');
     }
 
     public function getLink($link)
@@ -186,6 +198,7 @@ class TemplateCompiler
                     $data = $node['data'];
                     $compiled = $this->compileTemplate($data['TEMPLATE'], $data);
                     $target->getParent()->makeDirectory(true);
+                    $compiled = $this->filterSet->applyOutputFilters($this, $path, $compiled);
                     $target->putContents($compiled);
                     $this->installMap->add($path, 'copy', [$target->getPath()]);
                     break;

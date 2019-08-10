@@ -17,6 +17,8 @@ class FilterSet
     
     private $displayTags = [];
 
+    private $output = [];
+
     public function addFilters($path)
     {
         $dir = scandir($path);
@@ -53,6 +55,9 @@ class FilterSet
                 trigger_error($filter->sourceFile . ': Redefining display tag: ' . $tag, E_USER_WARNING);
             }
             $this->displayTags[$tag] = $handler;
+        }
+        if (isset($filter->output)) {
+            $this->output[] = $filter->output;
         }
     }
     
@@ -114,5 +119,13 @@ class FilterSet
                 return Html::html($tag, $attributes);
             }
         }, $content);
+    }
+    
+    public function applyOutputFilters(TemplateCompiler $tc, $path, $content)
+    {
+        foreach ($this->output as $handler) {
+            $content = $handler($tc, $path, $content);
+        }
+        return $content;
     }
 }

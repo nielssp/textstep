@@ -34,6 +34,14 @@ class TemplateModule extends Module
         return $this->compiler->getInterpreter()->eval($parsed, $env);
     }
 
+    public function isCurrent(array $args, Env $dynamicEnv)
+    {
+        $link = self::parseArg($args, 0, 'string', true, function () use ($dynamicEnv) {
+            return $dynamicEnv->get('PATH');
+        })->toString();
+        return TrueVal::from($this->compiler->isCurrent($link));
+    }
+
     public function link(array $args, Env $dynamicEnv)
     {
         $link = self::parseArg($args, 0, 'string', true, function () use ($dynamicEnv) {

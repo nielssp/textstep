@@ -212,6 +212,9 @@ abstract class Snippet
                 return $this->after($this->delete());
             }
             $contentType = strtolower($this->request->getHeaderLine('Content-Type'));
+            if (strpos($contentType, ';') !== false) {
+                $contentType = explode(';', $contentType)[0];
+            }
             if ($this->jsonBody and $contentType !== 'application/json') {
                 $this->m->logger->info('Invalid content type: {contentType}', ['contentType' => $contentType]);
                 return $this->error('JSON expected', \Jivoo\Http\Message\Status::BAD_REQUEST);
@@ -351,6 +354,7 @@ abstract class Snippet
             }
             $message = $message->getMessage();
         }
+        $this->m->logger->info('Snippet error: ' . $message);
         $response = $this->response;
         $response->getBody()->write($message);
         return $response->withStatus($status);
