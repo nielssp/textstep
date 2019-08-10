@@ -151,7 +151,8 @@ class Shell
                 $filterSet = new Compile\FilterSet();
                 $filterSet->addFilters($this->m->main->p('src/filters'));
                 $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
-                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet);
+                $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
+                $compiler = new Compile\ContentCompiler($this->m->files->get('build'), $siteMap, $contentMap, $filterSet, $config);
                 $id = function ($content) {
                     return $content;
                 };

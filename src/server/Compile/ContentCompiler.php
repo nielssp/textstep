@@ -41,13 +41,16 @@ class ContentCompiler
      */
     private $filterSet;
 
-    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap, FilterSet $filterSet)
+    private $timeZone;
+
+    public function __construct(\Blogstep\Files\File $buildDir, SiteMap $siteMap, \Blogstep\Compile\ContentMap $contentMap, FilterSet $filterSet, \Jivoo\Store\Config $config)
     {
         $this->buildDir = $buildDir;
         $this->handler = new \Blogstep\Compile\ContentHandler();
         $this->contentMap = $contentMap;
         $this->siteMap = $siteMap;
         $this->filterSet = $filterSet;
+        $this->timeZone = $config->get('timeZone', date_default_timezone_get());
     }
 
     public function getHandler()
@@ -164,7 +167,10 @@ class ContentCompiler
         if (!isset($published)) {
             $metadata['published'] = time();
         } elseif (is_string($published)) {
+            $oldTz = date_default_timezone_get();
+            date_default_timezone_set($this->timeZone);
             $metadata['published'] = strtotime($published);
+            date_default_timezone_set($oldTz);
         }
         $metadata['modified'] = $file->getModified();
         $metadata['path'] = $file->getPath();

@@ -81,6 +81,15 @@ class Env
         return null;
     }
 
+    public function getOrNil($name)
+    {
+        $value = $this->get($name);
+        if ($value !== null) {
+            return $value;
+        }
+        return NilVal::nil();
+    }
+
     public function let($name, Val $value)
     {
         $this->vars[$name] = $value;

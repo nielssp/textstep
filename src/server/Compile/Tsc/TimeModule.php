@@ -27,6 +27,7 @@ class TimeModule extends Module
         } elseif ($arg instanceof IntVal) {
             return new TimeVal($arg->getValue());
         }
+        // TODO: timezone / iso8601 parser
         return new TimeVal(strtotime($arg->getValue()));
     }
 

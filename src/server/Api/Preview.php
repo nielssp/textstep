@@ -41,15 +41,15 @@ class Preview extends AuthenticatedSnippet
         $filterSet->addFilters($this->m->main->p('src/filters'));
         $filterSet->addFilters($this->m->files->get('site/filters')->getHostPath());
 
-        $cc = new ContentCompiler($destination, $siteMap, $contentMap, $filterSet);
+        $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
+
+        $cc = new ContentCompiler($destination, $siteMap, $contentMap, $filterSet, $config);
         $id = function ($content) {
             return $content;
         };
         $cc->getHandler()->addHandler('html', $id);
         $cc->getHandler()->addHandler('htm', $id);
         $cc->getHandler()->addHandler('md', [new \Parsedown(), 'text']);
-
-        $config = new \Jivoo\Store\Config(new \Jivoo\Store\JsonStore($this->m->files->get('site/site.json')->getHostPath()));
 
         // TODO: generate temporary auth token
         $tc = new PreviewTemplateCompiler($destination, $installMap, $siteMap, $contentMap, $filterSet, $config, $this->sessionId);
