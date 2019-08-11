@@ -28,6 +28,12 @@ class Content extends \Blogstep\AuthenticatedSnippet
             }
             return $this->error('Extension not loaded: zip');
         }
+        if ($this->request->hasHeader('If-Modified-Since')) {
+            $time = strtotime($this->request->getHeaderLine('If-Modified-Since'));
+            if ($time !== false and $time >= $file->getModified()) {
+                return new \Jivoo\Http\Message\Response(\Jivoo\Http\Message\Status::NOT_MODIFIED);
+            }
+        }
         $type = $file->getMimeType();
         if (!isset($type)) {
             $type = 'application/octet-stream';
@@ -38,6 +44,7 @@ class Content extends \Blogstep\AuthenticatedSnippet
         if (isset($this->request->query['force']) and $this->request->query['force'] === 'true') {
             $response = $response->withHeader('Content-Disposition', 'attachment');
         }
+        $response = $response->withHeader('Last-Modified', date('r', $file->getModified()));
         return $response;
     }
 
