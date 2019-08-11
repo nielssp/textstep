@@ -230,6 +230,7 @@ TEXTSTEP.requestLogin = function (overlay = false) {
             let stack = new ui.StackColumn();
             loginFrame.formElem.appendChild(stack.outer);
             stack.innerPadding = true;
+            let id = ui.createId();
             stack.append(ui.elem('label', {'for': id}, ['Username']));
             stack.append(ui.elem('input', {type: 'text', name: 'username', id: id}));
             id = ui.createId();
