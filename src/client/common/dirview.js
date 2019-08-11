@@ -117,7 +117,9 @@ export class DirView extends ui.Component {
         }
         this.selection = [path];
         var files = this.columns[this.stack.length - 1].setSelection(this.selection);
-        files[0].bringIntoView();
+        if (files.length) {
+            files[0].bringIntoView();
+        }
         if (this.preview) {
             this.preview.preview(files);
         }
