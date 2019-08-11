@@ -9,464 +9,625 @@ import * as ui from './ui';
 import * as util from './util';
 import * as paths from './paths';
 
-export default function DirView() {
-    this.columns = [];
-    this.currentColumn = null;
-    this.cwd = null;
-    this.stack = [];
-    this.previousStackSize = 0;
-    this.stackOffset = 0;
-    this.files = {};
-    this.selection = [];
-    this.touchSelectMode = false;
+export class DirView extends ui.Component {
+    constructor() {
+        super();
+        this.outer.className = 'files-columns';
 
-    this.multiSelect = true;
-    this.touchOpen = true;
+        this.columns = [];
+        this.currentColumn = null;
+        this.preview = null;
+        this.cwd = null;
+        this.stack = [];
+        this.previousStackSize = 0;
+        this.stackOffset = 0;
+        this.files = {};
+        this.selection = [];
+        this.touchSelectMode = false;
 
-    this.elem = ui.elem('div', {'class': 'files-columns'});
-}
+        this.multiSelect = true;
+        this.touchOpen = true;
+        this.showEmptyColumns = false;
+        this.showPreview = true;
 
-util.eventify(DirView.prototype);
-
-DirView.prototype.reload = function (paths = null) {
-    if (!paths) {
-        this.columns[this.stack.length - 1].reload();
-    } else {
-        this.columns.forEach(column => {
-            if (paths.indexOf(column.path) >= 0) {
-                column.reload();
+        this.addEventListener('selectionChanged', selection => {
+            if (this.preview) {
             }
         });
     }
-};
 
-DirView.prototype.cd = function (path) {
-    var names = path.split('/');
-    var path = '';
-    this.stack = ['/'];
-    for (var i = 0; i < names.length; i++) {
-        if (names[i] === '..') {
-            if (this.stack.length > 1) {
-                this.stack.pop();
-                path = this.stack[this.stack.length - 1];
-            }
-        } else if (names[i] !== '' && names[i] !== '.') {
-            path += '/' + names[i];
-            this.stack.push(path);
+    reload(paths = null) {
+        if (!paths) {
+            this.columns[this.stack.length - 1].reload();
+        } else {
+            this.columns.forEach(column => {
+                if (paths.indexOf(column.path) >= 0) {
+                    column.reload();
+                }
+            });
         }
     }
-    this.cwd = this.stack[this.stack.length - 1];
-    this.touchSelectMode = false;
-    this.selection = [];
-    this.fire('selectionChanged', this.selection);
-    this.fire('cwdChanged', this.cwd);
-    this.updateColumns();
-};
 
-DirView.prototype.goUp = function () {
-    if (this.stack.length > 1) {
-        this.stack.pop();
+    cd(path) {
+        var names = path.split('/');
+        var path = '';
+        this.stack = ['/'];
+        for (var i = 0; i < names.length; i++) {
+            if (names[i] === '..') {
+                if (this.stack.length > 1) {
+                    this.stack.pop();
+                    path = this.stack[this.stack.length - 1];
+                }
+            } else if (names[i] !== '' && names[i] !== '.') {
+                path += '/' + names[i];
+                this.stack.push(path);
+            }
+        }
         this.cwd = this.stack[this.stack.length - 1];
         this.touchSelectMode = false;
         this.selection = [];
-        this.fire('selectionChanged', this.selection);
-        this.fire('cwdChanged', this.cwd);
+        this.trigger('selectionChanged', this.selection);
+        this.trigger('cwdChanged', this.cwd);
         this.updateColumns();
     }
-};
 
-DirView.prototype.open = function (path) {
-    this.fire('fileOpen', path);
-};
-
-DirView.prototype.upload = function () {
-    var fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.style.display = 'none';
-    document.body.appendChild(fileInput);
-    fileInput.click();
-    fileInput.onchange = () => {
-        var files = fileInput.files;
-        var data = new FormData();
-        for (var i = 0; i < files.length; i++) {
-            data.append('files[]', files[i]);
-        }
-        TEXTSTEP.post('content', {path: this.cwd}, data).then(() => {
-            this.reload();
-        }).finally(() => {
-            fileInput.outerHTML = '';
-        });
-        return false;
-    };
-};
-
-DirView.prototype.setSelection = function (path) {
-    var dir = paths.dirName(path);
-    if (this.cwd !== dir) {
-        this.cd(dir);
-    }
-    this.selection = [path];
-    this.columns[this.stack.length - 1].setSelection(this.selection);
-    this.fire('selectionChanged', this.selection);
-};
-
-DirView.prototype.addSelection = function (path) {
-    var dir = paths.dirName(path);
-    if (this.cwd !== dir) {
-        var selectedDir = null;
-        for (var i = 0; i < this.stack.length; i++) {
-            if (this.stack[i] === dir) {
-                selectedDir = this.stack[i + 1];
-                break;
-            }
-        }
-        this.cd(dir);
-        if (selectedDir !== null) {
-            this.selection = [selectedDir, path];
+    goUp() {
+        if (this.stack.length > 1) {
+            let previous = this.stack.pop();
+            this.cwd = this.stack[this.stack.length - 1];
+            this.touchSelectMode = false;
+            this.selection = [previous];
+            this.trigger('selectionChanged', this.selection);
+            this.trigger('cwdChanged', this.cwd);
+            this.updateColumns();
         } else {
-            this.selection = [path];
-        }
-    } else {
-        this.selection.push(path);
-    }
-    this.columns[this.stack.length - 1].setSelection(this.selection);
-    this.fire('selectionChanged', this.selection);
-};
-
-DirView.prototype.removeSelection = function (path) {
-    for (var i = 0; i < this.selection.length; i++) {
-        if (this.selection[i] === path) {
-            this.selection.splice(i, 1);
-            this.columns[this.stack.length - 1].setSelection(this.selection);
-            this.fire('selectionChanged', this.selection);
-            break;
+            this.clearSelection();
         }
     }
-};
 
-DirView.prototype.clearSelection = function () {
-    this.selection = [];
-    this.columns[this.stack.length - 1].setSelection(this.selection);
-    this.fire('selectionChanged', this.selection);
-};
-
-DirView.prototype.updateColumns = function () {
-    var rect = this.elem.getBoundingClientRect();
-    var maxColumns = Math.max(1, Math.floor(rect.width / 200));
-    this.stackOffset = Math.max(0, this.stack.length - maxColumns);
-    var n = Math.max(maxColumns, this.stack.length);
-    if (this.columns.length > n) {
-        this.columns.splice(n).forEach(function (column) {
-            this.elem.removeChild(column.elem);
-        }, this);
+    open(path) {
+        this.trigger('fileOpen', path);
     }
-    for (var i = 0; i < n; i++) {
-        var column;
-        if (i < this.stack.length) {
-            if (i < this.columns.length) {
-                column = this.columns[i];
-                if (column.path !== this.stack[i]) {
-                    this.columns.splice(i).forEach(function (column) {
-                        this.elem.removeChild(column.elem);
-                    }, this);
-                    column = new DirColumn(this, this.stack[i]);
-                    this.columns.push(column);
-                    this.elem.appendChild(column.elem);
-                }
-            } else {
-                column = new DirColumn(this, this.stack[i]);
-                this.columns.push(column);
-                this.elem.appendChild(column.elem);
-            }
-        } else {
-            if (i < this.columns.length) {
-                column = this.columns[i];
-                if (column.path !== null) {
-                    this.columns.splice(i).forEach(function (column) {
-                        this.elem.removeChild(column.elem);
-                    }, this);
-                    column = new DirColumn(this, null);
-                    this.columns.push(column);
-                    this.elem.appendChild(column.elem);
-                }
-            } else {
-                column = new DirColumn(this, null);
-                this.columns.push(column);
-                this.elem.appendChild(column.elem);
-            }
-        }
 
-        if (i + 1 < this.stack.length) {
-            column.setSelection([this.stack[i + 1]]);
-        } else if (i === this.stack.length - 1) {
-            column.setSelection(this.selection);
-        }
-
-        if (i < this.stackOffset) {
-            column.hide();
-        } else {
-            column.show();
-        }
-    }
-};
-
-function DirColumn(dirView, path) {
-    this.dirView = dirView;
-    this.path = path;
-    this.listElem = ui.elem('div', {'class': 'files-list'});
-    this.elem = ui.elem('div', {'class': 'files-panel'}, [this.listElem]);
-
-    this.list = null;
-    this.files = null;
-    this.selection = [];
-
-    this.elem.addEventListener('dragenter', e => {
-        e.stopPropagation();
-    });
-
-    this.elem.addEventListener('dragleave', e => {
-        this.elem.classList.remove('accept');
-    });
-
-    this.elem.addEventListener('dragover', e => {
-        e.preventDefault();
-        let type = e.dataTransfer.types.find(t => t === 'Files' || t === 'application/x-textstep-path');
-        if (this.files !== null && type) {
-            if (type === 'Files' || e.ctrlKey) {
-                e.dataTransfer.dropEffect = 'copy';
-            } else {
-                e.dataTransfer.dropEffect = 'move';
-            }
-            e.stopPropagation();
-            this.elem.classList.add('accept');
-        }
-    });
-
-    this.elem.addEventListener('dragend', e => {
-        e.preventDefault();
-    });
-
-    this.elem.addEventListener('drop', e => {
-        e.preventDefault();
-        this.elem.classList.remove('accept');
-        if (this.files === null) {
-            return;
-        }
-        let type = e.dataTransfer.types.find(t => t === 'Files' || t === 'application/x-textstep-path');
-        if (type === 'Files') {
-            let files = e.dataTransfer.files;
-            if (!files.length) {
-                return;
-            }
-            let data = new FormData();
+    upload() {
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+        fileInput.click();
+        fileInput.onchange = () => {
+            var files = fileInput.files;
+            var data = new FormData();
             for (var i = 0; i < files.length; i++) {
                 data.append('files[]', files[i]);
             }
-            TEXTSTEP.post('content', {path: this.path}, data).then(() => {
+            TEXTSTEP.post('content', {path: this.cwd}, data).then(() => {
                 this.reload();
-            }); // TODO: frame.alert() on error
-        } else if (type === 'application/x-textstep-path') {
-            let path = e.dataTransfer.getData('application/x-textstep-path');
-            TEXTSTEP.post(e.ctrlKey ? 'copy' : 'move', {}, {
-                path: path,
-                destination: paths.convert(paths.fileName(path), this.path)
-            }).then(() => this.dirView.reload([paths.dirName(path), this.path]));
+            }).finally(() => {
+                fileInput.outerHTML = '';
+            });
+            return false;
+        };
+    }
+
+    setSelection(path) {
+        var dir = paths.dirName(path);
+        if (this.cwd !== dir) {
+            this.cd(dir);
         }
-    });
+        this.selection = [path];
+        var files = this.columns[this.stack.length - 1].setSelection(this.selection);
+        if (this.preview) {
+            this.preview.preview(files);
+        }
+        this.trigger('selectionChanged', this.selection);
+    }
+
+    addSelection(path) {
+        var dir = paths.dirName(path);
+        if (this.cwd !== dir) {
+            var selectedDir = null;
+            for (var i = 0; i < this.stack.length; i++) {
+                if (this.stack[i] === dir) {
+                    selectedDir = this.stack[i + 1];
+                    break;
+                }
+            }
+            this.cd(dir);
+            if (selectedDir !== null) {
+                this.selection = [selectedDir, path];
+            } else {
+                this.selection = [path];
+            }
+        } else {
+            this.selection.push(path);
+        }
+        var files = this.columns[this.stack.length - 1].setSelection(this.selection);
+        if (this.preview) {
+            this.preview.preview(files);
+        }
+        this.trigger('selectionChanged', this.selection);
+    }
+
+    removeSelection(path) {
+        for (var i = 0; i < this.selection.length; i++) {
+            if (this.selection[i] === path) {
+                this.selection.splice(i, 1);
+                var files = this.columns[this.stack.length - 1].setSelection(this.selection);
+                if (this.preview) {
+                    this.preview.preview(files);
+                }
+                this.trigger('selectionChanged', this.selection);
+                break;
+            }
+        }
+    }
+
+    clearSelection() {
+        this.selection = [];
+        var files = this.columns[this.stack.length - 1].setSelection(this.selection);
+        if (this.preview) {
+            this.preview.preview(files);
+        }
+        this.trigger('selectionChanged', this.selection);
+    }
+
+    update() {
+        this.updateColumns();
+    }
+
+    updateColumns() {
+        var rect = this.outer.getBoundingClientRect();
+        var maxColumns = Math.max(1, Math.floor(rect.width / 200));
+        let preview = false;
+        if (this.showPreview && maxColumns > 1) {
+            preview = true;
+            maxColumns--;
+        }
+        if (this.preview) {
+            this.outer.removeChild(this.preview.elem);
+            this.preview = null;
+        }
+        this.stackOffset = Math.max(0, this.stack.length - maxColumns);
+        var n = Math.max(maxColumns, this.stack.length);
+        if (this.columns.length > n) {
+            this.columns.splice(n).forEach(function (column) {
+                this.outer.removeChild(column.elem);
+            }, this);
+        }
+        let selectedFiles = [];
+        for (var i = 0; i < n; i++) {
+            var column;
+            if (i < this.stack.length) {
+                if (i < this.columns.length) {
+                    column = this.columns[i];
+                    if (column.path !== this.stack[i]) {
+                        this.columns.splice(i).forEach(function (column) {
+                            this.outer.removeChild(column.elem);
+                        }, this);
+                        column = new DirColumn(this, this.stack[i]);
+                        this.columns.push(column);
+                        this.outer.appendChild(column.elem);
+                    }
+                } else {
+                    column = new DirColumn(this, this.stack[i]);
+                    this.columns.push(column);
+                    this.outer.appendChild(column.elem);
+                }
+            } else if (this.showEmptyColumns) {
+                if (i < this.columns.length) {
+                    column = this.columns[i];
+                    if (column.path !== null) {
+                        this.columns.splice(i).forEach(function (column) {
+                            this.outer.removeChild(column.elem);
+                        }, this);
+                        column = new DirColumn(this, null);
+                        this.columns.push(column);
+                        this.outer.appendChild(column.elem);
+                    }
+                } else {
+                    column = new DirColumn(this, null);
+                    this.columns.push(column);
+                    this.outer.appendChild(column.elem);
+                }
+            } else {
+                if (i < this.columns.length) {
+                    this.columns.splice(i).forEach(function (column) {
+                        this.outer.removeChild(column.elem);
+                    }, this);
+                }
+                break;
+            }
+
+            if (i + 1 < this.stack.length) {
+                column.setSelection([this.stack[i + 1]]);
+            } else if (i === this.stack.length - 1) {
+                selectedFiles = column.setSelection(this.selection);
+            }
+
+            if (i < this.stackOffset) {
+                column.hide();
+            } else {
+                column.show();
+            }
+        }
+        if (preview) {
+            this.preview = new PreviewColumn(this);
+            this.preview.preview(selectedFiles);
+            this.outer.appendChild(this.preview.elem);
+        }
+    }
 }
 
-DirColumn.prototype.setSelection = function (paths) {
-    if (this.files !== null) {
-        for (var i = 0; i < this.selection.length; i++) {
-            if (this.files.hasOwnProperty(this.selection[i])) {
-                this.files[this.selection[i]].setSelected(false);
-            }
-        }
-    }
-    this.selection = paths.slice();
-    if (this.files !== null) {
-        for (var i = 0; i < this.selection.length; i++) {
-            if (this.files.hasOwnProperty(this.selection[i])) {
-                this.files[this.selection[i]].setSelected(true);
-            }
-        }
-    }
-};
+class DirColumn {
+    constructor(dirView, path) {
+        this.dirView = dirView;
+        this.path = path;
+        this.listElem = ui.elem('div', {'class': 'files-list'});
+        this.elem = ui.elem('div', {'class': 'files-panel'}, [this.listElem]);
 
-DirColumn.prototype.reload = function () {
-    if (this.files !== null) {
-        this.listElem.innerHTML = '';
-        this.files = null;
         this.list = null;
-    }
-    TEXTSTEP.get('file', {path: this.path, list: true}).then(data => {
-        if (data.type === 'directory' && typeof data.files !== 'undefined') {
-            this.listElem.innerHTML = '';
-            this.files = {};
-            this.list = [];
-            data.files.sort(function(a, b) {
-                // TODO: optional sorting of directories before files
-                if ((a.type === 'directory') !== (b.type === 'directory')) {
-                    if (a.type === 'directory') {
-                        return -1;
-                    } else {
-                        return 1;
-                    }
-                }
-                var nameA = a.name.toUpperCase(); // ignore upper and lowercase
-                var nameB = b.name.toUpperCase(); // ignore upper and lowercase
-                if (nameA < nameB) {
-                    return -1;
-                } else if (nameA > nameB) {
-                    return 1;
+        this.files = null;
+        this.selection = [];
+
+        this.elem.addEventListener('dragenter', e => {
+            e.stopPropagation();
+        });
+
+        this.elem.addEventListener('dragleave', e => {
+            this.elem.classList.remove('accept');
+        });
+
+        this.elem.addEventListener('dragover', e => {
+            e.preventDefault();
+            let type = e.dataTransfer.types.find(t => t === 'Files' || t === 'application/x-textstep-path');
+            if (this.files !== null && type) {
+                if (type === 'Files' || e.ctrlKey) {
+                    e.dataTransfer.dropEffect = 'copy';
                 } else {
-                    return 0;
+                    e.dataTransfer.dropEffect = 'move';
                 }
-            });
-            for (var i = 0; i < data.files.length; i++) {
-                var file = new DirFile(this, data.files[i]);
-                this.list.push(file);
-                this.files[file.path] = file;
-                this.listElem.appendChild(file.elem);
+                e.stopPropagation();
+                this.elem.classList.add('accept');
             }
+        });
+
+        this.elem.addEventListener('dragend', e => {
+            e.preventDefault();
+        });
+
+        this.elem.addEventListener('drop', e => {
+            e.preventDefault();
+            this.elem.classList.remove('accept');
+            if (this.files === null) {
+                return;
+            }
+            let type = e.dataTransfer.types.find(t => t === 'Files' || t === 'application/x-textstep-path');
+            if (type === 'Files') {
+                let files = e.dataTransfer.files;
+                if (!files.length) {
+                    return;
+                }
+                let data = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    data.append('files[]', files[i]);
+                }
+                TEXTSTEP.post('content', {path: this.path}, data).then(() => {
+                    this.reload();
+                }); // TODO: frame.alert() on error
+            } else if (type === 'application/x-textstep-path') {
+                let path = e.dataTransfer.getData('application/x-textstep-path');
+                TEXTSTEP.post(e.ctrlKey ? 'copy' : 'move', {}, {
+                    path: path,
+                    destination: paths.convert(paths.fileName(path), this.path)
+                }).then(() => this.dirView.reload([paths.dirName(path), this.path]));
+            }
+        });
+    }
+
+    setSelection(paths) {
+        if (this.files !== null) {
+            for (var i = 0; i < this.selection.length; i++) {
+                if (this.files.hasOwnProperty(this.selection[i])) {
+                    this.files[this.selection[i]].setSelected(false);
+                }
+            }
+        }
+        this.selection = paths.slice();
+        let selected = [];
+        if (this.files !== null) {
             for (var i = 0; i < this.selection.length; i++) {
                 if (this.files.hasOwnProperty(this.selection[i])) {
                     this.files[this.selection[i]].setSelected(true);
+                    selected.push(this.files[this.selection[i]]);
                 }
             }
         }
-    });
-};
-
-DirColumn.prototype.show = function () {
-    this.elem.style.display = 'block';
-    if (this.files === null && this.path !== null) {
-        this.reload();
+        return selected;
     }
-};
 
-DirColumn.prototype.hide = function () {
-    this.elem.style.display = 'none';
-};
-
-function DirFile(column, data) {
-    this.column = column;
-    this.data = data;
-    this.name = data.name;
-    this.path = data.path;
-    this.type = data.type;
-    this.selected = false;
-
-    this.elem = ui.elem('a', {
-        'draggable': true,
-        'href': TEXTSTEP.url('content/' + this.name, {path: this.path})
-    });
-    this.elem.addEventListener('touchend', e => {
-        e.preventDefault();
-        if (this.column.dirView.touchSelectMode) {
-            if (this.selected) {
-                this.column.dirView.removeSelection(this.path);
-                if (!this.column.dirView.selection.length) {
-                    this.column.dirView.touchSelectMode = false;
-                }
-            } else {
-                this.column.dirView.addSelection(this.path);
-            }
-        } else if (this.type === 'directory') {
-            this.column.dirView.cd(this.path);
-        } else if (this.column.dirView.touchOpen) {
-            this.column.dirView.open(this.path);
-        } else {
-            this.column.dirView.setSelection(this.path);
+    reload() {
+        if (this.files !== null) {
+            this.listElem.innerHTML = '';
+            this.files = null;
+            this.list = null;
         }
-    });
-    ui.onLongPress(this.elem, e => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (this.column.dirView.multiSelect) {
-            this.column.dirView.touchSelectMode = true;
-        }
-    });
-    this.elem.onclick = (e) => {
-        if (e.ctrlKey && this.column.dirView.multiSelect) {
-            if (this.selected) {
-                this.column.dirView.removeSelection(this.path);
-            } else {
-                this.column.dirView.addSelection(this.path);
-            }
-        } else if (e.shiftKey && this.column.dirView.multiSelect) {
-            if (this.column.selection.length === 0) {
-                this.column.dirView.setSelection(this.path);
-            } else {
-                var other = this.column.selection[this.column.selection.length - 1];
-                if (this.path === other) {
-                    if (!this.selected) {
-                        this.column.dirView.addSelection(file.path);
+        TEXTSTEP.get('file', {path: this.path, list: true}).then(data => {
+            if (data.type === 'directory' && typeof data.files !== 'undefined') {
+                this.listElem.innerHTML = '';
+                this.files = {};
+                this.list = [];
+                data.files.sort(function(a, b) {
+                    // TODO: optional sorting of directories before files
+                    if ((a.type === 'directory') !== (b.type === 'directory')) {
+                        if (a.type === 'directory') {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
                     }
-                } else {
-                    var between = false;
-                    this.column.list.forEach(function (file) {
-                        if (file.path === this.path || file.path === other) {
-                            between = !between;
-                        } else if (!between) {
-                            return;
-                        }
-                        if (!file.selected) {
-                            this.column.dirView.addSelection(file.path);
-                        }
-                    }, this);
+                    var nameA = a.name.toUpperCase(); // ignore upper and lowercase
+                    var nameB = b.name.toUpperCase(); // ignore upper and lowercase
+                    if (nameA < nameB) {
+                        return -1;
+                    } else if (nameA > nameB) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+                for (var i = 0; i < data.files.length; i++) {
+                    var file = new DirFile(this, data.files[i]);
+                    this.list.push(file);
+                    this.files[file.path] = file;
+                    this.listElem.appendChild(file.elem);
+                }
+                let selectedFiles = [];
+                for (var i = 0; i < this.selection.length; i++) {
+                    if (this.files.hasOwnProperty(this.selection[i])) {
+                        this.files[this.selection[i]].setSelected(true);
+                        selectedFiles.push(this.files[this.selection[i]]);
+                    }
+                }
+                if (this.path === this.dirView.cwd && this.dirView.preview) {
+                    this.dirView.preview.preview(selectedFiles);
                 }
             }
-        } else if (this.type === 'directory') {
-            this.column.dirView.cd(this.path);
-        } else {
-            this.column.dirView.setSelection(this.path);
-        }
-        return false;
-    };
-    this.elem.ondblclick = () => {
-        this.column.dirView.open(this.path);
-    };
-    this.elem.ondragstart = (e) => {
-        var download = 'application/octet-stream:' + encodeURIComponent(this.name) + ':'
-                + location.origin + TEXTSTEP.url('content', {path: this.path});
-        e.dataTransfer.setData('DownloadURL', download);
-        e.dataTransfer.setData('application/x-textstep-path', this.path);
-        e.dataTransfer.effectAllowed = 'copyMove';
-    };
-    if (this.type === 'directory') {
-        this.icon = TEXTSTEP.getIcon('file-directory', 16);
-    } else {
-        this.icon = TEXTSTEP.getFileIcon(this.name.replace(/^.*?(?:\.([^.]+))?$/, '$1'), 16);
+        });
     }
-    this.elem.appendChild(this.icon);
-    this.label = ui.elem('span', {class: 'label'}, [this.name]);
-    this.elem.appendChild(this.label);
-    this.updateElement();
+
+    show() {
+        this.elem.style.display = '';
+        if (this.files === null && this.path !== null) {
+            this.reload();
+        }
+    }
+
+    hide() {
+        this.elem.style.display = 'none';
+    }
 }
 
-DirFile.prototype.updateElement = function () {
-    this.elem.className = 'file';
-    if (this.type === 'directory') {
-        this.elem.className += ' file-directory';
-        let oldIcon = this.icon;
-        if (this.selected) {
-            this.icon = TEXTSTEP.getIcon('file-directory-open', 16);
-        } else {
-            this.icon = TEXTSTEP.getIcon('file-directory', 16);
-        }
-        this.elem.replaceChild(this.icon, oldIcon);
+class PreviewColumn extends DirColumn {
+    constructor(dirView) {
+        super(dirView, null);
+        this.previewElem = ui.elem('div', {class: 'file-preview'});
+        this.elem.appendChild(this.previewElem);
     }
-    if (this.selected) {
-        this.elem.className += ' active';
-    }
-    if (!this.data.read) {
-        this.elem.className += ' locked';
-    }
-};
 
-DirFile.prototype.setSelected = function (selected) {
-    this.selected = selected;
-    this.updateElement();
-};
+    createFileData(elem, file) {
+        elem.appendChild(ui.elem('div', {'class': 'file-name'}, [file.name]));
+        let data = new ui.Grid();
+        data.outer.classList.add('file-data');
+        data.columns = 'min-content auto';
+        data.rowPadding = true;
+        data.columnPadding = true;
+        elem.appendChild(data.outer);
+
+        data.append(ui.elem('div', {'class': 'label'}, ['Size']));
+        data.append(ui.elem('div', {}, ['' + util.humanSize(file.data.size)]));
+
+        data.append(ui.elem('div', {'class': 'label'}, ['Created']));
+        data.append(ui.elem('div', {}, [util.parseDate(file.data.created).toLocaleString('en-GB')]));
+
+        data.append(ui.elem('div', {'class': 'label'}, ['Modified']));
+        data.append(ui.elem('div', {}, [util.parseDate(file.data.modified).toLocaleString('en-GB')]));
+
+        let joinGroups = permission => {
+            if (file.data.permissions[permission]) {
+                return file.data.permissions[permission].join(', ');
+            } else {
+                return '\u2013';
+            }
+        };
+        data.append(ui.elem('div', {'class': 'label'}, ['Read']));
+        data.append(ui.elem('div', {}, [joinGroups('read')]));
+        data.append(ui.elem('div', {'class': 'label'}, ['Write']));
+        data.append(ui.elem('div', {}, [joinGroups('write')]));
+        data.append(ui.elem('div', {'class': 'label'}, ['Grant']));
+        data.append(ui.elem('div', {}, [joinGroups('grant')]));
+    }
+
+    preview(files) {
+        this.listElem.innerHTML = '';
+        this.previewElem.innerHTML = '';
+        this.previewElem.style.display = 'none';
+        this.files = null;
+        this.list = null;
+        if (files.length > 1) {
+            this.listElem.innerHTML = files.map(f => f.name).join(', ');
+        } else if (files.length === 1) {
+            let file = files[0];
+            if (file.type === 'directory') {
+                this.previewElem.style.display = '';
+                this.createFileData(this.previewElem, file);
+                this.path = file.path;
+                this.reload();
+            } else {
+                let preview = ui.elem('div', {class: 'file-preview'});
+                this.listElem.appendChild(preview);
+                let type = paths.fileExt(files[0].name).toLowerCase();
+                switch (type) {
+                    case 'jpeg':
+                    case 'jpg':
+                    case 'png':
+                    case 'ico':
+                        let src = TEXTSTEP.url('thumbnail', {
+                            path: files[0].path,
+                            width: 200,
+                            height: 200
+                        });
+                        preview.appendChild(ui.elem('div', {'class': 'file-thumbnail'}, [
+                            ui.elem('img', {src: src})
+                        ]));
+                        break;
+                    default:
+                        preview.appendChild(ui.elem('div', {'class': 'file-icon'}, [
+                            TEXTSTEP.getFileIcon(type, 32)
+                        ]));
+                        break;
+                }
+                this.createFileData(preview, file);
+            }
+        } else {
+        }
+    }
+}
+
+class DirFile {
+    constructor(column, data) {
+        this.column = column;
+        this.data = data;
+        this.name = data.name;
+        this.path = data.path;
+        this.type = data.type;
+        this.selected = false;
+
+        this.elem = ui.elem('a', {
+            'draggable': true,
+            'href': TEXTSTEP.url('content/' + this.name, {path: this.path})
+        });
+
+        if (this.type === 'directory') {
+            this.icon = TEXTSTEP.getIcon('file-directory', 16);
+        } else {
+            this.icon = TEXTSTEP.getFileIcon(paths.fileExt(this.name), 16);
+        }
+        this.elem.appendChild(this.icon);
+        this.label = ui.elem('span', {class: 'label'}, [this.name]);
+        this.elem.appendChild(this.label);
+
+        this.elem.addEventListener('touchend', e => {
+            e.preventDefault();
+            if (this.column.dirView.touchSelectMode) {
+                if (this.selected) {
+                    this.column.dirView.removeSelection(this.path);
+                    if (!this.column.dirView.selection.length) {
+                        this.column.dirView.touchSelectMode = false;
+                    }
+                } else {
+                    this.column.dirView.addSelection(this.path);
+                }
+            } else if (this.type === 'directory') {
+                if (this.column.dirView.preview) {
+                    this.column.dirView.setSelection(this.path);
+                } else {
+                    this.column.dirView.cd(this.path);
+                }
+            } else if (this.column.dirView.touchOpen) {
+                this.column.dirView.open(this.path);
+            } else {
+                this.column.dirView.setSelection(this.path);
+            }
+        });
+        ui.onLongPress(this.elem, e => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (this.column.dirView.multiSelect) {
+                this.column.dirView.touchSelectMode = true;
+            }
+        });
+        this.elem.onmouseover = () => {
+            if (this.label.scrollWidth > this.label.offsetWidth) {
+                this.elem.title = this.name;
+            } else {
+                this.elem.title = '';
+            }
+        };
+        this.elem.onclick = (e) => {
+            e.preventDefault();
+            if (e.ctrlKey && this.column.dirView.multiSelect) {
+                if (this.selected) {
+                    this.column.dirView.removeSelection(this.path);
+                } else {
+                    this.column.dirView.addSelection(this.path);
+                }
+            } else if (e.shiftKey && this.column.dirView.multiSelect) {
+                if (this.column.selection.length === 0) {
+                    this.column.dirView.setSelection(this.path);
+                } else {
+                    var other = this.column.selection[this.column.selection.length - 1];
+                    if (this.path === other) {
+                        if (!this.selected) {
+                            this.column.dirView.addSelection(file.path);
+                        }
+                    } else {
+                        var between = false;
+                        this.column.list.forEach(function (file) {
+                            if (file.path === this.path || file.path === other) {
+                                between = !between;
+                            } else if (!between) {
+                                return;
+                            }
+                            if (!file.selected) {
+                                this.column.dirView.addSelection(file.path);
+                            }
+                        }, this);
+                    }
+                }
+            } else if (!this.column.dirView.preview && this.type === 'directory') {
+                this.column.dirView.cd(this.path);
+            } else {
+                this.column.dirView.setSelection(this.path);
+            }
+            return false;
+        };
+        this.elem.ondblclick = () => {
+            this.column.dirView.open(this.path);
+        };
+        this.elem.ondragstart = (e) => {
+            var download = 'application/octet-stream:' + encodeURIComponent(this.name) + ':'
+                + location.origin + TEXTSTEP.url('content', {path: this.path});
+            e.dataTransfer.setData('DownloadURL', download);
+            e.dataTransfer.setData('application/x-textstep-path', this.path);
+            e.dataTransfer.effectAllowed = 'copyMove';
+        };
+        this.updateElement();
+    }
+
+    updateElement() {
+        this.elem.className = 'file';
+        if (this.type === 'directory') {
+            this.elem.className += ' file-directory';
+            let oldIcon = this.icon;
+            if (this.selected) {
+                this.icon = TEXTSTEP.getIcon('file-directory-open', 16);
+            } else {
+                this.icon = TEXTSTEP.getIcon('file-directory', 16);
+            }
+            this.elem.replaceChild(this.icon, oldIcon);
+        }
+        if (this.selected) {
+            this.elem.className += ' active';
+        }
+        if (!this.data.read) {
+            this.elem.className += ' locked';
+        }
+    }
+
+    setSelected(selected) {
+        this.selected = selected;
+        this.updateElement();
+    }
+}
 

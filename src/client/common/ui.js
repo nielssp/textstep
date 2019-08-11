@@ -27,7 +27,7 @@ import {
 } from './component';
 import {Toolbar} from './toolbar';
 import {Dialog} from './dialog';
-import DirView from './dirview';
+import {DirView} from './dirview';
 
 export {
     Component,

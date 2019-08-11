@@ -7,7 +7,7 @@
 
 import * as ui from './ui';
 import * as paths from './paths';
-import DirView from './dirview';
+import {DirView} from './dirview';
 import {Toolbar} from './toolbar';
 import {Container, StackRow} from './component';
 
@@ -199,15 +199,16 @@ export class Dialog extends Container {
         var dirView = new DirView();
         dirView.touchOpen = false;
         dirView.multiSelect = multiple;
-        dirView.on('fileOpen', path => dialog.close([path]));
+        dirView.showPreview = false;
+        dirView.addEventListener('fileOpen', path => dialog.close([path]));
         var toolbar = new Toolbar();
         toolbar.padding('bottom');
         toolbar.createGroup()
             .addItem('Go up', 'go-up', () => dirView.goUp())
             .addItem('Go to root', 'go-home', () => dirView.cd('/'))
             .addItem('Reload', 'reload', () => dirView.reload());
-        dialog.append(toolbar.outer);
-        dialog.append(dirView.elem);
+        dialog.append(toolbar);
+        dialog.append(dirView);
         dialog.inner.style.width = '450px';
         dialog.inner.style.height = '300px';
         dialog.onopen = () => dirView.cd('/');
@@ -246,14 +247,15 @@ export class Dialog extends Container {
         var dirView = new DirView();
         dirView.touchOpen = false;
         dirView.multiSelect = false;
+        dirView.showPreview = false;
         var toolbar = new Toolbar();
         toolbar.padding('bottom');
         toolbar.createGroup()
             .addItem('Go up', 'go-up', () => dirView.goUp())
             .addItem('Go to root', 'go-home', () => dirView.cd('/'))
             .addItem('Reload', 'reload', () => dirView.reload());
-        dialog.append(toolbar.outer);
-        dialog.append(dirView.elem);
+        dialog.append(toolbar);
+        dialog.append(dirView);
         dialog.inner.style.width = '450px';
         dialog.inner.style.height = '300px';
         dialog.onopen = () => dirView.cd('/');
@@ -294,9 +296,9 @@ export class Dialog extends Container {
         footer.append(cancelButton);
         dialog.append(footer);
 
-        dirView.on('fileOpen', path => dialog.close(path));
-        dirView.on('cwdChanged', path => input.focus());
-        dirView.on('selectionChanged', selection => {
+        dirView.addEventListener('fileOpen', path => dialog.close(path));
+        dirView.addEventListener('cwdChanged', path => input.focus());
+        dirView.addEventListener('selectionChanged', selection => {
             if (selection.length === 1) {
                 input.value = paths.fileName(selection[0]);
                 input.setSelectionRange(0, input.value.length)

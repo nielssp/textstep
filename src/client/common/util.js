@@ -89,3 +89,48 @@ export function eventify(prototype) {
         }
     };
 }
+
+export function humanSize(size) {
+    if (size < 1024) {
+        return size + ' B';
+    } else if (size < 1024 * 1024) {
+        return parseFloat(size / 1024).toFixed(1) + ' KiB';
+    } else if (size < 1024 * 1024 * 1024) {
+        return parseFloat(size / (1024 * 1024)).toFixed(1) + ' MiB';
+    } else if (size < 1024 * 1024 * 1024 * 1024) {
+        return parseFloat(size / (1024 * 1024 * 1024)).toFixed(1) + ' GiB';
+    } else {
+        return parseFloat(size / (1024 * 1024 * 1024 * 1024)).toFixed(1) + ' TiB';
+    }
+}
+
+export function parseDate(dateString) {
+    let m = dateString.match(/^(\d{4})-?(\d{2})-?(\d{2})[ T](\d{2}):?(\d{2}):?(\d{2})(?:\.(\d{3}))?(Z|[-+]\d{2}(?::?\d{2})?)?$/);
+    if (!m) {
+        return null;
+    }
+    let year = parseInt(m[1]);
+    let month = parseInt(m[2]);
+    let day = parseInt(m[3]);
+    let hour = parseInt(m[4]);
+    let minute = parseInt(m[5]);
+    let second = parseInt(m[6]);
+    let millisecond = 0;
+    if (m[7]) {
+        millisecond = parseInt(m[7]);
+    }
+    let date = new Date(year, month - 1, day, hour, minute, second, millisecond);
+    if (m[8]) {
+        let offset = date.getTimezoneOffset();
+        if (m[8] !== 'Z') {
+            let sign = m[8][0] === '+' ? 1 : -1;
+            let offsetString = m[8].substring(1).replace(':', '');
+            offset += sign * parseInt(offsetString.substring(0, 2)) * 60;
+            if (offsetString.length > 2) {
+                offset += sign * parseInt(offsetString.substring(2));
+            }
+        }
+        date.setTime(date.getTime() - offset * 60000);
+    }
+    return date;
+}

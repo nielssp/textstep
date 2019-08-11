@@ -1,16 +1,11 @@
 /* 
- * BlogSTEP 
+ * TEXTSTEP
  * Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
  * Licensed under the MIT license.
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-exports.dirName = dirName;
-exports.fileName = fileName;
-exports.convert = convert;
-
-function dirName(path)
-{
+export function dirName(path) {
     var path = path.replace(/\/[^\/]+$/, '');
     if (path === '') {
         return '/';
@@ -18,13 +13,15 @@ function dirName(path)
     return path;
 }
 
-function fileName(path)
-{
+export function fileName(path) {
     return path.replace(/^.*\//, '');
 }
 
-function convert(path, cwd)
-{
+export function fileExt(path) {
+    return path.replace(/^.*?(?:\.([^.]+))?$/, '$1');
+}
+
+export function convert(path, cwd) {
     path = path.trim();
     if (!path.startsWith('/')) {
         path = cwd + '/' + path;

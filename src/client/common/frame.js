@@ -51,7 +51,7 @@ export class Frame extends Container {
         this.onFocus = null;
         this.onBlur = null;
         this.onKeydown = null;
-        this.onResize = null;
+        this.onresize = null;
 
         this.outer.style.display = 'none';
 
@@ -286,9 +286,8 @@ export class Frame extends Container {
         if (!this.hasFocus) {
             this.wasResized = true;
         }
-        if (this.onResize !== null) {
-            this.onResize();
-        }
+        this.trigger('resize');
+        this.update();
     }
 
     mouseDown(e) {

@@ -46,8 +46,8 @@ function newFolder() {
             }
             path += name;
             TEXTSTEP.post('file', {path: path}, {type: 'directory'}).then(function (data) {
+                dirView.setSelection(path);
                 dirView.reload();
-                dirView.cd(path);
             }, error => frame.alert('Error', error.message));
         }
     });
@@ -174,7 +174,7 @@ TEXTSTEP.initApp('files', function (app) {
     frame = self.createFrame('Files');
     frame.padding();
     dirView = new ui.DirView(frame);
-    frame.appendChild(dirView.elem);
+    frame.append(dirView);
 
     frame.defineAction('go-up', () => dirView.goUp(), ['nav']);
     frame.defineAction('root', () => dirView.cd('/'), ['nav']);
@@ -219,15 +219,15 @@ TEXTSTEP.initApp('files', function (app) {
 
     frame.disableAction('paste');
 
-    dirView.on('fileOpen', function (path) {
+    dirView.addEventListener('fileOpen', function (path) {
         TEXTSTEP.open(path).catch(() => frame.alert('Error', 'File could not be opened'));
     });
 
-    dirView.on('cwdChanged', function (path) {
+    dirView.addEventListener('cwdChanged', function (path) {
         self.setArgs({path: path});
     });
 
-    dirView.on('selectionChanged', function (selection) {
+    dirView.addEventListener('selectionChanged', function (selection) {
         if (selection.length > 0) {
             frame.enableGroup('selection');
         } else {
@@ -298,10 +298,6 @@ TEXTSTEP.initApp('files', function (app) {
     frame.isUnsaved = isUnsaved;
 
     */
-
-    frame.onResize = function () {
-        dirView.updateColumns();
-    };
 
     frame.onClose = () => self.close();
 

@@ -23,8 +23,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     flex-grow: 1;
     display: flex;
     align-items: stretch;
+    overflow: hidden;
     & > .files-panel {
-        width: 100%;
+        flex: 1 0 0;
     }
 }
 
@@ -34,9 +35,10 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     border-bottom: 1px solid #fff;
     background-color: var(--item-bg);
     color: var(--item-fg);
-    /*min-height: 200px;*/
+    overflow: hidden;
     flex-grow: 1;
-    position: relative;
+    display: flex;
+    flex-direction: column;
     &.readonly {
         background-color: #A59B9B;
     }
@@ -53,16 +55,17 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         left: 0;
         width: 100%;
     }
+
+    & > .file-preview {
+        border-top: 1px solid #fff;
+        box-shadow: inset 1px 1px 0 #000;
+    }
 }
 
 .files-grid,
 .files-list,
 .file-info {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    flex-grow: 1;
     border-left: 1px solid #000;
     border-top: 1px solid #000;
     margin: 0;
@@ -146,42 +149,42 @@ a.file {
     }
 }
 
-.file-info {
-    text-align: center;
-    padding: 10px;
-
-    .file {
-        text-align: center;
-    }
+.file-preview {
+    padding: var(--frame-padding);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
 
     .file-thumbnail {
-        max-width: 100%;
-        max-height: 50%;
-        display: block;
-        margin: 0 auto;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--frame-padding);
+
+        img {
+            max-width: 100%;
+        }
     }
     .file-icon {
-        display: block;
-        margin-bottom: 10px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--frame-padding);
+
     }
     .file-name {
-        display: block;
+        text-align: center;
         word-wrap: break-word;
-        margin-bottom: 10px;
+        margin-bottom: var(--frame-padding);
+        font-weight: 600;
+        font-size: 1.1em;
     }
-    .file-size {
-        display: block;
-        color: lighten($frameFg, 30%);
-        margin-bottom: 10px;
-    }
-    .file-modified {
-        display: block;
-        color: lighten($frameFg, 30%);
-        margin-bottom: 10px;
-    }
-    .file-access {
-        display: block;
-        color: lighten($frameFg, 30%);
-        margin-bottom: 10px;
+    .file-data {
+        .label {
+            opacity: 0.5;
+            text-align: right;
+        }
     }
 }

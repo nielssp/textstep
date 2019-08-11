@@ -75,13 +75,13 @@ export class Component {
     }
 
     trigger(eventName, eventData) {
-        if (this.hasOwnProperty('on' + eventName)) {
+        if (this.hasOwnProperty('on' + eventName) && this['on' + eventName]) {
             this['on' + eventName](eventData);
         }
     }
 
     addEventListener(eventName, handler) {
-        if (this.hasOwnProperty('on' + eventName)) {
+        if (this.hasOwnProperty('on' + eventName) && this['on' + eventName]) {
             let previous = this['on' + eventName];
             this['on' + eventName] = (eventData) => {
                 if (previous(eventData) !== false) {
@@ -91,6 +91,9 @@ export class Component {
         } else {
             this['on' + eventName] = handler;
         }
+    }
+
+    update() {
     }
 }
 
@@ -177,6 +180,10 @@ export class Container extends Component {
                 this.inner.classList.add('ts-padding-' + direction);
             }, this);
         }
+    }
+
+    update() {
+        this.children.forEach(child => child.update());
     }
 }
 
