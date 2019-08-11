@@ -518,7 +518,7 @@ class PreviewColumn extends DirColumn {
                         break;
                     default:
                         preview.appendChild(ui.elem('div', {'class': 'file-icon'}, [
-                            TEXTSTEP.getFileIcon(type, 32)
+                            TEXTSTEP.getFileIcon(type, 64)
                         ]));
                         break;
                 }
