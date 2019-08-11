@@ -236,6 +236,14 @@ TEXTSTEP.initApp('files', function (app) {
     });
 
     frame.bindKey('F2', 'rename');
+    frame.bindKey('ArrowDown', () => dirView.selectNext());
+    frame.bindKey('ArrowUp', () => dirView.selectPrevious());
+    frame.bindKey('ArrowLeft', 'go-up');
+    frame.bindKey('ArrowRight', () => {
+        if (dirView.selection.length === 1) {
+            dirView.open(dirView.selection[0]);
+        }
+    });
     frame.bindKey('Delete', 'trash');
 
     /*

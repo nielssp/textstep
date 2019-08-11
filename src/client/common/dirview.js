@@ -117,6 +117,7 @@ export class DirView extends ui.Component {
         }
         this.selection = [path];
         var files = this.columns[this.stack.length - 1].setSelection(this.selection);
+        files[0].bringIntoView();
         if (this.preview) {
             this.preview.preview(files);
         }
@@ -160,6 +161,36 @@ export class DirView extends ui.Component {
                 this.trigger('selectionChanged', this.selection);
                 break;
             }
+        }
+    }
+
+    selectNext() {
+        let files = this.columns[this.stack.length - 1].list;
+        if (files && files.length) {
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].selected) {
+                    if (i + 1 < files.length) {
+                        this.setSelection(files[i + 1].path);
+                    }
+                    return;
+                }
+            }
+            this.setSelection(files[0].path);
+        }
+    }
+
+    selectPrevious() {
+        let files = this.columns[this.stack.length - 1].list;
+        if (files && files.length) {
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].selected) {
+                    if (i > 0) {
+                        this.setSelection(files[i - 1].path);
+                    }
+                    return;
+                }
+            }
+            this.setSelection(files[files.length - 1].path);
         }
     }
 
@@ -628,6 +659,18 @@ class DirFile {
     setSelected(selected) {
         this.selected = selected;
         this.updateElement();
+    }
+
+    bringIntoView() {
+        let y = this.elem.offsetTop - this.column.listElem.offsetTop;
+        if (y < this.column.listElem.scrollTop) {
+            this.column.listElem.scrollTop = y;
+        } else {
+            y += this.elem.offsetHeight;
+            if (y > this.column.listElem.clientHeight + this.column.listElem.scrollTop) {
+                this.column.listElem.scrollTop = y - this.column.listElem.clientHeight;
+            }
+        }
     }
 }
 
