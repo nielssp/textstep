@@ -490,7 +490,9 @@ class PreviewColumn extends DirColumn {
         this.files = null;
         this.list = null;
         if (files.length > 1) {
-            this.listElem.innerHTML = files.map(f => f.name).join(', ');
+            let preview = ui.elem('div', {class: 'file-preview'});
+            this.listElem.appendChild(preview);
+            preview.appendChild(ui.elem('div', {'class': 'file-name'}, [files.length + ' files selected']));
         } else if (files.length === 1) {
             let file = files[0];
             if (file.type === 'directory') {
@@ -524,7 +526,6 @@ class PreviewColumn extends DirColumn {
                 }
                 this.createFileData(preview, file);
             }
-        } else {
         }
     }
 }
