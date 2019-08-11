@@ -425,6 +425,8 @@ class DirColumn {
                 if (this.path === this.dirView.cwd && this.dirView.preview) {
                     this.dirView.preview.preview(selectedFiles);
                 }
+            } else {
+                this.dirView.setSelection(this.path);
             }
         });
     }
