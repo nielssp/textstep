@@ -22,6 +22,8 @@ import {
     ValueSaturation,
     HsvPicker,
     ColorButton,
+    Input,
+    Label
 } from './component';
 import {Toolbar} from './toolbar';
 import {Dialog} from './dialog';
@@ -47,6 +49,8 @@ export {
     Toolbar,
     Dialog,
     DirView,
+    Input,
+    Label
 };
 
 export function elem(tag, attributes = {}, children = []) {
@@ -68,6 +72,17 @@ export function elem(tag, attributes = {}, children = []) {
 
 export function byId(id) {
     return document.getElementById(id);
+}
+
+let nextId = 0;
+
+export function createId() {
+    let id;
+    do {
+        id = 'tsid-' + nextId;
+        nextId++;
+    } while (document.getElementById(id));
+    return id;
 }
 
 var gaid = 0;

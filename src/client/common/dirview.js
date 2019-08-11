@@ -360,7 +360,7 @@ function DirFile(column, data) {
     this.elem = ui.elem('a', {
         'draggable': true,
         'href': TEXTSTEP.url('content/' + this.name, {path: this.path})
-    }, [this.name]);
+    });
     this.elem.addEventListener('touchend', e => {
         e.preventDefault();
         if (this.column.dirView.touchSelectMode) {
@@ -434,6 +434,14 @@ function DirFile(column, data) {
         e.dataTransfer.setData('application/x-textstep-path', this.path);
         e.dataTransfer.effectAllowed = 'copyMove';
     };
+    if (this.type === 'directory') {
+        this.icon = TEXTSTEP.getIcon('file-directory', 16);
+    } else {
+        this.icon = TEXTSTEP.getFileIcon(this.name.replace(/^.*?(?:\.([^.]+))?$/, '$1'), 16);
+    }
+    this.elem.appendChild(this.icon);
+    this.label = ui.elem('span', {class: 'label'}, [this.name]);
+    this.elem.appendChild(this.label);
     this.updateElement();
 }
 
@@ -441,8 +449,13 @@ DirFile.prototype.updateElement = function () {
     this.elem.className = 'file';
     if (this.type === 'directory') {
         this.elem.className += ' file-directory';
-    } else {
-        this.elem.className += ' file-' + this.name.replace(/^.*?(?:\.([^.]+))?$/, '$1');
+        let oldIcon = this.icon;
+        if (this.selected) {
+            this.icon = TEXTSTEP.getIcon('file-directory-open', 16);
+        } else {
+            this.icon = TEXTSTEP.getIcon('file-directory', 16);
+        }
+        this.elem.replaceChild(this.icon, oldIcon);
     }
     if (this.selected) {
         this.elem.className += ' active';

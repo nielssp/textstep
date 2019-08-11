@@ -5,11 +5,18 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-import {elem} from './ui';
+import {elem, createId} from './ui';
 
 export class Component {
     constructor() {
         this.outer = elem('div');
+    }
+
+    get id() {
+        if (!this.outer.id) {
+            this.outer.id = createId();
+        }
+        return this.outer.id;
     }
 
     get width() {
@@ -776,5 +783,40 @@ export class ColorButton extends Component {
 
     set disabled(disabled) {
         this.outer.disabled = disabled;
+    }
+}
+
+export class Input extends Component {
+    constructor(type) {
+        super();
+        this.outer = elem('input', {type: type});
+    }
+}
+
+export class Label extends Component {
+    constructor(text = '', input = null) {
+        super();
+        this.outer = elem('label');
+        this.text = text;
+        this.input = input;
+    }
+
+    get text() {
+        return this.outer.textContent;
+    }
+
+    set text(text) {
+        this.outer.textContent = text;
+    }
+
+    get input() {
+        return this.inputComp;
+    }
+
+    set input(input) {
+        this.inputComp = input;
+        if (this.inputComp) {
+            this.outer.htmlFor = this.inputComp.id;
+        }
     }
 }

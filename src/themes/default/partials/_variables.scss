@@ -20,6 +20,12 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     --inactive-titlebar-bg: var(--frame-bg);
     --inactive-titlebar-fg: var(--frame-fg);
 
+    --button-bg: var(--frame-bg);
+    --button-fg: var(--frame-fg);
+
+    --menu-item-bg: var(--button-bg);
+    --menu-item-fg: var(--button-fg);
+
     --input-bg: #ffffff;
     --input-bg-rgb: 255, 255, 255;
     --input-fg: #000000;

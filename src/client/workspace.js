@@ -226,26 +226,28 @@ TEXTSTEP.requestLogin = function (overlay = false) {
             loginFrame.capsLockWarning = ui.elem('div', {'class': 'caps-lock-warning'}, [
                 'Caps Lock appears to be on'
             ]),
-            loginFrame.formElem = ui.elem('form', {method: 'post', id: 'login'}, [
-                ui.elem('div', {'class': 'field'}, [
-                    ui.elem('label', {'for': 'login-username'}, ['Username']),
-                    ui.elem('input', {type: 'text', name: 'username', id: 'login-username'})
-                ]),
-                ui.elem('div', {'class': 'field'}, [
-                    ui.elem('label', {'for': 'login-password'}, ['Password']),
-                    ui.elem('input', {type: 'password', name: 'password', id: 'login-password'})
-                ]),
-                loginFrame.capsLockWarning,
-                ui.elem('div', {'class': 'field remember'}, [
-                    ui.elem('input', {type: 'checkbox', name: 'remember', value: 'remember', id: 'login-remember'}),
-                    ui.elem('label', {'for': 'login-remember'}, ['Remember'])
-                ]),
-                ui.elem('div', {'class': 'buttons'}, [
-                    ui.elem('button', {type: 'submit', title: 'Log in'}, [
-                        ui.elem('span', {'class': 'icon icon-unlock'})
-                    ])
-                ]),
-            ]);
+            loginFrame.formElem = ui.elem('form', {method: 'post', id: 'login'});
+            let stack = new ui.StackColumn();
+            loginFrame.formElem.appendChild(stack.outer);
+            stack.innerPadding = true;
+            stack.append(ui.elem('label', {'for': id}, ['Username']));
+            stack.append(ui.elem('input', {type: 'text', name: 'username', id: id}));
+            id = ui.createId();
+            stack.append(ui.elem('label', {'for': id}, ['Password']));
+            stack.append(ui.elem('input', {type: 'password', name: 'password', id: id}));
+            let footer = new ui.StackRow();
+            footer.alignItems = 'center';
+            let remember = new ui.StackRow();
+            remember.alignItems = 'center';
+            remember.innerPadding = true;
+            id = ui.createId();
+            remember.append(ui.elem('input', {type: 'checkbox', name: 'remember', value: 'remember', id: id}));
+            remember.append(ui.elem('label', {'for': id}, ['Remember']));
+            footer.append(remember, {grow: 1});
+            footer.append(ui.elem('button', {type: 'submit', title: 'Log in'}, [
+                TEXTSTEP.getIcon('unlock', 22)
+            ]));
+            stack.append(footer);
             loginFrame.formElem.password.onkeydown = e => {
                 if (loginFrame.capsLockWarning.style.display === 'block' && e.key === 'CapsLock') {
                     loginFrame.capsLockWarning.style.display = 'none';
@@ -514,19 +516,54 @@ function unloadLib(name) {
 
 TEXTSTEP.getIcon = function (name, size = 32) {
     // TODO: onerror
-    return ui.elem('img', {
-        src: TEXTSTEP.url('content', {path: '/dist/icons/default/' + size + '/' + name + '.png'}),
-        width: size,
-        height: size
-    });
+    let icon = ui.elem('div', {class: 'icon'});
+    icon.style.width = size + 'px';
+    icon.style.height = size + 'px';
+    if (TEXTSTEP.user) {
+        icon.style.backgroundImage = 'url(' + TEXTSTEP.url('content', {path: '/dist/icons/default/' + size + '/' + name + '.png'}) + ')';
+    } else {
+        icon.style.backgroundImage = 'url(' + TEXTSTEP.DIST_PATH + '/icons/default/' + size + '/' + name + '.png)';
+    }
+    icon.style.backgroundSize = `${size}px ${size}px`;
+    return icon;
+};
+
+TEXTSTEP.getFileIcon = function (type, size = 32) {
+    let icon = 'file-unknown';
+    switch (type.toLowerCase()) {
+        case 'html':
+        case 'htm':
+            icon = 'file-html';
+            break;
+        case 'php':
+        case 'tss':
+        case 'json':
+            icon = 'file-php';
+            break;
+        case 'md':
+            icon = 'file-md';
+            break;
+        case 'jpg':
+        case 'jpeg':
+        case 'png':
+        case 'ico':
+        case 'svg':
+        case 'gif':
+            icon = 'generic-image';
+            break;
+        case 'webm':
+            icon = 'generic-video';
+            break;
+    }
+    return TEXTSTEP.getIcon(icon, size);
 };
 
 var nextFrameId = 0;
 
 TEXTSTEP.openFrame = function (frame) {
     if (!frame.isOpen) {
-        frame.id = nextFrameId++;
-        frames[frame.id] = frame;
+        frame.frameId = nextFrameId++;
+        frames[frame.frameId] = frame;
         main.appendChild(frame.outer);
         for (var tool in frame.toolFrames) {
             if (frame.toolFrames.hasOwnProperty(tool)) {
@@ -542,14 +579,14 @@ TEXTSTEP.openFrame = function (frame) {
 };
 
 TEXTSTEP.closeFrame = function (frame) {
-    if (frame.isOpen && frame.id !== null) {
+    if (frame.isOpen && frame.frameId !== null) {
         if (focus === frame) {
             focus.loseFocus();
             focus = null;
         }
         frame.isOpen = false;
         main.removeChild(frame.outer);
-        delete frames[frame.id];
+        delete frames[frame.frameId];
         for (var i = 0; i < frame.menus.length; i++) {
             menu.removeChild(frame.menus[i].elem);
         }
@@ -623,8 +660,8 @@ TEXTSTEP.applyTheme = function (name) {
 };
 
 TEXTSTEP.applyIcons = function (name) {
-    let scriptSrc = TEXTSTEP.DIST_PATH + '/icons/' + name + '/icons.css';
-    let scriptElem = ui.elem('link', {rel: 'stylesheet', type: 'text/css', href: scriptSrc});
+    let scriptSrc = TEXTSTEP.DIST_PATH + '/icons/' + name + '/icons.js';
+    let scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
     scriptElem.onerror = function () {
         root.removeChild(scriptElem);
     };

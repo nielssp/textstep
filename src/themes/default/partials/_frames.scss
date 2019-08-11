@@ -130,11 +130,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 #login-overlay > .frame {
     margin: 14% auto 0 auto;
     width: 200px;
-    text-align: right;
-
-    .field {
-        text-align: left;
-    }
 
     .caps-lock-warning {
         text-align: center;
@@ -143,13 +138,5 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         margin-bottom: 8px;
         margin-top: -6px;
         display: none;
-    }
-
-    .remember {
-        float: left;
-        width: auto;
-        font-size: 0.95em;
-        margin-top: 7px;
-        margin-bottom: 0;
     }
 }

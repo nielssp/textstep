@@ -806,23 +806,7 @@ function appearancePanel(frame) {
     };
     skinRow.append(skinSave);
 
-    let bgFieldSet = new ui.FieldSet();
-    bgFieldSet.legend = 'Background';
-    dialog.append(bgFieldSet);
-
-    let colorPicker = new ui.HsvPicker();
-    colorPicker.outer.style.minHeight = '200px';
-    colorPicker.onchange = color => {
-        TEXTSTEP.setSkinProperty('desktop-bg', color)
-        TEXTSTEP.setSkinProperty('path', null)
-    };
-    colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim();
-    bgFieldSet.append(colorPicker, {grow: 1});
-
-    TEXTSTEP.addEventListener('skinChanged', () => {
-        colorPicker.color = TEXTSTEP.getSkinProperty('desktop-bg').trim()
-        selectCurrentSkin();
-    });
+    dialog.append(widgetStyle(frame, 'Background', 'desktop'));
 
     dialog.append(widgetStyle(frame, 'Active title bars', 'active-titlebar'));
 
@@ -831,6 +815,10 @@ function appearancePanel(frame) {
     dialog.append(widgetStyle(frame, 'Frames', 'frame'));
 
     dialog.append(widgetStyle(frame, 'Dock frames', 'dock-frame'));
+
+    dialog.append(widgetStyle(frame, 'Menu buttons', 'menu-item'));
+
+    dialog.append(widgetStyle(frame, 'Buttons', 'button'));
 
     dialog.append(widgetStyle(frame, 'Inputs', 'input'));
 

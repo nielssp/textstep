@@ -17,7 +17,7 @@ import {Component, Container} from './component';
 export class Frame extends Container {
     constructor(title) {
         super();
-        this.id = null;
+        this.frameId = null;
         this.title = title;
         this.isOpen = false;
         this.isVisible = false;

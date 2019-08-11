@@ -79,7 +79,6 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     -webkit-user-select: none;
     -webkit-touch-callout: none;
 
-    @include icon-size(32px);
     &:before {
         display: block;
         margin: 0 auto;
@@ -110,7 +109,9 @@ a.file {
 
 .files-list {
     .file {
-        display: block;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         padding: 8px 5px;
         white-space: nowrap;
         overflow: hidden;
@@ -121,16 +122,27 @@ a.file {
         @media screen and (min-width: $sm) {
             padding: 1px 5px;
         }
-        @include icon-size(16px);
-        &:before {
-            vertical-align: middle;
-            margin: 0 5px 0 0;
+        .icon {
+            margin-right: 4px;
+            flex-shrink: 0;
         }
-    }
-    a.file-directory {
-        background-image: url(arrow.png);
-        background-repeat: no-repeat;
-        background-position: right 8px center;
+        .label {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        &.file-directory {
+            &:after {
+                flex-shrink: 0;
+                display: block;
+                content: '';
+                width: 16px;
+                height: 16px;
+                background-image: url(arrow.png);
+                background-repeat: no-repeat;
+                background-position: right 3px center;
+            }
+        }
     }
 }
 

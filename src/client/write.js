@@ -194,7 +194,7 @@ function saveFile() {
                 frame.setTitle(current.path + ' – Write');
                 simplemde.clearAutosavedValue();
             }
-        });
+        }, error => frame.alert('Error', error.message, error));
     } else {
         return Promise.resolve();
     }
@@ -275,6 +275,7 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
     var menu = frame.addMenu('Write');
     menu.addItem('New', 'new');
     menu.addItem('Save', 'save');
+    menu.addItem('Publish', 'publish');
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');
 
