@@ -386,6 +386,9 @@ class DirColumn {
             this.list = null;
         }
         TEXTSTEP.get('file', {path: this.path, list: true}).then(data => {
+            if (data.path !== this.path) {
+                return;
+            }
             if (data.type === 'directory' && typeof data.files !== 'undefined') {
                 this.listElem.innerHTML = '';
                 this.files = {};
@@ -489,12 +492,14 @@ class PreviewColumn extends DirColumn {
         this.previewElem.style.display = 'none';
         this.files = null;
         this.list = null;
+        this.path = null;
         if (files.length > 1) {
             let preview = ui.elem('div', {class: 'file-preview'});
             this.listElem.appendChild(preview);
             preview.appendChild(ui.elem('div', {'class': 'file-name'}, [files.length + ' files selected']));
         } else if (files.length === 1) {
             let file = files[0];
+            this.path = file.path;
             if (file.type === 'directory') {
                 this.previewElem.style.display = '';
                 this.createFileData(this.previewElem, file);
