@@ -45,11 +45,22 @@ class Thumbnail extends AuthenticatedSnippet
         }
         $cacheKey = md5($fs->getPath()) . $size;
         $cached = $this->m->files->get('/var/cache/thumbnails/' . $cacheKey . '.png');
-        if ($cached->exists() and $cached->getCreated() >= $fs->getModified()) {
-            $path = $cached->getHostPath();
-            $mimeType = $cached->getMimeType();
-            $response = Response::file($path, $mimeType);
-            return $response;
+        if ($cached->exists()) {
+            if ($this->request->hasHeader('If-Modified-Since')) {
+                $time = strtotime($this->request->getHeaderLine('If-Modified-Since'));
+                if ($time !== false and $time >= $cached->getModified()) {
+                    return new Response(Status::NOT_MODIFIED);
+                }
+            }
+            if ($cached->getCreated() >= $fs->getModified()) {
+                $path = $cached->getHostPath();
+                $mimeType = $cached->getMimeType();
+                $response = Response::file($path, $mimeType);
+                $response = $response->withHeader('Last-Modified', date('r', $cached->getModified()));
+                return $response;
+            }
+        } else if (!$cached->getParent()->isDirectory()) {
+            $cached->getParent()->makeDirectory(true);
         }
         $path = $fs->getHostPath();
         $imgType = getimagesize($path);
@@ -105,6 +116,7 @@ class Thumbnail extends AuthenticatedSnippet
                     $path = $cached->getHostPath();
                     $mimeType = $cached->getMimeType();
                     $response = Response::file($path, $mimeType);
+                    $response = $response->withHeader('Last-Modified', date('r', $cached->getModified()));
                     return $response;
                 }
                 $stream = fopen('php://memory', 'wb+');
@@ -119,6 +131,7 @@ class Thumbnail extends AuthenticatedSnippet
         }
         $mimeType = $this->m->files->fileNameToMimeType($path);
         $response = Response::file($path, $mimeType);
+        $response = $response->withHeader('Last-Modified', date('r', $fs->getModified()));
         return $response;
     }
 }
