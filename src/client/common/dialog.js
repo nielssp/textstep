@@ -25,6 +25,7 @@ export class Dialog extends Container {
         this.outer = ui.elem('div', {'class': 'dialog-overlay'}, [this.frameElem]);
 
         this.onopen = () => {};
+        this.onclose = () => {};
     };
 
     get width() {
@@ -85,6 +86,7 @@ export class Dialog extends Container {
             this.deferred.resolve(result);
             this.deferred = null;
         }
+        this.trigger('close', null);
     }
 
     static footer(dialog, choices = ['OK', 'Cancel'], defaultChoice = 0) {
@@ -126,7 +128,7 @@ export class Dialog extends Container {
         }
         dialog.append(content);
         dialog.append(Dialog.footer(dialog, ['OK']));
-        return dialog.open();
+        return dialog;
     }
 
     static confirm(parent, title, message, choices = ['OK', 'Cancel'], defaultChoice = 0) {
@@ -136,7 +138,7 @@ export class Dialog extends Container {
         var content = ui.elem('div', {'class': 'frame-content'}, ['' + message]);
         dialog.append(content);
         dialog.append(Dialog.footer(dialog, choices, defaultChoice));
-        return dialog.open();
+        return dialog;
     }
 
     static prompt(parent, title, message, value = '', type = 'text') {
@@ -183,13 +185,14 @@ export class Dialog extends Container {
         footer.append(cancelButton);
         dialog.append(content);
         dialog.append(footer);
-        var promise = dialog.open();
-        input.focus();
-        if (value.length > 0) {
-            input.value = value;
-            input.setSelectionRange(0, value.length)
-        }
-        return promise;
+        dialog.addEventListener('open', () => {
+            input.focus();
+            if (value.length > 0) {
+                input.value = value;
+                input.setSelectionRange(0, value.length)
+            }
+        });
+        return dialog;
     }
 
     static file(parent, title, multiple = false) {
@@ -237,7 +240,7 @@ export class Dialog extends Container {
         footer.append(okButton);
         footer.append(cancelButton);
         dialog.append(footer);
-        return dialog.open();
+        return dialog
     }
 
     static save(parent, title) {
@@ -306,9 +309,8 @@ export class Dialog extends Container {
             input.focus();
         });
 
-        var promise = dialog.open();
-        input.focus();
-        return promise;
+        dialog.addEventListener('open', () => input.focus());
+        return dialog;
     }
 
     static color(parent, title, value) {
@@ -367,12 +369,13 @@ export class Dialog extends Container {
         footer.append(okButton);
         footer.append(cancelButton);
         dialog.append(footer);
-        let promise = dialog.open();
-        input.focus();
-        if (value.length > 0) {
-            input.value = value;
-            input.setSelectionRange(0, value.length)
-        }
-        return promise;
+        dialog.addEventListener('open', () => {
+            input.focus();
+            if (value.length > 0) {
+                input.value = value;
+                input.setSelectionRange(0, value.length)
+            }
+        });
+        return dialog;
     }
 }

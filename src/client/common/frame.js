@@ -101,6 +101,12 @@ export class Frame extends Container {
         return toolbar;
     }
 
+    openDialog(dialog) {
+        this.dialogs.push(dialog);
+        dialog.addEventListener('close', () => this.dialogs.pop());
+        return dialog.open();
+    }
+
     alert(title, message, error = {}) {
         if (!this.isOpen) {
             throw 'Frame not open';
@@ -109,31 +115,31 @@ export class Frame extends Container {
         if (error.context && error.context.details) {
             details = error.context.details;
         }
-        return Dialog.alert(this.inner, title, message, details);
+        return this.openDialog(Dialog.alert(this.inner, title, message, details));
     }
 
     confirm(title, message, choices, defaultChoice) {
-        return Dialog.confirm(this.inner, title, message, choices, defaultChoice);
+        return this.openDialog(Dialog.confirm(this.inner, title, message, choices, defaultChoice));
     }
 
     prompt(title, message, value = '', type = 'text') {
-        return Dialog.prompt(this.inner, title, message, value, type);
+        return this.openDialog(Dialog.prompt(this.inner, title, message, value, type));
     }
 
     file(title) {
-        return Dialog.file(this.inner, title);
+        return this.openDialog(Dialog.file(this.inner, title));
     }
 
     openFile(title, multiple = false) {
-        return Dialog.file(this.inner, title, multiple);
+        return this.openDialog(Dialog.file(this.inner, title, multiple));
     }
 
     saveFile(title) {
-        return Dialog.save(this.inner, title);
+        return this.openDialog(Dialog.save(this.inner, title));
     }
 
     color(title, value) {
-        return Dialog.color(this.inner, title, value);
+        return this.openDialog(Dialog.color(this.inner, title, value));
     }
 
     keydown(e) {
