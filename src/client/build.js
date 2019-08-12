@@ -72,9 +72,9 @@ function build(target) {
                         });
                     } else {
                         try {
-                            updateStatus(JSON.parse(xhr.response).message, true);
+                            updateStatus(JSON.parse(this.response).message, true);
                         } catch (e) {
-                            updateStatus(xhr.response, true);
+                            updateStatus(this.response, true);
                         }
                     }
                 }
