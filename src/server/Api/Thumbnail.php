@@ -59,8 +59,6 @@ class Thumbnail extends AuthenticatedSnippet
                 $response = $response->withHeader('Last-Modified', date('r', $cached->getModified()));
                 return $response;
             }
-        } else if (!$cached->getParent()->isDirectory()) {
-            $cached->getParent()->makeDirectory(true);
         }
         $path = $fs->getHostPath();
         $imgType = getimagesize($path);
@@ -102,7 +100,7 @@ class Thumbnail extends AuthenticatedSnippet
                 $created = false;
                 $this->m->acl->withAuthentication('thumbnail.generate', $cached, function ($cached) use ($resized, $created) {
                     try {
-                        if ($cached->makeFile()) {
+                        if ($cached->makeFile(true)) {
                             $cacheOut = $cached->openStream('wb+');
                             $f = $cacheOut->detach();
                             imagepng($resized, $f);
