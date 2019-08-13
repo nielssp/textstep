@@ -391,7 +391,7 @@ TEXTSTEP.open = function (path) {
         return TEXTSTEP.run('write', {path: path});
     } else if (fileName.match(/\.webm/i)) {
         return TEXTSTEP.run('play', {path: path});
-    } else if (fileName.match(/\.(?:jpe?g|png|gif|ico)/i)) {
+    } else if (fileName.match(/\.(?:jpe?g|png|gif|ico|svg)/i)) {
         return TEXTSTEP.run('view', {path: path});
     } else if (fileName.match(/\.(?:php|log|json|html|css|js|sass|scss)/i)) {
         return TEXTSTEP.run('code', {path: path});

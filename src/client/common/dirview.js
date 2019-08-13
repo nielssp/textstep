@@ -530,15 +530,24 @@ class PreviewColumn extends DirColumn {
                 let preview = ui.elem('div', {class: 'file-preview'});
                 this.listElem.appendChild(preview);
                 let type = paths.fileExt(files[0].name).toLowerCase();
+                let src;
                 switch (type) {
                     case 'jpeg':
                     case 'jpg':
                     case 'png':
                     case 'ico':
-                        let src = TEXTSTEP.url('thumbnail', {
+                        src = TEXTSTEP.url('thumbnail', {
                             path: files[0].path,
                             width: 200,
                             height: 200
+                        });
+                        preview.appendChild(ui.elem('div', {'class': 'file-thumbnail'}, [
+                            ui.elem('img', {src: src})
+                        ]));
+                        break;
+                    case 'svg':
+                        src = TEXTSTEP.url('content', {
+                            path: files[0].path
                         });
                         preview.appendChild(ui.elem('div', {'class': 'file-thumbnail'}, [
                             ui.elem('img', {src: src})
