@@ -74,6 +74,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:File');
         $this->m->router->auto('snippet:Content');
         $this->m->router->match('content/*', 'snippet:Content');
+        $this->m->router->auto('snippet:Delete');
         $this->m->router->auto('snippet:Copy');
         $this->m->router->auto('snippet:Move');
         $this->m->router->auto('snippet:Storage');

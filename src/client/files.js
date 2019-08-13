@@ -156,7 +156,7 @@ function trash() {
     }
     frame.confirm('Files', confirmation, ['Delete', 'Cancel'], 0).then(function (choice) {
         if (choice === 0) {
-            TEXTSTEP.delete('file', data).then(function (data) {
+            TEXTSTEP.post('delete', {}, data).then(function (data) {
                 dirView.clearSelection();
                 dirView.reload();
             }, error => frame.alert('Error', error.message));
@@ -236,15 +236,10 @@ TEXTSTEP.initApp('files', function (app) {
     });
 
     frame.bindKey('F2', 'rename');
-    frame.bindKey('ArrowDown', () => dirView.selectNext());
-    frame.bindKey('ArrowUp', () => dirView.selectPrevious());
-    frame.bindKey('ArrowLeft', 'go-up');
-    frame.bindKey('ArrowRight', () => {
-        if (dirView.selection.length === 1) {
-            dirView.open(dirView.selection[0]);
-        }
-    });
     frame.bindKey('Delete', 'trash');
+    frame.bindKey('C-C', 'copy');
+    frame.bindKey('C-X', 'cut');
+    frame.bindKey('C-V', 'paste');
 
     /*
     frame.defineAction('back', back, ['nav']);
@@ -325,5 +320,6 @@ TEXTSTEP.initApp('files', function (app) {
                 self.setArgs({path: dirView.cwd});
             }
         }
+        dirView.focus();
     };
 });

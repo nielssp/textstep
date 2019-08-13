@@ -12,7 +12,7 @@ class GenerateTestContent extends \Blogstep\AuthenticatedSnippet
 {
     public function post(array $data)
     {
-        $content = $this->m->files->get('content/published');
+        $content = $this->m->files->get('site/content/published');
         
         $num = 20;
         if (isset($data['num'])) {

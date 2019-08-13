@@ -228,19 +228,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/File'
     delete:
-      description: Delete files
+      description: Delete single file
       tags: [files]
       parameters: 
         - name: path
           in: query
           schema:
             type: string
-        - name: paths[]
-          in: query
-          schema:
-            type: array
-            items:
-              type: string
       responses:
         204:
           description: OK
@@ -324,9 +318,31 @@ paths:
       responses:
         200:
           description: File contents
+  /delete:
+    post:
+      description: Delete one or more files or directories
+      tags: [files]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paths:
+                  type: array
+                  description: List of paths
+                  items:
+                      type: string
+                path:
+                  type: string
+                  example: /file/path
+      responses:
+        204:
+          description: File copied
   /copy:
     post:
-      description: Copy a file or directory
+      description: Copy one or more files or directories
       tags: [files]
       requestBody:
         required: true
@@ -353,7 +369,7 @@ paths:
           description: File copied
   /move:
     post:
-      description: Move a file or directory
+      description: Move one or more files or directories
       tags: [files]
       requestBody:
         required: true

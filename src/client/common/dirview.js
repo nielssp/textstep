@@ -12,6 +12,7 @@ import * as paths from './paths';
 export class DirView extends ui.Component {
     constructor() {
         super();
+        this.focusable = true;
         this.outer.className = 'files-columns';
 
         this.columns = [];
@@ -30,9 +31,27 @@ export class DirView extends ui.Component {
         this.showEmptyColumns = false;
         this.showPreview = true;
 
-        this.addEventListener('selectionChanged', selection => {
-            if (this.preview) {
+        this.outer.addEventListener('keydown', e => {
+            switch (e.key) {
+                case 'ArrowDown':
+                    this.selectNext();
+                    break;
+                case 'ArrowUp':
+                    this.selectPrevious();
+                    break;
+                case 'ArrowLeft':
+                    this.goUp();
+                    break;
+                case 'ArrowRight':
+                    if (this.selection.length === 1) {
+                        this.open(this.selection[0]);
+                    }
+                    break;
+                default:
+                    return;
             }
+            e.preventDefault();
+            return false;
         });
     }
 
@@ -385,10 +404,12 @@ class DirColumn {
             this.files = null;
             this.list = null;
         }
+        this.elem.classList.add('loading');
         TEXTSTEP.get('file', {path: this.path, list: true}).then(data => {
             if (data.path !== this.path) {
                 return;
             }
+            this.elem.classList.remove('loading');
             if (data.type === 'directory' && typeof data.files !== 'undefined') {
                 this.listElem.innerHTML = '';
                 this.files = {};

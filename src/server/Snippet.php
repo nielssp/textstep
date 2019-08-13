@@ -25,11 +25,6 @@ abstract class Snippet
      */
     protected $parameters = array();
 
-    /**
-     * @var string Data key.
-     */
-    protected $dataKey = null;
-    
     protected $routeParameters = [];
 
     /**
@@ -232,6 +227,7 @@ abstract class Snippet
             } else {
                 $data = $this->request->data;
             }
+            $this->data = $data;
             switch ($this->request->method) {
                 case 'POST':
                     return $this->after($this->post($data));

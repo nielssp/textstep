@@ -19,6 +19,21 @@ export class Component {
         return this.outer.id;
     }
 
+    get focusable() {
+        return this.outer.tabIndex >= 0;
+    }
+
+    set focusable(focusable) {
+        if (focusable) {
+            this.outer.tabIndex = 0;
+        }
+        this.outer.tabIndex = -1;
+    }
+
+    focus() {
+        this.outer.focus();
+    }
+
     get width() {
         return this.outer.getBoundingClientRect().width;
     }

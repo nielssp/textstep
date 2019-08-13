@@ -56,10 +56,9 @@ class File extends \Blogstep\AuthenticatedSnippet
 
     public function delete()
     {
-        foreach ($this->getRequestedFiles() as $file) {
-            if (!$file->delete()) {
-                return $this->error('File could not be deleted: ' . $file->getPath(), \Jivoo\Http\Message\Status::BAD_REQUEST);
-            }
+        $file = $this->getRequestedFile();
+        if (!$file->delete()) {
+            return $this->error('File could not be deleted: ' . $file->getPath(), \Jivoo\Http\Message\Status::BAD_REQUEST);
         }
         return $this->ok();
     }
