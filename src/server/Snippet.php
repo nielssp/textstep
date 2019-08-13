@@ -51,6 +51,8 @@ abstract class Snippet
 
     protected $parseBody = true;
 
+    protected $data = null;
+
     /**
      * Construct snippet.
      *
