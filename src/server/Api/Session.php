@@ -5,6 +5,8 @@
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep\Api;
 
+use Blogstep\RuntimeException;
+
 class Session extends \Blogstep\Snippet
 {
     
@@ -26,7 +28,7 @@ class Session extends \Blogstep\Snippet
                 ]);
             }
         }
-        return $this->error('Invalid username or password', \Jivoo\Http\Message\Status::FORBIDDEN);
+        throw new RuntimeException(RuntimeException::INVALID_CREDENTIALS, 'Invalid username or password');
     }
     
     public function delete()

@@ -106,6 +106,16 @@ var commands = {
             writeLine(data);
         });
     },
+    get: function (args) {
+        args = args.split(' ');
+        execGet(args[0], {}, function (data) {
+            if (typeof data === 'string') {
+                writeLine(data);
+            } else {
+                writeLine(JSON.stringify(data, null, 2));
+            }
+        });
+    },
     exit: function (args) {
         self.close();
     },
@@ -235,15 +245,8 @@ function prompt()
             if (commands.hasOwnProperty(command)) {
                 commands[command]((typeof m[2] === 'undefined')? '' : m[2]);
             } else {
-                try {
-                    var data = (typeof m[2] === 'undefined') ? {} : JSON.parse(m[2]);
-                    exec(command, data, function (data) {
-                        writeLine(JSON.stringify(data, null, '  '));
-                    });
-                } catch (e) {
-                    writeLine(e);
-                    prompt();
-                }
+                writeLine(command + ': Undefined command');
+                prompt();
             }
         }
     });

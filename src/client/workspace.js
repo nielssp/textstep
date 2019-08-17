@@ -281,7 +281,7 @@ TEXTSTEP.requestLogin = function (overlay = false) {
                 username: loginFrame.formElem.username.value,
                 password: loginFrame.formElem.password.value,
             };
-            TEXTSTEP.post('session', {}, data).then(function (data) {
+            TEXTSTEP.post('session', {}, data).then(data => {
                 sessionId = data.sessionId;
                 if (loginFrame.formElem.remember.checked) {
                     sessionStorage.removeItem('textstepSessionId');
@@ -304,7 +304,10 @@ TEXTSTEP.requestLogin = function (overlay = false) {
                 loginFrame.promise = null;
                 TEXTSTEP.trigger('login');
                 resolve();
-            }, function () {
+            }, error => {
+                if (error.errorType !== 'INVALID_CREDENTIALS') {
+                    alert(error.message);
+                }
                 ui.shake(loginFrame.outer);
                 loginFrame.formElem.username.disabled = false;
                 loginFrame.formElem.password.disabled = false;
@@ -860,7 +863,10 @@ function requestAuthenticatedUser() {
                 resolve(user);
             }
         };
-        TEXTSTEP.get('who-am-i', {}, 'json').then(handleResult, reject);
+        TEXTSTEP.get('who-am-i', {}, 'json').then(handleResult, error => {
+            alert(error.message);
+            handleResult(null);
+        });
     });
 }
 

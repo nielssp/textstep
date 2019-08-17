@@ -240,7 +240,7 @@ abstract class Snippet
             }
             return $this->after($this->methodNotAllowed());
         } catch (RuntimeException $e) {
-            $this->m->logger->warning($e->getMessage(), ['exception' => $e]);
+            $this->m->logger->info('Exception: ' . $e->getMessage(), ['exception' => $e]);
             return $this->error($e);
         }
     }
@@ -324,7 +324,7 @@ abstract class Snippet
         if (isset($this->request->query['path']) and is_string($this->request->query['path'])) {
             return $this->m->files->get($this->request->query['path']);
         } else {
-            throw new RuntimeException('"path" expected');
+            throw new RuntimeException(RuntimeException::INVALID_QUERY, '"path" expected');
         }
     }
 
@@ -339,7 +339,7 @@ abstract class Snippet
         } elseif (isset($this->request->query['path'])) {
             return [$this->m->files->get($this->request->query['path'])];
         } else {
-            throw new RuntimeException('"path" or "paths[]" expected');
+            throw new RuntimeException(RuntimeException::INVALID_QUERY, '"path" or "paths[]" expected');
         }
     }
     

@@ -26,34 +26,4 @@ class FileException extends RuntimeException
     const DELETE_FAILED = 'DELETE_FAILED';
     const READ_FAILED = 'READ_FAILED';
     const SYNTAX_ERROR = 'SYNTAX_ERROR';
-
-    protected $errorType;
-
-    protected $context;
-
-    public function __construct($errorType, $message, array $context = [])
-    {
-        parent::__construct(\Jivoo\Log\Logger::interpolate($message, $context));
-        $this->errorType = $errorType;
-        $this->context = $context;
-    }
-
-    public function getErrorType()
-    {
-        return $this->errorType;
-    }
-
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    public function toArray()
-    {
-        return [
-            'errorType' => $this->getErrorType(),
-            'message' => $this->getMessage(),
-            'context' => $this->getContext(),
-        ];
-    }
 }
