@@ -782,6 +782,9 @@ function appearancePanel(frame) {
     let skinBrowse = ui.elem('button', {}, ['Open']);
     skinBrowse.onclick = () => {
         frame.openFile('Load skin').then(path => {
+            if (!path) {
+                return;
+            }
             TEXTSTEP.get('content', {path: path[0]}).then(skin => {
                 skin.path = path[0];
                 TEXTSTEP.applySkin(skin);
@@ -796,6 +799,9 @@ function appearancePanel(frame) {
     let skinSave = ui.elem('button', {}, ['Save as']);
     skinSave.onclick = () => {
         frame.saveFile('Save skin').then(path => {
+            if (!path) {
+                return;
+            }
             let skin = TEXTSTEP.getSkin();
             delete skin.path;
             TEXTSTEP.put('content', {path: path}, TEXTSTEP.getSkin()).then(() => {
