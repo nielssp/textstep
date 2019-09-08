@@ -588,6 +588,9 @@ class DirFile {
         this.label = ui.elem('span', {class: 'label'}, [this.name]);
         this.elem.appendChild(this.label);
 
+        this.elem.ondragleave = e => {
+            e.stopPropagation();
+        };
         this.elem.addEventListener('touchend', e => {
             e.preventDefault();
             if (this.column.dirView.touchSelectMode) {
