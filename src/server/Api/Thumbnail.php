@@ -52,7 +52,7 @@ class Thumbnail extends AuthenticatedSnippet
                     return new Response(Status::NOT_MODIFIED);
                 }
             }
-            if ($cached->getCreated() >= $fs->getModified()) {
+            if ($cached->getModified() >= $fs->getModified()) {
                 $path = $cached->getHostPath();
                 $mimeType = $cached->getMimeType();
                 $response = Response::file($path, $mimeType);

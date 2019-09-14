@@ -51,14 +51,6 @@ class SystemDevice implements Device
         return 0;
     }
 
-    public function getCreated($path)
-    {
-        if (isset($this->files[$path])) {
-            return $this->files[$path]->getCreated();
-        }
-        return 0;
-    }
-
     public function isReadable($path)
     {
         return $path === '/' or isset($this->files[$path]);

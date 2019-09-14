@@ -60,11 +60,6 @@ class HostDevice implements Device
         return (int) filemtime($this->rootPath . $path);
     }
 
-    public function getCreated($path)
-    {
-        return (int) filectime($this->rootPath . $path);
-    }
-
     public function isReadable($path)
     {
         return is_readable($this->rootPath . $path);

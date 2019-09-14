@@ -19,10 +19,6 @@ class TimeZoneFile extends SystemFile
     {
     }
 
-    public function getCreated()
-    {
-    }
-
     public function getDocuments($filter = null)
     {
         return \DateTimeZone::listIdentifiers();

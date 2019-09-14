@@ -24,10 +24,6 @@ class UserFile extends SystemFile
     {
     }
 
-    public function getCreated()
-    {
-    }
-
     private function toDocument(User $user)
     {
         return [

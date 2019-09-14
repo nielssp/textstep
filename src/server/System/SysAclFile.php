@@ -19,10 +19,6 @@ class SysAclFile extends SystemFile
     {
     }
 
-    public function getCreated()
-    {
-    }
-
     public function getDocuments($filter = null)
     {
         if ($this->check('sysacl.view')) {

@@ -24,10 +24,6 @@ class GroupFile extends SystemFile
     {
     }
 
-    public function getCreated()
-    {
-    }
-
     private function toDocument(Group $group)
     {
         return [

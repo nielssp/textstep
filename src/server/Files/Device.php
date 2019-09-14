@@ -41,15 +41,6 @@ interface Device
     public function getModified($path);
 
     /**
-     * Gets the creation time of the given file.
-     *
-     * @param string $path File path.
-     * @return int File creation time as a UNIX timestamp.
-     * @throws FileException On error.
-     */
-    public function getCreated($path);
-
-    /**
      * Returns whether the file or directory is readable.
      *
      * @param string $path File path.

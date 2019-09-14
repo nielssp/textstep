@@ -53,8 +53,6 @@ abstract class SystemFile implements \Blogstep\Files\Storage
 
     abstract public function getModified();
 
-    abstract public function getCreated();
-
     public function updateDocuments($documents)
     {
         $existing = $this->getDocuments();

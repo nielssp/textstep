@@ -57,10 +57,6 @@ components:
           type: string
           format: date-time
           example: "2019-06-02T14:13:22+00:00"
-        created:
-          type: string
-          format: date-time
-          example: "2019-06-02T14:13:22+00:00"
         permissions:
           $ref: '#/components/schemas/PermissionMap'
         read:

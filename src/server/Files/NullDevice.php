@@ -28,11 +28,6 @@ class NullDevice implements Device
         throw new FileException(FileException::NOT_READABLE, 'Null device is not readable');
     }
 
-    public function getCreated($path)
-    {
-        throw new FileException(FileException::NOT_READABLE, 'Null device is not readable');
-    }
-
     public function isReadable($path)
     {
         return false;

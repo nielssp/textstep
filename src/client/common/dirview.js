@@ -486,9 +486,6 @@ class PreviewColumn extends DirColumn {
         data.append(ui.elem('div', {'class': 'label'}, ['Size']));
         data.append(ui.elem('div', {}, ['' + util.humanSize(file.data.size)]));
 
-        data.append(ui.elem('div', {'class': 'label'}, ['Created']));
-        data.append(ui.elem('div', {}, [util.parseDate(file.data.created).toLocaleString('en-GB')]));
-
         data.append(ui.elem('div', {'class': 'label'}, ['Modified']));
         data.append(ui.elem('div', {}, [util.parseDate(file.data.modified).toLocaleString('en-GB')]));
 

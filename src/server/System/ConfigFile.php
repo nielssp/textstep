@@ -28,12 +28,6 @@ class ConfigFile extends SystemFile
         return filemtime($this->file);
     }
 
-    public function getCreated()
-    {
-        return filectime($this->file);
-    }
-
-
     public function close()
     {
         $this->config->save();

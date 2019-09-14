@@ -24,10 +24,6 @@ class SessionFile extends SystemFile
     {
     }
 
-    public function getCreated()
-    {
-    }
-
     private function toDocument(Session $session)
     {
         return [

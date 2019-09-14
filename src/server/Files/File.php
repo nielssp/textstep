@@ -149,11 +149,6 @@ class File implements \IteratorAggregate, HasRoute
         return $this->device->getModified($this->devicePath);
     }
 
-    public function getCreated()
-    {
-        return $this->device->getCreated($this->devicePath);
-    }
-
     private function isSystem()
     {
         return ! isset($this->system->user) or $this->system->user->isSystem();
@@ -269,7 +264,6 @@ class File implements \IteratorAggregate, HasRoute
             'path' => $this->getPath(),
             'type' => $this->getType(),
             'modified' => $iso8601 ? date('c', $this->getModified()) : $this->getModified(),
-            'created' => $iso8601 ? date('c', $this->getCreated()) : $this->getCreated(),
             'permissions' => $this->getPermissions(),
             'read' => $this->isReadable(),
             'write' => $this->isWritable(),
