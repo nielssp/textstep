@@ -25,26 +25,14 @@ export default function App(name) {
     this.dockMenu = new Menu('Dock');
     this.dockMenu.addItem('Pin', () => {
     });
-    this.dockMenu.addItem('Close', () => {
-        TEXTSTEP.kill(name);
-    });
+    this.dockMenu.addItem('Close', () => this.close());
 
     this.dockFrame = ui.elem('div', {'class': 'dock-frame'}, [
         ui.elem('label', {}, [name])
     ]);
     this.dockFrame.onmousedown = e => {
         if (e.button === 1) {
-            if (this.state === 'running') {
-                var frame = this.getUnsavedFrame();
-                if (frame !== null) {
-                    if (!frame.hasFocus) {
-                        frame.requestFocus();
-                        frame.close();
-                    }
-                } else {
-                    this.close();
-                }
-            }
+            this.close();
         }
         e.preventDefault();
     };
@@ -129,25 +117,25 @@ App.prototype.kill = function () {
 
 App.prototype.close = function (action) {
     if (this.state !== 'running') {
-        console.warn(this.name + ': close: unexpected state:', this.state);
-        return;
+        return Promise.resolve(false);
     }
-    this.state = 'closing';
     if (this.onClose !== null) {
         var ok = this.onClose(action);
         if (ok === false) {
-            this.state = 'running';
-            return false;
+            return Promise.resolve(false);
         }
     }
-    for (var i = 0; i < this.frames.length; i++) {
-        this.frames[i].close();
-    }
-    if (this.dockFrame !== null) {
-        this.dockFrame.parentNode.removeChild(this.dockFrame);
-    }
-    this.state = 'initialized';
-    return true;
+    return Promise.all(this.frames.map(frame => frame.close())).then(closed => {
+        if (closed.indexOf(false) < 0) {
+            if (this.dockFrame !== null) {
+                this.dockFrame.parentNode.removeChild(this.dockFrame);
+            }
+            this.state = 'initialized';
+            return true;
+        }
+        this.state = 'running';
+        return false;
+    });
 };
 
 App.prototype.getUnsavedFrame = function () {

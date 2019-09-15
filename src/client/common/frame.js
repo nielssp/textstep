@@ -102,6 +102,9 @@ export class Frame extends Container {
     }
 
     openDialog(dialog) {
+        if (!this.hasFocus) {
+            this.requestFocus();
+        }
         this.dialogs.push(dialog);
         dialog.addEventListener('close', () => this.dialogs.pop());
         return dialog.open();
@@ -212,9 +215,9 @@ export class Frame extends Container {
 
     close() {
         if (!this.isOpen) {
-            return;
+            return Promise.resolve(true);
         }
-        this.confirmClose().then(close => {
+        return this.confirmClose().then(close => {
             if (close) {
                 TEXTSTEP.closeFrame(this);
                 if (!this.isOpen) {
@@ -222,7 +225,9 @@ export class Frame extends Container {
                         this.onClose();
                     }
                 }
+                return true;
             }
+            return false;
         });
     }
 
