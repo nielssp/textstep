@@ -278,6 +278,13 @@ function sessionPanel(username, outerDialog) {
     actions.innerPadding = true;
     row.append(actions);
 
+    let deleteButton = new ui.Button('Delete');
+    deleteButton.disabled = true;
+    if ((!username && TEXTSTEP.hasPermission('sessions.self.delete')) ||
+            TEXTSTEP.hasPermission('sessions.delete')) {
+        actions.append(deleteButton);
+    }
+
     if (outerDialog) {
         let closeButton = ui.elem('button', {}, ['Close']);
         actions.append(closeButton);
@@ -292,13 +299,6 @@ function sessionPanel(username, outerDialog) {
         outerDialog.addEventListener('open', () => {
             closeButton.focus();
         });
-    }
-
-    let deleteButton = new ui.Button('Delete');
-    deleteButton.disabled = true;
-    if ((!username && TEXTSTEP.hasPermission('sessions.self.delete')) ||
-            TEXTSTEP.hasPermission('sessions.delete')) {
-        actions.append(deleteButton);
     }
 
     let selection = null;
@@ -341,6 +341,105 @@ function sessionPanel(username, outerDialog) {
             }
         }
     });
+
+    return dialog;
+}
+
+function userGroupsPanel(user, outerDialog) {
+    let dialog = new ui.StackColumn();
+
+    let grid = new ui.Grid();
+    grid.columns = 'auto min-content';
+    grid.rowPadding = true;
+    grid.columnPadding = true;
+    dialog.append(grid, {grow: 1});
+
+    let list = new ui.ListView();
+    list.height = '300px';
+
+    if (TEXTSTEP.hasPermission('users.update.groups')) {
+        let row = new ui.StackRow();
+        row.innerPadding = true;
+        row.alignItems = 'center';
+        grid.append(row);
+
+        row.append(ui.elem('label', {}, ['Add group:']), {shrink: 0});
+        let input = ui.elem('input', {type: 'text'});
+        row.append(input);
+
+        input.onchange = () => addButton.disabled = !input.value;
+        input.onkeyup = () => addButton.disabled = !input.value;
+
+        let addButton = new ui.Button('Add');
+        addButton.disabled = true;
+        grid.append(addButton);
+
+        addButton.onclick = () => {
+            let group = input.value;
+            if (group && user.groups.indexOf(group) < 0) {
+                user.groups.push(group);
+                TEXTSTEP.put('storage', {path: '/system/users.json', key: user.username}, {groups: user.groups}).then(updated => {
+                    user.groups = updated.groups;
+                    if (user.groups.indexOf(group) >= 0) {
+                        list.add(group, group);
+                    }
+                    input.value = '';
+                });
+            }
+        };
+    }
+    grid.append(list);
+
+    let actions = new ui.StackColumn();
+    actions.innerPadding = true;
+    grid.append(actions);
+
+    let removeButton = new ui.Button('Remove');
+    removeButton.disabled = true;
+    if (TEXTSTEP.hasPermission('users.update.groups')) {
+        actions.append(removeButton);
+    }
+
+    if (outerDialog) {
+        let closeButton = ui.elem('button', {}, ['Close']);
+        actions.append(closeButton);
+        closeButton.onclick = function () {
+            outerDialog.close(null);
+        };
+        closeButton.onkeydown = function (e) {
+            if (e.key === 'Escape') {
+                outerDialog.close(null);
+            }
+        };
+        outerDialog.addEventListener('open', () => {
+            closeButton.focus();
+        });
+    }
+
+    let selection = null;
+
+    list.onselect = id => {
+        selection = id;
+        list.select(id);
+        removeButton.disabled = !selection;
+    };
+
+    removeButton.onclick = () => {
+        if (selection) {
+            let group = selection;
+            let groups = user.groups.filter(g => g !== selection);
+            TEXTSTEP.put('storage', {path: '/system/users.json', key: user.username}, {groups: groups}).then(updated => {
+                user.groups = updated.groups;
+                if (user.groups.indexOf(group) < 0) {
+                    list.removeItem(selection);
+                }
+            });
+        }
+    };
+    
+    for (let group of user.groups) {
+        item = list.add(group, group);
+    }
 
     return dialog;
 }
@@ -446,21 +545,7 @@ function userPanel(frame) {
         dialog.maxWidth = '400px';
         dialog.padding();
         dialog.title = 'Groups for: ' + selection;
-        let groupList = new ui.ListView();
-        groupList.height = '300px';
-        for (let group of users[selection].groups) {
-            groupList.add(group, group);
-        }
-        dialog.append(groupList);
-        let row = new ui.StackRow();
-        row.padding('top');
-        row.innerPadding = true;
-        row.alignItems = 'center';
-        dialog.append(row);
-        row.append(ui.elem('label', {}, ['Add group:']), {shrink: 0});
-        row.append(ui.elem('input', {type: 'text'}));
-        row.append(new ui.Button('Add'));
-        dialog.append(ui.Dialog.footer(dialog, ['Close']));
+        dialog.append(userGroupsPanel(users[selection], dialog));
         dialog.open();
     };
 
