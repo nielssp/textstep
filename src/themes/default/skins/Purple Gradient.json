@@ -1,0 +1,5 @@
+{
+  "name": "Purple Gradient",
+  "active-titlebar-bg": "linear-gradient(to bottom right, #4d2e58, #262128)",
+  "menu-item-bg": "linear-gradient(to bottom right, #aeaaae, #6b676b)"
+}
