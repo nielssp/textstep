@@ -128,12 +128,18 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->files = new Files\FileSystem();
         $this->m->files->setAcl(new Files\FileAcl($this->p('system/fileacl.php')));
 
-        // Mount file systems
-        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
+        // Mount root file system
+        $this->m->files->mount(new Files\HostDevice($this->p('user')));
 
-        // Initialize and mount system device
+        // Initialize and mount system file system
         $this->m->system = new System\SystemDevice();
         $this->m->files->get('system')->mount($this->m->system);
+
+        // Mount dist file system
+        $this->m->files->get('dist')->mount(new Files\HostDevice($this->p('dist')));
+
+        // Mount user-defined file systems
+        $this->m->mounts = new Files\MountHandler($this->m->files, $this->p('system/mounts.php'));
 
         // Initialize authentication system
         $this->m->users = new UserModel($this->m->files, $this->p('system'));
