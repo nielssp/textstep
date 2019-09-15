@@ -273,7 +273,7 @@ function closeBuffer() {
                     if (choice === 0) {
                         return saveFile();
                     }
-                    return choice === 'No';
+                    return choice === 1;
                 });
         } else {
             ok = Promise.resolve(true);

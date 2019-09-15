@@ -18,10 +18,14 @@ class MountHandler
     {
         $this->files = $fileSystem;
         $this->store = new \Jivoo\Store\PhpStore($file);
-        $this->store->open(false);
-        $this->mounts = $this->store->read();
-        $this->store->close();
-        $this->mountAll();
+        try {
+            $this->store->open(false);
+            $this->mounts = $this->store->read();
+            $this->store->close();
+            $this->mountAll();
+        } catch (\Jivoo\Store\AccessException $e) {
+            $this->mounts = [];
+        }
     }
     
     private function mountAll()
