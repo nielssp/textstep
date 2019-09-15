@@ -46,6 +46,27 @@ export default function App(name) {
             TEXTSTEP.kill(name);
         });
     };
+    this.dockFrame.ondragenter = e => e.stopPropagation();
+    this.dockFrame.ondragend = e => e.stopPropagation();
+    this.dockFrame.ondragleave = e => this.dockFrame.classList.remove('accept');
+    this.dockFrame.ondragover = e => {
+        e.preventDefault();
+        let type = e.dataTransfer.types.find(t => t === 'application/x-textstep-path');
+        if (type) {
+            e.dataTransfer.dropEffect = 'copy';
+            e.stopPropagation();
+            this.dockFrame.classList.add('accept');
+        }
+    };
+    this.dockFrame.ondrop = e => {
+        e.preventDefault();
+        this.dockFrame.classList.remove('accept');
+        let type = e.dataTransfer.types.find(t => t === 'application/x-textstep-path');
+        if (type) {
+            let path = e.dataTransfer.getData('application/x-textstep-path');
+            TEXTSTEP.run(name, {path: path});
+        }
+    };
 
     this.onInit = null;
     this.onOpen = null;

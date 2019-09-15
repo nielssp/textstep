@@ -137,8 +137,8 @@ export class Frame extends Container {
         return this.openDialog(Dialog.file(this.inner, title, multiple));
     }
 
-    saveFile(title) {
-        return this.openDialog(Dialog.save(this.inner, title));
+    saveFile(title, directory = '/') {
+        return this.openDialog(Dialog.save(this.inner, title, directory));
     }
 
     color(title, value) {

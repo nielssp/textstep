@@ -5,31 +5,45 @@
  * See the LICENSE file or http://opensource.org/licenses/MIT for more information.
  */
 
-var paths = TEXTSTEP.paths;
-var ui = TEXTSTEP.ui;
+let paths = TEXTSTEP.paths;
+let ui = TEXTSTEP.ui;
 
-var CodeMirror = null;
+let CodeMirror = null;
 
-var self = null;
-var frame = null;
-var textarea = null;
-var current = null;
-var buffers = {};
-var bufferPanel = null;
-var codemirror = null;
+let self = null;
+let frame = null;
+let textarea = null;
+let current = null;
+let buffers = {};
+let bufferPanel = null;
+let codemirror = null;
+
+let nextUntitled = 1;
 
 function createBuffer(path) {
-    var item = ui.elem('a', {'class': 'file'}, [paths.fileName(path)]);
+    let name, cwd, data;
+    if (path) {
+        name = paths.fileName(path);
+        cwd = paths.dirName(path);
+        data = null;
+    } else {
+        path = 'Untitled ' + nextUntitled;
+        name = path;
+        nextUntitled++;
+        cwd = null;
+        data = '';
+    }
+    let item = ui.elem('a', {'class': 'file'}, [name]);
     item.onclick = function () {
         reopen({path: path});
     };
     bufferPanel.appendChild(item);
-    var buffer = {
+    let buffer = {
         path: path,
-        name: paths.fileName(path),
-        cwd: paths.dirName(path),
+        name: name,
+        cwd: cwd,
         item: item,
-        data: null,
+        data: data,
         loaded: false,
         unsaved: false,
         history: null
@@ -40,18 +54,22 @@ function createBuffer(path) {
     }
     current = buffer;
     current.item.className = 'file active';
-    TEXTSTEP.get('content', {path: path}, 'text').then(function (data) {
-        buffer.data = data;
-        if (current === buffer) {
-            openBuffer(path);
-        }
-    }, error => {
-        frame.alert('Error', error.message);
-        buffer.data = '';
-        if (current === buffer) {
-            openBuffer(path);
-        }
-    });
+    if (buffer.cwd) {
+        TEXTSTEP.get('content', {path: path}, 'text').then(function (data) {
+            buffer.data = data;
+            if (current === buffer) {
+                openBuffer(path);
+            }
+        }, error => {
+            frame.alert('Error', error.message);
+            buffer.data = '';
+            if (current === buffer) {
+                openBuffer(path);
+            }
+        });
+    } else {
+        openBuffer(path);
+    }
 }
 
 function openBuffer(path) {
@@ -103,10 +121,17 @@ function openBuffer(path) {
 }
 
 function open(args) {
-    var path = args.path;
+    let path = null;
+    if (args.path && args.path.startsWith('/')) {
+        path = args.path;
+    }
     textarea.value = '';
     textarea.focus();
-    frame.setTitle(path + ' (...) – Code');
+    if (path) {
+        frame.setTitle(path + ' (...) – Code');
+    } else {
+        frame.setTitle('Code');
+    }
     
     codemirror = CodeMirror.fromTextArea(textarea, {
         lineNumbers: true,
@@ -160,8 +185,41 @@ function close() {
     self.close();
 }
 
+function saveFileAs() {
+    if (codemirror !== null && current !== null) {
+        let buffer = current;
+        let directory = '/';
+        if (buffer.cwd) {
+            directory = buffer.cwd;
+        }
+        return frame.saveFile('Save as', directory).then(path => {
+            if (!path) {
+                return false;
+            }
+            return TEXTSTEP.put('content', {path: path}, new TEXTSTEP.RequestData(buffer.data, 'text/plain')).then(function () {
+                buffer.path = path;
+                buffer.name = paths.fileName(path);
+                buffer.cwd = paths.dirName(path);
+                buffer.unsaved = false;
+                buffer.item.textContent = buffer.name;
+                if (current === buffer) {
+                    frame.setTitle(current.path + ' – Code');
+                }
+                return true;
+            }, error => {
+                frame.alert('Save failed', 'The file could not be saved: ' + error.message, error)
+                return Promise.reject();
+            });
+        });
+    }
+    return Promise.reject('Editor not initialized');
+}
+
 function saveFile() {
     if (codemirror !== null && current !== null) {
+        if (!current.cwd) {
+            return saveFileAs();
+        }
         let buffer = current;
         return TEXTSTEP.put('content', {path: buffer.path}, new TEXTSTEP.RequestData(buffer.data, 'text/plain')).then(function () {
             buffer.unsaved = false;
@@ -169,6 +227,7 @@ function saveFile() {
             if (current === buffer) {
                 frame.setTitle(current.path + ' – Code');
             }
+            return true;
         }, error => {
             frame.alert('Save failed', 'The file could not be saved: ' + error.message, error)
             return Promise.reject();
@@ -178,7 +237,7 @@ function saveFile() {
 }
 
 function reloadFile() {
-    if (codemirror !== null && current !== null) {
+    if (codemirror !== null && current !== null && current.cwd) {
         let buffer = current;
         let promise;
         if (buffer.unsaved) {
@@ -212,7 +271,7 @@ function closeBuffer() {
             ok = frame.confirm('Code', 'Do you want to save the buffer before closing?',
                 ['Yes', 'No', 'Cancel'], 0).then(choice => {
                     if (choice === 0) {
-                        return saveFile().then(() => true);
+                        return saveFile();
                     }
                     return choice === 'No';
                 });
@@ -247,7 +306,7 @@ function isUnsaved() {
 }
 
 function newFile() {
-    frame.alert('New file', 'not implemented');
+    createBuffer(null);
 }
 
 function openFile() {
@@ -280,6 +339,7 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     bufferTool.appendChild(ui.elem('div', {'class': 'files-panel'}, [bufferPanel]));
 
     frame.defineAction('save', saveFile);
+    frame.defineAction('save-as', saveFileAs);
     frame.defineAction('new', newFile);
     frame.defineAction('open', openFile);
     frame.defineAction('reload', reloadFile);
@@ -288,9 +348,10 @@ TEXTSTEP.initApp('code', ['libedit'], function (app) {
     frame.bindKey('c-s', 'save');
     
     var menu = frame.addMenu('Code');
-    menu.addItem('Open', 'open');
     menu.addItem('New', 'new');
+    menu.addItem('Open', 'open');
     menu.addItem('Save', 'save');
+    menu.addItem('Save as', 'save-as');
     menu.addItem('Reload', 'reload');
     menu.addItem('Close buffer', 'close-buffer');
     menu.addItem('Close', 'close');

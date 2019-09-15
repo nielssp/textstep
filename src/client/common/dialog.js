@@ -243,7 +243,7 @@ export class Dialog extends Container {
         return dialog
     }
 
-    static save(parent, title) {
+    static save(parent, title, directory = '/') {
         var dialog = new Dialog(parent);
         dialog.padding();
         dialog.title = title;
@@ -309,7 +309,9 @@ export class Dialog extends Container {
             input.focus();
         });
 
-        dialog.addEventListener('open', () => input.focus());
+        dialog.addEventListener('open', () => {
+            dirView.cd(directory);
+        });
         return dialog;
     }
 
