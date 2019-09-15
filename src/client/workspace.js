@@ -256,7 +256,7 @@ TEXTSTEP.requestLogin = function (overlay = false) {
                     loginFrame.capsLockWarning.style.display = 'block';
                 }
             };
-            loginFrame.appendChild(loginFrame.formElem);
+            loginFrame.append(loginFrame.formElem);
             loginFrame.overlayElem = ui.elem('div', {id: 'login-overlay'}, [loginFrame.outer]);
             loginFrame.receiveFocus();
             loginFrame.outer.style.display = '';

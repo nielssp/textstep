@@ -39,6 +39,9 @@ class UserModel
         $this->systemGroup = new Group('system');
         $this->system = new User('system', null, $fs->get('system'), ['system']);
         $this->state = new StateMap($systemDir);
+        $this->state->touch('users');
+        $this->state->touch('groups');
+        $this->state->touch('sessions');
     }
 
     private function createUserObject($user)
