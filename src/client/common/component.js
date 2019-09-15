@@ -115,7 +115,7 @@ export class Component {
 export class Button extends Component {
     constructor(label) {
         super();
-        this.outer = elem('button', {type: 'button'}, [label]);
+        this.outer = elem('button', {type: 'button'}, label ? [label] : []);
         this.outer.onclick = e => this.trigger('click', e);
     }
 
@@ -160,6 +160,12 @@ export class Container extends Component {
         }
         if (properties.hasOwnProperty('justify')) {
             child.outer.style.justifySelf = properties.justify;
+        }
+        if (properties.hasOwnProperty('rowSpan')) {
+            child.outer.style.gridRowEnd = 'span ' + properties.rowSpan;
+        }
+        if (properties.hasOwnProperty('columnSpan')) {
+            child.outer.style.gridColumnEnd = 'span ' + properties.columnSpan;
         }
         this.inner.appendChild(child.outer);
         this.children.push(child);
