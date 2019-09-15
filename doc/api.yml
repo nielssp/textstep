@@ -492,45 +492,6 @@ paths:
       responses:
         204:
           description: OK
-  /mount:
-    post:
-      description: Mount host file system
-      tags: [system]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - path
-                - target
-              properties:
-                path:
-                  type: string
-                target:
-                  type: string
-      responses:
-        200:
-          description: File system mounted
-  /unmount:
-    post:
-      description: Unmount file system
-      tags: [system]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - path
-              properties:
-                path:
-                  type: string
-      responses:
-        200:
-          description: File system mounted
   /build:
     post:
       description: Generate site

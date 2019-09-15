@@ -1,20 +1,20 @@
 <?php
-// BlogSTEP
+// TEXTSTEP
 // Copyright (c) 2016 Niels Sonnich Poulsen (http://nielssp.dk)
 // Licensed under the MIT license.
 // See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 namespace Blogstep;
 
 /**
- * BlogSTEP main class.
+ * TEXTSTEP main class.
  */
 class Main implements \Psr\Log\LoggerAwareInterface
 {
 
     /**
-     * BlogSTEP version.
+     * TEXTSTEP version.
      */
-    const VERSION = '0.11.0';
+    const VERSION = '0.12.0';
 
     /**
      * @var Modules
@@ -79,9 +79,6 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->router->auto('snippet:Move');
         $this->m->router->auto('snippet:Storage');
         $this->m->router->auto('snippet:Thumbnail');
-
-        $this->m->router->auto('snippet:Mount');
-        $this->m->router->auto('snippet:Unmount');
 
         $this->m->router->auto('snippet:Build');
         $this->m->router->auto('snippet:Preview');
