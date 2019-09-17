@@ -14,6 +14,9 @@ import App from './common/app';
 import Lib from './common/lib';
 import Config from './common/config';
 
+import dragula from 'dragula';
+import dragula_css from 'dragula/dist/dragula.min.css';
+
 if (window.TEXTSTEP) {
   alert('TEXTSTEP Workspace already loaded!');
   throw 'Workspace already loaded';
@@ -411,13 +414,74 @@ TEXTSTEP.open = function (path) {
     }
 }
 
+function initDock() {
+    var drag = dragula([dock]);
+    drag.on('drop', (el, target, source, sibling) => {
+        let settings = localStorage.getItem('textstepDock');
+        if (settings) {
+            try {
+                settings = JSON.parse(settings);
+            } catch (error) {
+                console.error('Could not parse dock settings', error);
+                settings = {};
+            }
+        }
+        let order = 0;
+        for (let i = 0; i < dock.children.length; i++) {
+            let name = dock.children[i].getAttribute('data-app-name');
+            if (settings.hasOwnProperty(name)) {
+                if (settings[name].order <= order) {
+                    settings[name].order = ++order;
+                } else {
+                    order = settings[name].order;
+                }
+            } else {
+                settings[name] = {order: ++order};
+            }
+        }
+        localStorage.setItem('textstepDock', JSON.stringify(settings));
+    });
+}
+
+function openDockFrame(dockFrame, name) {
+    let settings = localStorage.getItem('textstepDock');
+    if (settings) {
+        try {
+            settings = JSON.parse(settings);
+        } catch (error) {
+            console.error('Could not parse dock settings', error);
+            settings = null;
+        }
+    }
+    dockFrame.setAttribute('data-app-name', name);
+    if (settings && settings.hasOwnProperty(name)) {
+        let order = settings[name].order;
+        for (let i = 0; i < dock.children.length; i++) {
+            let child = dock.children[i];
+            let childName = child.getAttribute('data-app-name');
+            if (settings.hasOwnProperty(childName)) {
+                if (settings[childName].order < order) {
+                    continue;
+                }
+            }
+            dock.insertBefore(dockFrame, child);
+            return;
+        }
+    }
+    dock.appendChild(dockFrame);
+}
+
+function closeDockFrame(dockFrame) {
+    dock.removeChild(dockFrame);
+}
+
 TEXTSTEP.run = function (name, args) {
     console.log('run', name, args);
     return new Promise(function (resolve, reject) {
         args = args || {};
         if (apps.hasOwnProperty(name)) {
             if (apps[name].state === 'initialized') {
-                dock.appendChild(apps[name].dockFrame);
+                openDockFrame(apps[name].dockFrame, name);
             }
             try {
                 apps[name].open(args);
@@ -444,12 +508,12 @@ function loadApp(name) {
             }
         } else {
             apps[name] = new App(name);
-            dock.appendChild(apps[name].dockFrame);
+            openDockFrame(apps[name].dockFrame, name);
             apps[name].deferred = {promise: promise, resolve: resolve, reject: reject};
             var scriptSrc = TEXTSTEP.url('content', {path: '/dist/apps/' + name + '.app/main.js'});
             apps[name].scriptElem = ui.elem('script', {type: 'text/javascript', src: scriptSrc});
             apps[name].scriptElem.onerror = function () {
-                dock.removeChild(apps[name].dockFrame);
+                closeDockFrame(apps[name].dockFrame);
                 unloadApp(name);
                 reject('Not found');
             };
@@ -874,6 +938,7 @@ TEXTSTEP.init = function (root) {
     TEXTSTEP.applyTheme('default');
     TEXTSTEP.applyIcons('default');
     TEXTSTEP.applySkin(TEXTSTEP.getSkin());
+    initDock();
     requestAuthenticatedUser().then(user => {
         TEXTSTEP.user = user;
         workspaceMenu.setTitle('Workspace for ' + user.username + '');
