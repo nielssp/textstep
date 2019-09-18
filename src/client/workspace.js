@@ -15,7 +15,7 @@ import Lib from './common/lib';
 import Config from './common/config';
 
 import dragula from 'dragula';
-import dragula_css from 'dragula/dist/dragula.min.css';
+import 'dragula/dist/dragula.min.css';
 
 if (window.TEXTSTEP) {
   alert('TEXTSTEP Workspace already loaded!');
@@ -34,6 +34,7 @@ var workspaceMenu = createWorkspaceMenu();
 var menu = ui.elem('aside', {id: 'menu'}, [workspaceMenu.elem]);
 var main = ui.elem('main');
 var dock = ui.elem('div', {id: 'dock'});
+var dockDrag = dragula([dock]);
 var loginFrame = null;
 
 var apps = {};
@@ -415,8 +416,7 @@ TEXTSTEP.open = function (path) {
 }
 
 function initDock() {
-    var drag = dragula([dock]);
-    drag.on('drop', (el, target, source, sibling) => {
+    dockDrag.on('drop', (el, target, source, sibling) => {
         let settings = localStorage.getItem('textstepDock');
         if (settings) {
             try {
@@ -425,6 +425,8 @@ function initDock() {
                 console.error('Could not parse dock settings', error);
                 settings = {};
             }
+        } else {
+            settings = {};
         }
         let order = 0;
         for (let i = 0; i < dock.children.length; i++) {
@@ -677,7 +679,7 @@ TEXTSTEP.closeFrame = function (frame) {
 };
 
 TEXTSTEP.focusFrame = function (frame) {
-    if (frame.isOpen) {
+    if (frame.isOpen && frame !== focus) {
         if (focus !== null) {
             focus.loseFocus();
             if (!frame.isFloating) {
@@ -895,6 +897,7 @@ root.onclick = function (event) {
     TEXTSTEP.closeFloatingMenu();
     if (root.classList.contains('show-menu')) {
         root.classList.toggle('show-menu');
+        dockDrag.cancel(true);
     }
 };
 
