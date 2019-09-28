@@ -287,6 +287,7 @@ TEXTSTEP.requestLogin = function (overlay = false) {
             };
             TEXTSTEP.post('session', {}, data).then(data => {
                 sessionId = data.sessionId;
+                TEXTSTEP.user = data.user;
                 if (loginFrame.formElem.remember.checked) {
                     sessionStorage.removeItem('textstepSessionId');
                     localStorage.setItem('textstepSessionId', sessionId);
@@ -306,6 +307,7 @@ TEXTSTEP.requestLogin = function (overlay = false) {
                 loginFrame.formElem.password.value = '';
                 loginFrame.formElem.onsubmit = null;
                 loginFrame.promise = null;
+                workspaceMenu.setTitle('Workspace for ' + TEXTSTEP.user.username + '');
                 TEXTSTEP.trigger('login');
                 resolve();
             }, error => {

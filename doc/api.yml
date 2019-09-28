@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: TEXTSTEP API
-  version: "0.10.0"
+  version: "0.12.0"
   description: ''
 components:
   securitySchemes:
@@ -22,6 +22,35 @@ components:
       schema:
         type: string
   schemas:
+    User:
+      type: object
+      description: User information
+      properties:
+        username:
+          type: string
+          description: The username of the current user
+        home:
+          type: string
+          description: Absolute path to the current user's home directory
+        shell:
+          type: string
+          description: The name of the shell application
+        version:
+          type: string
+          description: Server version string
+        system:
+          type: boolean
+          description: Whether the current user is a system user
+        groups:
+          type: array
+          description: List of groups that the current user is a member of
+          items:
+            type: string
+        permission:
+          type: array
+          description: List of permissions that the current user has
+          items:
+            type: string
     PermissionMap:
       type: object
       description: Access control list
@@ -109,6 +138,8 @@ paths:
                 properties:
                   sessionId:
                     type: string
+                  user:
+                    $ref: '#/components/schemas/User'
     delete:
       description: Invalidates the session
       tags: [user]
@@ -125,33 +156,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  username:
-                    type: string
-                    description: The username of the current user
-                  home:
-                    type: string
-                    description: Absolute path to the current user's home directory
-                  shell:
-                    type: string
-                    description: The name of the shell application
-                  version:
-                    type: string
-                    description: Server version string
-                  system:
-                    type: boolean
-                    description: Whether the current user is a system user
-                  groups:
-                    type: array
-                    description: List of groups that the current user is a member of
-                    items:
-                      type: string
-                  permission:
-                    type: array
-                    description: List of permissions that the current user has
-                    items:
-                      type: string
+                $ref: '#/components/schemas/User'
   /file:
     get:
       description: List file attributes and directory content

@@ -24,7 +24,16 @@ class Session extends \Blogstep\Snippet
                 $sessionId = $this->m->users->createSession($user, time() + 36000);
                 $this->m->logger->info('User authenticated: {user}', ['user' => $user->getName()]);
                 return $this->json([
-                    'sessionId' => $sessionId
+                    'sessionId' => $sessionId,
+                    'user' => [
+                        'username' => $user->getName(),
+                        'home' => $user->getHome()->getPath(),
+                        'shell' => 'files',
+                        'version' => \Blogstep\Main::VERSION,
+                        'groups' => $user->getGroups(),
+                        'system' => $user->isSystem(),
+                        'permissions' => $this->m->acl->getPermissions($user)
+                    ]
                 ]);
             }
         }
