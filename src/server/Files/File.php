@@ -88,7 +88,11 @@ class File implements \IteratorAggregate, HasRoute
         }
         $this->device = $device;
         $this->devicePath = '/';
-        $this->cache = [];
+        foreach ($this->cache as $name => $file) {
+          if (!isset($this->virtual[$name])) {
+            unset($this->cache[$name]);
+          }
+        }
         $this->type = 'directory';
         if ($this->parent !== $this) {
             $this->parent->addVirtual($this->getName());
