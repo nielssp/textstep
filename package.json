@@ -13,8 +13,8 @@
     "viewerjs": "^0.5.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
     "babel-loader": "^8.0.0",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^1.0.1",
@@ -23,9 +23,9 @@
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.5",
     "node-sass": "^4.13.1",
-    "sass-loader": "^7.2.0",
+    "sass-loader": "^7.3.1",
     "style-loader": "^0.13.2",
-    "webpack": "^4.39.1",
-    "webpack-cli": "^3.3.6"
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11"
   }
 }
