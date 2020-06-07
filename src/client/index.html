@@ -23,9 +23,9 @@
     <link rel="logo" type="image/svg" href="apps/workspace.app/assets/logo.svg" />
   </head>
 
-  <body data-server="api.php" data-dist=".">
-      <noscript>
-          JavaScript is not enabled.
-      </noscript>
+  <body data-server="<%= htmlWebpackPlugin.options.server %>" data-dist=".">
+    <noscript>
+      JavaScript is not enabled.
+    </noscript>
   </body>
 </html>

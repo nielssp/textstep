@@ -28,6 +28,27 @@ Menu.prototype.setTitle = function (title) {
     this.header.textContent = title;
 };
 
+Menu.prototype.insertItem = function (index, label, action) {
+    let button = ui.elem('button', {}, [label]);
+    button.onclick = () => {
+        this.commands.activate(action);
+        TEXTSTEP.closeFloatingMenu();
+    };
+    this.commands.bindElement(button, action);
+    for (let key in this.commands.keys) {
+        if (this.commands.keys.hasOwnProperty(key) && this.commands.keys[key] === action) {
+            button.appendChild(ui.elem('span', {'class': 'shortcut'}, [key]));
+        }
+    }
+    let item = ui.elem('li', {}, [button]);
+    if (index >= this.itemList.children.length) {
+        this.itemList.appendChild(item);
+    } else {
+        this.itemList.insertBefore(item, this.itemList.children[index]);
+    }
+    return this;
+};
+
 Menu.prototype.addItem = function (label, action) {
     let button = ui.elem('button', {}, [label]);
     button.onclick = () => {

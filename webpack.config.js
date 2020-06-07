@@ -11,12 +11,17 @@ const jsRule = {
     }
 };
 
+const tsRule = {
+    test: /\.ts$/,
+    use: 'ts-loader',
+    exclude: /node_modules/,
+};
+
 function app(name) {
     var entry = {};
     entry['apps/' + name + '.app'] = './' + name;
     return {
         name: name + '.app',
-        mode: 'development',
         entry: entry,
         context: __dirname + '/src/client',
         devtool: 'source-map',
@@ -33,7 +38,8 @@ function app(name) {
                     test: /\.s?css$/,
                     use: ['style-loader', 'css-loader?url=false', 'sass-loader']
                 },
-                jsRule
+                jsRule,
+                tsRule
             ]
         }
     };
@@ -68,7 +74,8 @@ function theme(name) {
                         use: ['css-loader?url=false', 'sass-loader']
                     })
                 },
-                jsRule
+                jsRule,
+                tsRule
             ]
         },
         plugins: [
@@ -98,7 +105,8 @@ function icons(name) {
                         use: ['css-loader?url=false', 'sass-loader']
                     })
                 },
-                jsRule
+                jsRule,
+                tsRule
             ]
         },
         plugins: [
@@ -110,7 +118,7 @@ function icons(name) {
     });
 }
 
-module.exports = [
+module.exports = (argv, env) => [
     Object.assign(app('workspace'), {
         plugins: [
             new CopyWebpackPlugin([
@@ -126,7 +134,8 @@ module.exports = [
             new HtmlWebpackPlugin({
                 hash: true,
                 template: './index.html',
-                filename: './index.html'
+                filename: './index.html',
+                server: env.env && env.env.dev ? 'http://localhost:8082/dev.php' : 'api.php'
             }),
         ]
     }),

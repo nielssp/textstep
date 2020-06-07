@@ -26,6 +26,8 @@ class Main implements \Psr\Log\LoggerAwareInterface
      */
     private $config;
 
+    private $initialized = false;
+
     public function __construct($distPath, $userPath, $systemPath)
     {
         \Jivoo\Log\ErrorHandler::getInstance()->register();
@@ -51,6 +53,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
     {
         switch ($property) {
             case 'config':
+            case 'm':
                 return $this->$property;
         }
         throw new \Jivoo\InvalidPropertyException('Undefined property: ' . $property);
@@ -92,8 +95,12 @@ class Main implements \Psr\Log\LoggerAwareInterface
         return $this->m->paths->p($ipath);
     }
 
-    public function run()
+    public function init()
     {
+        if ($this->initialized) {
+            return;
+        }
+
         // Force output buffering so that error handlers can clear it.
         ob_start();
 
@@ -154,21 +161,27 @@ class Main implements \Psr\Log\LoggerAwareInterface
         $this->m->system->addFile('sysacl.json', new System\SysAclFile($this->m->acl));
         $this->m->system->addFile('timezones.json', new System\TimeZoneFile($this->m->acl));
 
+        $this->m->shell = new Shell($this->m);
+
+        $this->m->router = new BlogstepRouter($this->m->logger);
+        $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
+        $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
+        $this->m->server->add(new \Jivoo\Http\EntityTag);
+
+        // Initialize routes
+        $this->initRoutes();
+
+        $this->initialized = true;
+    }
+
+    public function run()
+    {
+        $this->init();
         if (php_sapi_name() === 'cli') {
             // Open shell if running from CLI
-            $this->m->shell = new Shell($this->m);
             $this->m->shell->run();
         } else {
             // Otherwise prepare to handle a request
-
-            $this->m->router = new BlogstepRouter($this->m->logger);
-            $this->m->server = new \Jivoo\Http\SapiServer($this->m->router);
-            $this->m->router->add(new \Jivoo\Http\Compressor($this->m->server));
-            $this->m->server->add(new \Jivoo\Http\EntityTag);
-
-            // Initialize routes
-            $this->initRoutes();
-
             $this->m->server->listen();
         }
     }

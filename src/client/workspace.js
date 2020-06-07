@@ -143,12 +143,19 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
                 });
             } else {
                 try {
-                    reject(JSON.parse(xhr.response));
+                    const parsed = JSON.parse(xhr.response)
+                    if (typeof parsed === 'object' && parsed.errorType && parsed.message && parsed.context) {
+                        reject(parsed);
+                    } else {
+                        throw 'Invalid response';
+                    }
                 } catch (e) {
                     reject({
                         errorType: 'UNSPECIFIED',
-                        message: xhr.response,
-                        context: {}
+                        message: 'Server returned ' + xhr.status,
+                        context: {
+                            status: xhr.status
+                        }
                     });
                 }
             }
@@ -458,6 +465,7 @@ function openDockFrame(dockFrame, name) {
         }
     }
     dockFrame.setAttribute('data-app-name', name);
+    dockFrame.tabIndex = 0;
     if (settings && settings.hasOwnProperty(name)) {
         let order = settings[name].order;
         for (let i = 0; i < dock.children.length; i++) {

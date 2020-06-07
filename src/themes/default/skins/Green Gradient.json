@@ -1,0 +1,5 @@
+{
+  "name": "Green Gradient",
+  "desktop-bg": "#697c79",
+  "active-titlebar-bg": "linear-gradient(to bottom right, #3f4e4e, #21281f)"
+}

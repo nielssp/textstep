@@ -1,0 +1,14 @@
+{
+  "name": "Crimson",
+  "active-titlebar-bg": "#b24d7a",
+  "menu-item-bg": "#aeb2c3",
+  "desktop-bg": "#63639c",
+  "inactive-titlebar-bg": "#aeb2c3",
+  "frame-bg": "#aeb2c3",
+  "button-bg": "#aeb2c3",
+  "input-bg": "#fff7e9",
+  "item-bg": "#fff7e9",
+  "active-item-bg": "#000000",
+  "active-item-fg": "#ffffff",
+  "dock-frame-bg": "#aeb2c3"
+}
