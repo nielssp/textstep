@@ -27,7 +27,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         align-items: center;
     }
     &:focus {
-        outline: 1px solid #000000;
+        outline: 1px solid var(--focus-outline);
     }
     &:default {
         font-weight: bold;

@@ -14,7 +14,7 @@ $inputs: 'input[type=text], input[type=email], input[type=password], input[type=
     width: 100%;
 
     &:focus {
-        outline: 1px solid #000000;
+        outline: 1px solid var(--focus-outline);
         outline-offset: 0;
     }
 
@@ -81,7 +81,7 @@ input[type=checkbox] {
     }
 
     &:focus {
-        outline: 1px solid #000000;
+        outline: 1px solid var(--focus-outline);
     }
 
     &[disabled] {
@@ -155,7 +155,7 @@ select:not([size="1"]) {
     width: 100%;
 
     &:focus {
-        outline: 1px solid #000000;
+        outline: 1px solid var(--focus-outline);
         outline-offset: 0;
     }
 

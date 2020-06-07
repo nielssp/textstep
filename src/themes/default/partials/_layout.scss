@@ -78,7 +78,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         overflow-y: scroll;
     }
     &:focus {
-        outline: 1px solid #000;
+        outline: 1px solid var(--focus-outline);
     }
 }
 
@@ -108,7 +108,10 @@ a.ts-list-view-item {
         color: var(--active-item-fg);
     }
     &:focus, &.match {
-        outline: 1px solid #000;
+        outline: 1px solid var(--focus-outline);
+    }
+    &.active:focus {
+        outline: 0;
     }
 }
 

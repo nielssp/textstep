@@ -113,7 +113,7 @@ a.file {
         color: var(--active-item-fg);
     }
     &:focus, &.match {
-        outline: 1px solid #000;
+        outline: 1px solid var(--focus-outline);
     }
 }
 

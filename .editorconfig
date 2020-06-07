@@ -1,5 +1,5 @@
 root = true
 
-[*.{ts,js,php}]
+[*.{ts,js,php,css,scss}]
 indent_style = space
 indent_size = 4

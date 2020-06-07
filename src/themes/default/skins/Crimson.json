@@ -10,5 +10,6 @@
   "item-bg": "#fff7e9",
   "active-item-bg": "#000000",
   "active-item-fg": "#ffffff",
-  "dock-frame-bg": "#aeb2c3"
+  "dock-frame-bg": "#aeb2c3",
+  "focus-outline": "#b24d7a"
 }
