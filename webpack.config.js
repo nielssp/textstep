@@ -2,6 +2,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 const jsRule = {
     test: /\.js$/,
@@ -41,7 +42,10 @@ function app(name) {
                 jsRule,
                 tsRule
             ]
-        }
+        },
+        plugins: [
+            new WriteFilePlugin(),
+        ]
     };
 }
 
@@ -79,6 +83,7 @@ function theme(name) {
             ]
         },
         plugins: [
+            new WriteFilePlugin(),
             new ExtractTextPlugin('theme.css'),
             new CopyWebpackPlugin([
                 {from: '**', ignore: ['*.scss', '*.js', '*.css']},
@@ -110,6 +115,7 @@ function icons(name) {
             ]
         },
         plugins: [
+            new WriteFilePlugin(),
             new ExtractTextPlugin('icons.css'),
             new CopyWebpackPlugin([
                 {from: '**', ignore: ['*.scss', '*.js', '*.css']},
@@ -121,6 +127,7 @@ function icons(name) {
 module.exports = (argv, env) => [
     Object.assign(app('workspace'), {
         plugins: [
+            new WriteFilePlugin(),
             new CopyWebpackPlugin([
                 {
                     from: 'assets/**',

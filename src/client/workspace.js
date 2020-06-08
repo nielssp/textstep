@@ -162,7 +162,7 @@ TEXTSTEP.ajax = function(url, method, data = null, responseType = null) {
         };
         xhr.onerror = () => reject({
             errorType: 'UNSPECIFIED',
-            message: xhr.response,
+            message: 'Connection failed',
             context: {}
         });
         if (data !== null) {

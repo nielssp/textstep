@@ -256,7 +256,7 @@ TEXTSTEP.initApp('write', ['libedit'], function (app) {
     app.dockFrame.innerHTML = '';
     app.dockFrame.appendChild(TEXTSTEP.getIcon('editor', 32));
 
-    frame = self.createFrame('Code');
+    frame = self.createFrame('Write');
     frame.inner.className += ' editor-frame-body libedit-simplemde';
 
     textarea = ui.elem('textarea');
