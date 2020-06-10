@@ -42,6 +42,8 @@ export class Frame extends Container {
 
         this.isUnsaved = null;
 
+        this.floating = false;
+
         this.confirmClose = () => Promise.resolve(true);
 
         this.onOpen = null;
@@ -69,6 +71,51 @@ export class Frame extends Container {
         this.headElem.insertBefore(ui.elem('div', {'class': 'frame-actions'}, [menuButton]), this.headElem.children[0]);
 
         this.defineAction('close', () => this.close());
+    }
+
+    isFloating() {
+        return this.floating;
+    }
+
+    setFloating(floating) {
+        if (floating === this.floating) {
+            return;
+        }
+        this.floating = floating;
+        if (floating) {
+            this.outer.style.position = 'absolute';
+            this.outer.style.top = '0';
+            this.outer.style.left = '0';
+            this.outer.style.width = '600px';
+            this.outer.style.height = '400px';
+            let drag = null;
+            let x, y;
+            let maxX, maxY;
+            this.titleElem.onmousedown = e => {
+                e.preventDefault();
+                const rect = this.outer.getBoundingClientRect();
+                const parent = this.outer.parentElement.getBoundingClientRect();
+                drag = {x: rect.left - parent.left, y: rect.top - parent.top};
+                maxX = parent.width - rect.width;
+                maxY = parent.height - rect.height;
+                x = e.clientX;
+                y = e.clientY;
+            };
+            window.onmousemove = e => {
+                if (drag) {
+                    drag.x += e.clientX - x;
+                    drag.y += e.clientY - y;
+                    this.outer.style.left = Math.max(Math.min(drag.x, maxX), 0) + 'px';
+                    this.outer.style.top = Math.max(Math.min(drag.y, maxY), 0) + 'px';
+                    x = e.clientX;
+                    y = e.clientY;
+                }
+            };
+            window.onmouseup = e => {
+                drag = false;
+            };
+        } else {
+        }
     }
 
     updateElem() {

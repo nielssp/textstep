@@ -43,6 +43,8 @@ var frames = {};
 
 var sessionId = null;
 
+var frameStack = [];
+var visibleFrames = [];
 var focus = null;
 
 var floatingMenu = null;
@@ -660,6 +662,10 @@ TEXTSTEP.openFrame = function (frame) {
 
 TEXTSTEP.closeFrame = function (frame) {
     if (frame.isOpen && frame.frameId !== null) {
+        let visibleIndex = visibleFrames.indexOf(frame);
+        if (visibleIndex >= 0) {
+            visibleFrames.splice(visibleIndex, 1);
+        }
         if (focus === frame) {
             focus.loseFocus();
             focus = null;
@@ -676,6 +682,10 @@ TEXTSTEP.closeFrame = function (frame) {
             }
         }
         if (!focus) {
+            if (visibleFrames.length) {
+                TEXTSTEP.focusFrame(visibleFrames[visibleFrames.length - 1]);
+                return;
+            }
             // TODO: use stack of most recent frames
             for (var id in frames) {
                 if (frames.hasOwnProperty(id)) {
@@ -692,13 +702,17 @@ TEXTSTEP.focusFrame = function (frame) {
     if (frame.isOpen && frame !== focus) {
         if (focus !== null) {
             focus.loseFocus();
-            if (!frame.isFloating) {
-                focus.hide();
-            }
+        }
+        if (!frame.isFloating()) {
+            visibleFrames.forEach(f => f.hide());
+            visibleFrames = [];
         }
         focus = frame;
         focus.show();
         focus.receiveFocus();
+        if (visibleFrames.indexOf(focus) < 0) {
+            visibleFrames.push(focus);
+        }
         document.title = frame.title;
         root.classList.remove('show-desktop');
     }

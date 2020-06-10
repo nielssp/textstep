@@ -27,6 +27,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     & > .files-panel {
         flex: 1 0 0;
     }
+    &:focus {
+        outline: 1px solid var(--focus-outline);
+    }
 }
 
 .files-panel {

@@ -922,6 +922,7 @@ function appearancePanel(frame) {
 
 TEXTSTEP.initApp('control-panel', [], function (app) {
     let frame = app.createFrame('Control panel');
+    frame.setFloating(true);
 
     let config = new Config(() => TEXTSTEP.get('content', {path: '/site/site.json'}), data =>
         TEXTSTEP.put('content', {path: '/site/site.json'}, data));
