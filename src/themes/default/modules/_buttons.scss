@@ -6,34 +6,35 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 */
 
 @mixin button {
-    &, &:hover {
-        color: #000;
-        text-decoration: none;
-        background: var(--button-bg);
-        color: var(--button-fg);
-        text-decoration: none;
-        box-shadow: inset -1px -1px 0px #555555;
-        border: 1px solid #fff;
-        border-right: 1px solid #000000;
-        border-bottom: 1px solid #000000;
-        outline: none;
-        cursor: default !important;
-        padding: 2px 6px 2px 6px;
-        font-weight: normal;
-        border-radius: 1px;
-        text-align: left;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
+    color: #000;
+    text-decoration: none;
+    background: var(--button-bg);
+    color: var(--button-fg);
+    text-decoration: none;
+    box-shadow: inset -1px -1px 0px #555555;
+    border: 1px solid #fff;
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    outline: none;
+    cursor: default !important;
+    padding: 2px 6px 2px 6px;
+    font-weight: normal;
+    border-radius: 1px;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     &:focus {
         outline: 1px solid var(--focus-outline);
+    }
+    &::-moz-focus-inner {
+        border: none;
     }
     &:default {
         font-weight: bold;
     }
     &:active {
-        background: #ffffff;
+        background-color: #ffffff;
         color: #000000;
         border: 1px solid #000000;
         border-right: 1px solid #fff;

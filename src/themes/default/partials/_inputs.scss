@@ -135,6 +135,22 @@ input[type=radio] {
 select:not([size]), select[size="1"] {
     @include button;
     display: block;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url(select.png);
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 16px;
+    &:active {
+        padding-right: 15px;
+        background-position: right 7px center;
+    }
+
+    &:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 #000;
+    }
 
     option {
         padding: 3px 5px 1px 7px;
