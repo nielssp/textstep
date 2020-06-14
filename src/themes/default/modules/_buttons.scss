@@ -33,7 +33,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
     &:default {
         font-weight: bold;
     }
-    &:active {
+    &:note([disabled]):active {
         background-color: #ffffff;
         color: #000000;
         border: 1px solid #000000;

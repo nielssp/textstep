@@ -14,7 +14,7 @@ $buttons: 'button, input[type=button], input[type=reset], input[type=submit]';
         &:active, &:focus {
             z-index: 2;
         }
-        &.active, &:active {
+        &.active, &:not([disabled]):active {
             background-color: #ffffff;
             border: 1px solid #000000;
             border-right: 1px solid #fff;

@@ -168,14 +168,14 @@ export var shake = function (element, amount) {
       .run();
 };
 
-export var onLongPress = function(el, callback) {
-    var touching = false;
+export let onLongPress = function(el, callback) {
+    let touching = false;
     
-    var start = function (e) {
+    const start = function (e) {
         touching = true;
     };
     
-    var end = function (e) {
+    const end = function (e) {
         touching = false;
     };
     

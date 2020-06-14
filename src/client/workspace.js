@@ -16,6 +16,7 @@ import Config from './common/config';
 
 import dragula from 'dragula';
 import 'dragula/dist/dragula.min.css';
+import Hammer from 'hammerjs';
 
 if (window.TEXTSTEP) {
   alert('TEXTSTEP Workspace already loaded!');
@@ -28,6 +29,9 @@ TEXTSTEP.ui = ui;
 TEXTSTEP.paths = paths;
 TEXTSTEP.Menu = Menu;
 TEXTSTEP.Config = Config;
+TEXTSTEP.lib = {};
+TEXTSTEP.lib.dragula = dragula;
+TEXTSTEP.lib.Hammer = Hammer;
 
 var root = document.body;
 var workspaceMenu = createWorkspaceMenu();

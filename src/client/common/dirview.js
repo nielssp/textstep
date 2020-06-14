@@ -8,6 +8,7 @@
 import * as ui from './ui';
 import * as util from './util';
 import * as paths from './paths';
+import Hammer from 'hammerjs';
 
 export class DirView extends ui.Component {
     constructor() {
@@ -575,6 +576,7 @@ class DirFile {
             'draggable': true,
             'href': TEXTSTEP.url('content/' + this.name, {path: this.path})
         });
+        this.mc = new Hammer(this.elem);
 
         if (this.type === 'directory') {
             this.icon = TEXTSTEP.getIcon('file-directory', 16);
@@ -588,9 +590,62 @@ class DirFile {
         this.elem.ondragleave = e => {
             e.stopPropagation();
         };
-        this.elem.addEventListener('touchend', e => {
+        this.mc.on('tap', e => {
+            if (e.pointerType === 'mouse') {
+                if (e.srcEvent.ctrlKey && this.column.dirView.multiSelect) {
+                    if (this.selected) {
+                        this.column.dirView.removeSelection(this.path);
+                    } else {
+                        this.column.dirView.addSelection(this.path);
+                    }
+                } else if (e.srcEvent.shiftKey && this.column.dirView.multiSelect) {
+                    if (this.column.selection.length === 0) {
+                        this.column.dirView.setSelection(this.path);
+                    } else {
+                        var other = this.column.selection[this.column.selection.length - 1];
+                        if (this.path === other) {
+                            if (!this.selected) {
+                                this.column.dirView.addSelection(file.path);
+                            }
+                        } else {
+                            var between = false;
+                            this.column.list.forEach(function (file) {
+                                if (file.path === this.path || file.path === other) {
+                                    between = !between;
+                                } else if (!between) {
+                                    return;
+                                }
+                                if (!file.selected) {
+                                    this.column.dirView.addSelection(file.path);
+                                }
+                            }, this);
+                        }
+                    }
+                } else if (!this.column.dirView.preview && this.type === 'directory') {
+                    this.column.dirView.cd(this.path);
+                } else {
+                    this.column.dirView.setSelection(this.path);
+                }
+            } else {
+                if (this.column.dirView.touchSelectMode) {
+                    if (this.selected) {
+                        this.column.dirView.removeSelection(this.path);
+                        if (!this.column.dirView.selection.length) {
+                            this.column.dirView.touchSelectMode = false;
+                        }
+                    } else {
+                        this.column.dirView.addSelection(this.path);
+                    }
+                } else {
+                    this.column.dirView.open(this.path);
+                }
+            }
+        });
+        ui.onLongPress(this.elem, e => {
             e.preventDefault();
-            if (this.column.dirView.touchSelectMode) {
+            e.stopPropagation();
+            if (this.column.dirView.multiSelect) {
+                this.column.dirView.touchSelectMode = true;
                 if (this.selected) {
                     this.column.dirView.removeSelection(this.path);
                     if (!this.column.dirView.selection.length) {
@@ -599,23 +654,6 @@ class DirFile {
                 } else {
                     this.column.dirView.addSelection(this.path);
                 }
-            } else if (this.type === 'directory') {
-                if (this.column.dirView.preview) {
-                    this.column.dirView.setSelection(this.path);
-                } else {
-                    this.column.dirView.cd(this.path);
-                }
-            } else if (this.column.dirView.touchOpen) {
-                this.column.dirView.open(this.path);
-            } else {
-                this.column.dirView.setSelection(this.path);
-            }
-        });
-        ui.onLongPress(this.elem, e => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (this.column.dirView.multiSelect) {
-                this.column.dirView.touchSelectMode = true;
             }
         });
         this.elem.onmouseover = () => {
@@ -627,44 +665,12 @@ class DirFile {
         };
         this.elem.onclick = (e) => {
             e.preventDefault();
-            if (e.ctrlKey && this.column.dirView.multiSelect) {
-                if (this.selected) {
-                    this.column.dirView.removeSelection(this.path);
-                } else {
-                    this.column.dirView.addSelection(this.path);
-                }
-            } else if (e.shiftKey && this.column.dirView.multiSelect) {
-                if (this.column.selection.length === 0) {
-                    this.column.dirView.setSelection(this.path);
-                } else {
-                    var other = this.column.selection[this.column.selection.length - 1];
-                    if (this.path === other) {
-                        if (!this.selected) {
-                            this.column.dirView.addSelection(file.path);
-                        }
-                    } else {
-                        var between = false;
-                        this.column.list.forEach(function (file) {
-                            if (file.path === this.path || file.path === other) {
-                                between = !between;
-                            } else if (!between) {
-                                return;
-                            }
-                            if (!file.selected) {
-                                this.column.dirView.addSelection(file.path);
-                            }
-                        }, this);
-                    }
-                }
-            } else if (!this.column.dirView.preview && this.type === 'directory') {
-                this.column.dirView.cd(this.path);
-            } else {
-                this.column.dirView.setSelection(this.path);
-            }
             return false;
         };
         this.elem.ondblclick = () => {
-            this.column.dirView.open(this.path);
+            if (!this.column.dirView.touchSelectMode) {
+                this.column.dirView.open(this.path);
+            }
         };
         this.elem.ondragstart = (e) => {
             var download = 'application/octet-stream:' + encodeURIComponent(this.name) + ':'
