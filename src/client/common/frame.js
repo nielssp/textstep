@@ -83,6 +83,7 @@ export class Frame extends Container {
         }
         this.floating = floating;
         if (floating) {
+            // TODO: check available space before enabling
             this.outer.style.position = 'absolute';
             this.outer.style.top = '0';
             this.outer.style.left = '0';

@@ -180,6 +180,7 @@ class ContentCompiler
         $metadata['modified'] = $file->getModified();
         $metadata['path'] = $file->getPath();
         $metadata['contentFile'] = $htmlFile->getPath();
+        $metadata['assetPath'] = $file->getRelativePath($this->root);
         $metadata->setDefault('name', preg_replace('/\.[^.]+$/', '', $file->getName()));
 
         if (!isset($metadata['title'])) {

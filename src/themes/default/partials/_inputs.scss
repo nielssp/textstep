@@ -58,6 +58,8 @@ textarea {
 
 input[type=checkbox] {
     -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     background-color: var(--frame-bg);
     box-shadow: inset -1px -1px 0px #555555;
     border: 1px solid #fff;
@@ -92,6 +94,8 @@ input[type=checkbox] {
 
 input[type=radio] {
     -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     background-color: var(--frame-bg);
     box-shadow: inset 1px 1px 0px #000000;
     border: 1px solid #515551;
