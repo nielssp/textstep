@@ -78,7 +78,8 @@ export class Frame extends Container {
     }
 
     setFloating(floating) {
-        if (floating === this.floating) {
+        // TODO: experimental
+        if (true || floating === this.floating) {
             return;
         }
         this.floating = floating;
