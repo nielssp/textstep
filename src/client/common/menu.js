@@ -108,7 +108,11 @@ Menu.prototype.positionAtPointer = function (x, y) {
     let rect = this.elem.getBoundingClientRect();
     x += 1;
     if (rect.width + x > document.body.clientWidth) {
-        x = document.body.clientWidth - rect.width;
+        if (x - rect.width > 1) {
+            x -= rect.width - 1;
+        } else {
+            x = 0;
+        }
     }
     y += 1;
     if (rect.height + y > document.body.clientHeight) {

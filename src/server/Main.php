@@ -14,7 +14,7 @@ class Main implements \Psr\Log\LoggerAwareInterface
     /**
      * TEXTSTEP version.
      */
-    const VERSION = '0.12.0';
+    const VERSION = '0.13.0';
 
     /**
      * @var Modules
