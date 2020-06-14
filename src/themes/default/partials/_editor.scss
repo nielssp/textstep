@@ -12,15 +12,24 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
 
     & > .editor-toolbar {
         border: 0;
+        padding: var(--frame-padding);
+        white-space: nowrap;
+        overflow-y: auto;
 
-        a {
+        button {
+            background: var(--button-bg);
+            color: var(--button-fg);
+            text-decoration: none;
+            box-shadow: inset -1px -1px 0px #555555;
+            border: 1px solid #fff;
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            outline: none;
             border-radius: 0;
-            background: transparent;
             &:focus {
                 outline: 1px solid #000000;
             }
             &:hover {
-                background-color: lighten($frameBg, 5%);
                 color: $frameFg;
                 box-shadow: inset -1px -1px 0px #555555;
                 border: 1px solid #fff;
@@ -38,15 +47,24 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
         }
 
         .separator {
-            border-right: 0;
-            border-left: 1px solid #666;
+            border: none;
         }
 
         &:after, &:before {
             margin: 0;
         }
 
-        &.fullscreen a {
+        &.fullscreen {
+            background: var(--frame-bg);
+            border-radius: 0;
+            &::before {
+                display: none;
+            }
+            &::after {
+                display: none;
+            }
+        }
+        &.fullscreen button {
             &:active, &.active {
                 border: 1px solid #000;
             }

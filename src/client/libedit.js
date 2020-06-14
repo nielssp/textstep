@@ -10,7 +10,7 @@ var ui = TEXTSTEP.ui;
 
 window.hljs = require('highlightjs/highlight.pack.js');
 
-export var SimpleMDE = require('simplemde');
+export var EasyMDE = require('easymde');
 
 export var CodeMirror = require('codemirror');
 
@@ -24,7 +24,7 @@ require('./libedit.scss');
 
 TEXTSTEP.initLib('libedit', function (lib) {
     lib.export({
-        SimpleMDE: SimpleMDE,
+        EasyMDE: EasyMDE,
         CodeMirror: CodeMirror
     });
 });

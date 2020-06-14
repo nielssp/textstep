@@ -8,7 +8,7 @@
 var paths = TEXTSTEP.paths;
 var ui = TEXTSTEP.ui;
 
-var SimpleMDE = null;
+var EasyMDE = null;
 
 var self = null;
 var frame = null;
@@ -16,7 +16,7 @@ var textarea = null;
 var current = null;
 var buffers = {};
 var bufferPanel = null;
-var simplemde = null;
+var editorInstance = null;
 
 function createBuffer(path) {
     var item = ui.elem('a', {'class': 'file file-md'}, [paths.fileName(path)]);
@@ -53,7 +53,7 @@ function openBuffer(path) {
     if (buffers.hasOwnProperty(path)) {
         if (current !== null) {
             current.item.className = 'file file-md';
-            current.scrollInfo = simplemde.codemirror.getScrollInfo();
+            current.scrollInfo = editorInstance.codemirror.getScrollInfo();
         }
         current = buffers[path];
         current.item.className = 'file file-md active';
@@ -61,12 +61,12 @@ function openBuffer(path) {
             self.setArgs({ path: path });
             var data = current.data;
             current.data = null;
-            simplemde.value(data);
+            editorInstance.value(data);
             current.data = data;
             if (current.history !== null) {
-                simplemde.codemirror.setHistory(current.history);
+                editorInstance.codemirror.setHistory(current.history);
             } else {
-                simplemde.codemirror.clearHistory();
+                editorInstance.codemirror.clearHistory();
             }
             if (current.unsaved) {
                 frame.setTitle(current.path + ' (*) – Write');
@@ -75,7 +75,7 @@ function openBuffer(path) {
             }
             if (current.scrollInfo !== null) {
                 console.log(current.scrollInfo);
-                simplemde.codemirror.scrollTo(current.scrollInfo.left, current.scrollInfo.top);
+                editorInstance.codemirror.scrollTo(current.scrollInfo.left, current.scrollInfo.top);
             }
         } else {
             frame.setTitle(current.path + ' (...) – Write');
@@ -90,14 +90,14 @@ function open(args) {
     textarea.value = '';
     frame.setTitle(path + ' (...) – Write');
 
-    simplemde = new SimpleMDE({
+    editorInstance = new EasyMDE({
         autofocus: true,
         element: textarea,
         renderingConfig: {
             codeSyntaxHighlighting: true
         },
         previewRender: function (text) {
-            var html = SimpleMDE.prototype.markdown(text);
+            var html = editorInstance.markdown(text);
             return html.replace(/src\s*=\s*"([^"]*)"/ig, function (match, url) {
                 return 'src="' + TEXTSTEP.url('content', {path: paths.convert(url, current.cwd)}) + '"';
             });
@@ -111,6 +111,8 @@ function open(args) {
                 className: "fa fa-save",
                 title: "Save"
             },
+            "|",
+            "undo",
             "|",
             "bold",
             "italic",
@@ -133,12 +135,12 @@ function open(args) {
         ]
     });
 
-    simplemde.codemirror.on('changes', function () {
+    editorInstance.codemirror.on('changes', function () {
         if (current !== null && current.data !== null) {
             current.unsaved = true;
             current.item.textContent = current.name + ' (*)';
-            current.data = simplemde.value();
-            current.history = simplemde.codemirror.getHistory();
+            current.data = editorInstance.value();
+            current.history = editorInstance.codemirror.getHistory();
             frame.setTitle(current.path + ' (*) – Write');
         }
     });
@@ -177,22 +179,22 @@ function confirmClose() {
 }
 
 function close() {
-    simplemde.toTextArea();
-    simplemde = null;
+    editorInstance.toTextArea();
+    editorInstance = null;
     buffers = [];
     bufferPanel.innerHTML = '';
     self.close();
 }
 
 function saveFile() {
-    if (simplemde !== null && current !== null) {
+    if (editorInstance !== null && current !== null) {
         let buffer = current;
         return TEXTSTEP.put('content', {path: buffer.path}, new TEXTSTEP.RequestData(buffer.data, 'text/plain')).then(function () {
             buffer.unsaved = false;
             buffer.item.textContent = buffer.name;
             if (current === buffer) {
                 frame.setTitle(current.path + ' – Write');
-                simplemde.clearAutosavedValue();
+                editorInstance.clearAutosavedValue();
             }
         }, error => frame.alert('Error', error.message, error));
     } else {
@@ -201,7 +203,7 @@ function saveFile() {
 }
 
 function closeBuffer() {
-    if (simplemde !== null && current !== null) {
+    if (editorInstance !== null && current !== null) {
         let ok;
         if (current.unsaved) {
             ok = frame.confirm('Write', 'Do you want to save the buffer before closing?', ['Yes', 'No', 'Cancel'],
@@ -246,18 +248,18 @@ function newFile() {
 }
 
 function resizeView() {
-    simplemde.codemirror.refresh();
+    editorInstance.codemirror.refresh();
 }
 
 TEXTSTEP.initApp('write', ['libedit'], function (app) {
     self = app;
-    SimpleMDE = app.require('libedit').SimpleMDE;
+    EasyMDE = app.require('libedit').EasyMDE;
 
     app.dockFrame.innerHTML = '';
     app.dockFrame.appendChild(TEXTSTEP.getIcon('editor', 32));
 
     frame = self.createFrame('Write');
-    frame.inner.className += ' editor-frame-body libedit-simplemde';
+    frame.inner.className += ' editor-frame-body libedit-easymde';
 
     textarea = ui.elem('textarea');
     frame.append(textarea);
