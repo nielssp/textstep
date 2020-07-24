@@ -55,7 +55,7 @@ class IndexCompiler
             $this->env->addModule('contentmap', new Tsc\ContentMapModule($this->contentMap, $index->getParent()), true);
             $this->interpreter->eval($node, $this->env->openScope());
         } catch (Tsc\Error $e) {
-            throw new \Blogstep\RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
+            throw new \RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
         }
     }
 }

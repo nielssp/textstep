@@ -41,7 +41,7 @@ class SiteInstaller
                 $target->get($node['data'][0])->copy($target);
                 break;
             default:
-                throw new \Blogstep\RuntimeException('Undefined site node handler: ' . $node['handler']);
+                throw new \RuntimeException('Undefined site node handler: ' . $node['handler']);
         }
     }
 }

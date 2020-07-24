@@ -44,13 +44,13 @@ class MountHandler
             ];
         }
         if (!isset($options['type']) or $options['type'] !== 'host') {
-            throw new \Blogstep\RuntimeException(
+            throw new \RuntimeException(
                 'Unsupported file system type: ' .
                 (isset($options['type']) ? $options['type'] : '(null)')
             );
         }
         if (!isset($options['path']) || !is_string($options['path'])) {
-            throw new \Blogstep\RuntimeException('Missing device path');
+            throw new \RuntimeException('Missing device path');
         }
         return new HostDevice($options['path'], $options);
     }

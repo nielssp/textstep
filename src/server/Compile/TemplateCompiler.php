@@ -212,7 +212,7 @@ class TemplateCompiler
                     break;
             }
         } catch (Tsc\Error $e) {
-            throw new \Blogstep\RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
+            throw new \RuntimeException($e->srcFile . ':' . $e->srcLine . ':' . $e->srcColumn . ': ' . $e->getMessage(), 0, $e);
         }
     }
 }

@@ -63,7 +63,7 @@ class ContentCompiler
         $dom = new \simple_html_dom();
         $dom->load($html, true, false);
         if (!$dom) {
-            throw new \Blogstep\RuntimeException('Could not parse HTML: ' . $htmlFile()->getPath());
+            throw new \RuntimeException('Could not parse HTML: ' . $htmlFile()->getPath());
         }
         return $dom;
     }
@@ -157,12 +157,12 @@ class ContentCompiler
         }
         $contentBuildDir = $this->root->get('build' . $file->getPath());
         if (!$contentBuildDir->makeDirectory(true)) {
-            throw new \Blogstep\RuntimeException('Could not create build directory: ' . $contentBuildDir->getPath());
+            throw new \RuntimeException('Could not create build directory: ' . $contentBuildDir->getPath());
         }
         $html = $handler($file->getContents());
         $htmlFile = $contentBuildDir->get('content.html');
         if (!$htmlFile->putContents($html)) {
-            throw new \Blogstep\RuntimeException('Could not write file: ' . $htmlFile->getPath());
+            throw new \RuntimeException('Could not write file: ' . $htmlFile->getPath());
         }
         $dom = $this->parseHtml($html, $htmlFile);
         $this->copyAssets($file, $dom);
@@ -196,7 +196,7 @@ class ContentCompiler
 
         $html = $dom->__toString();
         if (!$htmlFile->putContents($html)) {
-            throw new \Blogstep\RuntimeException('Could not write file: ' . $htmlFile->getPath());
+            throw new \RuntimeException('Could not write file: ' . $htmlFile->getPath());
         }
         
         $this->contentMap->add($file->getPath(), $metadata->toArray());
