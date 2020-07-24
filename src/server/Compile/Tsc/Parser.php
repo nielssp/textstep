@@ -579,7 +579,7 @@ class Parser
                 break;
             } elseif (!$this->peekType('LineFeed')) {
                 $node->children[] = $this->parseStatement();
-                if (!$this->peekType('Text') or $this->peekType('Eof')) {
+                if (!$this->peekType('Text') and !$this->peekType('Eof')) {
                     $this->expectType('LineFeed');
                 }
             } else {
