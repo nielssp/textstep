@@ -135,4 +135,4 @@ add_static("index.html")
 
 Open the build tool from the main menu. Click on the "Build all" button. The `target`-directory should now be created with your `index.html` file in it.
 
-For an example of a complete website see [https://github.com/nielssp/nielssp.dk](this repository).
+For an example of a complete website see [this repository](https://github.com/nielssp/nielssp.dk).
