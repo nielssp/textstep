@@ -31,7 +31,9 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             font-size: 0.8em;
             padding: 1px 1px 1px 0;
             a {
-                display: block;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 height: 100%;
                 width: 19px;
                 padding: 0;
@@ -46,25 +48,29 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
                 border-right: 1px solid rgba(255,255,255,0.31);
                 border-bottom: 1px solid rgba(255,255,255,0.31);
                 position: relative;
+                &::after {
+                    display: block;
+                    content: '';
+                    width: 9px;
+                    height: 9px;
+                    mask-size: cover;
+                    -webkit-mask-size: cover;
+                    background: white;
+                }
                 &:active {
                     background-color: #fff;
                     border-color: #fff;
-                }
-                &[data-action="close"] {
-                    background-image: url(close2.png);
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    &:active {
-                        background-image: url(close1.png);
+                    &::after {
+                        background: black;
                     }
                 }
-                &[data-action="toggle-menu"] {
-                    background-image: url(menu2.png);
-                    background-repeat: no-repeat;
-                    background-position: center center;
-                    &:active {
-                        background-image: url(menu1.png);
-                    }
+                &[data-action="close"]::after {
+                    mask-image: url(close.svg);
+                    -webkit-mask-image: url(close.svg);
+                }
+                &[data-action="toggle-menu"]::after {
+                    mask-image: url(menu.svg);
+                    -webkit-mask-image: url(menu.svg);
                 }
             }
         }

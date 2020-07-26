@@ -14,8 +14,6 @@ $main->config['log.level'] = \Psr\Log\LogLevel::DEBUG;
 
 $main->init();
 
-trigger_error('test', E_USER_NOTICE);
-
 $main->m->server->add(function (ServerRequestInterface $request, ResponseInterface $response, callable $next) {
     if ($request->getMethod() === 'OPTIONS') {
         $response = $response->withStatus(\Jivoo\Http\Message\Status::NO_CONTENT);

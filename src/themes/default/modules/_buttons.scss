@@ -54,7 +54,7 @@ See the LICENSE file or http://opensource.org/licenses/MIT for more information.
             border-bottom: 1px solid #000000;
         }
         .icon {
-            opacity: 0.3;
+            filter: opacity(50%) grayscale(100%) drop-shadow(1px 1px 0 #fff);
         }
     }
     .icon {

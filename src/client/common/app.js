@@ -22,12 +22,12 @@ export default function App(name) {
 
     this.frames = [];
 
-    this.dockMenu = new Menu('Dock');
+    this.dockMenu = new Menu(name);
     this.dockMenu.addItem('Pin', () => {
     });
     this.dockMenu.addItem('Close', () => this.close());
 
-    this.dockFrame = ui.elem('div', {'class': 'dock-frame'}, [
+    this.dockFrame = ui.elem('div', {'class': 'dock-frame', 'role': 'button', 'tabindex': 0}, [
         ui.elem('label', {}, [name])
     ]);
     this.dockFrame.onmousedown = e => {
@@ -45,6 +45,12 @@ export default function App(name) {
             console.error('Could not restore ' + name + ':', e);
             TEXTSTEP.kill(name);
         });
+    };
+    this.dockFrame.onkeydown = e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            this.dockFrame.click();
+        }
     };
     this.dockFrame.ondragenter = e => e.stopPropagation();
     this.dockFrame.ondragend = e => e.stopPropagation();
