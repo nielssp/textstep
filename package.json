@@ -26,7 +26,7 @@
     "file-loader": "^1.1.0",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.4.5",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^7.3.1",
     "style-loader": "^0.13.2",
     "ts-loader": "^7.0.3",
